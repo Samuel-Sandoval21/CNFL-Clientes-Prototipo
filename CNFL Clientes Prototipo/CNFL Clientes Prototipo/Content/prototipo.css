@@ -1,0 +1,49 @@
+﻿/* Content/prototipo.css */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-cnfl {
+    background-color: #0056b3; /* Azul institucional */
+    border-bottom: 4px solid #ffcc00; /* Amarillo CNFL */
+    margin-bottom: 30px;
+}
+
+    .navbar-cnfl a {
+        color: white !important;
+        font-weight: bold;
+    }
+
+.card-cliente {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.tabla-clientes {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+    .tabla-clientes th {
+        background-color: #0056b3;
+        color: white;
+    }
+
+.btn-cnfl {
+    background-color: #ffcc00;
+    color: #333;
+    font-weight: bold;
+    border: none;
+}
+
+    .btn-cnfl:hover {
+        background-color: #e6b800;
+        color: #000;
+    }
