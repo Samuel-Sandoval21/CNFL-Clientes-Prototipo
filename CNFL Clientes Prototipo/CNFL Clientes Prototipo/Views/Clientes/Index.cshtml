@@ -1,17 +1,37 @@
-﻿@{
-    ViewBag.Title = "Listado de Clientes";
+﻿@model List<CNFL_Clientes_Prototipo.Models.Cliente>
+
+@{
+    ViewBag.Title = "Gestión de Clientes";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Listado de Clientes (Estructura Base)</h2>
-            <p>Aquí se mostrará la tabla de clientes cuando conectemos la lógica en la siguiente fase.</p>
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">Listado de Clientes</h2>
 
-            <div class="card-cliente">
-                <h4>Fase de Estructura</h4>
-                <p>Este es el HTML base del prototipo. Los estilos y scripts ya están cargados desde los archivos separados en <strong>Content</strong> y <strong>Scripts</strong>.</p>
-            </div>
+        <div class="tabla-clientes">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre Completo</th>
+                        <th>Identificación</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cliente in Model)
+                    {
+                        <tr>
+                            <td>@cliente.Id</td>
+                            <td>@cliente.Nombre @cliente.Apellidos</td>
+                            <td>@cliente.Identificacion</td>
+                            <td>@cliente.Telefono</td>
+                            <td>@cliente.Correo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
