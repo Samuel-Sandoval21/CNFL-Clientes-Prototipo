@@ -1,49 +1,81 @@
 ﻿/* Content/prototipo.css */
+:root {
+    --cnfl-orange: #F47920;
+    --cnfl-orange-light: #F89444;
+    --cnfl-orange-dark: #C45A00;
+    --cnfl-yellow: #FFD200;
+    --cnfl-bg: #FFF8F3;
+    --cnfl-white: #FFFFFF;
+    --cnfl-text: #2A1A0A;
+    --cnfl-border: #F0D0B0;
+}
+
 body {
-    background-color: #f8f9fa;
+    background-color: var(--cnfl-bg);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Header y Navegación */
 .navbar-cnfl {
-    background-color: #0056b3; /* Azul institucional */
-    border-bottom: 4px solid #ffcc00; /* Amarillo CNFL */
-    margin-bottom: 30px;
+    background-color: var(--cnfl-orange);
+    border-bottom: 4px solid var(--cnfl-orange-dark);
+    box-shadow: 0 4px 10px rgba(244, 121, 32, 0.3);
 }
 
     .navbar-cnfl a {
         color: white !important;
-        font-weight: bold;
+        font-weight: 700;
     }
 
+/* Tarjetas estilo App */
 .card-cliente {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    background-color: white;
+    background: var(--cnfl-white);
+    border: 1px solid var(--cnfl-border);
+    border-radius: 16px;
     padding: 20px;
+    box-shadow: 0 2px 12px rgba(244,121,32,0.08);
     margin-bottom: 20px;
 }
 
-.tabla-clientes {
-    background-color: white;
+/* Botones */
+.btn-cnfl {
+    background-color: var(--cnfl-orange);
+    color: white;
+    font-weight: 800;
+    border: none;
     border-radius: 10px;
+    padding: 10px 20px;
+}
+
+    .btn-cnfl:hover {
+        background-color: var(--cnfl-orange-dark);
+        color: white;
+    }
+
+/* Tablas */
+.tabla-clientes {
+    background: white;
+    border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
     .tabla-clientes th {
-        background-color: #0056b3;
+        background-color: var(--cnfl-orange);
         color: white;
+        border: none;
     }
 
-.btn-cnfl {
-    background-color: #ffcc00;
-    color: #333;
-    font-weight: bold;
-    border: none;
+/* Alertas y Notificaciones */
+.alerta-cnfl {
+    background-color: #FFF3E0;
+    border-left: 5px solid var(--cnfl-orange);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
 }
 
-    .btn-cnfl:hover {
-        background-color: #e6b800;
-        color: #000;
-    }
+/* Accesibilidad (Tamaño de letra para adultos mayores) */
+.texto-grande {
+    font-size: 1.2rem;
+}

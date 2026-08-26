@@ -10,20 +10,19 @@ namespace CNFL_Clientes_Prototipo.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            // Redirigimos a la nueva Home pública (Cuenta/Index)
+            return RedirectToAction("Index", "Cuenta");
         }
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
-
+            ViewBag.Message = "Tu aplicación de descripción.";
             return View();
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
-
+            ViewBag.Message = "Tu página de contacto.";
             return View();
         }
     }

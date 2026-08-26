@@ -1,0 +1,51 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Averia>
+
+@{
+    ViewBag.Title = "Estado de Averías";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="texto-grande">Estado de mis Averías</h2>
+    <a href="@Url.Action("Create", "Averias")" class="btn btn-cnfl">+ Reportar</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No tiene averías reportadas actualmente.</div>
+}
+
+@foreach (var averia in Model)
+{
+    <div class="card-cliente">
+        <div class="d-flex justify-content-between">
+            <h5 class="texto-grande">@averia.Titulo</h5>
+            @if (averia.Estado == "Reportado")
+            {
+                <span class="badge bg-danger">Reportado</span>
+            }
+            else if (averia.Estado == "En revisión")
+            {
+                <span class="badge bg-warning text-dark">En revisión</span>
+            }
+            else
+            {
+                <span class="badge bg-success">@averia.Estado</span>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(averia.FotoUrl))
+        {
+            <img src="@averia.FotoUrl" alt="Foto de la avería" class="img-fluid rounded my-3" style="max-height: 200px; object-fit: cover; border: 1px solid #ddd;" />
+        }
+
+        <p class="text-muted mb-1">📍 @averia.Direccion</p>
+        <p class="text-muted mb-1">🕐 @averia.Fecha.ToString("dd/MM/yyyy HH:mm")</p>
+        <p class="mb-2">@averia.Descripcion</p>
+
+        <!-- Barra de progreso estilo Amazon/Temu -->
+        <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="text-muted">Paso 1 de 4: Entregado</small>
+    </div>
+}

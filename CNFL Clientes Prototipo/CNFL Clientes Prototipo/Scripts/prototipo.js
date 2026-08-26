@@ -1,16 +1,19 @@
-﻿// Scripts/prototipo.js
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('Prototipo CNFL Cargado correctamente.');
+﻿document.addEventListener('DOMContentLoaded', function () {
+    console.log('Prototipo CNFL - RespuestaTCU cargado.');
 
-    // Capturamos el formulario si existe (para futuras implementaciones)
-    const formCliente = document.getElementById('form-cliente');
+    // Mostrar el Toast de notificación una sola vez
+    var toastEl = document.getElementById('toast-notificacion');
+    if (toastEl) {
+        var toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
 
-    if (formCliente) {
-        formCliente.addEventListener('submit', function (e) {
-            // Aquí solo simulamos el envío en el prototipo
-            e.preventDefault();
-            alert('Prototipo: Datos del cliente recibidos para su procesamiento.');
-            // En un futuro aquí se haría el fetch o ajax hacia el controlador
+    // Lógica para el botón de reportar avería (simulación de cámara)
+    const btnReportar = document.getElementById('btn-reportar-averia');
+    if (btnReportar) {
+        btnReportar.addEventListener('click', function () {
+            // En el prototipo real, esto abriría la cámara del celular
+            alert("📷 Prototipo: Se abrirá la cámara para tomar una foto de la avería.");
         });
     }
 });
