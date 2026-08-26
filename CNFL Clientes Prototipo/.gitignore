@@ -1,0 +1,13 @@
+## Ignorar Visual Studio archivos temporales
+.vs/
+obj/
+bin/
+packages/
+*.user
+*.suo
+*.userprefs
+*.csproj.user
+
+## Ignorar carpetas de compilación
+Debug/
+Release/
