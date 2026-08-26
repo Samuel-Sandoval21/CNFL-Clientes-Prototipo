@@ -16,21 +16,44 @@
 
 @foreach (var averia in Model)
 {
+    // Lógica para color y progreso según estado
+    string colorBadge = "bg-secondary";
+    string colorProgreso = "bg-secondary";
+    int progreso = 0;
+    string textoProgreso = "";
+
+    switch (averia.Estado)
+    {
+        case "Reportado":
+            colorBadge = "bg-danger";
+            colorProgreso = "bg-danger";
+            progreso = 25;
+            textoProgreso = "Paso 1 de 4: Entregado";
+            break;
+        case "En revisión":
+            colorBadge = "bg-warning text-dark";
+            colorProgreso = "bg-warning";
+            progreso = 50;
+            textoProgreso = "Paso 2 de 4: En revisión";
+            break;
+        case "En camino":
+            colorBadge = "bg-primary";
+            colorProgreso = "bg-primary";
+            progreso = 75;
+            textoProgreso = "Paso 3 de 4: Operador en camino";
+            break;
+        case "Resuelto":
+            colorBadge = "bg-success";
+            colorProgreso = "bg-success";
+            progreso = 100;
+            textoProgreso = "Paso 4 de 4: Problema resuelto";
+            break;
+    }
+
     <div class="card-cliente">
         <div class="d-flex justify-content-between">
             <h5 class="texto-grande">@averia.Titulo</h5>
-            @if (averia.Estado == "Reportado")
-            {
-                <span class="badge bg-danger">Reportado</span>
-            }
-            else if (averia.Estado == "En revisión")
-            {
-                <span class="badge bg-warning text-dark">En revisión</span>
-            }
-            else
-            {
-                <span class="badge bg-success">@averia.Estado</span>
-            }
+            <span class="badge @colorBadge">@averia.Estado</span>
         </div>
 
         @if (!string.IsNullOrEmpty(averia.FotoUrl))
@@ -42,10 +65,10 @@
         <p class="text-muted mb-1">🕐 @averia.Fecha.ToString("dd/MM/yyyy HH:mm")</p>
         <p class="mb-2">@averia.Descripcion</p>
 
-        <!-- Barra de progreso estilo Amazon/Temu -->
+        <!-- Barra de progreso dinámica -->
         <div class="progress" style="height: 8px;">
-            <div class="progress-bar bg-warning" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar @colorProgreso" role="progressbar" style="width: @progreso%" aria-valuenow="@progreso" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
-        <small class="text-muted">Paso 1 de 4: Entregado</small>
+        <small class="text-muted">@textoProgreso</small>
     </div>
 }

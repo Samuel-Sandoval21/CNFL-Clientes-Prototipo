@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using CNFL_Clientes_Prototipo.Models;
 using CNFL_Clientes_Prototipo.Repositories;
 
@@ -19,6 +16,11 @@ namespace CNFL_Clientes_Prototipo.Services
         public void RegistrarAveria(Averia averia)
         {
             _repository.Agregar(averia);
+        }
+
+        public void CambiarEstado(int id, string nuevoEstado)
+        {
+            _repository.ActualizarEstado(id, nuevoEstado);
         }
     }
 }

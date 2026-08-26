@@ -16,14 +16,37 @@
             {
                 <div class="mb-3">
                     <label class="form-label fw-bold">Usuario</label>
-                    <input type="text" name="usuario" class="form-control" placeholder="admin" />
+                    <input type="text" name="usuario" class="form-control" placeholder="Su usuario" required />
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Contraseña</label>
-                    <input type="password" name="contrasena" class="form-control" placeholder="123" />
+                    <div class="input-group">
+                        <input type="password" name="contrasena" id="passwordField" class="form-control" placeholder="Su contraseña" required />
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">👁️</button>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-cnfl w-100">Ingresar</button>
             }
+
+            <div class="alert alert-info mt-4">
+                <strong>Credenciales de prueba:</strong><br />
+                👨‍💼 Admin: Usuario <code>admin</code> / Contraseña <code>12345$</code><br />
+                🧑 Cliente: Usuario <code>cliente</code> / Contraseña <code>123456</code>
+            </div>
+
+            <hr />
+            <p class="text-center mb-0">¿No tienes cuenta? <a href="/Cuenta/Registro" class="fw-bold">Regístrate aquí</a></p>
         </div>
     </div>
 </div>
+
+<script>
+    function togglePassword() {
+        var campo = document.getElementById("passwordField");
+        if (campo.type === "password") {
+            campo.type = "text";
+        } else {
+            campo.type = "password";
+        }
+    }
+</script>

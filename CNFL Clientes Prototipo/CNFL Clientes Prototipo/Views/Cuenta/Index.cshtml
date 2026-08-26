@@ -7,7 +7,23 @@
     <p class="lead">Celebremos la calidad y continuidad de nuestro servicio.</p>
     <hr class="my-4">
     <p>Consulte su factura, pague en línea, reporte averías con fotos y reciba notificaciones en tiempo real.</p>
-    <a class="btn btn-warning btn-lg text-dark fw-bold" href="/Cuenta/Login">Iniciar Sesión</a>
+
+    @if (Session["Usuario"] == null)
+    {
+        <a class="btn btn-warning btn-lg text-dark fw-bold" href="/Cuenta/Login">Iniciar Sesión</a>
+    }
+    else
+    {
+        <a class="btn btn-warning btn-lg text-dark fw-bold" href="/Clientes">Ir a mi Panel</a>
+    }
+</div>
+
+<!-- Alertas visibles en el Home -->
+<div class="alert alert-warning d-flex align-items-center" role="alert">
+    <div class="me-3" style="font-size: 2rem;">🔔</div>
+    <div>
+        <strong>¡Aviso importante!</strong> Su factura vence en 3 días. Puede pagarla desde la app.
+    </div>
 </div>
 
 <div class="row">
@@ -20,7 +36,7 @@
     <div class="col-md-4">
         <div class="card-cliente">
             <h3>📄 Pago en línea</h3>
-            <p>Pague su factura de forma segura con SINPE, Tarjeta o IBAN.</p>
+            <p>Deberá pagar su factura por medio de SINPE Móvil, Tarjeta de crédito o Débito o Cuenta IBAN.</p>
         </div>
     </div>
     <div class="col-md-4">

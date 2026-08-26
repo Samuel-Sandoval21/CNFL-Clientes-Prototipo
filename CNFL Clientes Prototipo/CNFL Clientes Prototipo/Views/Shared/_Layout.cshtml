@@ -8,7 +8,6 @@
     <link href="@Url.Content("~/Content/prototipo.css")" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <!-- Menú superior -->
     <nav class="navbar navbar-expand-lg navbar-cnfl">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/Cuenta">
@@ -22,14 +21,25 @@
                     <!-- Apuntamos al Home Público -->
                     <li class="nav-item"><a class="nav-link" href="/Cuenta">Inicio</a></li>
 
-                    <!-- Zona protegida (Clientes) -->
+                    <!-- Zona Cliente -->
                     <li class="nav-item"><a class="nav-link" href="/Clientes">Clientes</a></li>
-
-                    <!-- Zona protegida (Averías) -->
                     <li class="nav-item"><a class="nav-link" href="/Averias">Averías</a></li>
 
-                    <!-- Botón de Login -->
-                    <li class="nav-item"><a class="nav-link btn btn-light text-dark ms-2" href="/Cuenta/Login">Iniciar Sesión</a></li>
+                    <!-- Zona Admin (Solo se muestra si tiene sesión Admin) -->
+                    @if (Session["Rol"] != null && Session["Rol"].ToString() == "Admin")
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Admin">Panel Admin</a></li>
+                    }
+
+                    <!-- Login / Logout -->
+                    @if (Session["Usuario"] == null)
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Cuenta/Login" style="border: 2px solid white; border-radius: 8px; padding: 5px 15px; margin-left: 10px;">Iniciar Sesión</a></li>
+                    }
+                    else
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Cuenta/Logout" style="border: 2px solid white; border-radius: 8px; padding: 5px 15px; margin-left: 10px;">Cerrar Sesión (@Session["Usuario"])</a></li>
+                    }
                 </ul>
             </div>
         </div>
@@ -42,16 +52,6 @@
             <p>&copy; @DateTime.Now.Year - Prototipo TCU Samuel Sandoval Ramírez</p>
             <p class="small">"Celebremos la calidad y continuidad de nuestro servicio"</p>
         </footer>
-    </div>
-
-    <!-- Toast de notificación (aparece una sola vez) -->
-    <div id="toast-notificacion" class="toast align-items-center text-white bg-primary border-0 position-fixed top-0 end-0 m-3" role="alert">
-        <div class="d-flex">
-            <div class="toast-body">
-                <strong>🔔 Aviso:</strong> Su factura vence en 3 días. Puede pagarla desde la app.
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

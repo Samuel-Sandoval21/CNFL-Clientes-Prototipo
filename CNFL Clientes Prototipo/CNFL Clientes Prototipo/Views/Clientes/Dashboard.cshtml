@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Bienvenido";
+    var nombre = Session["Usuario"]?.ToString() ?? "Usuario";
+    var rol = Session["Rol"]?.ToString() ?? "";
+}
+
+<div class="text-center mt-4">
+    <h1 class="display-4">¡Bienvenido, @nombre! 👋</h1>
+    <p class="lead">Rol activo: <strong>@rol</strong></p>
+    <hr />
+    <p>Desde aquí puedes gestionar tu servicio eléctrico.</p>
+
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <a href="/Averias" class="btn btn-cnfl w-100 py-4">📷 Reportar Avería</a>
+        </div>
+        <div class="col-md-4">
+            <a href="/Cuenta/MisDatos" class="btn btn-cnfl w-100 py-4">📄 Mis Datos</a>
+        </div>
+        <div class="col-md-4">
+            <a href="/Cuenta/Logout" class="btn btn-outline-danger w-100 py-4">🚪 Cerrar Sesión</a>
+        </div>
+    </div>
+</div>

@@ -29,7 +29,15 @@ namespace CNFL_Clientes_Prototipo.Repositories
         public void ActualizarEstado(int id, string nuevoEstado)
         {
             var averia = _averias.FirstOrDefault(a => a.Id == id);
-            if (averia != null) averia.Estado = nuevoEstado;
+            if (averia != null)
+            {
+                averia.Estado = nuevoEstado;
+            }
+        }
+
+        public Averia ObtenerPorId(int id)
+        {
+            return _averias.FirstOrDefault(a => a.Id == id);
         }
     }
 }

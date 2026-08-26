@@ -1,0 +1,74 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Averia>
+
+@{
+    ViewBag.Title = "Panel Administrativo";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="texto-grande">🧑‍💼 Panel Administrativo</h2>
+    <span class="badge bg-primary">Modo Operador</span>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No hay averías reportadas actualmente.</div>
+}
+
+@foreach (var averia in Model)
+{
+    <div class="card-cliente mb-3">
+        <div class="row">
+            <div class="col-md-8">
+                <h4>@averia.Id - @averia.Titulo</h4>
+                <p class="text-muted">📍 @averia.Direccion</p>
+                <p class="text-muted">🕐 @averia.Fecha.ToString("dd/MM/yyyy HH:mm")</p>
+                <p>@averia.Descripcion</p>
+                @if (!string.IsNullOrEmpty(averia.FotoUrl))
+                {
+                    <img src="@averia.FotoUrl" alt="Foto" class="img-fluid rounded" style="max-height: 150px;" />
+                }
+            </div>
+            <div class="col-md-4 d-flex flex-column justify-content-center">
+                <div class="mb-2">
+                    <strong>Estado actual:</strong>
+                    @if (averia.Estado == "Reportado")
+                    {
+                        <span class="badge bg-danger">@averia.Estado</span>
+                    }
+                    else if (averia.Estado == "En revisión")
+                    {
+                        <span class="badge bg-warning text-dark">@averia.Estado</span>
+                    }
+                    else if (averia.Estado == "En camino")
+                    {
+                        <span class="badge bg-primary">@averia.Estado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">@averia.Estado</span>
+                    }
+                </div>
+
+                @using (Html.BeginForm("CambiarEstado", "Admin", FormMethod.Post))
+                {
+                    @Html.Hidden("id", averia.Id)
+                    <div class="input-group mb-2">
+                        <select name="estado" class="form-select">
+                            <option value="Reportado">Reportado</option>
+                            <option value="En revisión">En revisión</option>
+                            <option value="En camino">En camino</option>
+                            <option value="Resuelto">Resuelto</option>
+                        </select>
+                        <button type="submit" class="btn btn-cnfl">Actualizar</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<hr />
+
+<div class="alert alert-info">
+    <strong>💡 Nota:</strong> Para ver el listado de clientes registrados, diríjase a la pestaña <a href="/Clientes">Clientes</a> del menú superior.
+</div>

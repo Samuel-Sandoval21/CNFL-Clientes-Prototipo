@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Registro";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card-cliente">
+            <h3 class="text-center mb-4">Crear Cuenta Nueva</h3>
+            <p class="text-muted text-center">Complete sus datos para registrarse como Cliente.</p>
+
+            @using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post))
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" required placeholder="Su nombre" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Apellidos</label>
+                    <input type="text" name="apellidos" class="form-control" required placeholder="Sus apellidos" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Cédula</label>
+                    <input type="text" name="cedula" class="form-control" required placeholder="1-2345-6789" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Teléfono</label>
+                    <input type="text" name="telefono" class="form-control" required placeholder="8888-8888" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Correo Electrónico</label>
+                    <input type="email" name="correo" class="form-control" required placeholder="usuario@correo.com" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">NISE (Número de Identificación del Servicio Eléctrico)</label>
+                    <input type="text" name="nise" class="form-control" required placeholder="1234567-8" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nombre de Usuario</label>
+                    <input type="text" name="usuario" class="form-control" required placeholder="Ej: Samuel123" />
+                </div>
+
+                <button type="submit" class="btn btn-cnfl w-100">Registrarme</button>
+            }
+
+            <hr />
+            <p class="text-center mb-0">¿Ya tienes cuenta? <a href="/Cuenta/Login" class="fw-bold">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+</div>

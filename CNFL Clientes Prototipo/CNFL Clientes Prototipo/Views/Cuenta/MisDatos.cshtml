@@ -1,0 +1,44 @@
+﻿@model CNFL_Clientes_Prototipo.Controllers.Usuario
+
+@{
+    ViewBag.Title = "Mis Datos";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card-cliente">
+            <h3 class="text-center mb-4">Mis Datos Personales</h3>
+            <p class="text-center text-muted">Puede actualizar su información de contacto aquí.</p>
+
+            @using (Html.BeginForm("GuardarDatos", "Cuenta", FormMethod.Post))
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nombre</label>
+                    <input type="text" name="nombre" value="@Model.Nombre" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Apellidos</label>
+                    <input type="text" name="apellidos" value="@Model.Apellidos" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Cédula</label>
+                    <input type="text" name="cedula" value="@Model.Cedula" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Teléfono</label>
+                    <input type="text" name="telefono" value="@Model.Telefono" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Correo Electrónico</label>
+                    <input type="email" name="correo" value="@Model.Correo" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">NISE (No editable)</label>
+                    <input type="text" value="@Model.NISE" class="form-control" disabled />
+                </div>
+
+                <button type="submit" class="btn btn-cnfl w-100">Guardar Cambios</button>
+            }
+        </div>
+    </div>
+</div>

@@ -1,37 +1,44 @@
-﻿@model List<CNFL_Clientes_Prototipo.Models.Cliente>
+﻿@model List<CNFL_Clientes_Prototipo.Controllers.Usuario>
 
 @{
-    ViewBag.Title = "Gestión de Clientes";
+    ViewBag.Title = "Listado de Clientes (Solo Admin)";
 }
 
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="mb-4">Listado de Clientes</h2>
-
-        <div class="tabla-clientes">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre Completo</th>
-                        <th>Identificación</th>
-                        <th>Teléfono</th>
-                        <th>Correo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var cliente in Model)
-                    {
-                        <tr>
-                            <td>@cliente.Id</td>
-                            <td>@cliente.Nombre @cliente.Apellidos</td>
-                            <td>@cliente.Identificacion</td>
-                            <td>@cliente.Telefono</td>
-                            <td>@cliente.Correo</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+@if (Session["Rol"] != null && Session["Rol"].ToString() == "Admin")
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Listado de Clientes Registrados</h2>
+        <span class="badge bg-primary">Vista Administrador</span>
     </div>
-</div>
+    <p class="text-muted">Los clientes que se registran en la app aparecen aquí automáticamente.</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre Completo</th>
+                <th>Identificación</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>NISE</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@u.Nombre.Substring(0, 1)@u.Apellidos.Substring(0, 1)</td>
+                    <td>@u.Nombre @u.Apellidos</td>
+                    <td>@u.Cedula</td>
+                    <td>@u.Telefono</td>
+                    <td>@u.Correo</td>
+                    <td>@u.NISE</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">No tiene permisos para ver esta sección. <a href="/Cuenta/Login">Inicie sesión como Admin</a></div>
+}
