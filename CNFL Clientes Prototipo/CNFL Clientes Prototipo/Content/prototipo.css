@@ -13,6 +13,8 @@
 body {
     background-color: var(--cnfl-bg);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px; /* Tamaño base legible */
+    color: var(--cnfl-text);
 }
 
 /* Header y Navegación */
@@ -78,4 +80,41 @@ body {
 /* Accesibilidad (Tamaño de letra para adultos mayores) */
 .texto-grande {
     font-size: 1.2rem;
+}
+
+/* ---- MEDIA QUERIES PARA MÓVILES Y TABLETS ---- */
+@media (max-width: 768px) {
+    body {
+        font-size: 15px;
+    }
+
+    .card-cliente {
+        padding: 15px;
+    }
+
+    .navbar-brand {
+        font-size: 1.1rem !important;
+    }
+
+    .navbar-nav {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    /* Tablas en móviles: se vuelven desplazables para que no se rompan */
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+    /* Tamaño mínimo para no cansar la vista */
+    .btn-cnfl {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    /* Botones a lo ancho en celulares */
 }
