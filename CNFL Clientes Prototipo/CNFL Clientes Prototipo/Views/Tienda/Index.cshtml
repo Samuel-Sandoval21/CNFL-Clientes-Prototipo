@@ -3,29 +3,104 @@
 }
 
 <div class="section-pad">
-    <div class="eyebrow">Productos y servicios</div>
+    <div class="h-name" style="font-size: 22px;">Productos y servicios</div>
 </div>
 
-<div style="background: linear-gradient(120deg, var(--orange), #ff8a5c); color: white; border-radius: 22px; padding: 20px; position: relative; overflow: hidden; box-shadow: 0 16px 30px -12px rgba(255,105,45,.6);">
-    <div style="font-size: 12px; font-weight: 800; letter-spacing: .05em; opacity: .9;">HOGAR 360°</div>
-    <div style="font-size: 20px; font-weight: 800; margin: 6px 0 4px; line-height: 1.15;">Cargador para tu auto eléctrico</div>
-    <div style="font-size: 12.5px; opacity: .92; line-height: 1.4; max-width: 74%;">Instalación certificada. Págalo cómodo en tu factura eléctrica.</div>
+<!-- Banner Promocional -->
+<div class="section-pad" style="margin-top: 12px;">
+    <div style="background: linear-gradient(120deg, var(--orange), #ff8a5c); color: #fff; border-radius: 22px; padding: 20px; position: relative; overflow: hidden; box-shadow: 0 16px 30px -12px rgba(255,105,45,.6);">
+        <div style="font-size: 12px; font-weight: 800; letter-spacing: .05em; opacity: .9;">HOGAR 360°</div>
+        <div style="font-size: 20px; font-weight: 800; margin: 6px 0 4px;">Cargador para tu auto eléctrico</div>
+        <div style="font-size: 12.5px; opacity: .92;">Instalación certificada. Págalo cómodo en tu factura eléctrica.</div>
+        <button class="btn btn-line" style="margin-top: 14px; padding: 11px 18px;" onclick="window.location='/Pagos?monto=615000&producto=Cargador+EV'">Solicitar cotización →</button>
+    </div>
 </div>
 
-<div class="card-cliente mt-3">
-    <h5>Marketplace</h5>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 13px;">
-        <div class="card-cliente" style="text-align: center; margin: 0;">
-            <div style="font-size: 32px; margin-bottom: 10px;">❄️</div>
-            <div style="font-weight: 700; font-size: 13px;">Aire acondicionado Inverter</div>
-            <div style="font-weight: 800; font-size: 16px; margin-top: 5px;">₡ 289.000</div>
-            <button class="btn btn-cnfl mt-2" style="padding: 8px;">Cargar a factura</button>
+<!-- Categorías -->
+<div class="section-pad">
+    <div class="eyebrow">CNFL te asiste</div>
+    <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px;">
+        <div style="min-width: 80px; background: #fff; border-radius: 18px; padding: 12px; text-align: center; cursor: pointer; box-shadow: var(--shadow);">
+            <div style="font-size: 26px; margin-bottom: 5px;">🛡️</div>
+            <div style="font-size: 11px; font-weight: 800;">Seguros</div>
         </div>
-        <div class="card-cliente" style="text-align: center; margin: 0;">
-            <div style="font-size: 32px; margin-bottom: 10px;">💡</div>
-            <div style="font-weight: 700; font-size: 13px;">Kit iluminación LED</div>
-            <div style="font-weight: 800; font-size: 16px; margin-top: 5px;">₡ 42.900</div>
-            <button class="btn btn-cnfl mt-2" style="padding: 8px;">Cargar a factura</button>
+        <div style="min-width: 80px; background: #fff; border-radius: 18px; padding: 12px; text-align: center; cursor: pointer; box-shadow: var(--shadow);">
+            <div style="font-size: 26px; margin-bottom: 5px;">📶</div>
+            <div style="font-size: 11px; font-weight: 800;">5G</div>
+        </div>
+        <div style="min-width: 80px; background: #fff; border-radius: 18px; padding: 12px; text-align: center; cursor: pointer; box-shadow: var(--shadow);">
+            <div style="font-size: 26px; margin-bottom: 5px;">📷</div>
+            <div style="font-size: 11px; font-weight: 800;">Videovigilancia</div>
+        </div>
+        <div style="min-width: 80px; background: #fff; border-radius: 18px; padding: 12px; text-align: center; cursor: pointer; box-shadow: var(--shadow);">
+            <div style="font-size: 26px; margin-bottom: 5px;">💚</div>
+            <div style="font-size: 11px; font-weight: 800;">Consumo verde</div>
+        </div>
+    </div>
+</div>
+
+<!-- Marketplace -->
+<div class="section-pad">
+    <div class="eyebrow">Marketplace</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 13px;">
+        <!-- Producto 1 -->
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow);">
+            <div style="height: 96px; display: grid; place-items: center; font-size: 34px; background: #eef6ff;">❄️</div>
+            <div style="padding: 11px 12px 13px;">
+                <div style="font-size: 12.5px; font-weight: 700;">Aire acondicionado Inverter 12.000 BTU</div>
+                <div style="font-weight: 800; font-size: 15px; margin-top: 6px;">₡ 289.000</div>
+                <button style="width: 100%; margin-top: 9px; background: var(--orange); color: #fff; border: 0; font-weight: 800; font-size: 11.5px; padding: 9px; border-radius: 11px; cursor: pointer;" onclick="window.location='/Pagos?monto=289000&producto=Aire'">Cargar a factura</button>
+            </div>
+        </div>
+
+        <!-- Producto 2 -->
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow);">
+            <div style="height: 96px; display: grid; place-items: center; font-size: 34px; background: #fff3ec;">💡</div>
+            <div style="padding: 11px 12px 13px;">
+                <div style="font-size: 12.5px; font-weight: 700;">Kit iluminación LED inteligente</div>
+                <div style="font-weight: 800; font-size: 15px; margin-top: 6px;">₡ 42.900</div>
+                <button style="width: 100%; margin-top: 9px; background: var(--orange); color: #fff; border: 0; font-weight: 800; font-size: 11.5px; padding: 9px; border-radius: 11px; cursor: pointer;" onclick="window.location='/Pagos?monto=42900&producto=LED'">Cargar a factura</button>
+            </div>
+        </div>
+
+        <!-- Producto 3 -->
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow);">
+            <div style="height: 96px; display: grid; place-items: center; font-size: 34px; background: #f3f0ff;">🔋</div>
+            <div style="padding: 11px 12px 13px;">
+                <div style="font-size: 12.5px; font-weight: 700;">Cargador EV residencial 7kW</div>
+                <div style="font-weight: 800; font-size: 15px; margin-top: 6px;">₡ 615.000</div>
+                <button style="width: 100%; margin-top: 9px; background: var(--orange); color: #fff; border: 0; font-weight: 800; font-size: 11.5px; padding: 9px; border-radius: 11px; cursor: pointer;" onclick="window.location='/Pagos?monto=615000&producto=Cargador+EV'">Cargar a factura</button>
+            </div>
+        </div>
+
+        <!-- Producto 4 -->
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow);">
+            <div style="height: 96px; display: grid; place-items: center; font-size: 34px; background: #eefbf0;">🔌</div>
+            <div style="padding: 11px 12px 13px;">
+                <div style="font-size: 12.5px; font-weight: 700;">Supresor de picos + base</div>
+                <div style="font-weight: 800; font-size: 15px; margin-top: 6px;">₡ 74.500</div>
+                <button style="width: 100%; margin-top: 9px; background: var(--orange); color: #fff; border: 0; font-weight: 800; font-size: 11.5px; padding: 9px; border-radius: 11px; cursor: pointer;" onclick="window.location='/Pagos?monto=74500&producto=Supresor'">Cargar a factura</button>
+            </div>
+        </div>
+
+        <!-- Producto 5 -->
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow);">
+            <div style="height: 96px; display: grid; place-items: center; font-size: 34px; background: #eefbf0;">🔆</div>
+            <div style="padding: 11px 12px 13px;">
+                <div style="font-size: 12.5px; font-weight: 700;">Panel Solar 400W</div>
+                <div style="font-weight: 800; font-size: 15px; margin-top: 6px;">₡ 185.000</div>
+                <button style="width: 100%; margin-top: 9px; background: var(--orange); color: #fff; border: 0; font-weight: 800; font-size: 11.5px; padding: 9px; border-radius: 11px; cursor: pointer;" onclick="window.location='/Pagos?monto=185000&producto=Panel+Solar'">Cargar a factura</button>
+            </div>
+        </div>
+
+        <!-- Producto 6 -->
+        <div style="background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow);">
+            <div style="height: 96px; display: grid; place-items: center; font-size: 34px; background: #fff3ec;">🌡️</div>
+            <div style="padding: 11px 12px 13px;">
+                <div style="font-size: 12.5px; font-weight: 700;">Termostato Smart</div>
+                <div style="font-weight: 800; font-size: 15px; margin-top: 6px;">₡ 89.000</div>
+                <button style="width: 100%; margin-top: 9px; background: var(--orange); color: #fff; border: 0; font-weight: 800; font-size: 11.5px; padding: 9px; border-radius: 11px; cursor: pointer;" onclick="window.location='/Pagos?monto=89000&producto=Termostato'">Cargar a factura</button>
+            </div>
         </div>
     </div>
 </div>

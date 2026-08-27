@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "Chat / WhatsApp";
+}
+<div style="padding: 20px;">
+    <h2 style="font-weight:800; color:#001482;">Asistente Virtual</h2>
+    <p class="text-muted">800 ENERGÍA · 1026</p>
+    <hr />
+    <div class="card-cliente">
+        <div id="chatBox" style="height: 250px; overflow-y:auto; border:1px solid var(--line); border-radius:10px; padding:10px; background:#f9f9f9;">
+            <div style="background:#fff; padding:8px; border-radius:8px; margin-bottom:8px;">¡Hola! Soy tu asistente CNFL. ¿Cómo puedo ayudarte?</div>
+        </div>
+        <div class="d-flex gap-2 mt-2">
+            <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu consulta..." />
+            <button class="btn btn-cnfl" onclick="enviar()">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function enviar() {
+        var input = document.getElementById("chatInput").value;
+        if (input.trim() === "") return;
+        var chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML += '<div style="background:#1E23E6; color:#fff; padding:8px; border-radius:8px; margin-bottom:8px; text-align:right;">' + input + '</div>';
+        document.getElementById("chatInput").value = "";
+        setTimeout(function() {
+            chatBox.innerHTML += '<div style="background:#fff; padding:8px; border-radius:8px; margin-bottom:8px;">Gracias por tu consulta. Un agente te atenderá en breve. ¿Tienes alguna otra pregunta?</div>';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 800);
+    }
+</script>

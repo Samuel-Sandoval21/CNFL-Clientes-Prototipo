@@ -1,11 +1,11 @@
 ﻿@{
     ViewBag.Title = "Pago Tarjeta";
     var monto = ViewBag.Monto ?? "0";
-    var periodo = ViewBag.Periodo ?? "";
+    var producto = ViewBag.Producto ?? "Factura";
 }
 <div class="section-pad">
     <div class="h-name" style="font-size: 22px; margin-top:20px;">Pago con Tarjeta</div>
-    <p class="text-muted">Factura: @periodo</p>
+    <p class="text-muted">Producto/Factura: @producto</p>
 </div>
 <div class="card-cliente m-3">
     <div class="mb-3">

@@ -3,17 +3,18 @@
     ViewBag.Title = "Mis Facturas";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 style="color: var(--cnfl-navy); font-weight: 800;">Mis Pagos</h3>
+<div class="section-pad">
+    <div class="eyebrow">Mis facturas</div>
+    <div class="h-name" style="font-size: 22px;">Mis Pagos</div>
 </div>
 
 @foreach (var f in Model)
 {
-    <div class="card-cliente" style="border-left: 5px solid var(--cnfl-orange);">
+    <div class="card-cliente" style="border-left: 5px solid var(--blue);">
         <div class="d-flex justify-content-between">
             <div>
                 <div style="font-weight: bold;">@f.Periodo</div>
-                <div style="font-size: 24px; font-weight: 800; color: var(--cnfl-navy);">₡@f.Monto.ToString("N0")</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--blue);">₡@f.Monto.ToString("N0")</div>
             </div>
             @if (f.Estado == "Pagada")
             {
@@ -26,9 +27,9 @@
         </div>
         <hr />
         <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="alert('Pago vía SINPE Móvil simulado')">SINPE</button>
-            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="alert('Pago vía IBAN simulado')">IBAN</button>
-            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="alert('Pago vía Tarjeta simulado')">Tarjeta</button>
+            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="window.location='/Pagos/Sinpe?monto=@f.Monto&periodo=@f.Periodo'">SINPE</button>
+            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="window.location='/Pagos/Iban?monto=@f.Monto&periodo=@f.Periodo'">IBAN</button>
+            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="window.location='/Pagos/Tarjeta?monto=@f.Monto&periodo=@f.Periodo'">Tarjeta</button>
         </div>
     </div>
 }

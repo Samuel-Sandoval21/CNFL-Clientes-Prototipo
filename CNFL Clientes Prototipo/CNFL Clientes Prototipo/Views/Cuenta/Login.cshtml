@@ -35,13 +35,20 @@
             }
 </style>
 
-<div class="login-wrap" style="padding: 30px 20px 0;">
-    <div class="brand-logo">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1E23E6" stroke-width="2.5"><path d="M13 2 3 14h7l-1 8 10-12h-7z" /></svg>
-        <span style="font-size: 22px; font-weight: 900; color: #FF692D; margin-left: 8px;">cnfl</span>
+<div class="login-wrap" style="padding: 20px 20px 0; margin-top: 60px;">
+    <!-- Usamos el mismo logo del Layout (SVG) para que se vea consistente, SIN duplicar -->
+    <div style="margin-top: -50px; margin-bottom: 20px;">
+        <div class="brand-logo" style="display: flex; align-items: center;">
+            <svg width="55" height="55" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25 5L10 25H18L12 45L35 22H25L30 5Z" stroke="#1E23E6" stroke-width="4" stroke-linejoin="round" />
+                <path d="M12 33C15 43 25 48 35 44C42 41 47 34 46 28" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
+                <path d="M38 5C30 1 20 3 15 10" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
+            </svg>
+            <span style="font-family:'Montserrat'; font-weight:900; font-size:32px; color:#FF692D; letter-spacing: -2px;">cnfl</span>
+        </div>
     </div>
 
-    <div style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-top: 34px; line-height: 1.15;">Tu energía,<br>en una sola app.</div>
+    <div style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-top: 20px; line-height: 1.15;">Tu energía,<br>en una sola app.</div>
     <div style="color: var(--muted); font-size: 13.5px; margin-top: 8px; line-height: 1.5;">Ingresa con las credenciales de tu Agencia Virtual.</div>
 
     @if (ViewBag.Error != null)
@@ -75,7 +82,7 @@
         <small style="font-size:12px; color:var(--muted); font-weight:700;">Ingresar con Face ID / Huella</small>
     </div>
 
-    <div style="margin-top:auto; text-align:center; font-size:11px; color:var(--muted); line-height:1.5; margin-bottom: 20px; margin-top: 30px;">
+    <div style="text-align:center; font-size:11px; color:var(--muted); line-height:1.5; margin-bottom: 20px; margin-top: 30px;">
         <span>¿Aún no tienes cuenta?</span> <a href="/Cuenta/Registro" style="color: var(--blue); font-weight: 800; text-decoration: none;">Regístrate con tu cédula</a><br>
         <span style="opacity:.7">Consentimiento informado · Política de privacidad</span>
     </div>

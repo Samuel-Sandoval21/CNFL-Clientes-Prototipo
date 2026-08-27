@@ -3,197 +3,729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prototipo Visual CNFL - Demo Completa</title>
-    <link rel="stylesheet" href="Content/prototipo.css">
+    <title>CNFL - App Móvil (Prototipo Visual)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        body {
-            padding: 20px;
-            background-color: #FFF8F3;
+        :root {
+            --blue: #1E23E6;
+            --orange: #FF692D;
+            --navy: #001482;
+            --sky: #64B9CD;
+            --green: #64B95A;
+            --amber: #F5A623;
+            --red: #E5484D;
+            --ink: #0E1116;
+            --muted: #727A86;
+            --line: #EDEFF3;
+            --bg: #F5F6FA;
+            --shadow: 0 4px 14px rgba(16, 20, 40, 0.06);
         }
 
+        body {
+            background: #ECEFF6;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--ink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .stage-title {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 800;
+            font-size: 22px;
+            color: var(--ink);
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .phone-frame {
+            width: 390px;
+            max-width: 100%;
+            height: 812px;
+            background: var(--bg);
+            border-radius: 44px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 40px 80px -20px rgba(16,20,60,.35), 0 0 0 11px #12141c, 0 0 0 13px #2a2d3a;
+            margin-top: 100px;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #12141c;
+            border-radius: 0 0 18px 18px;
+            z-index: 60;
+        }
+
+        .statusbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 0 26px 6px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 999;
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        .phone-content {
+            position: absolute;
+            inset: 0;
+            padding-top: 48px;
+            padding-bottom: 96px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+            .phone-content::-webkit-scrollbar {
+                display: none;
+            }
+
+        .langbar {
+            display: flex;
+            background: #fff;
+            padding: 4px;
+            border-radius: 20px;
+            border: 1px solid var(--line);
+        }
+
+            .langbar button {
+                border: none;
+                background: transparent;
+                color: var(--muted);
+                font-family: inherit;
+                font-size: 10px;
+                font-weight: 800;
+                border-radius: 15px;
+                padding: 4px 8px;
+                cursor: pointer;
+            }
+
+                .langbar button.active {
+                    background: var(--blue);
+                    color: #fff;
+                }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid var(--line);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+            .icon-btn .badge {
+                position: absolute;
+                top: -4px;
+                right: -4px;
+                background: var(--orange);
+                color: #fff;
+                font-size: 10px;
+                font-weight: 800;
+                width: 17px;
+                height: 17px;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+                border: 2px solid var(--bg);
+            }
+
+        .section-pad {
+            padding: 0 20px;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin: 22px 0 12px;
+        }
+
+        .h-name {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .bill {
+            background: linear-gradient(135deg, var(--navy), var(--blue));
+            color: #fff;
+            border-radius: 24px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 18px 34px -12px rgba(30,35,230,.55);
+        }
+
+        .btn-ghost {
+            background: rgba(255,255,255,0.16);
+            color: #fff;
+            padding: 13px 18px;
+            border-radius: 14px;
+            border: none;
+            font-weight: 700;
+        }
+
+        .btn-cta {
+            background: var(--orange);
+            color: #fff;
+            padding: 13px 20px;
+            border-radius: 14px;
+            border: none;
+            box-shadow: 0 8px 18px -6px rgba(255,105,45,.7);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .nise {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 15px;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--line);
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+            .nise .ring {
+                width: 46px;
+                height: 46px;
+                border-radius: 14px;
+                display: grid;
+                place-items: center;
+            }
+
+        .pill {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 10px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .st-normal {
+            background: #e9f7ec;
+            color: #2f8f3e;
+        }
+
+        .st-prev {
+            background: #fef3e0;
+            color: #b9791a;
+        }
+
+        .st-inc {
+            background: #fdeaea;
+            color: #c93a3f;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 18px;
+            margin-bottom: 15px;
+        }
+
+        .row-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .track .step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+            .track .step .cir {
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                background: #e6e9f2;
+                display: grid;
+                place-items: center;
+                font-size: 11px;
+                font-weight: 800;
+                z-index: 2;
+            }
+
+            .track .step.done .cir {
+                background: var(--green);
+                color: #fff;
+            }
+
+            .track .step.now .cir {
+                background: var(--blue);
+                color: #fff;
+                box-shadow: 0 0 0 4px rgba(30,35,230,.18);
+            }
+
+            .track .step::before {
+                content: "";
+                position: absolute;
+                top: 13px;
+                left: -50%;
+                width: 100%;
+                height: 3px;
+                background: #e6e9f2;
+                z-index: 1;
+            }
+
+            .track .step:first-child::before {
+                display: none;
+            }
+
+            .track .step.done::before, .track .step.now::before {
+                background: var(--green);
+            }
+
+        .tabbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 84px;
+            background: rgba(255,255,255,.92);
+            backdrop-filter: blur(18px);
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 13px;
+            z-index: 50;
+        }
+
+        .tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            cursor: pointer;
+            color: #9aa1b0;
+            font-size: 10px;
+            font-weight: 700;
+            flex: 1;
+            text-decoration: none;
+            background: none;
+            border: 0;
+            font-family: inherit;
+            height: 100%;
+        }
+
+            .tab svg {
+                width: 24px;
+                height: 24px;
+                margin-bottom: 3px;
+            }
+
+            .tab.active {
+                color: var(--blue);
+            }
+
+            .tab.center .fab {
+                width: 52px;
+                height: 52px;
+                border-radius: 18px;
+                background: linear-gradient(135deg, var(--orange), #ff8a4c);
+                display: grid;
+                place-items: center;
+                box-shadow: 0 10px 20px -6px rgba(255,105,45,.7);
+                margin-top: -24px;
+                border: 4px solid var(--bg);
+            }
+
+                .tab.center .fab svg {
+                    width: 26px;
+                    height: 26px;
+                    color: #fff;
+                }
+
+            .tab.center.active {
+                color: var(--orange);
+            }
+
+        .chat-box {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--line);
+            padding: 10px;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+
+        .map-container {
+            height: 180px;
+            background: linear-gradient(#e7f0e9, #dfeaf0);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        /* Ocultar/visible de pantallas */
         .pantalla {
             display: none;
         }
 
             .pantalla.activa {
                 display: block;
+                animation: fade .3s ease;
             }
 
-        .chat-box {
-            height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background: #f9f9f9;
+        @keyframes fade {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-cnfl mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="#" onclick="mostrar('home')">⚡ CNFL Clientes</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="mostrar('home')">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="mostrar('clientes')">Clientes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="mostrar('averias')">Averías</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="mostrar('chat')">💬 Chat</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">☰ Menú</a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#" onclick="mostrar('consultas')">Consultas</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="mostrar('solicitudes')">Solicitudes</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="mostrar('contactenos')">Contáctenos</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="mostrar('acercade')">Acerca de</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="mostrar('avisos')">Avisos y Notificaciones</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container">
-        <!-- HOME -->
-        <div id="home" class="pantalla activa">
-            <div class="p-5 mb-4 rounded-3 text-white" style="background: linear-gradient(135deg, #C45A00, #F47920);">
-                <h1>⚡ CNFL Clientes</h1>
-                <p>Celebremos la calidad y continuidad de nuestro servicio.</p>
-                <button class="btn btn-warning" onclick="mostrar('clientes')">Ver Demo</button>
-            </div>
-            <div class="row">
-                <div class="col-md-4"><div class="card-cliente"><h4>🔔 Notificaciones</h4><p>Entérese antes de un corte.</p></div></div>
-                <div class="col-md-4"><div class="card-cliente"><h4>📄 Pago en línea</h4><p>Pague con SINPE o Tarjeta.</p></div></div>
-                <div class="col-md-4"><div class="card-cliente"><h4>📷 Reporte con foto</h4><p>Reporte averías con evidencia.</p></div></div>
-            </div>
+    <div class="stage-title">CNFL · App Móvil — Prototipo Interactivo</div>
+
+    <div class="phone-frame">
+        <div class="phone-notch"></div>
+
+        <div class="statusbar">
+            <span id="clock">9:41</span>
+            <span style="display:flex; gap:6px;">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#0E1116" /><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#0E1116" /><rect x="9" y="2" width="3" height="10" rx="1" fill="#0E1116" /><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#0E1116" opacity=".3" /></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.5 2.5 12.7 3.5 14.3 5.1L15.7 3.6C13.7 1.6 11 .5 8 .5S2.3 1.6.3 3.6l1.4 1.5C3.3 3.5 5.5 2.5 8 2.5Z" fill="#0E1116" /><path d="M8 6.5c1.1 0 2.1.4 2.8 1.2l1.4-1.5C11.1 5.1 9.6 4.5 8 4.5s-3.1.6-4.2 1.7l1.4 1.5C5.9 6.9 6.9 6.5 8 6.5Z" fill="#0E1116" /><circle cx="8" cy="10" r="1.6" fill="#0E1116" /></svg>
+                <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="#0E1116" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" /><rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" /></svg>
+            </span>
         </div>
 
-        <!-- CLIENTES -->
-        <div id="clientes" class="pantalla">
-            <h2>Listado de Clientes</h2>
-            <table class="table table-striped">
-                <thead><tr><th>ID</th><th>Nombre</th><th>Cédula</th><th>Correo</th></tr></thead>
-                <tbody>
-                    <tr><td>1</td><td>Samuel Sandoval</td><td>2-0874-0716</td><td>samuel@cnfl.com</td></tr>
-                    <tr><td>2</td><td>Ana Rodríguez</td><td>1-0234-5678</td><td>ana@cnfl.com</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- AVERIAS -->
-        <div id="averias" class="pantalla">
-            <h2>Estado de mis Averías</h2>
-            <div class="card-cliente">
-                <div class="d-flex justify-content-between"><h5>Transformador dañado</h5><span class="badge bg-warning text-dark">En revisión</span></div>
-                <p>📍 Barrio Los Ángeles, Cartago</p>
-                <p>Se escuchan explosiones y no hay luz.</p>
-                <div class="progress"><div class="progress-bar bg-warning" style="width: 50%"></div></div>
-                <small>Paso 2 de 4: En revisión</small>
-            </div>
-        </div>
-
-        <!-- CONSULTAS -->
-        <div id="consultas" class="pantalla">
-            <h2>Consultas</h2>
-            <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action">Consulta de un NISE ></a>
-                <a href="#" class="list-group-item list-group-item-action">Facturas pendientes ></a>
-                <a href="#" class="list-group-item list-group-item-action">Suspensiones programadas ></a>
-                <a href="#" class="list-group-item list-group-item-action">Averías alumbrado público ></a>
-                <a href="#" class="list-group-item list-group-item-action">Mapa de averías red eléctrica ></a>
-                <a href="#" class="list-group-item list-group-item-action">Información de trámites ></a>
-            </div>
-        </div>
-
-        <!-- SOLICITUDES -->
-        <div id="solicitudes" class="pantalla">
-            <h2>Solicitudes</h2>
-            <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action">Solicite el envío de su factura a un correo electrónico ></a>
-                <a href="#" class="list-group-item list-group-item-action">Solicite un estudio de su consumo eléctrico ></a>
-                <a href="#" class="list-group-item list-group-item-action">Reporte una avería eléctrica ></a>
-                <a href="#" class="list-group-item list-group-item-action">Reporte una avería en alumbrado público ></a>
-            </div>
-        </div>
-
-        <!-- CONTACTENOS -->
-        <div id="contactenos" class="pantalla">
-            <h2>Contáctenos</h2>
-            <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action">Medios de atención digitales ></a>
-                <a href="#" class="list-group-item list-group-item-action">Atención telefónica ></a>
-                <a href="#" class="list-group-item list-group-item-action">Nuestras sucursales y agencias ></a>
-                <a href="#" class="list-group-item list-group-item-action">Centros de recarga vehicular ></a>
-                <a href="#" class="list-group-item list-group-item-action">Puntos de pago ></a>
-                <a href="#" class="list-group-item list-group-item-action">Tienda CNFL online ></a>
-            </div>
-        </div>
-
-        <!-- ACERCA DE -->
-        <div id="acercade" class="pantalla">
-            <h2>Compañía Nacional de Fuerza y Luz S.A</h2>
-            <p>CNFL es la aplicación pública para los clientes de la Compañía Nacional de Fuerza y Luz.</p>
-            <div class="d-grid gap-2">
-                <button class="btn btn-primary">POLÍTICA DE PRIVACIDAD Y SEGURIDAD</button>
-                <button class="btn btn-primary">TÉRMINOS Y CONDICIONES DE USO</button>
-                <a href="https://www.cnfl.go.cr" class="btn btn-primary">WWW.CNFL.GO.CR</a>
-            </div>
-        </div>
-
-        <!-- AVISOS -->
-        <div id="avisos" class="pantalla">
-            <h2>Avisos y Notificaciones</h2>
-            <div class="alert alert-warning">
-                <h5>Aviso</h5>
-                <p>Le informamos que para el reporte de averías eléctricas y de alumbrado público, pueden hacerlo por medio del sitio web o bien desde la App de CNFL.</p>
-            </div>
-        </div>
-
-        <!-- CHAT -->
-        <div id="chat" class="pantalla">
-            <h2>💬 Asistente Virtual CNFL</h2>
-            <div class="card-cliente">
-                <div id="chatBox" class="chat-box mb-3">
-                    <div class="alert alert-info">¡Hola! Soy el asistente virtual de CNFL. ¿En qué puedo ayudarte?</div>
+        <div class="phone-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding: 5px 20px 10px;">
+                <div style="display:flex; align-items:center; gap: 2px;">
+                    <svg width="55" height="55" viewBox="0 0 50 50" fill="none">
+                        <path d="M25 5L10 25H18L12 45L35 22H25L30 5Z" stroke="#1E23E6" stroke-width="4" stroke-linejoin="round" />
+                        <path d="M12 33C15 43 25 48 35 44C42 41 47 34 46 28" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
+                        <path d="M38 5C30 1 20 3 15 10" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
+                    </svg>
+                    <span style="font-family:'Montserrat'; font-weight:900; font-size:32px; color:#FF692D; letter-spacing: -2px;">cnfl</span>
                 </div>
-                <div class="input-group">
-                    <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu consulta...">
-                    <button class="btn btn-cnfl" onclick="enviarMensaje()">Enviar</button>
+
+                <div class="langbar" id="langbar">
+                    <button onclick="setLang('es')" class="active">ES</button>
+                    <button onclick="setLang('en')">EN</button>
+                    <button onclick="setLang('pt')">PT</button>
+                    <button onclick="setLang('fr')">FR</button>
+                </div>
+
+                <div style="display:flex; gap:8px;">
+                    <div class="icon-btn" onclick="mostrar('alertas')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" width="18" height="18"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="icon-btn" onclick="mostrar('perfil')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" width="18" height="18"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                    </div>
                 </div>
             </div>
+
+            <!-- INICIO -->
+            <div id="inicio" class="pantalla activa">
+                <div class="section-pad">
+                    <div style="color: var(--muted); font-weight: 600;">Hola,</div>
+                    <div class="h-name">Katherine V.</div>
+                </div>
+                <div class="section-pad" style="margin-top:16px">
+                    <div class="bill">
+                        <div style="font-size:12px; font-weight:700; opacity:.85; letter-spacing:.05em;">FACTURA PENDIENTE · NISE 4021</div>
+                        <div style="font-size:34px; font-weight:800; margin:6px 0 2px;">₡ 18.450</div>
+                        <div style="font-size:12px; opacity:.85;">Vence el 28 de agosto</div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:16px; gap:12px;">
+                            <button class="btn btn-ghost">Ver detalle</button>
+                            <button class="btn btn-cta" onclick="mostrar('pagos')">Pagar ahora</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-pad">
+                    <div class="eyebrow">Mis servicios asociados (NISE)</div>
+                    <div class="nise"><div class="ring" style="background:#e9f7ec"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64B95A" stroke-width="2"><path d="M9 21V9l6-6v18M9 13h6" /><path d="M3 21h18" /></svg></div><div style="flex:1"><div style="font-weight:700; font-size:14px;">Casa · NISE 4021</div><div style="font-size:12px; color:var(--muted);">Residencial · San José</div></div><span class="pill st-normal"><span style="width:7px; height:7px; border-radius:50%; background:#64B95A;"></span> Normal</span></div>
+                    <div class="nise"><div class="ring" style="background:#fef3e0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" /></svg></div><div style="flex:1"><div style="font-weight:700; font-size:14px;">Local · NISE 7788</div><div style="font-size:12px; color:var(--muted);">Mantenimiento programado 2:00pm</div></div><span class="pill st-prev"><span style="width:7px; height:7px; border-radius:50%; background:#F5A623;"></span> Prevención</span></div>
+                    <div class="nise"><div class="ring" style="background:#fdeaea"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E5484D" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z" /></svg></div><div style="flex:1"><div style="font-weight:700; font-size:14px;">Finca · NISE 9950</div><div style="font-size:12px; color:var(--muted);">Avería en la red · atendiéndose</div></div><span class="pill st-inc"><span style="width:7px; height:7px; border-radius:50%; background:#E5484D;"></span> Incidente</span></div>
+                </div>
+                <div class="section-pad">
+                    <div class="eyebrow">Consumo kWh · NISE 4021</div>
+                    <div class="card">
+                        <div style="display:flex; align-items:flex-end; gap:9px; height:110px;">
+                            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:45%; border-radius:8px 8px 4px 4px;"></div>
+                            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:62%; border-radius:8px 8px 4px 4px;"></div>
+                            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:53%; border-radius:8px 8px 4px 4px;"></div>
+                            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:71%; border-radius:8px 8px 4px 4px;"></div>
+                            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:58%; border-radius:8px 8px 4px 4px;"></div>
+                            <div style="flex:1; background:linear-gradient(var(--blue),#5a60f5); height:84%; border-radius:8px 8px 4px 4px;"></div>
+                        </div>
+                        <div style="display:flex; gap:6px; margin-top:24px;">
+                            <button style="font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:999px; background:var(--blue); color:#fff; border:0;">Últimos 6 meses</button>
+                            <button style="font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:999px; background:#eef0f7; color:var(--muted); border:0;">31 días</button>
+                            <button style="font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:999px; background:#eef0f7; color:var(--muted); border:0;">Lecturas</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-pad">
+                    <div class="eyebrow">Consulta al medidor (AMI)</div>
+                    <div class="card">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <div style="background:#f7f8fc; border-radius:14px; padding:13px;"><div style="font-size:11px; color:var(--muted); font-weight:700;">Última lectura</div><div style="font-size:18px; font-weight:800; margin-top:5px;">742 <small style="font-size:11px; color:var(--muted);">kWh</small></div></div>
+                            <div style="background:#f7f8fc; border-radius:14px; padding:13px;"><div style="font-size:11px; color:var(--muted); font-weight:700;">Acumulado del mes</div><div style="font-size:18px; font-weight:800; margin-top:5px;">198 <small style="font-size:11px; color:var(--muted);">kWh</small></div></div>
+                            <div style="background:#f7f8fc; border-radius:14px; padding:13px;"><div style="font-size:11px; color:var(--muted); font-weight:700;">Costo estimado</div><div style="font-size:18px; font-weight:800; color: var(--orange); margin-top:5px;">₡ 21.300</div></div>
+                            <div style="background:#f7f8fc; border-radius:14px; padding:13px;"><div style="font-size:11px; color:var(--muted); font-weight:700;">Promedio mensual</div><div style="font-size:18px; font-weight:800; margin-top:5px;">205 <small style="font-size:11px; color:var(--muted);">kWh</small></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRÁMITES -->
+            <div id="tramites" class="pantalla">
+                <div class="section-pad">
+                    <div class="h-name" style="font-size:22px;">Trámites</div>
+                    <div style="font-size:13px; color:var(--muted); margin-top:2px;">16 solicitudes en línea, sin filas.</div>
+                </div>
+                <div class="section-pad">
+                    <div class="eyebrow">Mis trámites activos</div>
+                    <div class="card">
+                        <div style="font-weight:700; font-size:13.5px;">Solicitud servicio nuevo monofásico</div>
+                        <div style="font-size:11.5px; color:var(--muted); margin-top:3px;">#TR-20482 · NISE 4021</div>
+                        <div class="track" style="display:flex; align-items:center; margin:10px 0 2px;">
+                            <div class="step done"><div class="cir">✓</div><div style="font-size:10px; font-weight:700;">Iniciado</div></div>
+                            <div class="step now"><div class="cir">2</div><div style="font-size:10px; font-weight:700;">En proceso</div></div>
+                            <div class="step"><div class="cir">3</div><div style="font-size:10px; font-weight:700;">Resuelto</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="section-pad">
+                    <div class="eyebrow">Catálogo de trámites</div>
+                    <div class="row-item"><div style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></div><div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Cambio de nombre de abonado</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg></div>
+                    <div class="row-item"><div style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></div><div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Desconexión y reconexión</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg></div>
+                    <div class="row-item"><div style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></div><div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Solicitud de servicio nuevo</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg></div>
+                </div>
+            </div>
+
+            <!-- PAGOS -->
+            <div id="pagos" class="pantalla">
+                <div class="section-pad">
+                    <div class="h-name" style="font-size:22px;">Mis Pagos</div>
+                </div>
+                <div class="section-pad">
+                    <div class="card" style="border-left: 4px solid var(--blue);">
+                        <div style="font-weight:700; font-size:13.5px;">Agosto 2026</div>
+                        <div style="font-size:24px; font-weight:800;">₡ 28.450</div>
+                        <span class="pill st-prev">Pendiente</span>
+                        <hr style="border-color: var(--line);" />
+                        <div style="display:flex; gap:10px;">
+                            <button style="background:#fff; border:1.5px solid var(--blue); color:var(--blue); border-radius:12px; padding:10px; flex:1; font-weight:700;">SINPE</button>
+                            <button style="background:#fff; border:1.5px solid var(--blue); color:var(--blue); border-radius:12px; padding:10px; flex:1; font-weight:700;">IBAN</button>
+                            <button style="background:#fff; border:1.5px solid var(--blue); color:var(--blue); border-radius:12px; padding:10px; flex:1; font-weight:700;">Tarjeta</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIENDA -->
+            <div id="tienda" class="pantalla">
+                <div class="section-pad">
+                    <div class="h-name" style="font-size:22px;">Productos y servicios</div>
+                </div>
+                <div class="section-pad" style="margin-top:12px;">
+                    <div style="background:linear-gradient(120deg, var(--orange), #ff8a5c); color:#fff; border-radius:22px; padding:20px; position:relative; overflow:hidden; box-shadow:0 16px 30px -12px rgba(255,105,45,.6);">
+                        <div style="font-size:12px; font-weight:800; letter-spacing:.05em; opacity:.9;">HOGAR 360°</div>
+                        <div style="font-size:20px; font-weight:800; margin:6px 0 4px;">Cargador para tu auto eléctrico</div>
+                        <div style="font-size:12.5px; opacity:.92;">Instalación certificada. Págalo cómodo en tu factura eléctrica.</div>
+                    </div>
+                </div>
+                <div class="section-pad">
+                    <div class="eyebrow">Marketplace</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:13px;">
+                        <div style="background:#fff; border:1px solid var(--line); border-radius:18px; padding:12px;"><div style="height:96px; display:grid; place-items:center; font-size:34px; background:#eef6ff;">❄️</div><div style="font-weight:700; font-size:12.5px; margin-top:8px;">Aire acondicionado Inverter</div><div style="font-weight:800; font-size:15px; margin-top:4px;">₡ 289.000</div><button style="width:100%; margin-top:8px; background:var(--orange); color:#fff; border:0; font-weight:800; font-size:11.5px; padding:9px; border-radius:11px;">Cargar a factura</button></div>
+                        <div style="background:#fff; border:1px solid var(--line); border-radius:18px; padding:12px;"><div style="height:96px; display:grid; place-items:center; font-size:34px; background:#fff3ec;">💡</div><div style="font-weight:700; font-size:12.5px; margin-top:8px;">Kit iluminación LED</div><div style="font-weight:800; font-size:15px; margin-top:4px;">₡ 42.900</div><button style="width:100%; margin-top:8px; background:var(--orange); color:#fff; border:0; font-weight:800; font-size:11.5px; padding:9px; border-radius:11px;">Cargar a factura</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORTES -->
+            <div id="reportes" class="pantalla">
+                <div class="section-pad">
+                    <div class="h-name" style="font-size:22px;">Reportes y mapa</div>
+                    <div style="font-size:13px; color:var(--muted); margin-top:2px;">Reporta una avería con foto y ubicación GPS.</div>
+                </div>
+                <div class="section-pad">
+                    <div class="map-container"><div style="position:absolute; top:20%; left:20%; width:30px; height:30px; background:var(--red); border-radius:50% 50% 50% 2px; transform:rotate(45deg);"></div><div style="position:absolute; top:40%; left:60%; width:30px; height:30px; background:var(--amber); border-radius:50% 50% 50% 2px; transform:rotate(45deg);"></div><div style="position:absolute; top:65%; left:35%; width:30px; height:30px; background:var(--green); border-radius:50% 50% 50% 2px; transform:rotate(45deg);"></div></div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+                        <span class="pill" style="background:#fff; border:1px solid var(--line);"><span style="width:9px; height:9px; border-radius:50%; background:var(--red);"></span> Averías</span>
+                        <span class="pill" style="background:#fff; border:1px solid var(--line);"><span style="width:9px; height:9px; border-radius:50%; background:var(--sky);"></span> Recarga eléctrica</span>
+                        <span class="pill" style="background:#fff; border:1px solid var(--line);"><span style="width:9px; height:9px; border-radius:50%; background:var(--green);"></span> Puntos verdes</span>
+                    </div>
+                </div>
+                <div class="section-pad">
+                    <div class="eyebrow">Nuevo reporte</div>
+                    <div class="row-item"><div style="width:40px; height:40px; border-radius:12px; background:#fef3e0; display:grid; place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M12 3v3M12 8a4 4 0 0 0-4 4v5h8v-5a4 4 0 0 0-4-4ZM9 21h6" /></svg></div><div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Avería en alumbrado público</div><div style="font-size:12px; color:var(--muted);">Foto + número de poste</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg></div>
+                    <div class="row-item"><div style="width:40px; height:40px; border-radius:12px; background:#fdeaea; display:grid; place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z" /></svg></div><div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Avería eléctrica propia</div><div style="font-size:12px; color:var(--muted);">En tu NISE registrado</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg></div>
+                    <div class="row-item"><div style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg></div><div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Avería eléctrica ajena</div><div style="font-size:12px; color:var(--muted);">Sube fotos y ubicación GPS</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg></div>
+                </div>
+            </div>
+
+            <!-- PERFIL -->
+            <div id="perfil" class="pantalla">
+                <div class="section-pad">
+                    <div style="background:linear-gradient(135deg, var(--navy), var(--blue)); border-radius:24px; padding:20px; color:#fff; display:flex; align-items:center; gap:14px; box-shadow:0 16px 30px -14px rgba(0,20,130,.6);">
+                        <div style="width:56px; height:56px; border-radius:18px; background:rgba(255,255,255,.18); display:grid; place-items:center; font-size:22px; font-weight:800;">KV</div>
+                        <div><div style="font-size:18px; font-weight:800;">Katherine Villalobos</div><div style="font-size:12px; opacity:.85; margin-top:2px;">k.villalobos@correo.cr</div></div>
+                    </div>
+                    <div style="background:#e9f7ec; border:1px solid #cdeed4; border-radius:16px; padding:13px; margin-top:14px; display:flex; gap:11px; align-items:center;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2f8f3e" stroke-width="2"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z" /><path d="m9 12 2 2 4-4" /></svg>
+                        <div><div style="font-size:12.5px; font-weight:800; color:#2f8f3e;">Datos protegidos</div><div style="font-size:11px; color:#4a9a57;">Cifrado extremo a extremo · biometría</div></div>
+                    </div>
+                </div>
+                <div class="section-pad">
+                    <div class="eyebrow">Mi actividad (CRM)</div>
+                    <div class="row-item"><div style="width:40px; height:40px; border-radius:12px; background:#fff3ec; display:grid; place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M3 3h18v6H3zM3 13h18v8H3z" /></svg></div><div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Historial de compras</div><div style="font-size:12px; color:var(--muted);">Marketplace</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg></div>
+                    <div class="row-item"><div style="width:40px; height:40px; border-radius:12px; background:#eefbf0; display:grid; place-items:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg></div><div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Suscripciones</div><div style="font-size:12px; color:var(--muted);">2 activas · 1 inactiva</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg></div>
+                </div>
+            </div>
+
+            <!-- ALERTAS -->
+            <div id="alertas" class="pantalla">
+                <div class="section-pad">
+                    <div class="h-name" style="font-size:22px;">Alertas</div>
+                </div>
+                <div class="section-pad">
+                    <div class="card" style="border-left:4px solid var(--red);"><div style="display:flex; gap:11px;"><div style="width:38px; height:38px; border-radius:11px; background:#fdeaea; display:grid; place-items:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z" /></svg></div><div><div style="font-weight:800; font-size:13.5px;">Avería · NISE 9950</div><div style="font-size:12px; color:var(--muted); margin-top:2px;">En atención · estimado 4:30pm</div></div></div></div>
+                    <div class="card" style="border-left:4px solid var(--amber);"><div style="display:flex; gap:11px;"><div style="width:38px; height:38px; border-radius:11px; background:#fef3e0; display:grid; place-items:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></svg></div><div><div style="font-weight:800; font-size:13.5px;">Suspensión programada</div><div style="font-size:12px; color:var(--muted); margin-top:2px;">NISE 7788 · mañana 8:00–10:00am</div></div></div></div>
+                    <div class="card" style="border-left:4px solid var(--orange);"><div style="display:flex; gap:11px;"><div style="width:38px; height:38px; border-radius:11px; background:#fff3ec; display:grid; place-items:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></svg></div><div><div style="font-weight:800; font-size:13.5px;">Factura por vencer</div><div style="font-size:12px; color:var(--muted); margin-top:2px;">₡18.450 · vence en 5 días</div></div></div></div>
+                </div>
+            </div>
+
+            <!-- CHAT -->
+            <div id="chat" class="pantalla">
+                <div class="section-pad">
+                    <div class="h-name" style="font-size:22px;">Asistente Virtual</div>
+                </div>
+                <div class="section-pad">
+                    <div class="card">
+                        <div id="chatBox" class="chat-box">
+                            <div style="background:#fff; border-radius:10px; padding:8px; margin-bottom:8px;">¡Hola! Soy el asistente virtual de CNFL.</div>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <input type="text" id="chatInput" placeholder="Escribe tu consulta..." style="flex:1; border:1px solid var(--line); border-radius:10px; padding:10px; font-family:inherit;">
+                            <button onclick="enviarMensaje()" style="background:var(--orange); color:#fff; border:none; border-radius:10px; padding:10px 20px; font-weight:700;">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENÚ INFERIOR -->
+        <div class="tabbar">
+            <a class="tab active" onclick="mostrar('inicio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" /></svg>Inicio</a>
+            <a class="tab" onclick="mostrar('tramites')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>Trámites</a>
+            <a class="tab" onclick="mostrar('pagos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 9h10M7 13h6" /></svg>Pagos</a>
+            <a class="tab center" onclick="mostrar('tienda')"><div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="20" r="1.5" /><circle cx="18" cy="20" r="1.5" /><path d="M2 3h3l2.5 12.5a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 2-1.5L22 7H6" /></svg></div>Tienda</a>
+            <a class="tab" onclick="mostrar('reportes')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>Reportes</a>
+            <a class="tab" onclick="mostrar('perfil')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>Cuenta</a>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="Scripts/prototipo.js"></script>
     <script>
         function mostrar(id) {
             document.querySelectorAll('.pantalla').forEach(el => el.classList.remove('activa'));
             document.getElementById(id).classList.add('activa');
+
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach((tab, index) => {
+                if (index === ['inicio', 'tramites', 'pagos', 'tienda', 'reportes', 'perfil'].indexOf(id)) tab.classList.add('active');
+            });
+        }
+
+        // Idiomas simulados en el prototipo estático
+        const textos = {
+            es: { home: "Inicio", tramites: "Trámites", pagos: "Pagos", tienda: "Tienda", reportes: "Reportes", cuenta: "Cuenta" },
+            en: { home: "Home", tramites: "Requests", pagos: "Payments", tienda: "Store", reportes: "Reports", cuenta: "Account" },
+            pt: { home: "Início", tramites: "Solicitações", pagos: "Pagamentos", tienda: "Loja", reportes: "Relatórios", cuenta: "Conta" },
+            fr: { home: "Accueil", tramites: "Démarches", pagos: "Paiements", tienda: "Boutique", reportes: "Signalements", cuenta: "Compte" }
+        };
+
+        function setLang(lang) {
+            document.querySelectorAll('#langbar button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            var labels = textos[lang];
+            document.querySelectorAll('.tab').forEach((tab, index) => {
+                var keys = ['home', 'tramites', 'pagos', 'tienda', 'reportes', 'cuenta'];
+                tab.innerHTML = tab.innerHTML.replace(/[^<]*$/, labels[keys[index]]);
+            });
         }
 
         function enviarMensaje() {
             var input = document.getElementById("chatInput").value;
             if (input.trim() === "") return;
             var chatBox = document.getElementById("chatBox");
-            chatBox.innerHTML += '<div class="alert alert-secondary text-end">' + input + '</div>';
+            chatBox.innerHTML += '<div style="background:#1E23E6; color:#fff; border-radius:10px; padding:8px; margin-bottom:8px; text-align:right;">' + input + '</div>';
             document.getElementById("chatInput").value = "";
 
             setTimeout(function () {
-                var respuesta = "Gracias por tu consulta. Un agente de CNFL te atenderá en breve.";
-                if (input.toLowerCase().includes("factura")) {
-                    respuesta = "Para consultar tu factura, ve a la sección 'Consultas' > 'Facturas pendientes'.";
-                } else if (input.toLowerCase().includes("averia")) {
-                    respuesta = "Para reportar una avería, ve a 'Solicitudes' > 'Reporte de avería eléctrica'.";
-                }
-                chatBox.innerHTML += '<div class="alert alert-info">' + respuesta + '</div>';
+                chatBox.innerHTML += '<div style="background:#f1f1f1; border-radius:10px; padding:8px; margin-bottom:8px;">Gracias por tu consulta. Un agente te atenderá en breve.</div>';
                 chatBox.scrollTop = chatBox.scrollHeight;
-            }, 1000);
+            }, 800);
         }
+
+        // Actualizar Hora
+        function actualizarHora() {
+            var ahora = new Date();
+            document.getElementById('clock').textContent = ahora.getHours().toString().padStart(2, '0') + ":" + ahora.getMinutes().toString().padStart(2, '0');
+        }
+        setInterval(actualizarHora, 10000);
+        actualizarHora();
     </script>
 </body>
 </html>

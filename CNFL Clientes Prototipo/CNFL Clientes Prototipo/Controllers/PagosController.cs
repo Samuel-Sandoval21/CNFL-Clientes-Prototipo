@@ -5,37 +5,35 @@ using System.Web;
 
 using System.Web.Mvc;
 
-
 namespace CNFL_Clientes_Prototipo.Controllers
 {
     public class PagosController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string monto, string producto)
         {
+            ViewBag.Monto = monto ?? "28450";
+            ViewBag.Producto = producto ?? "Factura Agosto 2026";
             return View();
         }
 
-        // GET: /Pagos/Sinpe
-        public ActionResult Sinpe(string monto, string periodo)
+        public ActionResult Sinpe(string monto, string producto)
         {
-            ViewBag.Monto = monto;
-            ViewBag.Periodo = periodo;
+            ViewBag.Monto = monto ?? "28450";
+            ViewBag.Producto = producto ?? "Factura Agosto 2026";
             return View();
         }
 
-        // GET: /Pagos/Iban
-        public ActionResult Iban(string monto, string periodo)
+        public ActionResult Iban(string monto, string producto)
         {
-            ViewBag.Monto = monto;
-            ViewBag.Periodo = periodo;
+            ViewBag.Monto = monto ?? "28450";
+            ViewBag.Producto = producto ?? "Factura Agosto 2026";
             return View();
         }
 
-        // GET: /Pagos/Tarjeta
-        public ActionResult Tarjeta(string monto, string periodo)
+        public ActionResult Tarjeta(string monto, string producto)
         {
-            ViewBag.Monto = monto;
-            ViewBag.Periodo = periodo;
+            ViewBag.Monto = monto ?? "28450";
+            ViewBag.Producto = producto ?? "Factura Agosto 2026";
             return View();
         }
     }

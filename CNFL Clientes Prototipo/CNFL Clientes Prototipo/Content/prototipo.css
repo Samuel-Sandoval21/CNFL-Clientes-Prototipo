@@ -23,13 +23,28 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
 }
 
-/* ==========================================
-   EL CELULAR (MARCO NEGRO)
-   ========================================== */
+/* ===== CABECERA FIJA (Nunca se desplaza) ===== */
+.stage-title {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: var(--ink);
+    z-index: 2000;
+    background: #ECEFF6; /* Fondo para que no se transparente */
+    padding-bottom: 10px;
+}
+
+/* ===== EL CELULAR ===== */
 .phone-frame {
     width: 390px;
     max-width: 100%;
@@ -39,6 +54,7 @@ body {
     position: relative;
     overflow: hidden;
     box-shadow: 0 40px 80px -20px rgba(16, 20, 60, .35), 0 0 0 11px #12141c, 0 0 0 13px #2a2d3a;
+    margin-top: 80px; /* Espacio para la cabecera fija */
 }
 
 .phone-notch {
@@ -53,6 +69,7 @@ body {
     z-index: 60;
 }
 
+/* ===== BARRA DE ESTADO FIJA DENTRO DEL CELULAR ===== */
 .statusbar {
     position: absolute;
     top: 0;
@@ -65,8 +82,9 @@ body {
     padding: 0 26px 6px;
     font-size: 13px;
     font-weight: 700;
-    z-index: 55;
+    z-index: 999;
     color: var(--ink);
+    background: var(--bg); /* Fondo para que no se transparente al hacer scroll */
 }
 
 .phone-content {
@@ -83,12 +101,18 @@ body {
         display: none;
     }
 
-/* --- INICIO DE ESTILOS DENTRO DEL CELULAR --- */
 .appbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 6px 20px 14px;
+}
+
+/* Logo por SVG (No depende de internet) */
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .icon-btn {
@@ -172,7 +196,6 @@ body {
     font-weight: 700;
 }
 
-/* NISE Cards */
 .nise {
     display: flex;
     align-items: center;
@@ -222,9 +245,7 @@ body {
     color: #c93a3f;
 }
 
-/* ==========================================
-   BARRA INFERIOR (Tamaño exacto al de Daniel)
-   ========================================== */
+/* ============ BARRA INFERIOR ============ */
 .tabbar {
     position: absolute;
     bottom: 0;
@@ -235,9 +256,9 @@ body {
     backdrop-filter: blur(18px);
     border-top: 1px solid var(--line);
     display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
-    padding-top: 11px;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 13px;
     z-index: 50;
 }
 
@@ -245,6 +266,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
     gap: 4px;
     cursor: pointer;
     color: #9aa1b0;
@@ -255,11 +277,13 @@ body {
     background: none;
     border: 0;
     font-family: inherit;
+    height: 100%;
 }
 
     .tab svg {
         width: 24px;
         height: 24px;
+        margin-bottom: 3px;
     }
 
     .tab.active {
@@ -283,6 +307,10 @@ body {
             height: 26px;
             color: #fff;
         }
+
+    .tab.center.active {
+        color: var(--orange);
+    }
 
 /* Accesibilidad */
 .alto-contraste body {

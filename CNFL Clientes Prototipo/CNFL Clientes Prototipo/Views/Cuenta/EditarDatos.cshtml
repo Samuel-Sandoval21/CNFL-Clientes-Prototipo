@@ -1,12 +1,11 @@
 ﻿@model CNFL_Clientes_Prototipo.Controllers.Usuario
 @{
-    ViewBag.Title = "Mis Datos";
+    ViewBag.Title = "Editar Datos";
 }
-
 <div style="padding: 20px;">
-    <h3 class="mb-4" style="font-weight: 800; color: #001482;">Editar Mis Datos</h3>
-
-    @using (Html.BeginForm("ActualizarDatos", "Cuenta", FormMethod.Post))
+    <h2 style="font-weight:800; color:#001482;">Editar Mis Datos</h2>
+    <hr />
+    @using (Html.BeginForm("EditarDatos", "Cuenta", FormMethod.Post))
     {
         <div class="mb-3">
             <label class="fw-bold">Nombre</label>
@@ -24,7 +23,6 @@
             <label class="fw-bold">Correo</label>
             @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", type = "email" })
         </div>
-
-        <button type="submit" class="btn btn-cnfl mt-3">Guardar Cambios</button>
+        <button type="submit" class="btn btn-cnfl">Guardar Cambios</button>
     }
 </div>

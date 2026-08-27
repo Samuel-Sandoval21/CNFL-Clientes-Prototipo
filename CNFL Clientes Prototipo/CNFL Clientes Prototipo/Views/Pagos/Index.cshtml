@@ -1,36 +1,33 @@
 ﻿@{
     ViewBag.Title = "Mis Pagos";
+    var monto = ViewBag.Monto as string ?? "28450";
+    var producto = ViewBag.Producto as string ?? "Factura Agosto 2026";
 }
 
 <div class="section-pad">
     <div class="eyebrow">Mis pagos</div>
-    <div class="h-name" style="font-size: 22px;">Pagar facturas</div>
+    <div class="h-name" style="font-size: 22px;">Pagar factura / Producto</div>
 </div>
 
 <div style="padding: 0 20px;">
     <div class="card-cliente" style="border-left: 4px solid var(--blue);">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <div style="font-weight: 700; font-size: 13.5px;">Agosto 2026</div>
-                <div style="font-size: 24px; font-weight: 800;">₡ 28.450</div>
-            </div>
-            <span class="pill st-prev">Pendiente</span>
+        <div>
+            <div style="font-weight: 700; font-size: 13.5px;">@producto</div>
+            <div style="font-size: 24px; font-weight: 800; color: var(--blue);">₡ @monto</div>
         </div>
         <hr style="border-color: var(--line);" />
         <div style="display:flex; flex-direction: column; gap: 10px;">
-            <button class="btn btn-outline-primary w-100" onclick="window.location='/Pagos/Sinpe?monto=28450&periodo=Agosto2026'">Pagar con SINPE Móvil</button>
-            <button class="btn btn-outline-primary w-100" onclick="window.location='/Pagos/Iban?monto=28450&periodo=Agosto2026'">Pagar con IBAN</button>
-            <button class="btn btn-outline-primary w-100" onclick="window.location='/Pagos/Tarjeta?monto=28450&periodo=Agosto2026'">Pagar con Tarjeta</button>
+            <button class="btn btn-outline-primary w-100" style="border-radius: 12px;" onclick="window.location='/Pagos/Sinpe?monto=@monto&producto=@producto'">Pagar con SINPE Móvil</button>
+            <button class="btn btn-outline-primary w-100" style="border-radius: 12px;" onclick="window.location='/Pagos/Iban?monto=@monto&producto=@producto'">Pagar con IBAN</button>
+            <button class="btn btn-outline-primary w-100" style="border-radius: 12px;" onclick="window.location='/Pagos/Tarjeta?monto=@monto&producto=@producto'">Pagar con Tarjeta</button>
         </div>
     </div>
 
     <div class="card-cliente" style="border-left: 4px solid var(--green);">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <div style="font-weight: 700; font-size: 13.5px;">Julio 2026</div>
-                <div style="font-size: 24px; font-weight: 800;">₡ 26.980</div>
-            </div>
-            <span class="pill st-normal">Pagada</span>
+        <div>
+            <div style="font-weight: 700; font-size: 13.5px;">Julio 2026</div>
+            <div style="font-size: 24px; font-weight: 800;">₡ 26.980</div>
         </div>
+        <span class="pill st-normal">Pagada</span>
     </div>
 </div>

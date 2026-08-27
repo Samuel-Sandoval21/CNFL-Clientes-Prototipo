@@ -130,13 +130,16 @@
     <Compile Include="Controllers\NotificacionesController.cs" />
     <Compile Include="Controllers\PagosController.cs" />
     <Compile Include="Controllers\TiendaController.cs" />
+    <Compile Include="Controllers\TramitesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Averia.cs" />
     <Compile Include="Models\Cliente.cs" />
     <Compile Include="Models\Factura.cs" />
+    <Compile Include="Models\FormularioTramite.cs" />
     <Compile Include="Models\Notificacion.cs" />
+    <Compile Include="Models\Tramite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AveriaRepository.cs" />
     <Compile Include="Repositories\ClienteRepository.cs" />
@@ -146,6 +149,7 @@
     <Compile Include="Services\ClienteService.cs" />
     <Compile Include="Services\FacturaService.cs" />
     <Compile Include="Services\NotificacionService.cs" />
+    <Compile Include="Services\TramiteService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -229,7 +233,14 @@
     <Content Include="Views\Pagos\Iban.cshtml" />
     <Content Include="Views\Pagos\Tarjeta.cshtml" />
     <Content Include="Views\Cuenta\Cuenta.cshtml" />
-    <Content Include="Views\App\Tramites.cshtml" />
+    <Content Include="Views\Tramites\Index.cshtml" />
+    <Content Include="Views\Tramites\Formulario.cshtml" />
+    <Content Include="Views\Cuenta\HistorialCompras.cshtml" />
+    <Content Include="Views\Cuenta\Suscripciones.cshtml" />
+    <Content Include="Views\Cuenta\ServiciosContratados.cshtml" />
+    <Content Include="Views\Cuenta\EditarDatos.cshtml" />
+    <Content Include="Views\Cuenta\Calculadora.cshtml" />
+    <Content Include="Views\Cuenta\Chat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -3,24 +3,24 @@
 }
 
 <div class="section-pad">
-    <div class="h-greet">Hola,</div>
+    <div style="color: var(--muted); font-weight: 600; font-size: 15px;" data-i18n="hola">Hola,</div>
     <div class="h-name">Katherine V.</div>
 </div>
 
 <div class="section-pad" style="margin-top:16px">
     <div class="bill">
-        <div style="font-size:12px; font-weight:700; opacity:.85; letter-spacing:.05em;">FACTURA PENDIENTE · NISE 4021</div>
+        <div style="font-size:12px; font-weight:700; opacity:.85; letter-spacing:.05em;" data-i18n="factura">FACTURA PENDIENTE · NISE 4021</div>
         <div style="font-size:34px; font-weight:800; margin:6px 0 2px;">₡ 18.450</div>
-        <div style="font-size:12px; opacity:.85;">Vence el 28 de agosto</div>
+        <div style="font-size:12px; opacity:.85;" data-i18n="vence">Vence el 28 de agosto</div>
         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:16px; gap:12px;">
-            <button class="btn btn-ghost" onclick="window.location='/Facturas'">Ver detalle</button>
-            <a href="/Pagos" class="btn btn-cta">Pagar ahora</a>
+            <button class="btn btn-ghost" data-i18n="ver" onclick="window.location='/Facturas'">Ver detalle</button>
+            <a href="/Pagos" class="btn btn-cta" data-i18n="pagar">Pagar ahora</a>
         </div>
     </div>
 </div>
 
 <div class="section-pad">
-    <div class="eyebrow">Mis servicios asociados (NISE)</div>
+    <div class="eyebrow" data-i18n="servicios">MIS SERVICIOS ASOCIADOS (NISE)</div>
 
     <div class="nise">
         <div class="ring" style="background:#e9f7ec">
@@ -30,7 +30,7 @@
             <div class="t">Casa · NISE 4021</div>
             <div class="s">Residencial · San José</div>
         </div>
-        <span class="pill st-normal"><span style="width:7px; height:7px; border-radius:50%; background:#64B95A;"></span> Normal</span>
+        <span class="pill st-normal"><span style="width:7px; height:7px; border-radius:50%; background:#64B95A;"></span> <span data-i18n="normal">Normal</span></span>
     </div>
 
     <div class="nise">
@@ -41,7 +41,7 @@
             <div class="t">Local · NISE 7788</div>
             <div class="s">Mantenimiento programado 2:00pm</div>
         </div>
-        <span class="pill st-prev"><span style="width:7px; height:7px; border-radius:50%; background:#F5A623;"></span> Prevención</span>
+        <span class="pill st-prev"><span style="width:7px; height:7px; border-radius:50%; background:#F5A623;"></span> <span data-i18n="prev">Prevención</span></span>
     </div>
 
     <div class="nise">
@@ -52,7 +52,7 @@
             <div class="t">Finca · NISE 9950</div>
             <div class="s">Avería en la red · atendiéndose</div>
         </div>
-        <span class="pill st-inc"><span style="width:7px; height:7px; border-radius:50%; background:#E5484D; animation: pulse 1.2s infinite;"></span> Incidente</span>
+        <span class="pill st-inc"><span style="width:7px; height:7px; border-radius:50%; background:#E5484D; animation: pulse 1.2s infinite;"></span> <span data-i18n="inc">Incidente</span></span>
     </div>
 </div>
 
@@ -75,7 +75,6 @@
     </div>
 </div>
 
-<!-- CONSULTA AL MEDIDOR (AMI) -->
 <div class="section-pad">
     <div class="eyebrow">Consulta al medidor (AMI)</div>
     <div class="card" style="background:#fff; border-radius:20px; box-shadow: var(--shadow); padding:18px;">

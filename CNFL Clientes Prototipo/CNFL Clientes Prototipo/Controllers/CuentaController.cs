@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CNFL_Clientes_Prototipo.Models;
 
 namespace CNFL_Clientes_Prototipo.Controllers
 {
@@ -10,18 +11,74 @@ namespace CNFL_Clientes_Prototipo.Controllers
     {
         private static List<Usuario> _usuarios = new List<Usuario>()
         {
-            new Usuario { Nombre = "Katherine", Apellidos = "Villalobos", Cedula = "1-2345-6789", Telefono = "8888-7777", Correo = "k.villalobos@correo.cr", Username = "cliente", Password = "123456", Rol = "Cliente", AliasPropiedad = "Casa", NISEs = new List<string> { "NISE 4021", "NISE 7788" } }
+            new Usuario { Nombre = "Katherine", Apellidos = "Villalobos", Cedula = "1-2345-6789", Telefono = "8888-7777", Correo = "k.villalobos@correo.cr", Username = "cliente", Password = "123456", Rol = "Cliente", NISEs = new List<string> { "NISE 4021", "NISE 7788" } }
         };
 
         public ActionResult Index()
         {
+            if (Session["Rol"] == null) return RedirectToAction("Login", "Cuenta");
             return View();
         }
 
+        // Vista Principal de Cuenta
         public ActionResult Cuenta()
         {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (Session["Rol"] == null) return RedirectToAction("Login", "Cuenta");
+            var user = _usuarios.Find(u => u.Username == Session["Username"]);
+            return View(user);
+        }
+
+        // Acción para "Historial de compras"
+        public ActionResult HistorialCompras()
+        {
+            return View();
+        }
+
+        // Acción para "Suscripciones"
+        public ActionResult Suscripciones()
+        {
+            return View();
+        }
+
+        // Acción para "Servicios contratados"
+        public ActionResult ServiciosContratados()
+        {
+            return View();
+        }
+
+        // Acción para "Editar mis datos"
+        public ActionResult EditarDatos()
+        {
+            if (Session["Rol"] == null) return RedirectToAction("Login", "Cuenta");
+            var user = _usuarios.Find(u => u.Username == Session["Username"]);
+            return View(user);
+        }
+
+        [HttpPost]
+        public ActionResult EditarDatos(Usuario modelo)
+        {
+            var user = _usuarios.Find(u => u.Username == Session["Username"]);
+            if (user != null)
+            {
+                user.Nombre = modelo.Nombre;
+                user.Apellidos = modelo.Apellidos;
+                user.Telefono = modelo.Telefono;
+                user.Correo = modelo.Correo;
+                Session["Usuario"] = modelo.Nombre + " " + modelo.Apellidos;
+                Session["Correo"] = modelo.Correo;
+            }
+            return RedirectToAction("Cuenta", "Cuenta");
+        }
+
+        // Acción para "Calculadora energética"
+        public ActionResult Calculadora()
+        {
+            return View();
+        }
+
+        // Acción para "Chat / WhatsApp"
+        public ActionResult Chat()
+        {
             return View();
         }
 
@@ -34,18 +91,14 @@ namespace CNFL_Clientes_Prototipo.Controllers
         public ActionResult Login(string usuario, string contrasena)
         {
             var user = _usuarios.Find(u => u.Username == usuario && u.Password == contrasena);
-
             if (user != null)
             {
                 Session["Usuario"] = user.Nombre + " " + user.Apellidos;
+                Session["Username"] = user.Username;
                 Session["Rol"] = user.Rol;
                 Session["Correo"] = user.Correo;
-                Session["Username"] = user.Username;
-
-                // Redirige al nuevo Home del prototipo
                 return RedirectToAction("Index", "Cuenta");
             }
-
             ViewBag.Error = "Credenciales incorrectas";
             return View();
         }
@@ -56,7 +109,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Registro(string nombre, string apellidos, string cedula, string telefono, string correo, string alias)
+        public ActionResult Registro(string nombre, string apellidos, string cedula, string telefono, string correo)
         {
             if (!string.IsNullOrEmpty(nombre) && !string.IsNullOrEmpty(cedula) && !string.IsNullOrEmpty(correo))
             {
@@ -70,13 +123,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     Username = nombre.ToLower().Replace(" ", ""),
                     Password = "123456",
                     Rol = "Cliente",
-                    AliasPropiedad = alias
+                    NISEs = new List<string> { "NISE 4021", "NISE 7788" }
                 };
-
                 _usuarios.Add(nuevoUsuario);
                 return RedirectToAction("Login", "Cuenta");
             }
-
             ViewBag.Error = "Debe completar todos los campos";
             return View();
         }
@@ -103,7 +154,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         public string Username { get; set; }
         public string Password { get; set; }
         public string Rol { get; set; }
-        public string AliasPropiedad { get; set; }
         public List<string> NISEs { get; set; } = new List<string>();
     }
 }
