@@ -1,0 +1,35 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Factura>
+@{
+    ViewBag.Title = "Mis Facturas";
+}
+<h2>Mis Facturas</h2>
+<table class="table table-striped">
+    <thead>
+        <tr><th>Período</th><th>Monto</th><th>Estado</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var f in Model)
+        {
+            <tr>
+                <td>@f.Periodo</td>
+                <td>₡@f.Monto.ToString("N0")</td>
+                <td>
+                    @if (f.Estado == "Pagada")
+                    {<span class="badge bg-success">Pagada</span> }
+                    else
+                    { <span class="badge bg-warning text-dark">Pendiente</span>}
+                </td>
+                <td>
+                    @if (f.Estado != "Pagada")
+                    {
+                        using (Html.BeginForm("Pagar", "Facturas", FormMethod.Post))
+                        {
+                            @Html.Hidden("id", f.Id)
+                            <button type="submit" class="btn btn-cnfl btn-sm">Pagar ahora</button>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
