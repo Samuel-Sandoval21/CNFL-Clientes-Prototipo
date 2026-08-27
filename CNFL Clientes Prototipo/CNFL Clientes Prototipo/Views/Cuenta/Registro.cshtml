@@ -20,7 +20,11 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Cédula</label>
-                    <input type="text" name="cedula" class="form-control" required placeholder="1-2345-6789" />
+                    <div class="input-group">
+                        <input type="text" name="cedula" id="cedulaInput" class="form-control" required placeholder="1-2345-6789" onblur="verificarCedula()" />
+                        <span class="input-group-text" id="resultadoCedula" style="background: #f8f9fa;"></span>
+                    </div>
+                    <div id="mensajeCedula" class="form-text"></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Teléfono</label>
@@ -47,3 +51,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    function verificarCedula() {
+        var cedula = document.getElementById("cedulaInput").value;
+        var resultado = document.getElementById("resultadoCedula");
+        var mensaje = document.getElementById("mensajeCedula");
+
+        if (cedula.length > 5) { // Simulación: si tiene más de 5 caracteres, está verificada
+            resultado.innerHTML = "✅";
+            mensaje.innerHTML = "<span class='text-success'><strong>Verificada por TSE</strong> (Simulación)</span>";
+        } else {
+            resultado.innerHTML = "❌";
+            mensaje.innerHTML = "<span class='text-danger'>Cédula no válida</span>";
+        }
+    }
+</script>

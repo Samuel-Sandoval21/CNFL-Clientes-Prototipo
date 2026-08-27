@@ -6,9 +6,34 @@
     <title>@ViewBag.Title - CNFL Clientes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="@Url.Content("~/Content/prototipo.css")" rel="stylesheet" type="text/css" />
+    <style>
+        /* Modo Alto Contraste */
+        .alto-contraste body {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+
+        .alto-contraste .card-cliente {
+            background-color: #111 !important;
+            border-color: #fff !important;
+            color: #fff !important;
+        }
+
+        .alto-contraste .navbar-cnfl {
+            background-color: #000 !important;
+            border-bottom: 4px solid #F47920;
+        }
+
+        .alto-contraste .text-muted {
+            color: #ccc !important;
+        }
+
+        .alto-contraste footer {
+            color: #ccc !important;
+        }
+    </style>
 </head>
 <body>
-    <!-- Menú superior -->
     <nav class="navbar navbar-expand-lg navbar-cnfl">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/Cuenta">
@@ -19,27 +44,30 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <!-- Apuntamos ao Home Público -->
                     <li class="nav-item"><a class="nav-link" href="/Cuenta">Inicio</a></li>
 
-                    <!-- Zona Cliente (Facturas y Mapa) -->
                     @if (Session["Rol"] != null)
                     {
                         <li class="nav-item"><a class="nav-link" href="/Facturas">Facturas</a></li>
                         <li class="nav-item"><a class="nav-link" href="/Mapa">Mapa</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Notificaciones">Notificaciones</a></li>
                     }
 
-                    <!-- Zona Cliente -->
                     <li class="nav-item"><a class="nav-link" href="/Clientes">Clientes</a></li>
                     <li class="nav-item"><a class="nav-link" href="/Averias">Averías</a></li>
 
-                    <!-- Zona Admin (Solo se muestra si tiene sesión Admin) -->
                     @if (Session["Rol"] != null && Session["Rol"].ToString() == "Admin")
                     {
                         <li class="nav-item"><a class="nav-link" href="/Admin">Panel Admin</a></li>
                     }
 
-                    <!-- Login / Logout -->
+                    <!-- Accesibilidad -->
+                    <li class="nav-item">
+                        <button onclick="cambiarTamano(1)" class="btn btn-sm btn-outline-light mx-1" style="border-radius: 50%;">A+</button>
+                        <button onclick="cambiarTamano(-1)" class="btn btn-sm btn-outline-light mx-1" style="border-radius: 50%;">A-</button>
+                        <button onclick="toggleContraste()" class="btn btn-sm btn-outline-light mx-1" style="border-radius: 50%;" title="Alto contraste">◐</button>
+                    </li>
+
                     @if (Session["Usuario"] == null)
                     {
                         <li class="nav-item"><a class="nav-link" href="/Cuenta/Login" style="border: 2px solid white; border-radius: 8px; padding: 5px 15px; margin-left: 10px;">Iniciar Sesión</a></li>
@@ -61,6 +89,32 @@
             <p class="small">"Celebremos la calidad y continuidad de nuestro servicio"</p>
         </footer>
     </div>
+
+    <script>
+        // Cargar preferencias guardadas (Cookies / LocalStorage)
+        window.onload = function () {
+            var tamano = localStorage.getItem('tamanoFuente');
+            var contraste = localStorage.getItem('altoContraste');
+
+            if (tamano) document.body.style.fontSize = tamano + 'px';
+            if (contraste === 'true') document.body.classList.add('alto-contraste');
+        };
+
+        function cambiarTamano(delta) {
+            let actual = parseFloat(document.body.style.fontSize) || 16;
+            let nuevo = actual + delta;
+            if (nuevo >= 12 && nuevo <= 24) {
+                document.body.style.fontSize = nuevo + 'px';
+                localStorage.setItem('tamanoFuente', nuevo); // Guarda la preferencia
+            }
+        }
+
+        function toggleContraste() {
+            document.body.classList.toggle('alto-contraste');
+            var activo = document.body.classList.contains('alto-contraste');
+            localStorage.setItem('altoContraste', activo); // Guarda la preferencia
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="@Url.Content("~/Scripts/prototipo.js")"></script>

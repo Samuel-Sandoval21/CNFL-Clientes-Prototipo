@@ -1,0 +1,24 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Notificacion>
+@{
+    ViewBag.Title = "Notificaciones";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🔔 Notificaciones</h2>
+    @using (Html.BeginForm("MarcarLeidas", "Notificaciones", FormMethod.Post))
+    {
+        <button type="submit" class="btn btn-cnfl btn-sm">Marcar todas como leídas</button>
+    }
+</div>
+
+@foreach (var n in Model)
+{
+    <div class="card-cliente" style="@(n.Leida ? "opacity: 0.6;" : "border-left: 5px solid #F47920;")">
+        <div class="d-flex justify-content-between">
+            <h5>@n.Titulo</h5>
+            <span class="badge bg-secondary">@n.Tipo</span>
+        </div>
+        <p class="text-muted">@n.Mensaje</p>
+        <small>📅 @n.Fecha</small>
+    </div>
+}
