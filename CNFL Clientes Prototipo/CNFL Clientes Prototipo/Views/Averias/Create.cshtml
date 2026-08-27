@@ -1,44 +1,47 @@
 ﻿@model CNFL_Clientes_Prototipo.Models.Averia
-
 @{
     ViewBag.Title = "Reportar Avería";
 }
 
 <div class="card-cliente">
-    <h3 class="texto-grande">Reportar Avería Eléctrica</h3>
-    <hr />
+    <h3 class="text-center" style="color: var(--cnfl-navy); font-weight: 800;">Reportar Avería</h3>
+    <p class="text-muted text-center">Tus datos se precargan automáticamente. Usa tu cámara y GPS.</p>
+
     @using (Html.BeginForm("Create", "Averias", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
 
+        <!-- Datos precargados -->
         <div class="mb-3">
-            @Html.LabelFor(m => m.Titulo, new { @class = "form-label fw-bold" })
-            @Html.TextBoxFor(m => m.Titulo, new { @class = "form-control", placeholder = "Ej: Poste inclinado" })
+            <label class="form-label fw-bold">Reportado por:</label>
+            <input type="text" class="form-control" value="@Session["Usuario"]" disabled />
         </div>
         <div class="mb-3">
-            @Html.LabelFor(m => m.Descripcion, new { @class = "form-label fw-bold" })
-            @Html.TextAreaFor(m => m.Descripcion, new { @class = "form-control", rows = 3 })
-        </div>
-        <div class="mb-3">
-            @Html.LabelFor(m => m.Direccion, new { @class = "form-label fw-bold" })
-            @Html.TextBoxFor(m => m.Direccion, new { @class = "form-control", placeholder = "Dirección exacta del problema" })
-        </div>
-        <div class="mb-3">
-            @Html.LabelFor(m => m.Tipo, new { @class = "form-label fw-bold" })
-            @Html.DropDownListFor(m => m.Tipo, new List<SelectListItem>
-            {
-                new SelectListItem { Text = "Eléctrica", Value = "Eléctrica" },
-                new SelectListItem { Text = "Alumbrado público", Value = "Alumbrado público" }
-            }, "Seleccione el tipo", new { @class = "form-control" })
+            <label class="form-label fw-bold">NISE Asociado (Automático)</label>
+            <input type="text" class="form-control" value="NISE 4021 - Casa" disabled />
         </div>
 
         <div class="mb-3">
-            <label class="form-label fw-bold">📷 Adjuntar Foto</label>
-            <input type="file" class="form-control" id="btn-reportar-averia" name="foto" accept="image/*" />
-            <div class="form-text">En la app real, esto abrirá la cámara automáticamente.</div>
+            <label class="form-label fw-bold">Descripción del problema</label>
+            @Html.TextBoxFor(m => m.Titulo, new { @class = "form-control", placeholder = "Ej: Poste con cable caído" })
         </div>
 
-        <button type="submit" class="btn btn-cnfl w-100">Enviar Reporte</button>
-        @Html.ActionLink("Volver al listado", "Index", null, new { @class = "btn btn-secondary w-100 mt-2" })
+        <div class="mb-3">
+            <label class="form-label fw-bold">Número de Poste</label>
+            <input type="text" class="form-control" placeholder="Ej: 435-12" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">📷 Tomar Foto / Video</label>
+            <input type="file" class="form-control" name="foto" accept="image/*" capture="environment" />
+        </div>
+
+        <div class="mb-3">
+            <button type="button" class="btn btn-outline-info w-100" onclick="alert('📍 Ubicación GPS obtenida: 9.9333° N, 84.0833° W')">
+                📍 Obtener mi ubicación en tiempo real
+            </button>
+        </div>
+
+        <button type="submit" class="btn btn-cnfl">Enviar Reporte</button>
     }
 </div>

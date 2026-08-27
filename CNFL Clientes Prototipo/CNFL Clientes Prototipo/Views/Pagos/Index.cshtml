@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "Mis Pagos";
+}
+
+<div class="section-pad">
+    <div class="eyebrow">Mis pagos</div>
+    <div class="h-name" style="font-size: 22px;">Pagar facturas</div>
+</div>
+
+<div style="padding: 0 20px;">
+    <div class="card-cliente" style="border-left: 4px solid var(--blue);">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div style="font-weight: 700; font-size: 13.5px;">Agosto 2026</div>
+                <div style="font-size: 24px; font-weight: 800;">₡ 28.450</div>
+            </div>
+            <span class="pill st-prev">Pendiente</span>
+        </div>
+        <hr style="border-color: var(--line);" />
+        <div style="display:flex; flex-direction: column; gap: 10px;">
+            <button class="btn btn-outline-primary w-100" onclick="window.location='/Pagos/Sinpe?monto=28450&periodo=Agosto2026'">Pagar con SINPE Móvil</button>
+            <button class="btn btn-outline-primary w-100" onclick="window.location='/Pagos/Iban?monto=28450&periodo=Agosto2026'">Pagar con IBAN</button>
+            <button class="btn btn-outline-primary w-100" onclick="window.location='/Pagos/Tarjeta?monto=28450&periodo=Agosto2026'">Pagar con Tarjeta</button>
+        </div>
+    </div>
+
+    <div class="card-cliente" style="border-left: 4px solid var(--green);">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div style="font-weight: 700; font-size: 13.5px;">Julio 2026</div>
+                <div style="font-size: 24px; font-weight: 800;">₡ 26.980</div>
+            </div>
+            <span class="pill st-normal">Pagada</span>
+        </div>
+    </div>
+</div>

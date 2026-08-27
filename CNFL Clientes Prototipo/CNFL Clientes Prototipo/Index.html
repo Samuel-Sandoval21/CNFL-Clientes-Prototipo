@@ -3,105 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prototipo Visual CNFL - Lanzador</title>
-    <!-- IMPORTAMOS CSS SEPARADO -->
+    <title>Prototipo Visual CNFL - Demo Completa</title>
     <link rel="stylesheet" href="Content/prototipo.css">
-    <!-- Usamos Bootstrap para la estructura base -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <style>
-        /* Pequeño ajuste para que se vea bien como demo estática */
         body {
             padding: 20px;
-            background-color: #f8f9fa;
+            background-color: #FFF8F3;
         }
 
-        .nav-tabs {
-            margin-bottom: 20px;
-        }
-
-        .hidden {
+        .pantalla {
             display: none;
+        }
+
+            .pantalla.activa {
+                display: block;
+            }
+
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f9f9f9;
         }
     </style>
 </head>
 <body>
-
-    <!-- Menú de navegación estilo App -->
     <nav class="navbar navbar-expand-lg navbar-cnfl mb-4">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><span style="font-size: 1.5rem;">⚡ CNFL</span> Clientes</a>
+            <a class="navbar-brand" href="#" onclick="mostrar('home')">⚡ CNFL Clientes</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#" onclick="cambiarPestana('home')">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="cambiarPestana('clientes')">Clientes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="cambiarPestana('averias')">Averías</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="mostrar('home')">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="mostrar('clientes')">Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="mostrar('averias')">Averías</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="mostrar('chat')">💬 Chat</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">☰ Menú</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" onclick="mostrar('consultas')">Consultas</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="mostrar('solicitudes')">Solicitudes</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="mostrar('contactenos')">Contáctenos</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="mostrar('acercade')">Acerca de</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="mostrar('avisos')">Avisos y Notificaciones</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
     <div class="container">
-        <!-- Pestaña Home -->
-        <div id="home" class="pestana">
+        <!-- HOME -->
+        <div id="home" class="pantalla activa">
             <div class="p-5 mb-4 rounded-3 text-white" style="background: linear-gradient(135deg, #C45A00, #F47920);">
-                <h1 class="display-5 fw-bold">⚡ CNFL Clientes</h1>
-                <p class="lead">Celebremos la calidad y continuidad de nuestro servicio.</p>
-                <hr class="my-4">
-                <p>Consulte su factura, pague en línea, reporte averías con fotos y reciba notificaciones.</p>
-                <a class="btn btn-warning btn-lg text-dark fw-bold" href="#" onclick="cambiarPestana('clientes')">Ver Demo</a>
+                <h1>⚡ CNFL Clientes</h1>
+                <p>Celebremos la calidad y continuidad de nuestro servicio.</p>
+                <button class="btn btn-warning" onclick="mostrar('clientes')">Ver Demo</button>
             </div>
             <div class="row">
-                <div class="col-md-4"><div class="card-cliente"><h3>🔔 Notificaciones</h3><p>Entérese antes de que ocurra un corte.</p></div></div>
-                <div class="col-md-4"><div class="card-cliente"><h3>📄 Pago en línea</h3><p>Pague con SINPE o Tarjeta.</p></div></div>
-                <div class="col-md-4"><div class="card-cliente"><h3>📷 Reporte con foto</h3><p>Reporte averías con evidencia.</p></div></div>
+                <div class="col-md-4"><div class="card-cliente"><h4>🔔 Notificaciones</h4><p>Entérese antes de un corte.</p></div></div>
+                <div class="col-md-4"><div class="card-cliente"><h4>📄 Pago en línea</h4><p>Pague con SINPE o Tarjeta.</p></div></div>
+                <div class="col-md-4"><div class="card-cliente"><h4>📷 Reporte con foto</h4><p>Reporte averías con evidencia.</p></div></div>
             </div>
         </div>
 
-        <!-- Pestaña Clientes (Tabla simulada) -->
-        <div id="clientes" class="pestana hidden">
-            <h2 class="mb-4">Listado de Clientes</h2>
-            <div class="tabla-clientes">
-                <table class="table table-hover">
-                    <thead><tr><th>ID</th><th>Nombre</th><th>Cédula</th><th>Correo</th></tr></thead>
-                    <tbody>
-                        <tr><td>1</td><td>Samuel Sandoval</td><td>2-0874-0716</td><td>samuel@cnfl.com</td></tr>
-                        <tr><td>2</td><td>Ana Rodríguez</td><td>1-0234-5678</td><td>ana@cnfl.com</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <!-- CLIENTES -->
+        <div id="clientes" class="pantalla">
+            <h2>Listado de Clientes</h2>
+            <table class="table table-striped">
+                <thead><tr><th>ID</th><th>Nombre</th><th>Cédula</th><th>Correo</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td>Samuel Sandoval</td><td>2-0874-0716</td><td>samuel@cnfl.com</td></tr>
+                    <tr><td>2</td><td>Ana Rodríguez</td><td>1-0234-5678</td><td>ana@cnfl.com</td></tr>
+                </tbody>
+            </table>
         </div>
 
-        <!-- Pestaña Averías (Con estado y progreso) -->
-        <div id="averias" class="pestana hidden">
-            <h2 class="mb-4">Estado de mis Averías</h2>
+        <!-- AVERIAS -->
+        <div id="averias" class="pantalla">
+            <h2>Estado de mis Averías</h2>
             <div class="card-cliente">
-                <div class="d-flex justify-content-between">
-                    <h5>Transformador dañado</h5>
-                    <span class="badge bg-warning text-dark">En revisión</span>
-                </div>
-                <p class="text-muted">📍 Barrio Los Ángeles, Cartago</p>
+                <div class="d-flex justify-content-between"><h5>Transformador dañado</h5><span class="badge bg-warning text-dark">En revisión</span></div>
+                <p>📍 Barrio Los Ángeles, Cartago</p>
                 <p>Se escuchan explosiones y no hay luz.</p>
-                <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-warning" style="width: 50%"></div>
+                <div class="progress"><div class="progress-bar bg-warning" style="width: 50%"></div></div>
+                <small>Paso 2 de 4: En revisión</small>
+            </div>
+        </div>
+
+        <!-- CONSULTAS -->
+        <div id="consultas" class="pantalla">
+            <h2>Consultas</h2>
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action">Consulta de un NISE ></a>
+                <a href="#" class="list-group-item list-group-item-action">Facturas pendientes ></a>
+                <a href="#" class="list-group-item list-group-item-action">Suspensiones programadas ></a>
+                <a href="#" class="list-group-item list-group-item-action">Averías alumbrado público ></a>
+                <a href="#" class="list-group-item list-group-item-action">Mapa de averías red eléctrica ></a>
+                <a href="#" class="list-group-item list-group-item-action">Información de trámites ></a>
+            </div>
+        </div>
+
+        <!-- SOLICITUDES -->
+        <div id="solicitudes" class="pantalla">
+            <h2>Solicitudes</h2>
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action">Solicite el envío de su factura a un correo electrónico ></a>
+                <a href="#" class="list-group-item list-group-item-action">Solicite un estudio de su consumo eléctrico ></a>
+                <a href="#" class="list-group-item list-group-item-action">Reporte una avería eléctrica ></a>
+                <a href="#" class="list-group-item list-group-item-action">Reporte una avería en alumbrado público ></a>
+            </div>
+        </div>
+
+        <!-- CONTACTENOS -->
+        <div id="contactenos" class="pantalla">
+            <h2>Contáctenos</h2>
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action">Medios de atención digitales ></a>
+                <a href="#" class="list-group-item list-group-item-action">Atención telefónica ></a>
+                <a href="#" class="list-group-item list-group-item-action">Nuestras sucursales y agencias ></a>
+                <a href="#" class="list-group-item list-group-item-action">Centros de recarga vehicular ></a>
+                <a href="#" class="list-group-item list-group-item-action">Puntos de pago ></a>
+                <a href="#" class="list-group-item list-group-item-action">Tienda CNFL online ></a>
+            </div>
+        </div>
+
+        <!-- ACERCA DE -->
+        <div id="acercade" class="pantalla">
+            <h2>Compañía Nacional de Fuerza y Luz S.A</h2>
+            <p>CNFL es la aplicación pública para los clientes de la Compañía Nacional de Fuerza y Luz.</p>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary">POLÍTICA DE PRIVACIDAD Y SEGURIDAD</button>
+                <button class="btn btn-primary">TÉRMINOS Y CONDICIONES DE USO</button>
+                <a href="https://www.cnfl.go.cr" class="btn btn-primary">WWW.CNFL.GO.CR</a>
+            </div>
+        </div>
+
+        <!-- AVISOS -->
+        <div id="avisos" class="pantalla">
+            <h2>Avisos y Notificaciones</h2>
+            <div class="alert alert-warning">
+                <h5>Aviso</h5>
+                <p>Le informamos que para el reporte de averías eléctricas y de alumbrado público, pueden hacerlo por medio del sitio web o bien desde la App de CNFL.</p>
+            </div>
+        </div>
+
+        <!-- CHAT -->
+        <div id="chat" class="pantalla">
+            <h2>💬 Asistente Virtual CNFL</h2>
+            <div class="card-cliente">
+                <div id="chatBox" class="chat-box mb-3">
+                    <div class="alert alert-info">¡Hola! Soy el asistente virtual de CNFL. ¿En qué puedo ayudarte?</div>
                 </div>
-                <small class="text-muted">Paso 2 de 4: En revisión</small>
+                <div class="input-group">
+                    <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu consulta...">
+                    <button class="btn btn-cnfl" onclick="enviarMensaje()">Enviar</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- IMPORTAMOS JS SEPARADO -->
     <script src="Scripts/prototipo.js"></script>
-
     <script>
-        // Función simple para cambiar de pestaña en la demo estática
-        function cambiarPestana(id) {
-            document.querySelectorAll('.pestana').forEach(el => el.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+        function mostrar(id) {
+            document.querySelectorAll('.pantalla').forEach(el => el.classList.remove('activa'));
+            document.getElementById(id).classList.add('activa');
+        }
+
+        function enviarMensaje() {
+            var input = document.getElementById("chatInput").value;
+            if (input.trim() === "") return;
+            var chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML += '<div class="alert alert-secondary text-end">' + input + '</div>';
+            document.getElementById("chatInput").value = "";
+
+            setTimeout(function () {
+                var respuesta = "Gracias por tu consulta. Un agente de CNFL te atenderá en breve.";
+                if (input.toLowerCase().includes("factura")) {
+                    respuesta = "Para consultar tu factura, ve a la sección 'Consultas' > 'Facturas pendientes'.";
+                } else if (input.toLowerCase().includes("averia")) {
+                    respuesta = "Para reportar una avería, ve a 'Solicitudes' > 'Reporte de avería eléctrica'.";
+                }
+                chatBox.innerHTML += '<div class="alert alert-info">' + respuesta + '</div>';
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 1000);
         }
     </script>
 </body>

@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "Trámites";
+}
+
+<div class="section-pad">
+    <div class="h-name" style="font-size: 22px;">Trámites</div>
+    <div style="font-size: 13px; color: var(--muted); margin-top: 2px;">16 solicitudes en línea, sin filas.</div>
+</div>
+
+<div class="section-pad">
+    <div class="eyebrow">Mis trámites activos</div>
+    <div class="card" style="background:#fff; border-radius:20px; box-shadow: var(--shadow); padding:18px;">
+        <div style="font-weight:700; font-size:13.5px;">Solicitud servicio nuevo monofásico</div>
+        <div style="font-size:11.5px; color:var(--muted); margin-top:3px;">#TR-20482 · NISE 4021</div>
+
+        <div style="display:flex; align-items:center; margin:10px 0 2px; position:relative;">
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative;">
+                <div style="width:26px; height:26px; border-radius:50%; background:var(--green); color:#fff; display:grid; place-items:center; font-size:11px; font-weight:800; z-index:2;">✓</div>
+                <div style="font-size:10px; font-weight:700;">Iniciado</div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative;">
+                <div style="width:26px; height:26px; border-radius:50%; background:var(--blue); color:#fff; display:grid; place-items:center; font-size:11px; font-weight:800; z-index:2; box-shadow:0 0 0 4px rgba(30,35,230,.18);">2</div>
+                <div style="font-size:10px; font-weight:700;">En proceso</div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative;">
+                <div style="width:26px; height:26px; border-radius:50%; background:#e6e9f2; color:#a2a9b8; display:grid; place-items:center; font-size:11px; font-weight:800; z-index:2;">3</div>
+                <div style="font-size:10px; font-weight:700;">Resuelto</div>
+            </div>
+            <div style="position:absolute; top:13px; left:-50%; width:100%; height:3px; background:#e6e9f2; z-index:1;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="section-pad">
+    <div class="eyebrow">Catálogo de trámites</div>
+    <div class="rows" style="display:flex; flex-direction:column; gap:10px;">
+        <div class="row-item" onclick="alert('Formulario de cambio de nombre')">
+            <div class="ic" style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center; flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></div>
+            <div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Cambio de nombre de abonado</div></div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+        <div class="row-item" onclick="alert('Formulario de desconexión')">
+            <div class="ic" style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center; flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></div>
+            <div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Desconexión y reconexión</div></div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+        <div class="row-item" onclick="alert('Formulario de servicio nuevo')">
+            <div class="ic" style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center; flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></div>
+            <div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Solicitud de servicio nuevo</div></div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+        <div class="row-item" onclick="alert('Formulario de traslado de medidor')">
+            <div class="ic" style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center; flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></div>
+            <div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Traslado de medidor</div></div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+        <div class="row-item" onclick="alert('Formulario de traspaso')">
+            <div class="ic" style="width:40px; height:40px; border-radius:12px; background:#eef6ff; display:grid; place-items:center; flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></div>
+            <div style="flex:1;"><div style="font-weight:700; font-size:13.5px;">Traspaso de servicio eléctrico</div></div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+    </div>
+</div>
+
+<style>
+    .row-item {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        cursor: pointer;
+        transition: .15s;
+    }
+
+        .row-item:active {
+            transform: scale(.99);
+            background: #fafbff;
+        }
+
+    .chev {
+        color: #c3c8d4;
+        flex: none;
+    }
+</style>

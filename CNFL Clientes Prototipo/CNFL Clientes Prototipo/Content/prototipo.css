@@ -1,120 +1,310 @@
-﻿/* Content/prototipo.css */
-:root {
-    --cnfl-orange: #F47920;
-    --cnfl-orange-light: #F89444;
-    --cnfl-orange-dark: #C45A00;
-    --cnfl-yellow: #FFD200;
-    --cnfl-bg: #FFF8F3;
-    --cnfl-white: #FFFFFF;
-    --cnfl-text: #2A1A0A;
-    --cnfl-border: #F0D0B0;
+﻿:root {
+    --blue: #1E23E6;
+    --orange: #FF692D;
+    --navy: #001482;
+    --sky: #64B9CD;
+    --green: #64B95A;
+    --amber: #F5A623;
+    --red: #E5484D;
+    --ink: #0E1116;
+    --muted: #727A86;
+    --line: #EDEFF3;
+    --bg: #F5F6FA;
+    --card: #FFFFFF;
+    --radius: 20px;
+    --shadow: 0 4px 14px rgba(16, 20, 40, 0.06);
 }
 
 body {
-    background-color: var(--cnfl-bg);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 16px; /* Tamaño base legible */
-    color: var(--cnfl-text);
+    background: #ECEFF6;
+    font-family: 'Montserrat', system-ui, sans-serif;
+    color: var(--ink);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Header y Navegación */
-.navbar-cnfl {
-    background-color: var(--cnfl-orange);
-    border-bottom: 4px solid var(--cnfl-orange-dark);
-    box-shadow: 0 4px 10px rgba(244, 121, 32, 0.3);
-}
-
-    .navbar-cnfl a {
-        color: white !important;
-        font-weight: 700;
-    }
-
-/* Tarjetas estilo App */
-.card-cliente {
-    background: var(--cnfl-white);
-    border: 1px solid var(--cnfl-border);
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 2px 12px rgba(244,121,32,0.08);
-    margin-bottom: 20px;
-}
-
-/* Botones */
-.btn-cnfl {
-    background-color: var(--cnfl-orange);
-    color: white;
-    font-weight: 800;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-}
-
-    .btn-cnfl:hover {
-        background-color: var(--cnfl-orange-dark);
-        color: white;
-    }
-
-/* Tablas */
-.tabla-clientes {
-    background: white;
-    border-radius: 12px;
+/* ==========================================
+   EL CELULAR (MARCO NEGRO)
+   ========================================== */
+.phone-frame {
+    width: 390px;
+    max-width: 100%;
+    height: 812px;
+    background: var(--bg);
+    border-radius: 44px;
+    position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 40px 80px -20px rgba(16, 20, 60, .35), 0 0 0 11px #12141c, 0 0 0 13px #2a2d3a;
 }
 
-    .tabla-clientes th {
-        background-color: var(--cnfl-orange);
-        color: white;
-        border: none;
+.phone-notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 30px;
+    background: #12141c;
+    border-radius: 0 0 18px 18px;
+    z-index: 60;
+}
+
+.statusbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 26px 6px;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 55;
+    color: var(--ink);
+}
+
+.phone-content {
+    position: absolute;
+    inset: 0;
+    padding-top: 48px;
+    padding-bottom: 96px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+    .phone-content::-webkit-scrollbar {
+        display: none;
     }
 
-/* Alertas y Notificaciones */
-.alerta-cnfl {
-    background-color: #FFF3E0;
-    border-left: 5px solid var(--cnfl-orange);
-    border-radius: 12px;
+/* --- INICIO DE ESTILOS DENTRO DEL CELULAR --- */
+.appbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 20px 14px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    position: relative;
+    box-shadow: var(--shadow);
+}
+
+    .icon-btn .badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: var(--orange);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        min-width: 17px;
+        height: 17px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        border: 2px solid var(--bg);
+    }
+
+.section-pad {
+    padding: 0 20px;
+}
+
+.eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 22px 0 12px;
+}
+
+.h-name {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+/* Tarjeta Factura */
+.bill {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: #fff;
+    border-radius: 24px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 18px 34px -12px rgba(30, 35, 230, 0.55);
+}
+
+.btn-ghost {
+    background: rgba(255,255,255,0.16);
+    color: #fff;
+    padding: 13px 18px;
+    border-radius: 14px;
+    border: none;
+    backdrop-filter: blur(4px);
+    font-weight: 700;
+}
+
+.btn-cta {
+    background: var(--orange);
+    color: #fff;
+    padding: 13px 20px;
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 8px 18px -6px rgba(255,105,45,.7);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+/* NISE Cards */
+.nise {
+    display: flex;
+    align-items: center;
+    gap: 14px;
     padding: 15px;
-    margin-bottom: 15px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: 0.15s;
+    border: 1px solid var(--line);
+    margin-bottom: 10px;
 }
 
-/* Accesibilidad (Tamaño de letra para adultos mayores) */
-.texto-grande {
-    font-size: 1.2rem;
+    .nise .ring {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        flex: none;
+    }
+
+.pill {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 5px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
 }
 
-/* ---- MEDIA QUERIES PARA MÓVILES Y TABLETS ---- */
-@media (max-width: 768px) {
-    body {
-        font-size: 15px;
-    }
-
-    .card-cliente {
-        padding: 15px;
-    }
-
-    .navbar-brand {
-        font-size: 1.1rem !important;
-    }
-
-    .navbar-nav {
-        text-align: center;
-        margin-top: 10px;
-    }
-
-    /* Tablas en móviles: se vuelven desplazables para que no se rompan */
-    .table-responsive {
-        overflow-x: auto;
-    }
+.st-normal {
+    background: #e9f7ec;
+    color: #2f8f3e;
 }
 
-@media (max-width: 480px) {
-    body {
-        font-size: 14px;
+.st-prev {
+    background: #fef3e0;
+    color: #b9791a;
+}
+
+.st-inc {
+    background: #fdeaea;
+    color: #c93a3f;
+}
+
+/* ==========================================
+   BARRA INFERIOR (Tamaño exacto al de Daniel)
+   ========================================== */
+.tabbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 84px;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(18px);
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    padding-top: 11px;
+    z-index: 50;
+}
+
+.tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    color: #9aa1b0;
+    font-size: 10px;
+    font-weight: 700;
+    flex: 1;
+    text-decoration: none;
+    background: none;
+    border: 0;
+    font-family: inherit;
+}
+
+    .tab svg {
+        width: 24px;
+        height: 24px;
     }
-    /* Tamaño mínimo para no cansar la vista */
-    .btn-cnfl {
-        width: 100%;
-        margin-bottom: 5px;
+
+    .tab.active {
+        color: var(--blue);
     }
-    /* Botones a lo ancho en celulares */
+
+    .tab.center .fab {
+        width: 52px;
+        height: 52px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--orange), #ff8a4c);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 10px 20px -6px rgba(255,105,45,.7);
+        margin-top: -24px;
+        border: 4px solid var(--bg);
+    }
+
+        .tab.center .fab svg {
+            width: 26px;
+            height: 26px;
+            color: #fff;
+        }
+
+/* Accesibilidad */
+.alto-contraste body {
+    background: #000 !important;
+}
+
+.alto-contraste .phone-frame {
+    background: #000 !important;
+    border-color: #fff !important;
+}
+
+.alto-contraste .card-cliente, .alto-contraste .nise {
+    background: #111 !important;
+    border-color: #fff !important;
+    color: #fff !important;
+}
+
+.alto-contraste .tabbar {
+    background: #000 !important;
+    border-top: 1px solid #fff;
+}
+
+.alto-contraste .tab {
+    color: #fff !important;
 }

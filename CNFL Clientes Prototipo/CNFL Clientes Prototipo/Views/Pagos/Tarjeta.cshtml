@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Pago Tarjeta";
+    var monto = ViewBag.Monto ?? "0";
+    var periodo = ViewBag.Periodo ?? "";
+}
+<div class="section-pad">
+    <div class="h-name" style="font-size: 22px; margin-top:20px;">Pago con Tarjeta</div>
+    <p class="text-muted">Factura: @periodo</p>
+</div>
+<div class="card-cliente m-3">
+    <div class="mb-3">
+        <label class="form-label fw-bold">Número de tarjeta</label>
+        <input type="text" class="form-control" placeholder="1234 5678 9012 3456" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-bold">Fecha expiración</label>
+        <input type="text" class="form-control" placeholder="MM/AA" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label fw-bold">CVV</label>
+        <input type="text" class="form-control" placeholder="123" />
+    </div>
+    <hr />
+    <button class="btn btn-cnfl" onclick="alert('Pago con Tarjeta procesado exitosamente!')">Pagar ₡@monto</button>
+</div>

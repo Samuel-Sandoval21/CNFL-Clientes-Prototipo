@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Chat";
+}
+<div class="card-cliente">
+    <h4>💬 Asistente Virtual CNFL</h4>
+    <div id="chatBox" style="height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #f9f9f9; margin-bottom: 10px;">
+        <div class="alert alert-info">¡Hola! Soy el asistente virtual de CNFL. ¿En qué puedo ayudarte?</div>
+    </div>
+    <div class="input-group">
+        <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu consulta..." />
+        <button class="btn btn-cnfl" onclick="enviarMensaje()">Enviar</button>
+    </div>
+</div>
+
+<script>
+    function enviarMensaje() {
+        var input = document.getElementById("chatInput").value;
+        if (input.trim() === "") return;
+
+        var chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML += '<div class="alert alert-secondary text-end">' + input + '</div>';
+        document.getElementById("chatInput").value = "";
+
+        setTimeout(function() {
+            var respuesta = "Gracias por tu consulta. Un agente de CNFL te atenderá en breve.";
+            if (input.toLowerCase().includes("factura")) {
+                respuesta = "Para consultar tu factura, ve a la sección 'Consultas' > 'Facturas pendientes'.";
+            } else if (input.toLowerCase().includes("averia")) {
+                respuesta = "Para reportar una avería, ve a 'Solicitudes' > 'Reporte de avería eléctrica'.";
+            }
+            chatBox.innerHTML += '<div class="alert alert-info">' + respuesta + '</div>';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 1000);
+    }
+</script>

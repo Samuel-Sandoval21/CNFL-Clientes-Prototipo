@@ -121,12 +121,15 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AppController.cs" />
     <Compile Include="Controllers\AveriasController.cs" />
     <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\FacturasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MapaController.cs" />
     <Compile Include="Controllers\NotificacionesController.cs" />
+    <Compile Include="Controllers\PagosController.cs" />
+    <Compile Include="Controllers\TiendaController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -210,6 +213,23 @@
     <Content Include="Views\Facturas\Index.cshtml" />
     <Content Include="Views\Mapa\Index.cshtml" />
     <Content Include="Views\Notificaciones\Index.cshtml" />
+    <Content Include="Views\App\Consultas.cshtml" />
+    <Content Include="Views\App\ConsultaNise.cshtml" />
+    <Content Include="Views\App\Suspensiones.cshtml" />
+    <Content Include="Views\App\InfoTramites.cshtml" />
+    <Content Include="Views\App\EnvioFactura.cshtml" />
+    <Content Include="Views\App\EstudioConsumo.cshtml" />
+    <Content Include="Views\App\Contactenos.cshtml" />
+    <Content Include="Views\App\AcercaDe.cshtml" />
+    <Content Include="Views\App\Avisos.cshtml" />
+    <Content Include="Views\App\Chat.cshtml" />
+    <Content Include="Views\Tienda\Index.cshtml" />
+    <Content Include="Views\Pagos\Index.cshtml" />
+    <Content Include="Views\Pagos\Sinpe.cshtml" />
+    <Content Include="Views\Pagos\Iban.cshtml" />
+    <Content Include="Views\Pagos\Tarjeta.cshtml" />
+    <Content Include="Views\Cuenta\Cuenta.cshtml" />
+    <Content Include="Views\App\Tramites.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

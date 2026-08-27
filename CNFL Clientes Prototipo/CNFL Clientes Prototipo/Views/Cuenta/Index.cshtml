@@ -2,51 +2,104 @@
     ViewBag.Title = "Bienvenido a CNFL";
 }
 
-<div class="p-5 mb-4 rounded-3 text-white" style="background: linear-gradient(135deg, #C45A00, #F47920);">
-    <h1 class="display-5 fw-bold">⚡ CNFL Clientes</h1>
-    <p class="lead">Celebremos la calidad y continuidad de nuestro servicio.</p>
-    <hr class="my-4">
-    <p>Consulte su factura, pague en línea, reporte averías con fotos y reciba notificaciones en tiempo real.</p>
-
-    @if (Session["Usuario"] == null)
-    {
-        <a class="btn btn-warning btn-lg text-dark fw-bold" href="/Cuenta/Login">Iniciar Sesión</a>
-    }
-    else
-    {
-        <a class="btn btn-warning btn-lg text-dark fw-bold" href="/Clientes/Dashboard">Ir a mi Panel</a>
-    }
+<div class="section-pad">
+    <div class="h-greet">Hola,</div>
+    <div class="h-name">Katherine V.</div>
 </div>
 
-<!-- Comunicados Oficiales (Sin Login) -->
-<div class="card-cliente">
-    <h4 class="mb-3">📢 Comunicados Oficiales</h4>
-    <div class="alert alert-warning">
-        <strong>⚠️ Corte Programado:</strong> El 28 de agosto de 8:00 am a 12:00 pm en Cartago Centro.
-    </div>
-    <div class="alert alert-info">
-        <strong>📄 Actualización de Datos:</strong> Recuerde actualizar sus datos en la app para evitar suspensiones.
+<div class="section-pad" style="margin-top:16px">
+    <div class="bill">
+        <div style="font-size:12px; font-weight:700; opacity:.85; letter-spacing:.05em;">FACTURA PENDIENTE · NISE 4021</div>
+        <div style="font-size:34px; font-weight:800; margin:6px 0 2px;">₡ 18.450</div>
+        <div style="font-size:12px; opacity:.85;">Vence el 28 de agosto</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:16px; gap:12px;">
+            <button class="btn btn-ghost" onclick="window.location='/Facturas'">Ver detalle</button>
+            <a href="/Pagos" class="btn btn-cta">Pagar ahora</a>
+        </div>
     </div>
 </div>
 
-<!-- Beneficios -->
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card-cliente">
-            <h3>🔔 Notificaciones</h3>
-            <p>Entérese antes de que ocurra un corte o avería en su zona.</p>
+<div class="section-pad">
+    <div class="eyebrow">Mis servicios asociados (NISE)</div>
+
+    <div class="nise">
+        <div class="ring" style="background:#e9f7ec">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#64B95A" stroke-width="2"><path d="M9 21V9l6-6v18M9 13h6" /><path d="M3 21h18" /></svg>
+        </div>
+        <div class="info">
+            <div class="t">Casa · NISE 4021</div>
+            <div class="s">Residencial · San José</div>
+        </div>
+        <span class="pill st-normal"><span style="width:7px; height:7px; border-radius:50%; background:#64B95A;"></span> Normal</span>
+    </div>
+
+    <div class="nise">
+        <div class="ring" style="background:#fef3e0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" /></svg>
+        </div>
+        <div class="info">
+            <div class="t">Local · NISE 7788</div>
+            <div class="s">Mantenimiento programado 2:00pm</div>
+        </div>
+        <span class="pill st-prev"><span style="width:7px; height:7px; border-radius:50%; background:#F5A623;"></span> Prevención</span>
+    </div>
+
+    <div class="nise">
+        <div class="ring" style="background:#fdeaea">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E5484D" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z" /></svg>
+        </div>
+        <div class="info">
+            <div class="t">Finca · NISE 9950</div>
+            <div class="s">Avería en la red · atendiéndose</div>
+        </div>
+        <span class="pill st-inc"><span style="width:7px; height:7px; border-radius:50%; background:#E5484D; animation: pulse 1.2s infinite;"></span> Incidente</span>
+    </div>
+</div>
+
+<div class="section-pad">
+    <div class="eyebrow">Consumo kWh · NISE 4021</div>
+    <div class="card" style="background:#fff; border-radius:20px; box-shadow: var(--shadow); padding:18px;">
+        <div style="display:flex; align-items:flex-end; gap:9px; height:110px;">
+            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:45%; border-radius:8px 8px 4px 4px;"></div>
+            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:62%; border-radius:8px 8px 4px 4px;"></div>
+            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:53%; border-radius:8px 8px 4px 4px;"></div>
+            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:71%; border-radius:8px 8px 4px 4px;"></div>
+            <div style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:58%; border-radius:8px 8px 4px 4px;"></div>
+            <div style="flex:1; background:linear-gradient(var(--blue),#5a60f5); height:84%; border-radius:8px 8px 4px 4px;"></div>
+        </div>
+        <div style="display:flex; gap:6px; margin-top:24px;">
+            <button style="font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:999px; background:var(--blue); color:#fff; border:0;">Últimos 6 meses</button>
+            <button style="font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:999px; background:#eef0f7; color:var(--muted); border:0;">31 días</button>
+            <button style="font-size:11.5px; font-weight:700; padding:7px 12px; border-radius:999px; background:#eef0f7; color:var(--muted); border:0;">Lecturas</button>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card-cliente">
-            <h3>📄 Pago en línea</h3>
-            <p>Pague su factura de forma segura con SINPE, Tarjeta o IBAN.</p>
+</div>
+
+<!-- CONSULTA AL MEDIDOR (AMI) -->
+<div class="section-pad">
+    <div class="eyebrow">Consulta al medidor (AMI)</div>
+    <div class="card" style="background:#fff; border-radius:20px; box-shadow: var(--shadow); padding:18px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="background:#f7f8fc; border-radius:14px; padding:13px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;">Última lectura</div>
+                <div style="font-size:18px; font-weight:800; margin-top:5px;">742 <small style="font-size:11px; color:var(--muted);">kWh</small></div>
+            </div>
+            <div style="background:#f7f8fc; border-radius:14px; padding:13px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;">Acumulado del mes</div>
+                <div style="font-size:18px; font-weight:800; margin-top:5px;">198 <small style="font-size:11px; color:var(--muted);">kWh</small></div>
+            </div>
+            <div style="background:#f7f8fc; border-radius:14px; padding:13px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;">Costo estimado</div>
+                <div style="font-size:18px; font-weight:800; color: var(--orange); margin-top:5px;">₡ 21.300</div>
+            </div>
+            <div style="background:#f7f8fc; border-radius:14px; padding:13px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;">Promedio mensual</div>
+                <div style="font-size:18px; font-weight:800; margin-top:5px;">205 <small style="font-size:11px; color:var(--muted);">kWh</small></div>
+            </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card-cliente">
-            <h3>📷 Reporte con foto</h3>
-            <p>Reporte averías tomando una foto directamente desde la app.</p>
+        <div style="display:flex; align-items:center; gap:4px; font-size:11px; color: var(--green); font-weight:700; margin-top:5px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5" /></svg>
+            <span>12% menos que el mes anterior · ¡buen ahorro!</span>
         </div>
     </div>
 </div>

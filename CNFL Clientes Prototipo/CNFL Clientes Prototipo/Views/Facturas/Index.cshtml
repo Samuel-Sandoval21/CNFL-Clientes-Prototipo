@@ -2,34 +2,33 @@
 @{
     ViewBag.Title = "Mis Facturas";
 }
-<h2>Mis Facturas</h2>
-<table class="table table-striped">
-    <thead>
-        <tr><th>Período</th><th>Monto</th><th>Estado</th><th></th></tr>
-    </thead>
-    <tbody>
-        @foreach (var f in Model)
-        {
-            <tr>
-                <td>@f.Periodo</td>
-                <td>₡@f.Monto.ToString("N0")</td>
-                <td>
-                    @if (f.Estado == "Pagada")
-                    {<span class="badge bg-success">Pagada</span> }
-                    else
-                    { <span class="badge bg-warning text-dark">Pendiente</span>}
-                </td>
-                <td>
-                    @if (f.Estado != "Pagada")
-                    {
-                        using (Html.BeginForm("Pagar", "Facturas", FormMethod.Post))
-                        {
-                            @Html.Hidden("id", f.Id)
-                            <button type="submit" class="btn btn-cnfl btn-sm">Pagar ahora</button>
-                        }
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 style="color: var(--cnfl-navy); font-weight: 800;">Mis Pagos</h3>
+</div>
+
+@foreach (var f in Model)
+{
+    <div class="card-cliente" style="border-left: 5px solid var(--cnfl-orange);">
+        <div class="d-flex justify-content-between">
+            <div>
+                <div style="font-weight: bold;">@f.Periodo</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--cnfl-navy);">₡@f.Monto.ToString("N0")</div>
+            </div>
+            @if (f.Estado == "Pagada")
+            {
+                <span class="badge badge-success align-self-start">Pagada</span>
+            }
+            else
+            {
+                <span class="badge badge-warning align-self-start">Pendiente</span>
+            }
+        </div>
+        <hr />
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="alert('Pago vía SINPE Móvil simulado')">SINPE</button>
+            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="alert('Pago vía IBAN simulado')">IBAN</button>
+            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="alert('Pago vía Tarjeta simulado')">Tarjeta</button>
+        </div>
+    </div>
+}

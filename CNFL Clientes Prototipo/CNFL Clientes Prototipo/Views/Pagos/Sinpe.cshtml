@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Pago SINPE";
+    var monto = ViewBag.Monto ?? "0";
+    var periodo = ViewBag.Periodo ?? "";
+}
+<div class="section-pad">
+    <div class="h-name" style="font-size: 22px; margin-top:20px;">Pago con SINPE Móvil</div>
+    <p class="text-muted">Factura: @periodo</p>
+</div>
+<div class="card-cliente m-3">
+    <p class="fw-bold">Monto a pagar: ₡@monto</p>
+    <p>1. Abra su app del Banco.</p>
+    <p>2. Digite el teléfono: <strong>8888-8888</strong></p>
+    <p>3. Digite el monto: <strong>@monto</strong></p>
+    <p>4. Acepte el pago en su celular.</p>
+    <hr />
+    <button class="btn btn-cnfl" onclick="alert('Pago SINPE procesado exitosamente!')">Confirmar pago</button>
+</div>
