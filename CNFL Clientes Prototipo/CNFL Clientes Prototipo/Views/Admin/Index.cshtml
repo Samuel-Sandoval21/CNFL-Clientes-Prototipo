@@ -1,74 +1,339 @@
 ﻿@model List<CNFL_Clientes_Prototipo.Models.Averia>
 
 @{
-    ViewBag.Title = "Panel Administrativo";
+    ViewBag.Title = "Panel Administrativo - CNFL";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="texto-grande">🧑‍💼 Panel Administrativo</h2>
-    <span class="badge bg-primary">Modo Operador</span>
+<!-- Estilos específicos para el Panel Admin -->
+<style>
+    .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .stat-box {
+        background: white;
+        border-radius: 16px;
+        padding: 16px 12px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid var(--line);
+        transition: transform 0.2s;
+    }
+
+        .stat-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--blue);
+            line-height: 1.2;
+        }
+
+        .stat-box .label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .stat-box .icon {
+            font-size: 28px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .stat-box.orange .number {
+            color: var(--orange);
+        }
+
+        .stat-box.green .number {
+            color: var(--green);
+        }
+
+        .stat-box.purple .number {
+            color: #7C4DFF;
+        }
+
+    .card-cliente {
+        background: white;
+        border-radius: 20px;
+        padding: 18px 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid var(--line);
+        transition: all 0.2s;
+        margin-bottom: 16px;
+    }
+
+        .card-cliente:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            border-color: #d0d7e0;
+        }
+
+        .card-cliente h4 {
+            font-weight: 700;
+            font-size: 16px;
+            margin: 0 0 6px 0;
+            color: var(--ink);
+        }
+
+        .card-cliente .meta {
+            font-size: 13px;
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+            .card-cliente .meta span {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+        .card-cliente .descripcion {
+            font-size: 14px;
+            color: var(--ink);
+            margin: 8px 0 12px 0;
+            line-height: 1.5;
+        }
+
+        .card-cliente .foto-preview {
+            max-height: 120px;
+            border-radius: 12px;
+            margin-top: 8px;
+            border: 1px solid var(--line);
+            max-width: 100%;
+        }
+
+        .card-cliente .estado-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+    .estado-reportado {
+        background: #FFEBEE;
+        color: #C62828;
+    }
+
+    .estado-revision {
+        background: #FFF8E1;
+        color: #F57F17;
+    }
+
+    .estado-camino {
+        background: #E3F2FD;
+        color: #0D47A1;
+    }
+
+    .estado-resuelto {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .admin-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+        align-items: center;
+    }
+
+        .admin-actions select {
+            padding: 8px 14px;
+            border-radius: 12px;
+            border: 1.5px solid var(--line);
+            font-size: 13px;
+            font-weight: 600;
+            background: white;
+            font-family: inherit;
+            color: var(--ink);
+            min-width: 140px;
+        }
+
+            .admin-actions select:focus {
+                outline: none;
+                border-color: var(--blue);
+            }
+
+    .btn-actualizar {
+        background: var(--blue);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 20px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+    }
+
+        .btn-actualizar:hover {
+            background: #1519b3;
+            transform: scale(0.97);
+        }
+
+        .btn-actualizar:active {
+            transform: scale(0.95);
+        }
+
+    .admin-nota {
+        background: #FFF8E1;
+        border-left: 4px solid #FFB300;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-top: 20px;
+        font-size: 13px;
+        color: #5D4037;
+    }
+
+        .admin-nota a {
+            color: var(--blue);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+            .admin-nota a:hover {
+                text-decoration: underline;
+            }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 20px;
+        border: 1px dashed var(--line);
+    }
+
+        .empty-state .icono-grande {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+</style>
+
+<!-- Encabezado -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 style="font-weight: 800; font-size: 22px; margin: 0;">🧑‍💼 Panel Administrativo</h2>
+        <p style="color: var(--muted); font-size: 13px; margin: 2px 0 0 0;">Gestión de averías y operaciones</p>
+    </div>
+    <span class="estado-badge estado-camino" style="font-size: 12px;">🔑 Operador</span>
 </div>
 
+<!-- Estadísticas -->
+<div class="admin-stats">
+    <div class="stat-box">
+        <span class="icon">📋</span>
+        <div class="number">@ViewBag.TotalAverias</div>
+        <div class="label">Total Averías</div>
+    </div>
+    <div class="stat-box orange">
+        <span class="icon">⏳</span>
+        <div class="number">@ViewBag.AveriasPendientes</div>
+        <div class="label">Pendientes</div>
+    </div>
+    <div class="stat-box purple">
+        <span class="icon">🔍</span>
+        <div class="number">@ViewBag.AveriasEnRevision</div>
+        <div class="label">En Revisión</div>
+    </div>
+    <div class="stat-box green">
+        <span class="icon">✅</span>
+        <div class="number">@ViewBag.AveriasEnCamino</div>
+        <div class="label">En Camino</div>
+    </div>
+</div>
+
+<!-- Lista de Averías -->
 @if (!Model.Any())
 {
-    <div class="alert alert-info">No hay averías reportadas actualmente.</div>
-}
-
-@foreach (var averia in Model)
-{
-    <div class="card-cliente mb-3">
-        <div class="row">
-            <div class="col-md-8">
-                <h4>@averia.Id - @averia.Titulo</h4>
-                <p class="text-muted">📍 @averia.Direccion</p>
-                <p class="text-muted">🕐 @averia.Fecha.ToString("dd/MM/yyyy HH:mm")</p>
-                <p>@averia.Descripcion</p>
-                @if (!string.IsNullOrEmpty(averia.FotoUrl))
-                {
-                    <img src="@averia.FotoUrl" alt="Foto" class="img-fluid rounded" style="max-height: 150px;" />
-                }
-            </div>
-            <div class="col-md-4 d-flex flex-column justify-content-center">
-                <div class="mb-2">
-                    <strong>Estado actual:</strong>
-                    @if (averia.Estado == "Reportado")
-                    {
-                        <span class="badge bg-danger">@averia.Estado</span>
-                    }
-                    else if (averia.Estado == "En revisión")
-                    {
-                        <span class="badge bg-warning text-dark">@averia.Estado</span>
-                    }
-                    else if (averia.Estado == "En camino")
-                    {
-                        <span class="badge bg-primary">@averia.Estado</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">@averia.Estado</span>
-                    }
-                </div>
-
-                @using (Html.BeginForm("CambiarEstado", "Admin", FormMethod.Post))
-                {
-                    @Html.Hidden("id", averia.Id)
-                    <div class="input-group mb-2">
-                        <select name="estado" class="form-select">
-                            <option value="Reportado">Reportado</option>
-                            <option value="En revisión">En revisión</option>
-                            <option value="En camino">En camino</option>
-                            <option value="Resuelto">Resuelto</option>
-                        </select>
-                        <button type="submit" class="btn btn-cnfl">Actualizar</button>
-                    </div>
-                }
-            </div>
-        </div>
+    <div class="empty-state">
+        <span class="icono-grande">✅</span>
+        <h3>No hay averías reportadas</h3>
+        <p style="color: var(--muted); font-size: 14px; margin-top: 6px;">Todo en orden. Los clientes no han reportado incidencias recientemente.</p>
     </div>
 }
+else
+{
+    foreach (var averia in Model)
+    {
+        // Determinar la clase CSS según el estado
+        string estadoClass = "estado-reportado";
+        if (averia.Estado == "En revisión")
+        {
+            estadoClass = "estado-revision";
+        }
+        else if (averia.Estado == "En camino")
+        {
+            estadoClass = "estado-camino";
+        }
+        else if (averia.Estado == "Resuelto")
+        {
+            estadoClass = "estado-resuelto";
+        }
 
-<hr />
+        <div class="card-cliente" id="averia-@averia.Id">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
+                <div style="flex: 1;">
+                    <h4>@averia.Titulo</h4>
+                    <div class="meta">
+                        <span>📍 @averia.Direccion</span>
+                        <span>🕐 @averia.Fecha.ToString("dd/MM/yyyy HH:mm")</span>
+                        <span>🆔 #@averia.Id</span>
+                    </div>
+                    <p class="descripcion">@averia.Descripcion</p>
+                    @if (!string.IsNullOrEmpty(averia.FotoUrl))
+                    {
+                        <img src="@averia.FotoUrl" alt="Foto de la avería" class="foto-preview" />
+                    }
+                </div>
+                <div style="min-width: 100px; text-align: right;">
+                    <span class="estado-badge @estadoClass">@averia.Estado</span>
+                </div>
+            </div>
 
-<div class="alert alert-info">
-    <strong>💡 Nota:</strong> Para ver el listado de clientes registrados, diríjase a la pestaña <a href="/Clientes">Clientes</a> del menú superior.
+            <!-- Acciones del Admin -->
+            <div class="admin-actions">
+                <form method="post" action="@Url.Action("CambiarEstado", "Admin")" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@averia.Id" />
+                    <select name="estado" class="form-select">
+                        <option value="Reportado" @(averia.Estado == "Reportado" ? "selected" : "")>📋 Reportado</option>
+                        <option value="En revisión" @(averia.Estado == "En revisión" ? "selected" : "")>🔍 En revisión</option>
+                        <option value="En camino" @(averia.Estado == "En camino" ? "selected" : "")>🚗 En camino</option>
+                        <option value="Resuelto" @(averia.Estado == "Resuelto" ? "selected" : "")>✅ Resuelto</option>
+                    </select>
+                    <button type="submit" class="btn-actualizar">🔄 Actualizar</button>
+                </form>
+            </div>
+        </div>
+    }
+}
+
+<!-- Nota informativa -->
+<div class="admin-nota">
+    ⚠️ <strong>Nota:</strong> Para ver el listado completo de clientes registrados, diríjase a la pestaña
+    <a href="@Url.Action("Clientes", "Admin")">Clientes</a> del menú superior.
 </div>

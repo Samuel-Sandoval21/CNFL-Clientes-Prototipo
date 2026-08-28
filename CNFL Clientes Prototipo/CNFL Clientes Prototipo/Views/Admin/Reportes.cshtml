@@ -1,0 +1,531 @@
+﻿@model CNFL_Clientes_Prototipo.Models.ReportesViewModel
+
+@{
+    ViewBag.Title = "Reportes - CNFL";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+        .report-header h2 {
+            font-weight: 800;
+            font-size: 22px;
+            margin: 0;
+        }
+
+        .report-header p {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 2px 0 0 0;
+        }
+
+    .report-filters {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: white;
+        padding: 16px 20px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        margin-bottom: 20px;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+        .report-filters select,
+        .report-filters input {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1.5px solid var(--line);
+            font-size: 13px;
+            font-family: inherit;
+            background: white;
+            color: var(--ink);
+            min-width: 140px;
+        }
+
+            .report-filters select:focus,
+            .report-filters input:focus {
+                outline: none;
+                border-color: var(--blue);
+            }
+
+    .btn-generar {
+        background: var(--blue);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 24px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        margin-left: auto;
+    }
+
+        .btn-generar:hover {
+            background: #1519b3;
+            transform: scale(0.97);
+        }
+
+        .btn-generar:active {
+            transform: scale(0.95);
+        }
+
+    .report-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .report-card {
+        background: white;
+        border-radius: 18px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+        .report-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .report-card .icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .report-card .number {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--blue);
+        }
+
+        .report-card .label {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .report-card .trend {
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 6px;
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 999px;
+        }
+
+    .trend-up {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .trend-down {
+        background: #FFEBEE;
+        color: #C62828;
+    }
+
+    .trend-neutral {
+        background: #FFF8E1;
+        color: #F57F17;
+    }
+
+    .report-chart-container {
+        background: white;
+        border-radius: 18px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+        .report-chart-container h4 {
+            font-weight: 700;
+            font-size: 16px;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+    .chart-bars {
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-end;
+        height: 180px;
+        padding: 10px 0;
+        border-bottom: 2px solid var(--line);
+    }
+
+    .chart-bar-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .chart-bar {
+        width: 32px;
+        border-radius: 6px 6px 0 0;
+        transition: height 0.6s ease;
+        min-height: 8px;
+        background: var(--blue);
+    }
+
+        .chart-bar.orange {
+            background: var(--orange);
+        }
+
+        .chart-bar.green {
+            background: var(--green);
+        }
+
+        .chart-bar.purple {
+            background: #7C4DFF;
+        }
+
+    .chart-bar-label {
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 600;
+    }
+
+    .chart-bar-value {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .report-table-container {
+        background: white;
+        border-radius: 18px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        overflow-x: auto;
+    }
+
+        .report-table-container h4 {
+            font-weight: 700;
+            font-size: 16px;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+        .report-table th {
+            background: var(--bg);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--muted);
+            border-bottom: 2px solid var(--line);
+        }
+
+        .report-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .report-table tr:hover td {
+            background: #f8f9fe;
+        }
+
+        .report-table .badge-estado {
+            padding: 3px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+    .badge-estado.estado-reportado {
+        background: #FFEBEE;
+        color: #C62828;
+    }
+
+    .badge-estado.estado-revision {
+        background: #FFF8E1;
+        color: #F57F17;
+    }
+
+    .badge-estado.estado-camino {
+        background: #E3F2FD;
+        color: #0D47A1;
+    }
+
+    .badge-estado.estado-resuelto {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .report-export-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+    }
+
+    .btn-export {
+        padding: 8px 18px;
+        border-radius: 12px;
+        border: 1.5px solid var(--line);
+        background: white;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-export:hover {
+            border-color: var(--blue);
+            background: #f0f2ff;
+        }
+
+        .btn-export.pdf {
+            color: #D32F2F;
+        }
+
+        .btn-export.excel {
+            color: #2E7D32;
+        }
+
+        .btn-export.csv {
+            color: var(--blue);
+        }
+</style>
+
+<!-- CORRECCIÓN: CSS responsive fuera del bloque <style> usando <text> -->
+<text>
+    <style>
+        @@media (max-width: 600px) {
+            .report-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .report-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-generar {
+                margin-left: 0;
+            }
+
+            .chart-bars {
+                height: 140px;
+            }
+
+            .chart-bar {
+                width: 24px;
+            }
+        }
+    </style>
+</text>
+
+<div class="report-header">
+    <div>
+        <h2>📈 Reportes y Estadísticas</h2>
+        <p>Análisis detallado de averías, clientes y rendimiento del sistema</p>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="report-filters">
+    <select id="periodoFilter">
+        <option value="7d">Últimos 7 días</option>
+        <option value="30d" selected>Últimos 30 días</option>
+        <option value="90d">Últimos 90 días</option>
+        <option value="1a">Último año</option>
+        <option value="personalizado">Personalizado</option>
+    </select>
+    <input type="date" id="fechaInicio" placeholder="Fecha inicio" />
+    <input type="date" id="fechaFin" placeholder="Fecha fin" />
+    <button class="btn-generar" onclick="generarReporte()">🔄 Generar Reporte</button>
+</div>
+
+<!-- Tarjetas de resumen -->
+<div class="report-grid">
+    <div class="report-card">
+        <span class="icon">📋</span>
+        <div class="number">@Model.TotalAverias</div>
+        <div class="label">Total Averías</div>
+        @{
+            string trendClassAverias = "trend-neutral";
+            string trendIconAverias = "—";
+            if (Model.TrendAverias > 0)
+            {
+                trendClassAverias = "trend-up";
+                trendIconAverias = "▲";
+            }
+            else if (Model.TrendAverias < 0)
+            {
+                trendClassAverias = "trend-down";
+                trendIconAverias = "▼";
+            }
+        }
+        <span class="trend @trendClassAverias">
+            @trendIconAverias @Math.Abs(Model.TrendAverias)% vs mes anterior
+        </span>
+    </div>
+    <div class="report-card">
+        <span class="icon">⏱️</span>
+        <div class="number">@Model.TiempoPromedioResolucion</div>
+        <div class="label">Tiempo Prom. Resolución</div>
+        @{
+            string trendClassTiempo = "trend-neutral";
+            string trendIconTiempo = "—";
+            if (Model.TrendTiempo < 0)
+            {
+                trendClassTiempo = "trend-up";
+                trendIconTiempo = "▲";
+            }
+            else if (Model.TrendTiempo > 0)
+            {
+                trendClassTiempo = "trend-down";
+                trendIconTiempo = "▼";
+            }
+        }
+        <span class="trend @trendClassTiempo">
+            @trendIconTiempo @Math.Abs(Model.TrendTiempo)% más rápido
+        </span>
+    </div>
+    <div class="report-card">
+        <span class="icon">✅</span>
+        <div class="number">@Model.TasaResolucion%</div>
+        <div class="label">Tasa de Resolución</div>
+        @{
+            string trendClassTasa = "trend-neutral";
+            string trendIconTasa = "—";
+            if (Model.TrendTasa > 0)
+            {
+                trendClassTasa = "trend-up";
+                trendIconTasa = "▲";
+            }
+            else if (Model.TrendTasa < 0)
+            {
+                trendClassTasa = "trend-down";
+                trendIconTasa = "▼";
+            }
+        }
+        <span class="trend @trendClassTasa">
+            @trendIconTasa @Math.Abs(Model.TrendTasa)% vs mes anterior
+        </span>
+    </div>
+</div>
+
+<!-- Gráfico de averías por mes -->
+<div class="report-chart-container">
+    <h4>📊 Averías por mes</h4>
+    <div class="chart-bars" id="chartBars">
+        @foreach (var item in Model.AveriasPorMes)
+        {
+            <div class="chart-bar-item">
+                <div class="chart-bar-value">@item.Cantidad</div>
+                @{
+                    int barHeight = (item.Cantidad > 0) ? (item.Cantidad * 8 + 10) : 10;
+                    string barColor = (item.Cantidad > 0) ? "var(--blue)" : "#e0e0e0";
+                }
+                <div class="chart-bar" style="height: @(barHeight)px; background: @(barColor);"></div>
+                <div class="chart-bar-label">@item.Mes</div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Tabla de averías recientes -->
+<div class="report-table-container">
+    <h4>📋 Detalle de averías recientes</h4>
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Ubicación</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Tiempo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var averia in Model.AveriasRecientes)
+            {
+                string estadoClass = "estado-reportado";
+                if (averia.Estado == "En revisión")
+                {
+                    estadoClass = "estado-revision";
+                }
+                else if (averia.Estado == "En camino")
+                {
+                    estadoClass = "estado-camino";
+                }
+                else if (averia.Estado == "Resuelto")
+                {
+                    estadoClass = "estado-resuelto";
+                }
+
+                <tr>
+                    <td><strong>#@averia.Id</strong></td>
+                    <td>@averia.Titulo</td>
+                    <td>@averia.Direccion</td>
+                    <td>@averia.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td><span class="badge-estado @estadoClass">@averia.Estado</span></td>
+                    <td>@averia.TiempoTranscurrido</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Botones de exportación -->
+    <div class="report-export-buttons">
+        <button class="btn-export pdf" onclick="exportarReporte('pdf')">📄 Exportar PDF</button>
+        <button class="btn-export excel" onclick="exportarReporte('excel')">📊 Exportar Excel</button>
+        <button class="btn-export csv" onclick="exportarReporte('csv')">📋 Exportar CSV</button>
+    </div>
+</div>
+
+<script>
+    function generarReporte() {
+        const periodo = document.getElementById('periodoFilter').value;
+        const fechaInicio = document.getElementById('fechaInicio').value;
+        const fechaFin = document.getElementById('fechaFin').value;
+
+        alert('📊 Generando reporte con filtros:\n' +
+            'Período: ' + periodo + '\n' +
+            'Desde: ' + (fechaInicio || 'No especificado') + '\n' +
+            'Hasta: ' + (fechaFin || 'No especificado'));
+    }
+
+    function exportarReporte(formato) {
+        alert('📥 Exportando reporte en formato: ' + formato.toUpperCase());
+    }
+</script>

@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewBag.Title - CNFL Admin</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Estilos base del layout -->
+    <style>
+        :root {
+            --blue: #1E23E6;
+            --orange: #FF692D;
+            --navy: #001482;
+            --sky: #64B9CD;
+            --green: #64B95A;
+            --amber: #F5A623;
+            --red: #E5484D;
+            --ink: #0E1116;
+            --muted: #727A86;
+            --line: #EDEFF3;
+            --bg: #F5F6FA;
+            --card: #FFFFFF;
+            --radius: 20px;
+            --shadow: 0 4px 14px rgba(16, 20, 40, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ECEFF6;
+            color: var(--ink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 12px;
+        }
+
+        .app-container {
+            max-width: 430px;
+            width: 100%;
+            min-height: 780px;
+            height: auto;
+            background: var(--bg);
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 11px #12141c, 0 0 0 13px #2a2d3a;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Barra de estado */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 24px 6px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        /* Encabezado Admin */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 18px 14px;
+            background: var(--bg);
+        }
+
+        .back-btn, .lang-toggle {
+            background: var(--card);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--muted);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+            .back-btn:hover, .lang-toggle:hover {
+                background: var(--blue);
+                color: white;
+                transform: scale(0.96);
+            }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card);
+            padding: 4px 16px 4px 4px;
+            border-radius: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--orange);
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .user-email {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 18px 20px;
+            scrollbar-width: thin;
+        }
+
+            .main-content::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .main-content::-webkit-scrollbar-thumb {
+                background: var(--blue);
+                border-radius: 10px;
+            }
+
+        /* Menú inferior */
+        .bottom-nav {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            padding: 8px 10px 18px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--line);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.04);
+        }
+
+        .nav-item {
+            background: transparent;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 600;
+            position: relative;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+            .nav-item .nav-icon {
+                font-size: 22px;
+                transition: 0.2s;
+            }
+
+            .nav-item.active {
+                color: var(--blue);
+                font-weight: 700;
+            }
+
+                .nav-item.active .nav-icon {
+                    transform: scale(1.1);
+                    color: var(--blue);
+                }
+
+                .nav-item.active::before {
+                    content: '';
+                    position: absolute;
+                    top: -6px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 20px;
+                    height: 4px;
+                    background: var(--blue);
+                    border-radius: 10px;
+                }
+
+            .nav-item:hover {
+                background: rgba(30, 35, 230, 0.06);
+            }
+
+            .nav-item i {
+                font-size: 22px;
+            }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Barra de estado -->
+        <header class="status-bar">
+            <span class="time" id="statusTime">10:44</span>
+            <div class="status-icons">
+                <span>📶</span>
+                <span>📶</span>
+                <span>🔋</span>
+            </div>
+        </header>
+
+        <!-- Encabezado -->
+        <section class="admin-header">
+            <button class="back-btn" onclick="history.back();">← Volver</button>
+            <div class="user-badge">
+                <span class="avatar">A</span>
+                <div class="user-info">
+                    <span class="user-name">@(Session["Nombre"] ?? "Admin Sistema")</span>
+                    <span class="user-email">@(Session["Correo"] ?? "admin@cnfl.go.cr")</span>
+                </div>
+            </div>
+            <button class="lang-toggle" title="Cambiar idioma">ES ▼</button>
+        </section>
+
+        <!-- Contenido dinámico -->
+        <main class="main-content">
+            @RenderBody()
+        </main>
+
+        <!-- Menú inferior -->
+        <nav class="bottom-nav">
+            <a href="@Url.Action("Dashboard", "Admin")" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="@Url.Action("Index", "Admin")" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">
+                <span class="nav-icon">⚠️</span>
+                <span>Averías</span>
+            </a>
+            <a href="@Url.Action("Clientes", "Admin")" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Clientes" ? "active" : "")">
+                <span class="nav-icon">👥</span>
+                <span>Clientes</span>
+            </a>
+            <a href="@Url.Action("Reportes", "Admin")" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Reportes" ? "active" : "")">
+                <span class="nav-icon">📈</span>
+                <span>Reportes</span>
+            </a>
+            <a href="@Url.Action("Logout", "Cuenta")" class="nav-item">
+                <span class="nav-icon">🚪</span>
+                <span>Salir</span>
+            </a>
+        </nav>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <script>
+        // Actualizar hora en la barra de estado
+        function updateTime() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('statusTime').textContent = h + ':' + m;
+        }
+        updateTime();
+        setInterval(updateTime, 30000);
+    </script>
+</body>
+</html>

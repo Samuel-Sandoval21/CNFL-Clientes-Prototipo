@@ -1,0 +1,169 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Averia>
+
+@{
+    ViewBag.Title = "Dashboard - CNFL";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .dash-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .dash-stat {
+        background: white;
+        border-radius: 18px;
+        padding: 18px 16px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid var(--line);
+        transition: transform 0.2s;
+    }
+
+        .dash-stat:hover {
+            transform: translateY(-2px);
+        }
+
+        .dash-stat .num {
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .dash-stat .lbl {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .dash-stat .emoji {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .dash-stat.blue .num {
+            color: var(--blue);
+        }
+
+        .dash-stat.orange .num {
+            color: var(--orange);
+        }
+
+        .dash-stat.green .num {
+            color: var(--green);
+        }
+
+        .dash-stat.red .num {
+            color: var(--red);
+        }
+
+    .dash-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 20px 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .recent-item {
+        background: white;
+        border-radius: 14px;
+        padding: 14px 16px;
+        border-left: 4px solid var(--blue);
+        margin-bottom: 10px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        border: 1px solid var(--line);
+        border-left-width: 4px;
+    }
+
+        .recent-item .titulo {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .recent-item .detalle {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .recent-item .estado {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+</style>
+
+<h2 style="font-weight: 800; font-size: 22px; margin: 0;">📊 Resumen General</h2>
+<p style="color: var(--muted); font-size: 13px; margin: 2px 0 18px;">Vista rápida de las operaciones del sistema</p>
+
+<div class="dash-stats">
+    <div class="dash-stat blue">
+        <span class="emoji">📋</span>
+        <div class="num">@ViewBag.TotalAverias</div>
+        <div class="lbl">Total Averías</div>
+    </div>
+    <div class="dash-stat orange">
+        <span class="emoji">⏳</span>
+        <div class="num">@ViewBag.AveriasPendientes</div>
+        <div class="lbl">Pendientes</div>
+    </div>
+    <div class="dash-stat red">
+        <span class="emoji">🔍</span>
+        <div class="num">@ViewBag.AveriasEnRevision</div>
+        <div class="lbl">En Revisión</div>
+    </div>
+    <div class="dash-stat green">
+        <span class="emoji">✅</span>
+        <div class="num">@ViewBag.AveriasResueltas</div>
+        <div class="lbl">Resueltas</div>
+    </div>
+</div>
+
+<div class="dash-section-title">
+    <span>🕐</span> Últimas averías reportadas
+</div>
+
+@if (Model.Any())
+{
+    var ultimas = Model.OrderByDescending(a => a.Fecha).Take(3);
+    foreach (var averia in ultimas)
+    {
+        <div class="recent-item" style="border-left-color: @(averia.Estado == "Resuelto" ? "var(--green)" : "var(--orange)")">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <div class="titulo">@averia.Titulo</div>
+                    <div class="detalle">📍 @averia.Direccion</div>
+                    <div class="detalle">🕐 @averia.Fecha.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+                <span class="estado estado-@averia.Estado.Replace(" ", "").ToLower()" style="background: #E3F2FD; color: #0D47A1;">
+                    @averia.Estado
+                </span>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div style="text-align: center; padding: 30px; color: var(--muted);">
+        No hay averías reportadas
+    </div>
+}
+
+<div style="margin-top: 20px; background: white; border-radius: 16px; padding: 16px; border: 1px solid var(--line);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 28px;">💡</span>
+        <div>
+            <div style="font-weight: 700; font-size: 14px;">Consejo del día</div>
+            <div style="font-size: 13px; color: var(--muted);">Mantén actualizados los estados de las averías para un mejor seguimiento.</div>
+        </div>
+    </div>
+</div>

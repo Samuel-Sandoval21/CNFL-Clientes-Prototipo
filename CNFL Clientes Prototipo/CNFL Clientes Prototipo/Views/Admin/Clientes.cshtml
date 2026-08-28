@@ -1,0 +1,188 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Cliente>
+
+@{
+    ViewBag.Title = "Gestión de Clientes - CNFL";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .client-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid var(--line);
+    }
+
+        .client-table th {
+            background: var(--bg);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            border-bottom: 2px solid var(--line);
+        }
+
+        .client-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+            font-size: 14px;
+        }
+
+        .client-table tr:hover td {
+            background: #f8f9fe;
+        }
+
+        .client-table .status-badge {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .client-table .status-active {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .client-table .status-inactive {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+    .btn-client-edit {
+        background: var(--blue);
+        color: white;
+        border: none;
+        padding: 5px 14px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: 0.2s;
+    }
+
+        .btn-client-edit:hover {
+            background: #1519b3;
+            transform: scale(0.95);
+        }
+
+    .search-box {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1.5px solid var(--line);
+            font-size: 14px;
+            font-family: inherit;
+            min-width: 200px;
+        }
+
+            .search-box input:focus {
+                outline: none;
+                border-color: var(--blue);
+            }
+
+    .total-clientes {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 16px;
+    }
+
+        .total-clientes strong {
+            color: var(--ink);
+        }
+</style>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+    <div>
+        <h2 style="font-weight: 800; font-size: 22px; margin: 0;">👥 Gestión de Clientes</h2>
+        <p style="color: var(--muted); font-size: 13px; margin: 2px 0 0 0;">Listado de clientes registrados en el sistema</p>
+    </div>
+</div>
+
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, cédula o NISE..." onkeyup="filtrarClientes()" />
+</div>
+
+<div class="total-clientes">
+    Total: <strong>@Model.Count</strong> clientes registrados
+</div>
+
+<div style="overflow-x: auto;">
+    <table class="client-table" id="clientTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre Completo</th>
+                <th>Identificación</th>
+                <th>NISE</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 30px; color: var(--muted);">
+                        No hay clientes registrados.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                int index = 1;
+                foreach (var cliente in Model)
+                {
+                    string nombreCompleto = cliente.Nombre + " " + (cliente.Apellidos ?? "");
+                    string identificacion = cliente.Identificacion ?? cliente.Cedula ?? "N/A";
+                    string searchData = (cliente.Nombre + " " + cliente.Apellidos + " " + cliente.Identificacion + " " + cliente.Cedula + " " + cliente.NISE + " " + cliente.Correo).ToLower();
+
+                    <tr class="client-row" data-search="@searchData">
+                        <td>@index</td>
+                        <td><strong>@nombreCompleto</strong></td>
+                        <td>@identificacion</td>
+                        <td>@cliente.NISE</td>
+                        <td>@cliente.Telefono</td>
+                        <td>@cliente.Correo</td>
+                        <td>
+                            <button class="btn-client-edit" onclick="alert('✏️ Editar cliente: @nombreCompleto')">Editar</button>
+                        </td>
+                    </tr>
+                    index++;
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function filtrarClientes() {
+        var input = document.getElementById('searchInput');
+        var filter = input.value.toLowerCase();
+        var rows = document.querySelectorAll('.client-row');
+
+        rows.forEach(function (row) {
+            var searchData = row.dataset.search;
+            if (searchData.indexOf(filter) > -1) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>

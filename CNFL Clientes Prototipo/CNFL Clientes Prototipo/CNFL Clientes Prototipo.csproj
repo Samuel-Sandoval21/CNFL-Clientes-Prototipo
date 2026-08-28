@@ -139,6 +139,7 @@
     <Compile Include="Models\Factura.cs" />
     <Compile Include="Models\FormularioTramite.cs" />
     <Compile Include="Models\Notificacion.cs" />
+    <Compile Include="Models\ReportesViewModel.cs" />
     <Compile Include="Models\Tramite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AveriaRepository.cs" />
@@ -150,7 +151,11 @@
     <Compile Include="Services\FacturaService.cs" />
     <Compile Include="Services\NotificacionService.cs" />
     <Compile Include="Services\TramiteService.cs" />
+    <Content Include="Views\Admin\Clientes.cshtml" />
+    <Content Include="Views\Admin\Dashboard.cshtml" />
+    <Content Include="Views\Admin\Reportes.cshtml" />
     <None Include="Views\Facturas\Detalle.cshtml" />
+    <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
