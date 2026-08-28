@@ -10,7 +10,12 @@ namespace CNFL_Clientes_Prototipo.Services
     public class FacturaService
     {
         private readonly FacturaRepository _repository = new FacturaRepository();
+
         public List<Factura> ListarFacturas() => _repository.ObtenerTodas();
+
+        // NUEVO: Obtener una factura por ID
+        public Factura ObtenerPorId(int id) => _repository.ObtenerPorId(id);
+
         public void PagarFactura(int id) => _repository.Pagar(id);
     }
 }

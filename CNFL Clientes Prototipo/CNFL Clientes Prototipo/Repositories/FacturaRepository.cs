@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CNFL_Clientes_Prototipo.Models;
 
 namespace CNFL_Clientes_Prototipo.Repositories
@@ -14,6 +15,12 @@ namespace CNFL_Clientes_Prototipo.Repositories
         public List<Factura> ObtenerTodas()
         {
             return _facturas;
+        }
+
+        // NUEVO: Obtener una factura por ID
+        public Factura ObtenerPorId(int id)
+        {
+            return _facturas.FirstOrDefault(f => f.Id == id);
         }
 
         public void Pagar(int id)

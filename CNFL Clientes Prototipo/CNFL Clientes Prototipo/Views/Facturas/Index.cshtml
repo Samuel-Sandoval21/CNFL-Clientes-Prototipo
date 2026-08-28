@@ -5,31 +5,55 @@
 
 <div class="section-pad">
     <div class="eyebrow">Mis facturas</div>
-    <div class="h-name" style="font-size: 22px;">Mis Pagos</div>
+    <div class="h-name" style="font-size: 24px;">Historial de Pagos</div>
+    <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">Consulta y paga tus facturas en segundos.</div>
 </div>
 
-@foreach (var f in Model)
-{
-    <div class="card-cliente" style="border-left: 5px solid var(--blue);">
-        <div class="d-flex justify-content-between">
-            <div>
-                <div style="font-weight: bold;">@f.Periodo</div>
-                <div style="font-size: 24px; font-weight: 800; color: var(--blue);">₡@f.Monto.ToString("N0")</div>
+<div class="facturas-container">
+    @foreach (var f in Model)
+    {
+        <div class="factura-card">
+            <!-- Cabecera de la factura -->
+            <div class="factura-header">
+                <div>
+                    <div class="factura-periodo">@f.Periodo</div>
+                    <div class="factura-monto">₡@f.Monto.ToString("N0")</div>
+                </div>
+
+                @if (f.Estado == "Pagada")
+                {
+                    <span class="factura-estado estado-pagada">✓ Pagada</span>
+                }
+                else
+                {
+                    <span class="factura-estado estado-pendiente">⏳ Pendiente</span>
+                }
             </div>
-            @if (f.Estado == "Pagada")
+
+            <!-- Botones de acción si está pendiente -->
+            @if (f.Estado != "Pagada")
             {
-                <span class="badge badge-success align-self-start">Pagada</span>
+                <div class="factura-acciones">
+                    <a href="/Pagos/Sinpe?monto=@f.Monto&producto=@f.Periodo" class="btn-metodo-pago sinpe">
+                        📱 SINPE
+                    </a>
+                    <a href="/Pagos/Iban?monto=@f.Monto&producto=@f.Periodo" class="btn-metodo-pago">
+                        🏦 IBAN
+                    </a>
+                    <a href="/Pagos/Tarjeta?monto=@f.Monto&producto=@f.Periodo" class="btn-metodo-pago tarjeta">
+                        💳 Tarjeta
+                    </a>
+                </div>
             }
             else
             {
-                <span class="badge badge-warning align-self-start">Pendiente</span>
+                <div style="text-align: center; margin-top: 15px; border-top: 1px solid var(--line); padding-top: 15px;">
+                    <span style="font-size: 12px; color: var(--green); font-weight: 700;">✓ Pago realizado con éxito</span>
+                </div>
             }
         </div>
-        <hr />
-        <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="window.location='/Pagos/Sinpe?monto=@f.Monto&periodo=@f.Periodo'">SINPE</button>
-            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="window.location='/Pagos/Iban?monto=@f.Monto&periodo=@f.Periodo'">IBAN</button>
-            <button class="btn btn-sm btn-outline-primary flex-fill" onclick="window.location='/Pagos/Tarjeta?monto=@f.Monto&periodo=@f.Periodo'">Tarjeta</button>
-        </div>
-    </div>
-}
+    }
+</div>
+
+<!-- Espaciado inferior para que no choque con la barra del menú -->
+<div style="height: 20px;"></div>

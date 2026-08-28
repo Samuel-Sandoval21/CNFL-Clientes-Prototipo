@@ -9,7 +9,6 @@
     <link href="@Url.Content("~/Content/prototipo.css")" rel="stylesheet" type="text/css" />
 
     <script>
-        // Diccionario de traducciones
         const Idiomas = {
             es: { title: "CNFL · App Móvil — Prototipo Interactivo", home: "Inicio", tramites: "Trámites", tienda: "Tienda", pagos: "Pagos", reportes: "Reportes", cuenta: "Cuenta", hola: "Hola,", factura: "FACTURA PENDIENTE · NISE 4021", vence: "Vence el 28 de agosto", ver: "Ver detalle", pagar: "Pagar ahora", servicios: "MIS SERVICIOS ASOCIADOS (NISE)", normal: "Normal", prev: "Prevención", inc: "Incidente" },
             en: { title: "CNFL · Mobile App — Interactive Prototype", home: "Home", tramites: "Requests", tienda: "Store", pagos: "Payments", reportes: "Reports", cuenta: "Account", hola: "Hello,", factura: "PENDING BILL · NISE 4021", vence: "Due August 28", ver: "View details", pagar: "Pay now", servicios: "MY LINKED SERVICES (NISE)", normal: "Normal", prev: "Prevention", inc: "Incident" },
@@ -18,26 +17,15 @@
         };
 
         let idiomaActual = localStorage.getItem('idioma') || 'es';
-
-        function t(clave) {
-            return Idiomas[idiomaActual][clave] || Idiomas.es[clave];
-        }
-
+        function t(clave) { return Idiomas[idiomaActual][clave] || Idiomas.es[clave]; }
         function aplicarIdioma() {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                el.innerHTML = t(el.getAttribute('data-i18n'));
-            });
+            document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n')); });
             document.querySelectorAll('#langbar button').forEach(btn => {
                 btn.style.background = btn.dataset.lang === idiomaActual ? '#1E23E6' : 'transparent';
                 btn.style.color = btn.dataset.lang === idiomaActual ? '#fff' : '#727A86';
             });
         }
-
-        function cambiarIdioma(lang) {
-            idiomaActual = lang;
-            localStorage.setItem('idioma', lang);
-            aplicarIdioma();
-        }
+        function cambiarIdioma(lang) { idiomaActual = lang; localStorage.setItem('idioma', lang); aplicarIdioma(); }
 
         window.onload = function () {
             var tamano = localStorage.getItem('tamanoFuente');
@@ -46,26 +34,16 @@
             if (contraste === 'true') document.body.classList.add('alto-contraste');
             aplicarIdioma();
             actualizarHora();
+            if (document.getElementById('consumoChart')) { dibujarGraficoConsumo('6m'); }
         };
 
         function cambiarTamano(delta) {
             let actual = parseFloat(document.body.style.fontSize) || 16;
             let nuevo = actual + delta;
-            if (nuevo >= 12 && nuevo <= 24) {
-                document.body.style.fontSize = nuevo + 'px';
-                localStorage.setItem('tamanoFuente', nuevo);
-            }
+            if (nuevo >= 12 && nuevo <= 24) { document.body.style.fontSize = nuevo + 'px'; localStorage.setItem('tamanoFuente', nuevo); }
         }
-
-        function toggleContraste() {
-            document.body.classList.toggle('alto-contraste');
-            localStorage.setItem('altoContraste', document.body.classList.contains('alto-contraste'));
-        }
-
-        function actualizarHora() {
-            var ahora = new Date();
-            document.getElementById('clock').textContent = ahora.getHours().toString().padStart(2, '0') + ":" + ahora.getMinutes().toString().padStart(2, '0');
-        }
+        function toggleContraste() { document.body.classList.toggle('alto-contraste'); localStorage.setItem('altoContraste', document.body.classList.contains('alto-contraste')); }
+        function actualizarHora() { var ahora = new Date(); document.getElementById('clock').textContent = ahora.getHours().toString().padStart(2, '0') + ":" + ahora.getMinutes().toString().padStart(2, '0'); }
         setInterval(actualizarHora, 10000);
     </script>
 </head>
@@ -75,7 +53,6 @@
 
     <div class="phone-frame" style="margin-top: 80px;">
         <div class="phone-notch"></div>
-
         <div class="statusbar">
             <span id="clock">9:41</span>
             <span style="display:flex; gap:6px;">
@@ -117,35 +94,49 @@
             @RenderBody()
         </div>
 
+        <!-- BARRA INFERIOR -->
         <div class="tabbar">
+            <!-- Inicio: SIEMPRE visible y con contenido informativo -->
             <a href="/Cuenta" class="tab @(Request.Url.AbsolutePath == "/Cuenta" || Request.Url.AbsolutePath == "/" ? "active" : "")">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" /></svg>
                 <span data-i18n="home">Inicio</span>
             </a>
-            <a href="/Tramites" class="tab @(Request.Url.AbsolutePath == "/Tramites" ? "active" : "")">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
-                <span data-i18n="tramites">Trámites</span>
-            </a>
-            <a href="/Pagos" class="tab @(Request.Url.AbsolutePath == "/Pagos" ? "active" : "")">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 9h10M7 13h6" /></svg>
-                <span data-i18n="pagos">Pagos</span>
-            </a>
-            <a href="/Tienda" class="tab center @(Request.Url.AbsolutePath == "/Tienda" ? "active" : "")">
-                <div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="20" r="1.5" /><circle cx="18" cy="20" r="1.5" /><path d="M2 3h3l2.5 12.5a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 2-1.5L22 7H6" /></svg></div>
-                <span style="@(Request.Url.AbsolutePath == "/Tienda" ? "color: var(--orange); font-weight: 800;" : "")" data-i18n="tienda">Tienda</span>
-            </a>
-            <a href="/Averias" class="tab @(Request.Url.AbsolutePath == "/Averias" ? "active" : "")">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
-                <span data-i18n="reportes">Reportes</span>
-            </a>
-            <a href="/Cuenta/Cuenta" class="tab @(Request.Url.AbsolutePath == "/Cuenta/Cuenta" ? "active" : "")">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                <span data-i18n="cuenta">Cuenta</span>
-            </a>
+
+            @if (Session["Rol"] != null)
+            {
+                <a href="/Tramites" class="tab @(Request.Url.AbsolutePath == "/Tramites" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                    <span data-i18n="tramites">Trámites</span>
+                </a>
+                <a href="/Pagos" class="tab @(Request.Url.AbsolutePath == "/Pagos" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 9h10M7 13h6" /></svg>
+                    <span data-i18n="pagos">Pagos</span>
+                </a>
+                <a href="/Tienda" class="tab center @(Request.Url.AbsolutePath == "/Tienda" ? "active" : "")">
+                    <div class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="20" r="1.5" /><circle cx="18" cy="20" r="1.5" /><path d="M2 3h3l2.5 12.5a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 2-1.5L22 7H6" /></svg></div>
+                    <span style="@(Request.Url.AbsolutePath == "/Tienda" ? "color: var(--orange); font-weight: 800;" : "")" data-i18n="tienda">Tienda</span>
+                </a>
+                <a href="/Averias" class="tab @(Request.Url.AbsolutePath == "/Averias" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
+                    <span data-i18n="reportes">Reportes</span>
+                </a>
+                <a href="/Cuenta/Cuenta" class="tab @(Request.Url.AbsolutePath == "/Cuenta/Cuenta" || Request.Url.AbsolutePath == "/Cuenta/Login" || Request.Url.AbsolutePath == "/Cuenta/Registro" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                    <span data-i18n="cuenta">Cuenta</span>
+                </a>
+            }
+            else
+            {
+                <a href="/Cuenta/Login" class="tab @(Request.Url.AbsolutePath == "/Cuenta/Login" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                    <span>Ingresar</span>
+                </a>
+            }
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="@Url.Content("~/Scripts/prototipo.js")"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

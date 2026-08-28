@@ -10,32 +10,40 @@ namespace CNFL_Clientes_Prototipo.Controllers
     {
         private readonly AveriaService _service = new AveriaService();
 
+        // GET: Averias (Index con lista)
         public ActionResult Index()
         {
             var averias = _service.ListarAverias();
             return View(averias);
         }
 
-        public ActionResult Create()
+        // GET: Averias/Create (Recibe el tipo)
+        public ActionResult Create(string tipo)
         {
+            ViewBag.Tipo = tipo ?? "General";
             return View();
         }
 
+        // POST: Averias/Create (Guarda foto y datos)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Averia averia, HttpPostedFileBase foto)
+        public ActionResult Create(Averia averia, HttpPostedFileBase foto, string latitud, string longitud)
         {
             if (ModelState.IsValid)
             {
+                // Guardar foto si viene
                 if (foto != null && foto.ContentLength > 0)
                 {
-                    // Guardamos la imagen en la carpeta Content/ImagenesAverias
                     var fileName = Path.GetFileName(foto.FileName);
                     var path = Path.Combine(Server.MapPath("~/Content/ImagenesAverias"), fileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(path)); // Crear carpeta si no existe
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
                     foto.SaveAs(path);
                     averia.FotoUrl = "/Content/ImagenesAverias/" + fileName;
                 }
+
+                // Guardar ubicación GPS
+                averia.Latitud = latitud;
+                averia.Longitud = longitud;
 
                 _service.RegistrarAveria(averia);
                 return RedirectToAction("Index");

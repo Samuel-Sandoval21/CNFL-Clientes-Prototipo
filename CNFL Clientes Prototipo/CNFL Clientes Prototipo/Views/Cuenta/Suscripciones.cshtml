@@ -1,23 +1,62 @@
 ﻿@{
     ViewBag.Title = "Suscripciones";
 }
-<div style="padding: 20px;">
-    <h2 style="font-weight:800; color:#001482;">Suscripciones</h2>
-    <p class="text-muted">Servicios activos y suscripciones</p>
-    <hr />
-    <div class="card-cliente" style="border-left:4px solid var(--green);">
-        <div style="font-weight:800;">Internet 5G</div>
-        <div class="text-muted">Plan Hogar 300MB</div>
-        <span class="badge bg-success">Activa</span>
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 20px; cursor: pointer;" onclick="history.back()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg>
+    <span style="font-weight: 800; font-size: 16px;">Volver</span>
+</div>
+
+<div class="section-pad">
+    <div class="h-name" style="font-size: 24px;">Suscripciones</div>
+    <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">Administra tus servicios contratados activos o inactivos.</div>
+</div>
+
+<div class="section-pad">
+    <div class="eyebrow">Mis suscripciones</div>
+
+    <div class="card-cliente" style="border-left: 4px solid var(--green);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <div style="font-weight: 800; font-size: 16px;">📶 Internet 5G</div>
+                <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">Plan Hogar 300MB · NISE 4021</div>
+            </div>
+            <span class="pill st-normal">Activa</span>
+        </div>
+        <div style="margin-top: 15px; border-top: 1px solid var(--line); padding-top: 12px;">
+            <div style="font-size: 12px; color: var(--muted); font-weight: 700;">Mensual</div>
+            <div style="font-size: 16px; font-weight: 800; margin-top: 4px;">₡29.900</div>
+            <button class="btn btn-cnfl mt-2" onclick="alert('Gestión de suscripción en desarrollo')">Gestionar</button>
+        </div>
     </div>
-    <div class="card-cliente" style="border-left:4px solid var(--green);">
-        <div style="font-weight:800;">Videovigilancia</div>
-        <div class="text-muted">Plan Hogar Pro</div>
-        <span class="badge bg-success">Activa</span>
+
+    <div class="card-cliente" style="border-left: 4px solid var(--green);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <div style="font-weight: 800; font-size: 16px;">📷 Videovigilancia</div>
+                <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">Plan Hogar Pro · NISE 7788</div>
+            </div>
+            <span class="pill st-normal">Activa</span>
+        </div>
+        <div style="margin-top: 15px; border-top: 1px solid var(--line); padding-top: 12px;">
+            <div style="font-size: 12px; color: var(--muted); font-weight: 700;">Mensual</div>
+            <div style="font-size: 16px; font-weight: 800; margin-top: 4px;">₡15.900</div>
+            <button class="btn btn-cnfl mt-2" onclick="alert('Gestión de suscripción en desarrollo')">Gestionar</button>
+        </div>
     </div>
-    <div class="card-cliente" style="border-left:4px solid var(--muted);">
-        <div style="font-weight:800;">Seguro Hogar</div>
-        <div class="text-muted">Plan Básico</div>
-        <span class="badge bg-secondary">Inactiva</span>
+
+    <div class="card-cliente" style="border-left: 4px solid var(--muted); opacity: 0.7;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <div style="font-weight: 800; font-size: 16px;">🛡️ Seguro Hogar</div>
+                <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">Plan Básico · NISE 4021</div>
+            </div>
+            <span class="pill st-prev">Inactiva</span>
+        </div>
+        <div style="margin-top: 15px; border-top: 1px solid var(--line); padding-top: 12px;">
+            <div style="font-size: 12px; color: var(--muted); font-weight: 700;">Mensual</div>
+            <div style="font-size: 16px; font-weight: 800; margin-top: 4px;">₡4.200</div>
+            <button class="btn btn-cnfl mt-2" onclick="alert('Para activar este servicio, visite la tienda CNFL')">Activar</button>
+        </div>
     </div>
 </div>

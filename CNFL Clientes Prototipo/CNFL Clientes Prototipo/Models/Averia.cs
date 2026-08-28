@@ -13,7 +13,9 @@ namespace CNFL_Clientes_Prototipo.Models
         public string Direccion { get; set; }
         public string Estado { get; set; } // "Reportado", "En revisión", "En camino", "Resuelto"
         public DateTime Fecha { get; set; }
-        public string Tipo { get; set; } // "Eléctrica" o "Alumbrado público"
-        public string FotoUrl { get; set; } // Nueva propiedad para guardar la ruta de la imagen
+        public string Tipo { get; set; } // "Eléctrica", "Alumbrado" o "Ajena"
+        public string FotoUrl { get; set; } // Ruta de la imagen
+        public string Latitud { get; set; }
+        public string Longitud { get; set; }
     }
 }

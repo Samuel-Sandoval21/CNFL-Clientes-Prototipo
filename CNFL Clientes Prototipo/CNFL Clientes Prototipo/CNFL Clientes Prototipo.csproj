@@ -150,6 +150,7 @@
     <Compile Include="Services\FacturaService.cs" />
     <Compile Include="Services\NotificacionService.cs" />
     <Compile Include="Services\TramiteService.cs" />
+    <None Include="Views\Facturas\Detalle.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />

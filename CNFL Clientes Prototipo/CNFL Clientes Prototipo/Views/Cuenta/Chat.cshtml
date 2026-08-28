@@ -1,31 +1,28 @@
 ﻿@{
     ViewBag.Title = "Chat / WhatsApp";
 }
-<div style="padding: 20px;">
-    <h2 style="font-weight:800; color:#001482;">Asistente Virtual</h2>
-    <p class="text-muted">800 ENERGÍA · 1026</p>
-    <hr />
+
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 20px; cursor: pointer;" onclick="history.back()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg>
+    <span style="font-weight: 800; font-size: 16px;">Volver</span>
+</div>
+
+<div class="section-pad">
+    <div class="h-name" style="font-size: 24px;">Asistente Virtual</div>
+    <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">800 ENERGÍA · 1026</div>
+</div>
+
+<div class="section-pad mt-3">
     <div class="card-cliente">
-        <div id="chatBox" style="height: 250px; overflow-y:auto; border:1px solid var(--line); border-radius:10px; padding:10px; background:#f9f9f9;">
-            <div style="background:#fff; padding:8px; border-radius:8px; margin-bottom:8px;">¡Hola! Soy tu asistente CNFL. ¿Cómo puedo ayudarte?</div>
+        <div style="height: 300px; overflow-y: auto; background: #f7f8fc; border-radius: 14px; padding: 12px;" id="chatBox">
+            <div style="background: #fff; padding: 10px; border-radius: 10px; margin-bottom: 8px; font-size: 13px;">
+                ¡Hola! Soy tu asistente virtual CNFL. ¿En qué puedo ayudarte?
+            </div>
         </div>
-        <div class="d-flex gap-2 mt-2">
+
+        <div style="display: flex; gap: 10px; margin-top: 12px;">
             <input type="text" id="chatInput" class="form-control" placeholder="Escribe tu consulta..." />
-            <button class="btn btn-cnfl" onclick="enviar()">Enviar</button>
+            <button type="button" class="btn btn-cnfl" style="padding: 10px 20px; width: auto; background: var(--blue);" onclick="enviarMensajeChat()">Enviar</button>
         </div>
     </div>
 </div>
-
-<script>
-    function enviar() {
-        var input = document.getElementById("chatInput").value;
-        if (input.trim() === "") return;
-        var chatBox = document.getElementById("chatBox");
-        chatBox.innerHTML += '<div style="background:#1E23E6; color:#fff; padding:8px; border-radius:8px; margin-bottom:8px; text-align:right;">' + input + '</div>';
-        document.getElementById("chatInput").value = "";
-        setTimeout(function() {
-            chatBox.innerHTML += '<div style="background:#fff; padding:8px; border-radius:8px; margin-bottom:8px;">Gracias por tu consulta. Un agente te atenderá en breve. ¿Tienes alguna otra pregunta?</div>';
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }, 800);
-    }
-</script>
