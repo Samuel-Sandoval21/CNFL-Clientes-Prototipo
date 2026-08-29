@@ -5,7 +5,6 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<!-- Estilos específicos para el Panel Admin -->
 <style>
     .admin-stats {
         display: grid;
@@ -47,8 +46,8 @@
 
         .stat-box .icon {
             font-size: 28px;
-            margin-bottom: 4px;
             display: block;
+            margin-bottom: 4px;
         }
 
         .stat-box.orange .number {
@@ -83,6 +82,9 @@
             font-size: 16px;
             margin: 0 0 6px 0;
             color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card-cliente .meta {
@@ -188,10 +190,6 @@
             transform: scale(0.97);
         }
 
-        .btn-actualizar:active {
-            transform: scale(0.95);
-        }
-
     .admin-nota {
         background: #FFF8E1;
         border-left: 4px solid #FFB300;
@@ -231,18 +229,77 @@
             color: var(--muted);
             font-weight: 600;
         }
+
+    .toast-notification {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2E7D32;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 16px;
+        font-weight: 600;
+        font-size: 14px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        z-index: 2000;
+        display: none;
+        animation: slideUp 0.3s ease;
+        max-width: 90%;
+    }
+
+        .toast-notification.error {
+            background: #C62828;
+        }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .admin-stats {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .stat-box .number {
+            font-size: 22px;
+        }
+
+        .card-cliente {
+            padding: 14px 16px;
+        }
+
+        .admin-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+            .admin-actions select {
+                min-width: auto;
+            }
+    }
 </style>
 
-<!-- Encabezado -->
-<div class="d-flex justify-content-between align-items-center mb-3">
+<!-- Toast -->
+<div class="toast-notification" id="toastNotif"></div>
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap;">
     <div>
-        <h2 style="font-weight: 800; font-size: 22px; margin: 0;">🧑‍💼 Panel Administrativo</h2>
-        <p style="color: var(--muted); font-size: 13px; margin: 2px 0 0 0;">Gestión de averías y operaciones</p>
+        <h2 style="font-weight:800; font-size:22px; margin:0;">🧑‍💼 Panel Administrativo</h2>
+        <p style="color:var(--muted); font-size:13px; margin:2px 0 0 0;">Gestión de averías y operaciones</p>
     </div>
-    <span class="estado-badge estado-camino" style="font-size: 12px;">🔑 Operador</span>
+    <span class="estado-badge estado-camino" style="font-size:12px; padding:4px 14px; border-radius:999px;">🔑 Operador</span>
 </div>
 
-<!-- Estadísticas -->
 <div class="admin-stats">
     <div class="stat-box">
         <span class="icon">📋</span>
@@ -260,13 +317,12 @@
         <div class="label">En Revisión</div>
     </div>
     <div class="stat-box green">
-        <span class="icon">✅</span>
+        <span class="icon">🚗</span>
         <div class="number">@ViewBag.AveriasEnCamino</div>
         <div class="label">En Camino</div>
     </div>
 </div>
 
-<!-- Lista de Averías -->
 @if (!Model.Any())
 {
     <div class="empty-state">
@@ -279,25 +335,15 @@ else
 {
     foreach (var averia in Model)
     {
-        // Determinar la clase CSS según el estado
         string estadoClass = "estado-reportado";
-        if (averia.Estado == "En revisión")
-        {
-            estadoClass = "estado-revision";
-        }
-        else if (averia.Estado == "En camino")
-        {
-            estadoClass = "estado-camino";
-        }
-        else if (averia.Estado == "Resuelto")
-        {
-            estadoClass = "estado-resuelto";
-        }
+        if (averia.Estado == "En revisión") { estadoClass = "estado-revision"; }
+        else if (averia.Estado == "En camino") { estadoClass = "estado-camino"; }
+        else if (averia.Estado == "Resuelto") { estadoClass = "estado-resuelto"; }
 
         <div class="card-cliente" id="averia-@averia.Id">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
-                <div style="flex: 1;">
-                    <h4>@averia.Titulo</h4>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap;">
+                <div style="flex:1;">
+                    <h4><span>⚡</span> @averia.Titulo</h4>
                     <div class="meta">
                         <span>📍 @averia.Direccion</span>
                         <span>🕐 @averia.Fecha.ToString("dd/MM/yyyy HH:mm")</span>
@@ -309,17 +355,15 @@ else
                         <img src="@averia.FotoUrl" alt="Foto de la avería" class="foto-preview" />
                     }
                 </div>
-                <div style="min-width: 100px; text-align: right;">
+                <div style="min-width:100px; text-align:right;">
                     <span class="estado-badge @estadoClass">@averia.Estado</span>
                 </div>
             </div>
-
-            <!-- Acciones del Admin -->
             <div class="admin-actions">
-                <form method="post" action="@Url.Action("CambiarEstado", "Admin")" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <form method="post" action="@Url.Action("CambiarEstado", "Admin")" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; width:100%;">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="id" value="@averia.Id" />
-                    <select name="estado" class="form-select">
+                    <select name="estado">
                         <option value="Reportado" @(averia.Estado == "Reportado" ? "selected" : "")>📋 Reportado</option>
                         <option value="En revisión" @(averia.Estado == "En revisión" ? "selected" : "")>🔍 En revisión</option>
                         <option value="En camino" @(averia.Estado == "En camino" ? "selected" : "")>🚗 En camino</option>
@@ -332,8 +376,26 @@ else
     }
 }
 
-<!-- Nota informativa -->
 <div class="admin-nota">
-    ⚠️ <strong>Nota:</strong> Para ver el listado completo de clientes registrados, diríjase a la pestaña
-    <a href="@Url.Action("Clientes", "Admin")">Clientes</a> del menú superior.
+    ⚠️ <strong>Nota:</strong> Para ver el listado completo de clientes registrados, diríjase a la pestaña <a href="@Url.Action("Clientes", "Admin")">Clientes</a> del menú superior.
 </div>
+
+<script>
+    // Mostrar toast después de actualizar estado
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('updated') === 'true') {
+            mostrarToast('✅ Estado actualizado correctamente');
+        }
+    });
+
+    function mostrarToast(mensaje, tipo) {
+        const toast = document.getElementById('toastNotif');
+        toast.textContent = mensaje;
+        toast.className = 'toast-notification' + (tipo === 'error' ? ' error' : '');
+        toast.style.display = 'block';
+        setTimeout(function() {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+</script>

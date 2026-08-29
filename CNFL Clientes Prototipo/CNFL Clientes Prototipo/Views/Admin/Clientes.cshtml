@@ -5,119 +5,24 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<style>
-    .client-table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        border: 1px solid var(--line);
-    }
+<!-- CSS externo para Clientes -->
+<link rel="stylesheet" href="@Url.Content("~/Content/admin-clientes.css")" />
 
-        .client-table th {
-            background: var(--bg);
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--muted);
-            border-bottom: 2px solid var(--line);
-        }
-
-        .client-table td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--line);
-            font-size: 14px;
-        }
-
-        .client-table tr:hover td {
-            background: #f8f9fe;
-        }
-
-        .client-table .status-badge {
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .client-table .status-active {
-            background: #E8F5E9;
-            color: #2E7D32;
-        }
-
-        .client-table .status-inactive {
-            background: #FFEBEE;
-            color: #C62828;
-        }
-
-    .btn-client-edit {
-        background: var(--blue);
-        color: white;
-        border: none;
-        padding: 5px 14px;
-        border-radius: 10px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        font-family: inherit;
-        transition: 0.2s;
-    }
-
-        .btn-client-edit:hover {
-            background: #1519b3;
-            transform: scale(0.95);
-        }
-
-    .search-box {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 18px;
-        flex-wrap: wrap;
-    }
-
-        .search-box input {
-            flex: 1;
-            padding: 12px 16px;
-            border-radius: 14px;
-            border: 1.5px solid var(--line);
-            font-size: 14px;
-            font-family: inherit;
-            min-width: 200px;
-        }
-
-            .search-box input:focus {
-                outline: none;
-                border-color: var(--blue);
-            }
-
-    .total-clientes {
-        font-size: 14px;
-        color: var(--muted);
-        margin-bottom: 16px;
-    }
-
-        .total-clientes strong {
-            color: var(--ink);
-        }
-</style>
+<!-- Toast de notificación -->
+<div class="toast-notification" id="toastNotif"></div>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
     <div>
-        <h2 style="font-weight: 800; font-size: 22px; margin: 0;">👥 Gestión de Clientes</h2>
+        <h2 style="font-weight: 800; font-size: 22px; margin: 0;"><i class="fas fa-users" style="color:var(--blue);"></i> Gestión de Clientes</h2>
         <p style="color: var(--muted); font-size: 13px; margin: 2px 0 0 0;">Listado de clientes registrados en el sistema</p>
     </div>
 </div>
 
-<div class="search-box">
+<div class="client-search">
     <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, cédula o NISE..." onkeyup="filtrarClientes()" />
 </div>
 
-<div class="total-clientes">
+<div class="client-total">
     Total: <strong>@Model.Count</strong> clientes registrados
 </div>
 
@@ -150,17 +55,39 @@
                 {
                     string nombreCompleto = cliente.Nombre + " " + (cliente.Apellidos ?? "");
                     string identificacion = cliente.Identificacion ?? cliente.Cedula ?? "N/A";
-                    string searchData = (cliente.Nombre + " " + cliente.Apellidos + " " + cliente.Identificacion + " " + cliente.Cedula + " " + cliente.NISE + " " + cliente.Correo).ToLower();
+                    string iniciales = cliente.Nombre.Length > 0 ? cliente.Nombre.Substring(0, 1).ToUpper() : "?";
 
-                    <tr class="client-row" data-search="@searchData">
+                    <tr class="client-row" data-search="@(cliente.Nombre + " " + cliente.Apellidos + " " + cliente.Identificacion + " " + cliente.Cedula + " " + cliente.NISE + " " + cliente.Correo).ToLower()" data-id="@cliente.Id">
                         <td>@index</td>
-                        <td><strong>@nombreCompleto</strong></td>
+                        <td>
+                            <div class="client-name-cell">
+                                <div class="client-avatar">@iniciales</div>
+                                <strong>@nombreCompleto</strong>
+                            </div>
+                        </td>
                         <td>@identificacion</td>
                         <td>@cliente.NISE</td>
                         <td>@cliente.Telefono</td>
-                        <td>@cliente.Correo</td>
                         <td>
-                            <button class="btn-client-edit" onclick="alert('✏️ Editar cliente: @nombreCompleto')">Editar</button>
+                            <div id="emailDisplay_@cliente.Id">
+                                <span style="color: var(--blue); font-size: 13px;" id="emailText_@cliente.Id">@cliente.Correo</span>
+                            </div>
+                            <div id="emailEdit_@cliente.Id" style="display:none;">
+                                <input type="email" class="client-email-input editing" id="emailInput_@cliente.Id" value="@cliente.Correo" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="client-actions-cell">
+                                <button class="btn-edit-client" id="editBtn_@cliente.Id" onclick="editarCliente(@cliente.Id)">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="btn-save-client" id="saveBtn_@cliente.Id" style="display:none;" onclick="guardarCorreo(@cliente.Id)">
+                                    <i class="fas fa-save"></i> Guardar
+                                </button>
+                                <button class="btn-cancel-client" id="cancelBtn_@cliente.Id" style="display:none;" onclick="cancelarEdicion(@cliente.Id)">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     index++;
@@ -170,19 +97,5 @@
     </table>
 </div>
 
-<script>
-    function filtrarClientes() {
-        var input = document.getElementById('searchInput');
-        var filter = input.value.toLowerCase();
-        var rows = document.querySelectorAll('.client-row');
-
-        rows.forEach(function (row) {
-            var searchData = row.dataset.search;
-            if (searchData.indexOf(filter) > -1) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-</script>
+<!-- JavaScript externo para Clientes -->
+<script src="@Url.Content("~/Scripts/admin-clientes.js")"></script>
