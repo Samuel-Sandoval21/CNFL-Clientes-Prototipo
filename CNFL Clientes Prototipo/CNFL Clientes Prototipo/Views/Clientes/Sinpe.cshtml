@@ -1,0 +1,45 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Pago SINPE - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Pagos -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/pagos.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="pago_sinpe">Pago con SINPE Móvil</div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;">
+        <span data-i18n="producto_factura">Producto/Factura:</span> Termostato
+    </div>
+</div>
+
+<div class="section-pad">
+    <div class="pago-card" style="text-align:center;">
+        <div style="font-size:20px; font-weight:800; color:var(--green);">₡ 89.000</div>
+        <div style="font-size:13px; color:var(--muted); margin-top:4px;" data-i18n="monto_pagar">Monto a pagar</div>
+
+        <hr style="border-color:var(--line); margin:16px 0;" />
+
+        <div style="text-align:left; font-size:14px; line-height:2;">
+            <div><span style="font-weight:700;">1.</span> <span data-i18n="abrir_app_banco">Abra su app del Banco.</span></div>
+            <div><span style="font-weight:700;">2.</span> <span data-i18n="digite_telefono">Digite el teléfono: 8888-8888</span></div>
+            <div><span style="font-weight:700;">3.</span> <span data-i18n="digite_monto">Digite el monto: ₡89.000</span></div>
+            <div><span style="font-weight:700;">4.</span> <span data-i18n="acepte_pago">Acepte el pago en su celular.</span></div>
+        </div>
+
+        <button class="btn-cta" style="width:100%; margin-top:16px;" onclick="alert('✅ Pago confirmado exitosamente')">
+            <span data-i18n="confirmar_pago">Confirmar pago</span>
+        </button>
+    </div>
+</div>
+
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/pagos.js")"></script>
+}

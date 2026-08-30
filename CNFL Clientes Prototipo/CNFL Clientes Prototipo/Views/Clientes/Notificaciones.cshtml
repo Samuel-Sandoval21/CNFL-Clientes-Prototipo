@@ -1,0 +1,82 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Notificaciones - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Notificaciones -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/notificaciones.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="notificaciones_titulo">🔔 Notificaciones</div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="notificaciones_subtitulo">Tus alertas y notificaciones del sistema</div>
+</div>
+
+<div class="section-pad">
+    <button class="btn-marcar-todas" onclick="marcarTodasLeidas()">
+        <i class="fas fa-check-double"></i> Marcar todas como leídas
+    </button>
+
+    <!-- ===== NOTIFICACIÓN 1 ===== -->
+    <div class="notificacion-item" onclick="marcarLeida(this, 1)">
+        <div class="icono" style="background:#fdeaea;">
+            <i class="fas fa-exclamation-triangle" style="color:var(--red);"></i>
+        </div>
+        <div class="info">
+            <div class="titulo">Avería · NISE 9950</div>
+            <div class="descripcion">En atención · estimado 4:30pm</div>
+            <div class="fecha">Hoy, 2:30 PM</div>
+        </div>
+        <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, 1)">Marcar leída</button>
+    </div>
+
+    <!-- ===== NOTIFICACIÓN 2 ===== -->
+    <div class="notificacion-item" onclick="marcarLeida(this, 2)">
+        <div class="icono" style="background:#fef3e0;">
+            <i class="fas fa-clock" style="color:var(--amber);"></i>
+        </div>
+        <div class="info">
+            <div class="titulo">Suspensión programada</div>
+            <div class="descripcion">NISE 7788 · mañana 8:00–10:00am</div>
+            <div class="fecha">Hoy, 10:15 AM</div>
+        </div>
+        <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, 2)">Marcar leída</button>
+    </div>
+
+    <!-- ===== NOTIFICACIÓN 3 ===== -->
+    <div class="notificacion-item" onclick="marcarLeida(this, 3)">
+        <div class="icono" style="background:#fff3ec;">
+            <i class="fas fa-file-invoice" style="color:var(--orange);"></i>
+        </div>
+        <div class="info">
+            <div class="titulo">Factura por vencer</div>
+            <div class="descripcion">₡18.450 · vence en 5 días</div>
+            <div class="fecha">Ayer, 8:00 AM</div>
+        </div>
+        <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, 3)">Marcar leída</button>
+    </div>
+
+    <!-- ===== NOTIFICACIÓN 4 ===== -->
+    <div class="notificacion-item" onclick="marcarLeida(this, 4)">
+        <div class="icono" style="background:#e8f0fe;">
+            <i class="fas fa-check-circle" style="color:var(--blue);"></i>
+        </div>
+        <div class="info">
+            <div class="titulo">Reporte de avería recibido</div>
+            <div class="descripcion">Tu reporte #REP-1234 ha sido recibido y está en revisión</div>
+            <div class="fecha">Hace 2 días</div>
+        </div>
+        <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, 4)">Marcar leída</button>
+    </div>
+</div>
+
+<!-- JavaScript externo para Notificaciones -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/notificaciones.js")"></script>
+}

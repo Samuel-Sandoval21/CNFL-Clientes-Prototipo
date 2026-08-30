@@ -1,0 +1,131 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Mi Cuenta - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Perfil -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/cuenta.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <!-- ===== PERFIL HEADER ===== -->
+    <div class="perfil-header">
+        <div class="perfil-avatar">KV</div>
+        <div class="perfil-info">
+            <div class="perfil-nombre">Katherine Villalobos</div>
+            <div class="perfil-email">k.villalobos@correo.cr</div>
+        </div>
+        <span class="perfil-badge">Cliente</span>
+    </div>
+
+    <!-- ===== DATOS PROTEGIDOS ===== -->
+    <div class="perfil-protegido">
+        <div class="icon"><i class="fas fa-shield-alt"></i></div>
+        <div>
+            <div class="titulo" data-i18n="datos_protegidos">Datos protegidos</div>
+            <div class="subtitulo" data-i18n="cifrado_biometria">Cifrado extremo a extremo · biometría</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MI ACTIVIDAD ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="mi_actividad">
+        <i class="fas fa-chart-line" style="color:var(--blue);"></i> Mi actividad
+    </div>
+
+    <!-- Historial de compras -->
+    <div class="perfil-item" onclick="verHistorial()">
+        <div class="ic" style="background:#fff3ec;">
+            <i class="fas fa-shopping-bag" style="color:var(--orange);"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="historial_compras">Historial de compras</div>
+            <div class="s" data-i18n="marketplace">Marketplace</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Suscripciones -->
+    <div class="perfil-item" onclick="verSuscripciones()">
+        <div class="ic" style="background:#eefbf0;">
+            <i class="fas fa-check-circle" style="color:var(--green);"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="suscripciones">Suscripciones</div>
+            <div class="s" data-i18n="activas_inactivas">2 activas · 1 inactiva</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Servicios contratados -->
+    <div class="perfil-item" onclick="verServiciosContratados()">
+        <div class="ic" style="background:#eef6ff;">
+            <i class="fas fa-list" style="color:var(--blue);"></i>
+        </div>
+        <div class="tx">
+            <div class="t">Servicios contratados</div>
+            <div class="s">Todos tus servicios activos</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Editar datos -->
+    <div class="perfil-item" onclick="editarDatos()">
+        <div class="ic" style="background:#e8f0fe;">
+            <i class="fas fa-user-edit" style="color:var(--blue);"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="editar_datos">Editar Mis Datos</div>
+            <div class="s" data-i18n="nombre">Nombre, correo, teléfono</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Calculadora -->
+    <div class="perfil-item" onclick="abrirCalculadora()">
+        <div class="ic" style="background:#fef3e0;">
+            <i class="fas fa-calculator" style="color:var(--amber);"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="calculadora_titulo">Calculadora energética</div>
+            <div class="s" data-i18n="calculadora_subtitulo">Estima el costo de tus equipos</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Chat / Asistente -->
+    <div class="perfil-item" onclick="abrirChat()">
+        <div class="ic" style="background:#f0f2ff;">
+            <i class="fas fa-robot" style="color:var(--blue);"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="asistente_titulo">Asistente Virtual</div>
+            <div class="s" data-i18n="asistente_subtitulo">800 ENERGÍA · 1026</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Cerrar sesión -->
+    <div class="perfil-item cerrar-sesion" onclick="cerrarSesion()">
+        <div class="ic">
+            <i class="fas fa-sign-out-alt" style="color:var(--red);"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="cerrar_sesion">Cerrar Sesión</div>
+            <div class="s">Salir de tu cuenta</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+</div>
+
+<!-- JavaScript externo para Perfil -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
+}

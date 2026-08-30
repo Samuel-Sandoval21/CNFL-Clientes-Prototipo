@@ -1,0 +1,381 @@
+﻿/* ==========================================
+   LAYOUT CLIENTE - ESTILOS BASE
+   ========================================== */
+
+:root {
+    --blue: #1E23E6;
+    --orange: #FF692D;
+    --navy: #001482;
+    --sky: #64B9CD;
+    --green: #64B95A;
+    --amber: #F5A623;
+    --red: #E5484D;
+    --ink: #0E1116;
+    --muted: #727A86;
+    --line: #EDEFF3;
+    --bg: #F5F6FA;
+    --card: #FFFFFF;
+    --shadow: 0 4px 14px rgba(16, 20, 40, 0.06);
+    --shadow-lg: 0 8px 30px rgba(16, 20, 40, 0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #ECEFF6;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 12px;
+}
+
+/* ===== TELÉFONO ===== */
+.phone-frame {
+    width: 390px;
+    max-width: 100%;
+    height: 812px;
+    background: var(--bg);
+    border-radius: 44px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 40px 80px -20px rgba(16, 20, 60, .35), 0 0 0 11px #12141c, 0 0 0 13px #2a2d3a;
+}
+
+.phone-notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 30px;
+    background: #12141c;
+    border-radius: 0 0 18px 18px;
+    z-index: 60;
+}
+
+/* ===== BARRA DE ESTADO ===== */
+.status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 26px 6px;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 999;
+    color: var(--ink);
+    background: var(--bg);
+}
+
+.status-icons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* ===== CONTENIDO SCROLL ===== */
+.phone-content {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    right: 0;
+    bottom: 84px;
+    /* ESPACIO PARA EL MENÚ */
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+    .phone-content::-webkit-scrollbar {
+        display: none;
+    }
+
+/* ===== HEADER ===== */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 20px 10px;
+    flex-shrink: 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.brand-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    color: var(--orange);
+    letter-spacing: -2px;
+}
+
+.langbar {
+    display: flex;
+    background: #fff;
+    padding: 4px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+}
+
+    .langbar button {
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 800;
+        border-radius: 15px;
+        padding: 4px 8px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .langbar button.active {
+            background: var(--blue);
+            color: #fff;
+        }
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+}
+
+    .icon-btn:hover {
+        transform: scale(0.95);
+    }
+
+    .icon-btn .badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: var(--orange);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 2px solid var(--bg);
+    }
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.main-content {
+    padding: 0 18px 20px;
+    padding-bottom: 20px;
+}
+
+/* ===== MENÚ INFERIOR FIJO ===== */
+.bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 84px;
+    background: rgba(255, 255, 255, .95);
+    backdrop-filter: blur(18px);
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 13px;
+    z-index: 50;
+}
+
+.tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    cursor: pointer;
+    color: #9aa1b0;
+    font-size: 10px;
+    font-weight: 700;
+    flex: 1;
+    text-decoration: none;
+    background: none;
+    border: 0;
+    font-family: inherit;
+    height: 100%;
+    transition: 0.2s;
+}
+
+    .tab i {
+        font-size: 22px;
+        transition: 0.2s;
+    }
+
+    .tab.active {
+        color: var(--blue);
+    }
+
+        .tab.active i {
+            transform: scale(1.1);
+        }
+
+    .tab.center .fab {
+        width: 52px;
+        height: 52px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--orange), #ff8a4c);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 10px 20px -6px rgba(255, 105, 45, .7);
+        margin-top: -24px;
+        border: 4px solid var(--bg);
+        transition: 0.2s;
+    }
+
+        .tab.center .fab i {
+            font-size: 24px;
+            color: #fff;
+        }
+
+    .tab.center.active {
+        color: var(--orange);
+    }
+
+        .tab.center.active .fab {
+            transform: scale(1.05);
+        }
+
+    .tab:hover {
+        color: var(--blue);
+    }
+
+/* ===== BOTÓN VOLVER ===== */
+.btn-volver {
+    background: var(--card);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--muted);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+    .btn-volver:hover {
+        background: var(--blue);
+        color: white;
+        transform: scale(0.96);
+    }
+
+    .btn-volver i {
+        font-size: 14px;
+    }
+
+/* ===== UTILIDADES ===== */
+.section-pad {
+    padding: 0 0 16px 0;
+}
+
+.h-name {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.h-name-2 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 22px 0 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    body {
+        padding: 0;
+    }
+
+    .phone-frame {
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .phone-notch {
+        display: none;
+    }
+
+    .phone-content {
+        bottom: 74px;
+        top: 44px;
+    }
+
+    .bottom-nav {
+        height: 74px;
+        padding-bottom: 10px;
+    }
+
+    .tab {
+        font-size: 9px;
+    }
+
+        .tab i {
+            font-size: 20px;
+        }
+
+        .tab.center .fab {
+            width: 46px;
+            height: 46px;
+            margin-top: -20px;
+        }
+
+            .tab.center .fab i {
+                font-size: 20px;
+            }
+
+    .main-content {
+        padding: 0 14px 14px;
+    }
+
+    .h-name {
+        font-size: 22px;
+    }
+
+    .h-name-2 {
+        font-size: 18px;
+    }
+}

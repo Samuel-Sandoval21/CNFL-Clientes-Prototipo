@@ -1,0 +1,211 @@
+﻿/* ==========================================
+   CALCULADORA - ESTILOS PREMIUM
+   ========================================== */
+
+.calculadora-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+    .calculadora-card .form-group {
+        margin-bottom: 20px;
+    }
+
+        .calculadora-card .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+    .calculadora-card .input-wrapper {
+        position: relative;
+    }
+
+        .calculadora-card .input-wrapper .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            padding-right: 70px;
+            border: 1.5px solid var(--line);
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.3s;
+            background: white;
+            color: var(--ink);
+        }
+
+            .calculadora-card .input-wrapper .form-input:focus {
+                outline: none;
+                border-color: var(--blue);
+                box-shadow: 0 0 0 4px rgba(30, 35, 230, 0.08);
+            }
+
+        .calculadora-card .input-wrapper .input-suffix {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+.btn-calcular {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--orange), #ff8a5c);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: inherit;
+    box-shadow: 0 6px 20px rgba(255, 105, 45, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+    .btn-calcular:hover {
+        transform: scale(0.98);
+        box-shadow: 0 8px 30px rgba(255, 105, 45, 0.4);
+    }
+
+    .btn-calcular:active {
+        transform: scale(0.95);
+    }
+
+/* ===== RESULTADO ===== */
+.resultado-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f0f2ff, #e8f0fe);
+    border-radius: 14px;
+    border: 1px solid #dce8f5;
+    margin-bottom: 16px;
+}
+
+    .resultado-card .resultado-icon {
+        font-size: 32px;
+    }
+
+    .resultado-card .resultado-label {
+        font-size: 13px;
+        color: var(--muted);
+    }
+
+    .resultado-card .resultado-monto {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--blue);
+    }
+
+/* ===== EQUIPOS COMUNES ===== */
+.equipos-comunes {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+}
+
+    .equipos-comunes .equipos-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+.equipos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.equipo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
+    background: white;
+}
+
+    .equipo-item:hover {
+        border-color: var(--blue);
+        background: #f0f2ff;
+        transform: translateY(-2px);
+    }
+
+    .equipo-item:active {
+        transform: scale(0.95);
+    }
+
+    .equipo-item .equipo-icon {
+        font-size: 24px;
+    }
+
+    .equipo-item span {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--ink);
+        line-height: 1.3;
+    }
+
+        .equipo-item span small {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .calculadora-card {
+        padding: 16px;
+    }
+
+        .calculadora-card .input-wrapper .form-input {
+            font-size: 14px;
+            padding: 12px 14px;
+            padding-right: 60px;
+        }
+
+    .btn-calcular {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+    .resultado-card .resultado-monto {
+        font-size: 20px;
+    }
+
+    .equipos-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .equipo-item {
+        padding: 10px 6px;
+    }
+
+        .equipo-item .equipo-icon {
+            font-size: 20px;
+        }
+}

@@ -1,0 +1,93 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Suscripciones - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Suscripciones -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/suscripciones.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="suscripciones_titulo">
+        <i class="fas fa-check-circle" style="color:var(--green);"></i> Suscripciones
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="suscripciones_subtitulo">
+        Administra tus servicios contratados activos o inactivos.
+    </div>
+</div>
+
+<!-- ===== SUSCRIPCIONES ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="mis_suscripciones">MIS SUSCRIPCIONES</div>
+
+    <!-- Internet 5G -->
+    <div class="suscripcion-card">
+        <div class="suscripcion-header">
+            <div class="suscripcion-icon" style="background:#eefbf0;">
+                <i class="fas fa-wifi" style="color:var(--green);"></i>
+            </div>
+            <div class="suscripcion-info">
+                <div class="suscripcion-nombre" data-i18n="internet_5g">Internet 5G</div>
+                <div class="suscripcion-detalle"><span data-i18n="plan_hogar">Plan Hogar 300MB</span> · NISE 4021</div>
+            </div>
+            <span class="suscripcion-estado activo" data-i18n="activo">Activo</span>
+        </div>
+        <div class="suscripcion-footer">
+            <div class="suscripcion-precio">₡ 29.900 <span>/ mes</span></div>
+            <button class="btn-gestionar" onclick="alert('📡 Gestionando suscripción de Internet 5G')" data-i18n="gestionar">
+                <i class="fas fa-cog"></i> Gestionar
+            </button>
+        </div>
+    </div>
+
+    <!-- Videovigilancia -->
+    <div class="suscripcion-card">
+        <div class="suscripcion-header">
+            <div class="suscripcion-icon" style="background:#eefbf0;">
+                <i class="fas fa-video" style="color:var(--blue);"></i>
+            </div>
+            <div class="suscripcion-info">
+                <div class="suscripcion-nombre" data-i18n="videovigilancia">Videovigilancia</div>
+                <div class="suscripcion-detalle"><span data-i18n="plan_hogar_pro">Plan Hogar Pro</span> · NISE 7788</div>
+            </div>
+            <span class="suscripcion-estado activo" data-i18n="activo">Activo</span>
+        </div>
+        <div class="suscripcion-footer">
+            <div class="suscripcion-precio">₡ 15.900 <span>/ mes</span></div>
+            <button class="btn-gestionar" onclick="alert('📹 Gestionando suscripción de Videovigilancia')" data-i18n="gestionar">
+                <i class="fas fa-cog"></i> Gestionar
+            </button>
+        </div>
+    </div>
+
+    <!-- Seguro Hogar -->
+    <div class="suscripcion-card inactiva">
+        <div class="suscripcion-header">
+            <div class="suscripcion-icon" style="background:#fef3e0;">
+                <i class="fas fa-shield-alt" style="color:var(--amber);"></i>
+            </div>
+            <div class="suscripcion-info">
+                <div class="suscripcion-nombre" data-i18n="seguro_hogar">Seguro Hogar</div>
+                <div class="suscripcion-detalle"><span data-i18n="plan_basico">Plan Básico</span> · NISE 4021</div>
+            </div>
+            <span class="suscripcion-estado inactivo">Inactivo</span>
+        </div>
+        <div class="suscripcion-footer">
+            <div class="suscripcion-precio">₡ 8.900 <span>/ mes</span></div>
+            <button class="btn-gestionar" onclick="alert('🛡️ Gestionando suscripción de Seguro Hogar')" data-i18n="gestionar">
+                <i class="fas fa-cog"></i> Gestionar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript externo para Suscripciones -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/suscripciones.js")"></script>
+}

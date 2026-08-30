@@ -4,25 +4,24 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
+
 namespace CNFL_Clientes_Prototipo.Controllers
 {
     public class HomeController : Controller
     {
+        // GET: Home/Index (Página pública sin login)
         public ActionResult Index()
         {
-            // Redirigimos a la nueva Home pública (Cuenta/Index)
-            return RedirectToAction("Index", "Cuenta");
-        }
+            // Si ya está logueado, redirigir según rol
+            if (Session["Rol"] != null)
+            {
+                if (Session["Rol"].ToString() == "Admin")
+                    return RedirectToAction("Dashboard", "Admin");
+                else
+                    return RedirectToAction("Inicio", "Clientes");
+            }
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Tu aplicación de descripción.";
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Tu página de contacto.";
+            // Si no está logueado, mostrar la home pública
             return View();
         }
     }

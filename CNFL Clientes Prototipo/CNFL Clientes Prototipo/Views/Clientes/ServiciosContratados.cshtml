@@ -1,0 +1,97 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Servicios Contratados - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Servicios Contratados -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/servicios-contratados.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2">
+        <i class="fas fa-list" style="color:var(--blue);"></i> Servicios contratados
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;">
+        Todos los servicios que tienes asociados a tu cuenta.
+    </div>
+</div>
+
+<div class="section-pad">
+    <div class="eyebrow">SERVICIOS ACTIVOS</div>
+
+    <!-- Servicio Eléctrico -->
+    <div class="servicio-card" onclick="verDetalleServicio('Servicio Eléctrico')">
+        <div class="servicio-icon" style="background:#eef6ff;">
+            <i class="fas fa-bolt" style="color:var(--blue);"></i>
+        </div>
+        <div class="servicio-info">
+            <div class="servicio-nombre">Servicio Eléctrico</div>
+            <div class="servicio-detalle">Residencial · NISE 4021 · Casa</div>
+            <span class="servicio-estado activo">Activo</span>
+        </div>
+        <i class="fas fa-chevron-right" style="color:#c3c8d4;"></i>
+    </div>
+
+    <!-- Internet 5G -->
+    <div class="servicio-card" onclick="verDetalleServicio('Internet 5G')">
+        <div class="servicio-icon" style="background:#eefbf0;">
+            <i class="fas fa-wifi" style="color:var(--green);"></i>
+        </div>
+        <div class="servicio-info">
+            <div class="servicio-nombre">Internet 5G</div>
+            <div class="servicio-detalle">Plan Hogar 300MB · NISE 4021</div>
+            <span class="servicio-estado activo">Activo</span>
+        </div>
+        <i class="fas fa-chevron-right" style="color:#c3c8d4;"></i>
+    </div>
+
+    <!-- Servicio Comercial -->
+    <div class="servicio-card" onclick="verDetalleServicio('Servicio Comercial')">
+        <div class="servicio-icon" style="background:#fff3ec;">
+            <i class="fas fa-store" style="color:var(--orange);"></i>
+        </div>
+        <div class="servicio-info">
+            <div class="servicio-nombre">Servicio Comercial</div>
+            <div class="servicio-detalle">NISE 7788 · Local</div>
+            <span class="servicio-estado activo">Activo</span>
+        </div>
+        <i class="fas fa-chevron-right" style="color:#c3c8d4;"></i>
+    </div>
+
+    <!-- Videovigilancia -->
+    <div class="servicio-card" onclick="verDetalleServicio('Videovigilancia')">
+        <div class="servicio-icon" style="background:#fef3e0;">
+            <i class="fas fa-video" style="color:var(--amber);"></i>
+        </div>
+        <div class="servicio-info">
+            <div class="servicio-nombre">Videovigilancia</div>
+            <div class="servicio-detalle">Plan Hogar Pro · NISE 7788</div>
+            <span class="servicio-estado activo">Activo</span>
+        </div>
+        <i class="fas fa-chevron-right" style="color:#c3c8d4;"></i>
+    </div>
+
+    <!-- Seguro Hogar (Inactivo) -->
+    <div class="servicio-card" onclick="verDetalleServicio('Seguro Hogar')" style="opacity:0.6;">
+        <div class="servicio-icon" style="background:#fdeaea;">
+            <i class="fas fa-shield-alt" style="color:var(--red);"></i>
+        </div>
+        <div class="servicio-info">
+            <div class="servicio-nombre">Seguro Hogar</div>
+            <div class="servicio-detalle">Plan Básico · NISE 4021</div>
+            <span class="servicio-estado inactivo">Inactivo</span>
+        </div>
+        <i class="fas fa-chevron-right" style="color:#c3c8d4;"></i>
+    </div>
+</div>
+
+<!-- JavaScript externo para Servicios Contratados -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/servicios-contratados.js")"></script>
+}

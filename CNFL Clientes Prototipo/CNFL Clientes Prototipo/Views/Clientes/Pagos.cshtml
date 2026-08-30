@@ -1,0 +1,63 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Mis Pagos - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Pagos -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/pagos.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="pagos_titulo">Mis Pagos</div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="consulta_paga">Consulta y paga tus facturas en segundos.</div>
+</div>
+
+<!-- ===== FACTURA PENDIENTE ===== -->
+<div class="section-pad">
+    <div class="pago-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="pago-titulo">Factura Agosto 2026</div>
+                <div class="pago-monto">₡ 28.450</div>
+            </div>
+            <span class="pago-estado pendiente" data-i18n="pendiente">PENDIENTE</span>
+        </div>
+        <div class="pago-metodos">
+            <!-- ✅ CORREGIDO: /Clientes/ en lugar de /Cliente/ -->
+            <button class="sinpe" onclick="window.location.href='/Clientes/Sinpe'">
+                <i class="fas fa-mobile-alt"></i> <span data-i18n="sinpe_movil">SINPE Móvil</span>
+            </button>
+            <button class="iban" onclick="window.location.href='/Clientes/Iban'">
+                <i class="fas fa-university"></i> <span data-i18n="iban">IBAN</span>
+            </button>
+            <button class="tarjeta" onclick="window.location.href='/Clientes/Tarjeta'">
+                <i class="fas fa-credit-card"></i> <span data-i18n="tarjeta">Tarjeta</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== FACTURA PAGADA ===== -->
+<div class="section-pad">
+    <div class="pago-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="pago-titulo">Julio 2026</div>
+                <div class="pago-monto" style="color:var(--green);">₡ 26.980</div>
+            </div>
+            <span class="pago-estado pagada" data-i18n="pagada">PAGADA</span>
+        </div>
+        <div class="pago-exitoso" data-i18n="pago_exitoso">✓ Pago realizado con éxito</div>
+    </div>
+</div>
+
+<!-- JavaScript externo para Pagos -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/pagos.js")"></script>
+}

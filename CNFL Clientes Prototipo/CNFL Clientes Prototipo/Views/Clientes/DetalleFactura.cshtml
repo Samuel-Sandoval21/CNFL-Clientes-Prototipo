@@ -1,0 +1,62 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Detalle de Factura - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Facturas -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/pagos.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="detalle_factura">Detalle de Factura</div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="revisa_info">Revisa la información completa de tu factura.</div>
+</div>
+
+<div class="section-pad">
+    <div class="pago-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="pago-titulo">Agosto 2026</div>
+                <div class="pago-monto">₡ 28.450</div>
+            </div>
+            <span class="pago-estado pendiente" data-i18n="pendiente">PENDIENTE</span>
+        </div>
+
+        <hr style="border-color:var(--line); margin:14px 0;" />
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div><strong data-i18n="nise">NISE</strong><br><span style="color:var(--muted);">4021</span></div>
+            <div><strong data-i18n="tarifa">Tarifa</strong><br><span style="color:var(--muted);" data-i18n="residencial">Residencial</span></div>
+            <div><strong data-i18n="consumo">Consumo</strong><br><span style="color:var(--muted);">387 kWh</span></div>
+            <div><strong data-i18n="vencimiento">Vencimiento</strong><br><span style="color:var(--muted);">28 de agosto</span></div>
+        </div>
+
+        <hr style="border-color:var(--line); margin:14px 0;" />
+
+        <div style="text-align:center; margin-top:8px;">
+            <p style="font-weight:600; margin-bottom:12px;" data-i18n="deseas_pagar">¿Deseas pagar esta factura ahora?</p>
+            <div class="pago-metodos">
+                <!-- ✅ CORREGIDO: /Clientes/ en lugar de /Cliente/ -->
+                <button class="sinpe" onclick="window.location.href='/Clientes/Sinpe?monto=28450'">
+                    <i class="fas fa-mobile-alt"></i> <span data-i18n="sinpe_movil">SINPE Móvil</span>
+                </button>
+                <button class="iban" onclick="window.location.href='/Clientes/Iban?monto=28450'">
+                    <i class="fas fa-university"></i> <span data-i18n="iban">IBAN</span>
+                </button>
+                <button class="tarjeta" onclick="window.location.href='/Clientes/Tarjeta?monto=28450'">
+                    <i class="fas fa-credit-card"></i> <span data-i18n="tarjeta">Tarjeta</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/pagos.js")"></script>
+}

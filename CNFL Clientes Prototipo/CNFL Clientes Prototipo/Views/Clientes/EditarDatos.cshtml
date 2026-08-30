@@ -1,0 +1,63 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Editar Datos - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Editar Datos -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/editar-datos.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="editar_datos">
+        <i class="fas fa-user-edit" style="color:var(--blue);"></i> Editar Mis Datos
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="nombre">
+        Actualiza tu información personal
+    </div>
+</div>
+
+<div class="section-pad">
+    <form class="editar-form" onsubmit="guardarCambios(event)">
+        <!-- Nombre -->
+        <div class="form-group">
+            <label for="nombre" data-i18n="nombre">Nombre</label>
+            <input type="text" id="nombre" value="Katherine" class="form-input" required />
+        </div>
+
+        <!-- Apellidos -->
+        <div class="form-group">
+            <label for="apellidos" data-i18n="apellidos">Apellidos</label>
+            <input type="text" id="apellidos" value="Villalobos" class="form-input" required />
+        </div>
+
+        <!-- Teléfono -->
+        <div class="form-group">
+            <label for="telefono" data-i18n="telefono">Teléfono</label>
+            <input type="text" id="telefono" value="8888-7777" class="form-input" required />
+            <span class="input-hint">Formato: 8888-8888</span>
+        </div>
+
+        <!-- Correo -->
+        <div class="form-group">
+            <label for="correo" data-i18n="correo">Correo</label>
+            <input type="email" id="correo" value="k.villalobos@correo.cr" class="form-input" required />
+            <span class="input-hint">Recibirás notificaciones en este correo</span>
+        </div>
+
+        <!-- Botón Guardar -->
+        <button type="submit" class="btn-guardar">
+            <i class="fas fa-save"></i> <span data-i18n="guardar_cambios">Guardar Cambios</span>
+        </button>
+    </form>
+</div>
+
+<!-- JavaScript externo para Editar Datos -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/editar-datos.js")"></script>
+}

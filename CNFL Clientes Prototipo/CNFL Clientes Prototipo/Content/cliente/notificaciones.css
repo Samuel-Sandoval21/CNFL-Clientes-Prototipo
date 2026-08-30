@@ -1,0 +1,131 @@
+﻿/* ==========================================
+   NOTIFICACIONES - ESTILOS
+   ========================================== */
+
+.notificacion-item {
+    display: flex;
+    gap: 14px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    margin-bottom: 12px;
+    transition: 0.2s;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    position: relative;
+}
+
+    .notificacion-item:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+    }
+
+    .notificacion-item .icono {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        font-size: 18px;
+    }
+
+    .notificacion-item .info {
+        flex: 1;
+        min-width: 0;
+    }
+
+        .notificacion-item .info .titulo {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        .notificacion-item .info .descripcion {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        .notificacion-item .info .fecha {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+    .notificacion-item .btn-leer {
+        background: none;
+        border: none;
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 8px;
+        transition: 0.2s;
+        font-family: inherit;
+        flex-shrink: 0;
+        align-self: center;
+    }
+
+        .notificacion-item .btn-leer:hover {
+            background: #f0f2ff;
+        }
+
+        .notificacion-item .btn-leer:active {
+            transform: scale(0.95);
+        }
+
+/* ===== BOTÓN MARCAR TODAS ===== */
+.btn-marcar-todas {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .btn-marcar-todas:hover {
+        background: #1519b3;
+        transform: scale(0.97);
+    }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .notificacion-item {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+        .notificacion-item .icono {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+
+        .notificacion-item .info .titulo {
+            font-size: 13px;
+        }
+
+        .notificacion-item .info .descripcion {
+            font-size: 12px;
+        }
+
+    .btn-marcar-todas {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+    }
+}

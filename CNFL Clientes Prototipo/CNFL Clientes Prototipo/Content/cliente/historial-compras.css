@@ -1,0 +1,221 @@
+﻿/* ==========================================
+   HISTORIAL DE COMPRAS - ESTILOS
+   ========================================== */
+
+.historial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+    .historial-header .total-items {
+        font-size: 13px;
+        color: var(--muted);
+    }
+
+        .historial-header .total-items strong {
+            color: var(--ink);
+        }
+
+.historial-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    margin-bottom: 12px;
+    transition: 0.2s;
+    box-shadow: var(--shadow);
+}
+
+    .historial-item:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+    }
+
+    .historial-item .icono {
+        font-size: 32px;
+        width: 50px;
+        height: 50px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        background: #f7f8fc;
+        border-radius: 12px;
+    }
+
+    .historial-item .info {
+        flex: 1;
+        min-width: 0;
+    }
+
+        .historial-item .info .nombre {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        .historial-item .info .detalle {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 12px;
+        }
+
+            .historial-item .info .detalle span {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .historial-item .info .detalle .precio {
+                font-weight: 700;
+                color: var(--blue);
+            }
+
+    .historial-item .estado {
+        flex-shrink: 0;
+        padding: 4px 14px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        text-align: center;
+        min-width: 80px;
+    }
+
+        .historial-item .estado.pagada {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .historial-item .estado.pendiente {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+
+        .historial-item .estado.cancelada {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .historial-item .estado.procesando {
+            background: #E3F2FD;
+            color: #0D47A1;
+        }
+
+    .historial-item .btn-detalle {
+        background: none;
+        border: none;
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 8px;
+        transition: 0.2s;
+        font-family: inherit;
+        flex-shrink: 0;
+    }
+
+        .historial-item .btn-detalle:hover {
+            background: #f0f2ff;
+        }
+
+/* ===== FILTROS ===== */
+.historial-filtros {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+    .historial-filtros .filtro-btn {
+        padding: 6px 16px;
+        border-radius: 20px;
+        border: 1.5px solid var(--line);
+        background: white;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+        font-family: inherit;
+        color: var(--muted);
+    }
+
+        .historial-filtros .filtro-btn:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .historial-filtros .filtro-btn.active {
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+
+/* ===== EMPTY STATE ===== */
+.historial-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 20px;
+    border: 1px dashed var(--line);
+}
+
+    .historial-empty .empty-icon {
+        font-size: 64px;
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .historial-empty h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--muted);
+    }
+
+    .historial-empty p {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 6px;
+    }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .historial-item {
+        flex-wrap: wrap;
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+        .historial-item .icono {
+            font-size: 24px;
+            width: 42px;
+            height: 42px;
+        }
+
+        .historial-item .info .nombre {
+            font-size: 13px;
+        }
+
+        .historial-item .info .detalle {
+            font-size: 11px;
+        }
+
+        .historial-item .estado {
+            font-size: 10px;
+            padding: 3px 10px;
+            min-width: 60px;
+        }
+
+    .historial-filtros .filtro-btn {
+        font-size: 11px;
+        padding: 4px 12px;
+    }
+}

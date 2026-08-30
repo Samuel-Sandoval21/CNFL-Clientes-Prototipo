@@ -1,0 +1,119 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Trámites - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Trámites -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/tramites.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="tramites_titulo">
+        <i class="fas fa-file-alt" style="color:var(--blue);"></i> Trámites
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="tramites_subtitulo">
+        16 solicitudes en línea, sin filas.
+    </div>
+</div>
+
+<!-- ===== MIS TRÁMITES ACTIVOS ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="mis_tramites_activos">Mis trámites activos</div>
+
+    <div class="tramite-card">
+        <div class="tramite-titulo" data-i18n="solicitud_servicio">Solicitud servicio nuevo monofásico</div>
+        <div class="tramite-ref">#TR-20482 · NISE 4021</div>
+        <div class="tramite-estado">
+            <span class="estado-dot proceso"></span>
+            <span class="estado-label" data-i18n="estado">Estado: <span data-i18n="en_proceso">En proceso</span></span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CATÁLOGO ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="catalogo_tramites">Catálogo de trámites</div>
+
+    <!-- Cambio de nombre -->
+    <div class="row-item" onclick="seleccionarTramite('cambio_nombre')">
+        <div class="ic" style="background:#eef6ff;">
+            <i class="fas fa-user-edit" style="color:var(--blue); font-size:20px;"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="cambio_nombre">Cambio de nombre de abonado</div>
+            <div class="s">Actualiza el titular del servicio</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Desconexión y reconexión -->
+    <div class="row-item" onclick="seleccionarTramite('desconexion_reconexion')">
+        <div class="ic" style="background:#eef6ff;">
+            <i class="fas fa-plug" style="color:var(--blue); font-size:20px;"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="desconexion_reconexion">Desconexión y reconexión</div>
+            <div class="s">Solicita cortar o restablecer el servicio</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Solicitud de servicio nuevo -->
+    <div class="row-item" onclick="seleccionarTramite('solicitud_servicio')">
+        <div class="ic" style="background:#eef6ff;">
+            <i class="fas fa-file-signature" style="color:var(--blue); font-size:20px;"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="solicitud_servicio_nuevo">Solicitud de servicio nuevo</div>
+            <div class="s">Contrata un nuevo servicio eléctrico</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Traslado de medidor -->
+    <div class="row-item" onclick="seleccionarTramite('traslado_medidor')">
+        <div class="ic" style="background:#eef6ff;">
+            <i class="fas fa-exchange-alt" style="color:var(--blue); font-size:20px;"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="traslado_medidor">Traslado de medidor</div>
+            <div class="s">Cambia la ubicación de tu medidor</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Traspaso de servicio -->
+    <div class="row-item" onclick="seleccionarTramite('traspaso_servicio')">
+        <div class="ic" style="background:#eef6ff;">
+            <i class="fas fa-handshake" style="color:var(--blue); font-size:20px;"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="traspaso_servicio">Traspaso de servicio eléctrico</div>
+            <div class="s">Transfiere el servicio a otra persona</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Reclamo por daños -->
+    <div class="row-item" onclick="seleccionarTramite('reclamo_danos')">
+        <div class="ic" style="background:#eef6ff;">
+            <i class="fas fa-gavel" style="color:var(--blue); font-size:20px;"></i>
+        </div>
+        <div class="tx">
+            <div class="t" data-i18n="reclamo_danos">Reclamo por daños</div>
+            <div class="s">Presenta un reclamo por daños ocasionados</div>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </div>
+</div>
+
+<!-- JavaScript externo para Trámites -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/tramites.js")"></script>
+}

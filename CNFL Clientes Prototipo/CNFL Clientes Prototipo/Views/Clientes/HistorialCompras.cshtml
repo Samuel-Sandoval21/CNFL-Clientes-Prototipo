@@ -1,0 +1,125 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Historial de Compras - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Historial -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/historial-compras.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="historial_compras">📊 Historial de compras</div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="marketplace">Marketplace</div>
+</div>
+
+<div class="section-pad">
+    <!-- ===== FILTROS ===== -->
+    <div class="historial-header">
+        <div class="total-items">
+            Total: <strong>4</strong> compras
+        </div>
+    </div>
+
+    <div class="historial-filtros">
+        <button class="filtro-btn active" data-estado="todos" onclick="filtrarHistorial('todos')">Todos</button>
+        <button class="filtro-btn" data-estado="pagada" onclick="filtrarHistorial('pagada')">✅ Pagadas</button>
+        <button class="filtro-btn" data-estado="pendiente" onclick="filtrarHistorial('pendiente')">⏳ Pendientes</button>
+        <button class="filtro-btn" data-estado="procesando" onclick="filtrarHistorial('procesando')">🔄 Procesando</button>
+    </div>
+
+    <!-- ===== ITEM 1 - PAGADA ===== -->
+    <div class="historial-item" data-estado="pagada" data-id="1">
+        <div class="icono">❄️</div>
+        <div class="info">
+            <div class="nombre" data-i18n="aire_acondicionado">Aire acondicionado Inverter 12.000 BTU</div>
+            <div class="detalle">
+                <span>📅 28/08/2026</span>
+                <span class="precio">💰 ₡ 289.000</span>
+                <span>🔢 #TRX-001</span>
+            </div>
+        </div>
+        <span class="estado pagada" data-i18n="pagada">PAGADA</span>
+        <button class="btn-detalle" onclick="verDetalleCompra('TRX-001', 'Aire acondicionado Inverter', '₡ 289.000', '28/08/2026', 'pagada')">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- ===== ITEM 2 - PAGADA ===== -->
+    <div class="historial-item" data-estado="pagada" data-id="2">
+        <div class="icono">💡</div>
+        <div class="info">
+            <div class="nombre" data-i18n="kit_iluminacion">Kit iluminación LED inteligente</div>
+            <div class="detalle">
+                <span>📅 15/08/2026</span>
+                <span class="precio">💰 ₡ 42.900</span>
+                <span>🔢 #TRX-002</span>
+            </div>
+        </div>
+        <span class="estado pagada" data-i18n="pagada">PAGADA</span>
+        <button class="btn-detalle" onclick="verDetalleCompra('TRX-002', 'Kit iluminación LED', '₡ 42.900', '15/08/2026', 'pagada')">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- ===== ITEM 3 - PAGADA ===== -->
+    <div class="historial-item" data-estado="pagada" data-id="3">
+        <div class="icono">🔌</div>
+        <div class="info">
+            <div class="nombre" data-i18n="cargador_ev">Cargador EV residencial 7kW</div>
+            <div class="detalle">
+                <span>📅 01/08/2026</span>
+                <span class="precio">💰 ₡ 615.000</span>
+                <span>🔢 #TRX-003</span>
+            </div>
+        </div>
+        <span class="estado pagada" data-i18n="pagada">PAGADA</span>
+        <button class="btn-detalle" onclick="verDetalleCompra('TRX-003', 'Cargador EV residencial', '₡ 615.000', '01/08/2026', 'pagada')">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- ===== ITEM 4 - PENDIENTE ===== -->
+    <div class="historial-item" data-estado="pendiente" data-id="4">
+        <div class="icono">☀️</div>
+        <div class="info">
+            <div class="nombre" data-i18n="panel_solar">Panel Solar 400W</div>
+            <div class="detalle">
+                <span>📅 25/08/2026</span>
+                <span class="precio">💰 ₡ 185.000</span>
+                <span>🔢 #TRX-004</span>
+            </div>
+        </div>
+        <span class="estado pendiente" data-i18n="pendiente">PENDIENTE</span>
+        <button class="btn-detalle" onclick="verDetalleCompra('TRX-004', 'Panel Solar 400W', '₡ 185.000', '25/08/2026', 'pendiente')">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- ===== ITEM 5 - PROCESANDO ===== -->
+    <div class="historial-item" data-estado="procesando" data-id="5">
+        <div class="icono">🌡️</div>
+        <div class="info">
+            <div class="nombre" data-i18n="termostato_smart">Termostato Smart</div>
+            <div class="detalle">
+                <span>📅 29/08/2026</span>
+                <span class="precio">💰 ₡ 89.000</span>
+                <span>🔢 #TRX-005</span>
+            </div>
+        </div>
+        <span class="estado procesando">🔄 PROCESANDO</span>
+        <button class="btn-detalle" onclick="verDetalleCompra('TRX-005', 'Termostato Smart', '₡ 89.000', '29/08/2026', 'procesando')">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+<!-- JavaScript externo para Historial -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/historial-compras.js")"></script>
+}

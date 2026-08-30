@@ -1,0 +1,124 @@
+﻿/* ==========================================
+   CLIENTE PAGOS - ESTILOS
+   ========================================== */
+
+.pago-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    margin-bottom: 14px;
+    transition: 0.2s;
+}
+
+    .pago-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .pago-card .pago-titulo {
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+    .pago-card .pago-monto {
+        font-size: 28px;
+        font-weight: 800;
+        margin: 4px 0;
+    }
+
+    .pago-card .pago-estado {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 14px;
+        border-radius: 999px;
+        display: inline-block;
+    }
+
+        .pago-card .pago-estado.pendiente {
+            background: #fef3e0;
+            color: #b9791a;
+        }
+
+        .pago-card .pago-estado.pagada {
+            background: #e9f7ec;
+            color: #2f8f3e;
+        }
+
+.pago-metodos {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+    .pago-metodos button {
+        flex: 1;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1.5px solid var(--line);
+        background: white;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        transition: 0.2s;
+        font-family: inherit;
+    }
+
+        .pago-metodos button:hover {
+            border-color: var(--blue);
+            background: #f0f2ff;
+            transform: scale(0.97);
+        }
+
+        .pago-metodos button.sinpe {
+            border-color: #64B95A;
+            color: #2E7D32;
+        }
+
+            .pago-metodos button.sinpe:hover {
+                background: #E8F5E9;
+            }
+
+        .pago-metodos button.iban {
+            border-color: #1E23E6;
+            color: #1E23E6;
+        }
+
+            .pago-metodos button.iban:hover {
+                background: #E8EAFF;
+            }
+
+        .pago-metodos button.tarjeta {
+            border-color: #FF692D;
+            color: #FF692D;
+        }
+
+            .pago-metodos button.tarjeta:hover {
+                background: #FFF0E8;
+            }
+
+.pago-exitoso {
+    background: #E8F5E9;
+    border: 1px solid #A5D6A7;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    color: #2E7D32;
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .pago-card .pago-monto {
+        font-size: 24px;
+    }
+
+    .pago-metodos {
+        flex-direction: column;
+    }
+
+        .pago-metodos button {
+            padding: 10px;
+        }
+}

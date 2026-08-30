@@ -1,0 +1,130 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Inicio - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Inicio -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/inicio.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div style="color: var(--muted); font-weight: 600;" data-i18n="inicio_saludo">Hola,</div>
+    <div class="h-name">@(Session["Nombre"] ?? "Katherine Villalobos")</div>
+</div>
+
+<!-- ===== FACTURA PENDIENTE ===== -->
+<div class="section-pad" style="margin-top:16px">
+    <div class="bill">
+        <div class="bill-lbl" data-i18n="factura_pendiente">FACTURA PENDIENTE · NISE 4021</div>
+        <div class="bill-amt">₡ 18.450</div>
+        <div class="bill-due" data-i18n="vence_el">Vence el 28 de agosto</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:16px; gap:12px;">
+            <!-- ✅ CORREGIDO: /Clientes/ en lugar de /Cliente/ -->
+            <button class="btn-ghost" onclick="window.location.href='/Clientes/DetalleFactura/1'">
+                <span data-i18n="ver_detalle">Ver detalle</span>
+            </button>
+            <button class="btn-cta" onclick="window.location.href='/Clientes/Pagos'">
+                <span data-i18n="pagar_ahora">Pagar ahora</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SERVICIOS ASOCIADOS ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="mis_servicios">Mis servicios asociados</div>
+
+    <div class="nise">
+        <div class="ring" style="background:#e9f7ec">
+            <i class="fas fa-home" style="color:#64B95A; font-size:20px;"></i>
+        </div>
+        <div style="flex:1">
+            <div style="font-weight:700; font-size:14px;">Casa · NISE 4021</div>
+            <div style="font-size:12px; color:var(--muted);">Residencial · San José</div>
+        </div>
+        <span class="pill st-normal"><span style="width:7px; height:7px; border-radius:50%; background:#64B95A;"></span> <span data-i18n="normal">Normal</span></span>
+    </div>
+
+    <div class="nise">
+        <div class="ring" style="background:#fef3e0">
+            <i class="fas fa-store" style="color:#F5A623; font-size:20px;"></i>
+        </div>
+        <div style="flex:1">
+            <div style="font-weight:700; font-size:14px;">Local · NISE 7788</div>
+            <div style="font-size:12px; color:var(--muted);">Mantenimiento programado 2:00pm</div>
+        </div>
+        <span class="pill st-prev"><span style="width:7px; height:7px; border-radius:50%; background:#F5A623;"></span> <span data-i18n="prevencion">Prevención</span></span>
+    </div>
+
+    <div class="nise">
+        <div class="ring" style="background:#fdeaea">
+            <i class="fas fa-tree" style="color:#E5484D; font-size:20px;"></i>
+        </div>
+        <div style="flex:1">
+            <div style="font-weight:700; font-size:14px;">Finca · NISE 9950</div>
+            <div style="font-size:12px; color:var(--muted);">Avería en la red · atendiéndose</div>
+        </div>
+        <span class="pill st-inc"><span style="width:7px; height:7px; border-radius:50%; background:#E5484D;"></span> <span data-i18n="incidente">Incidente</span></span>
+    </div>
+</div>
+
+<!-- ===== CONSUMO ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="consumo_kwh">Consumo kWh · NISE 4021</div>
+    <div class="card">
+        <div id="graficoConsumo" style="display:flex; align-items:flex-end; gap:9px; height:110px; padding:0 4px;">
+            <div class="barra" style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:45%; border-radius:8px 8px 4px 4px; transition:height 0.6s ease;"></div>
+            <div class="barra" style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:62%; border-radius:8px 8px 4px 4px; transition:height 0.6s ease;"></div>
+            <div class="barra" style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:53%; border-radius:8px 8px 4px 4px; transition:height 0.6s ease;"></div>
+            <div class="barra" style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:71%; border-radius:8px 8px 4px 4px; transition:height 0.6s ease;"></div>
+            <div class="barra" style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:58%; border-radius:8px 8px 4px 4px; transition:height 0.6s ease;"></div>
+            <div class="barra" style="flex:1; background:linear-gradient(var(--blue),#5a60f5); height:84%; border-radius:8px 8px 4px 4px; transition:height 0.6s ease;"></div>
+        </div>
+        <div style="display:flex; gap:6px; margin-top:24px; flex-wrap:wrap;">
+            <button class="chip active" onclick="cambiarPeriodo('6m')" data-i18n="ultimos_6_meses">Últimos 6 meses</button>
+            <button class="chip" onclick="cambiarPeriodo('31d')" data-i18n="31_dias">31 días</button>
+            <button class="chip" onclick="cambiarPeriodo('lecturas')" data-i18n="lecturas">Lecturas</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CONSULTA MEDIDOR ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="consulta_medidor">Consulta al medidor</div>
+    <div class="card">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="background:#f7f8fc; border-radius:14px; padding:13px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;" data-i18n="ultima_lectura">Última lectura</div>
+                <div style="font-size:18px; font-weight:800; margin-top:5px;">742 <small style="font-size:11px; color:var(--muted);">kWh</small></div>
+            </div>
+            <div style="background:#f7f8fc; border-radius:14px; padding:13px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;" data-i18n="acumulado_mes">Acumulado del mes</div>
+                <div style="font-size:18px; font-weight:800; margin-top:5px;">198 <small style="font-size:11px; color:var(--muted);">kWh</small></div>
+            </div>
+            <div style="background:#f7f8fc; border-radius:14px; padding:13px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;" data-i18n="costo_estimado">Costo estimado</div>
+                <div style="font-size:18px; font-weight:800; color: var(--orange); margin-top:5px;">₡ 21.300</div>
+            </div>
+            <div style="background:#f7f8fc; border-radius:14px; padding:13px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:700;" data-i18n="promedio_mensual">Promedio mensual</div>
+                <div style="font-size:18px; font-weight:800; margin-top:5px;">205 <small style="font-size:11px; color:var(--muted);">kWh</small></div>
+            </div>
+        </div>
+        <div style="margin-top:12px; padding:10px; background:#E8F5E9; border-radius:12px; text-align:center;">
+            <span style="font-size:13px; font-weight:600; color:#2E7D32;">
+                ✅ <span data-i18n="ahorro">12% menos que el mes anterior · ¡buen ahorro!</span>
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript externo para Inicio -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/inicio.js")"></script>
+}

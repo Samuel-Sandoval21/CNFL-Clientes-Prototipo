@@ -1,0 +1,74 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Asistente Virtual - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Chat -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/chat.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2">
+        <i class="fas fa-robot" style="color:var(--blue);"></i> <span data-i18n="asistente_titulo">Asistente Virtual</span>
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="asistente_subtitulo">
+        <i class="fas fa-phone"></i> 800 ENERGÍA · 1026
+    </div>
+</div>
+
+<div class="section-pad">
+    <div class="card chat-container">
+        <!-- ===== BURBUJAS DE CHAT ===== -->
+        <div id="chatBox" class="chat-box">
+            <div class="chat-message bot">
+                <div class="avatar-bot">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-bubble bot-bubble">
+                    <span data-i18n="asistente_saludo">¡Hola! Soy tu asistente virtual CNFL. ¿En qué puedo ayudarte?</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SUGERENCIAS RÁPIDAS ===== -->
+        <div class="quick-suggestions" id="quickSuggestions">
+            <button class="suggestion-btn" onclick="preguntaRapida('factura')">
+                <i class="fas fa-file-invoice"></i> <span>Factura</span>
+            </button>
+            <button class="suggestion-btn" onclick="preguntaRapida('averia')">
+                <i class="fas fa-exclamation-triangle"></i> <span>Avería</span>
+            </button>
+            <button class="suggestion-btn" onclick="preguntaRapida('consumo')">
+                <i class="fas fa-chart-line"></i> <span>Consumo</span>
+            </button>
+            <button class="suggestion-btn" onclick="preguntaRapida('suspension')">
+                <i class="fas fa-clock"></i> <span>Suspensión</span>
+            </button>
+            <button class="suggestion-btn" onclick="preguntaRapida('pago')">
+                <i class="fas fa-credit-card"></i> <span>Pagos</span>
+            </button>
+            <button class="suggestion-btn" onclick="preguntaRapida('contrato')">
+                <i class="fas fa-file-signature"></i> <span>Contrato</span>
+            </button>
+        </div>
+
+        <!-- ===== INPUT ===== -->
+        <div class="chat-input-container">
+            <input type="text" id="chatInput" data-i18n-placeholder="escribe_consulta" placeholder="Escribe tu consulta..." />
+            <button onclick="enviarMensaje()" class="btn-enviar-chat">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript externo para Chat -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/chat.js")"></script>
+}

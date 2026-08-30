@@ -1,0 +1,237 @@
+﻿/* ==========================================
+   REPORTES FORM - ESTILOS PREMIUM
+   ========================================== */
+
+.reporte-form {
+    background: #fff;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    border: 1px solid var(--line);
+}
+
+    .reporte-form .form-group {
+        margin-bottom: 20px;
+    }
+
+        .reporte-form .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .reporte-form .form-group .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--line);
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: 0.3s;
+            background: white;
+            color: var(--ink);
+        }
+
+            .reporte-form .form-group .form-input:focus {
+                outline: none;
+                border-color: var(--blue);
+                box-shadow: 0 0 0 4px rgba(30, 35, 230, 0.08);
+            }
+
+            .reporte-form .form-group .form-input::placeholder {
+                color: var(--muted);
+                opacity: 0.7;
+            }
+
+        .reporte-form .form-group textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .reporte-form .form-group select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23727A86'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+/* ===== TIPO DE REPORTE BADGE ===== */
+.tipo-reporte-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+    .tipo-reporte-badge.alumbrado {
+        background: #fef3e0;
+        color: #b9791a;
+    }
+
+    .tipo-reporte-badge.propia {
+        background: #fdeaea;
+        color: #c93a3f;
+    }
+
+    .tipo-reporte-badge.ajena {
+        background: #eef6ff;
+        color: #1a3a7a;
+    }
+
+/* ===== DROPZONE ===== */
+.dropzone {
+    border: 2px dashed var(--line);
+    border-radius: 14px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+    .dropzone:hover {
+        border-color: var(--blue);
+        background: #f8f9fe;
+    }
+
+    .dropzone.dragover {
+        border-color: var(--blue);
+        background: #eef0ff;
+    }
+
+    .dropzone i {
+        font-size: 32px;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .dropzone .drop-text {
+        font-size: 13px;
+        color: var(--muted);
+    }
+
+    .dropzone .drop-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+    }
+
+/* ===== BOTÓN GPS ===== */
+.btn-gps {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: inherit;
+    width: 100%;
+    margin-top: 4px;
+    box-shadow: 0 4px 16px rgba(30, 35, 230, 0.2);
+}
+
+    .btn-gps:hover {
+        background: #1519b3;
+        transform: scale(0.98);
+    }
+
+    .btn-gps i {
+        margin-right: 8px;
+    }
+
+/* ===== UBICACIÓN TEXTO ===== */
+.ubicacion-texto {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: #f7f8fc;
+    border-radius: 12px;
+    display: none;
+    border: 1px solid var(--line);
+}
+
+    .ubicacion-texto.show {
+        display: block;
+    }
+
+/* ===== NISE AUTOMÁTICO ===== */
+.nise-automatico {
+    padding: 12px 16px;
+    background: #f7f8fc;
+    border-radius: 14px;
+    font-weight: 600;
+    color: var(--blue);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .nise-automatico i {
+        color: var(--green);
+    }
+
+/* ===== BOTÓN ENVIAR ===== */
+.btn-enviar-reporte {
+    background: var(--orange);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 14px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: inherit;
+    width: 100%;
+    margin-top: 8px;
+    box-shadow: 0 8px 24px rgba(255, 105, 45, 0.3);
+}
+
+    .btn-enviar-reporte:hover {
+        background: #e85a21;
+        transform: scale(0.98);
+    }
+
+    .btn-enviar-reporte:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn-enviar-reporte i {
+        margin-right: 8px;
+    }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .reporte-form {
+        padding: 16px;
+    }
+
+        .reporte-form .form-group .form-input {
+            font-size: 13px;
+            padding: 10px 14px;
+        }
+
+    .dropzone {
+        padding: 20px 16px;
+    }
+
+        .dropzone i {
+            font-size: 28px;
+        }
+
+    .btn-enviar-reporte {
+        font-size: 14px;
+        padding: 12px;
+    }
+}

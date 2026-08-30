@@ -1,130 +1,103 @@
-﻿@{
+﻿@model dynamic
+
+@{
     ViewBag.Title = "Registro";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<style>
-    .field {
-        margin-top: 16px;
-    }
-
-        .field label {
-            font-size: 14px;
-            font-weight: 800;
-            color: var(--muted);
-            display: block;
-            margin-bottom: 7px;
-        }
-
-        .field .inp {
-            background: #fff;
-            border: 1.5px solid var(--line);
-            border-radius: 14px;
-            padding: 14px 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-            .field .inp input {
-                border: none;
-                outline: none;
-                width: 100%;
-                font-family: inherit;
-                font-size: 15px;
-                background: transparent;
-                color: var(--ink);
-            }
-
-    .btn-register {
-        background: var(--blue);
-        color: #fff;
-        border: none;
-        border-radius: 14px;
-        padding: 16px;
-        width: 100%;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        margin-top: 20px;
-        box-shadow: 0 8px 18px -6px rgba(30,35,230,.7);
-    }
-
-        .btn-register:hover {
-            background: var(--navy);
-        }
-</style>
+<!-- CSS externo para Cuenta -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/cuenta.css")" />
 
 <div class="section-pad" style="margin-top: 20px;">
-    <div style="font-size: 28px; font-weight: 800;">Crear cuenta</div>
-    <div style="font-size: 14px; color: var(--muted); margin-top: 6px;">Regístrate para conectar con la Agencia Virtual.</div>
+    <div class="registro-title">Crear cuenta</div>
+    <div class="registro-subtitle">Regístrate para conectar con la Agencia Virtual.</div>
 </div>
 
 <div class="section-pad mt-3">
     <div class="card-cliente">
         @using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post))
         {
+            @Html.AntiForgeryToken()
+
+            <!-- CÉDULA -->
             <div class="field">
                 <label>CÉDULA (Autocompleta tus datos)</label>
                 <div class="inp">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="12" r="2.5" /><path d="M14 10h4M14 14h4" /></svg>
-                    <input type="text" name="cedula" id="cedula" class="form-control" required placeholder="1-2345-6789" style="border:none; background:transparent;" onblur="autocompletarPorCedula()" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="12" r="2.5" /><path d="M14 10h4M14 14h4" /></svg>
+                    <input type="text" name="Cedula" id="cedula" required placeholder="1-2345-6789" onblur="autocompletarPorCedula()" />
                 </div>
-                <small style="color: var(--blue); font-weight: 600;">Al escribir tu cédula, se cargan tus datos y tus NISEs automáticamente.</small>
+                <div class="registro-hint">Al escribir tu cédula, se cargan tus datos y tus NISEs automáticamente.</div>
             </div>
+
+            <!-- NOMBRE -->
             <div class="field">
                 <label>NOMBRE</label>
                 <div class="inp">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                    <input type="text" name="nombre" id="nombre" class="form-control" required placeholder="Su nombre" style="border:none; background:transparent;" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                    <input type="text" name="Nombre" id="nombre" required placeholder="Su nombre" />
                 </div>
             </div>
+
+            <!-- APELLIDOS -->
             <div class="field">
                 <label>APELLIDOS</label>
                 <div class="inp">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                    <input type="text" name="apellidos" id="apellidos" class="form-control" required placeholder="Sus apellidos" style="border:none; background:transparent;" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                    <input type="text" name="Apellidos" id="apellidos" required placeholder="Sus apellidos" />
                 </div>
             </div>
+
+            <!-- NISES -->
             <div class="field">
                 <label>NISE(S) ASOCIADO(S)</label>
                 <div class="inp" style="background: #f7f8fc;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" /></svg>
-                    <input type="text" name="nises" id="nises" class="form-control" readonly placeholder="Se cargarán automáticamente" style="border:none; background:transparent; color: var(--muted);" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" /></svg>
+                    <input type="text" name="NISE" id="nises" readonly placeholder="Se cargarán automáticamente" style="color: var(--muted);" />
                 </div>
             </div>
+
+            <!-- CORREO -->
             <div class="field">
                 <label>CORREO</label>
                 <div class="inp">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
-                    <input type="email" name="correo" class="form-control" required placeholder="usuario@correo.com" style="border:none; background:transparent;" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
+                    <input type="email" name="Correo" required placeholder="usuario@correo.com" />
                 </div>
             </div>
+
+            <!-- TELÉFONO -->
             <div class="field">
                 <label>TELÉFONO</label>
                 <div class="inp">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-                    <input type="text" name="telefono" class="form-control" required placeholder="8888-8888" style="border:none; background:transparent;" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                    <input type="text" name="Telefono" required placeholder="8888-8888" />
                 </div>
             </div>
+
+            <!-- USUARIO -->
             <div class="field">
                 <label>USUARIO (Para iniciar sesión)</label>
                 <div class="inp">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                    <input type="text" name="usuario" class="form-control" required placeholder="Escribe tu usuario" style="border:none; background:transparent;" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                    <input type="text" name="UserName" required placeholder="Escribe tu usuario" />
                 </div>
             </div>
+
+            <!-- CONTRASEÑA -->
             <div class="field">
                 <label>CONTRASEÑA</label>
                 <div class="inp">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                    <input type="password" name="contrasena" class="form-control" required placeholder="••••••••" style="border:none; background:transparent;" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                    <input type="password" name="Contraseña" id="contrasena" required placeholder="••••••••" />
                 </div>
             </div>
+
+            <!-- CONFIRMAR CONTRASEÑA -->
             <div class="field">
                 <label>CONFIRMAR CONTRASEÑA</label>
                 <div class="inp">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                    <input type="password" name="confirm" class="form-control" required placeholder="••••••••" style="border:none; background:transparent;" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                    <input type="password" name="Confirm" id="confirm" required placeholder="••••••••" />
                 </div>
             </div>
 
@@ -133,17 +106,7 @@
     </div>
 </div>
 
-<script>
-    function autocompletarPorCedula() {
-        var cedula = document.getElementById("cedula").value;
-        if (cedula.length >= 9) {
-            document.getElementById("nombre").value = "Carlos";
-            document.getElementById("apellidos").value = "Vargas Mora";
-            document.getElementById("nises").value = "NISE 4021, NISE 7788";
-        } else {
-            document.getElementById("nombre").value = "";
-            document.getElementById("apellidos").value = "";
-            document.getElementById("nises").value = "";
-        }
-    }
-</script>
+<!-- JavaScript externo para Cuenta -->
+@section scripts {
+    <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
+}

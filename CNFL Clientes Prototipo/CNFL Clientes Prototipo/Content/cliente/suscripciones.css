@@ -1,0 +1,161 @@
+﻿/* ==========================================
+   SUSCRIPCIONES - ESTILOS PREMIUM
+   ========================================== */
+
+.suscripcion-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+    .suscripcion-card:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .suscripcion-card.inactiva {
+        opacity: 0.7;
+    }
+
+        .suscripcion-card.inactiva:hover {
+            opacity: 0.85;
+        }
+
+.suscripcion-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px 12px;
+}
+
+.suscripcion-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.suscripcion-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.suscripcion-nombre {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+}
+
+.suscripcion-detalle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.suscripcion-estado {
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+    .suscripcion-estado.activo {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .suscripcion-estado.inactivo {
+        background: #FFEBEE;
+        color: #C62828;
+    }
+
+.suscripcion-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 18px 16px;
+    border-top: 1px solid var(--line);
+    background: #fafbfc;
+}
+
+.suscripcion-precio {
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--blue);
+}
+
+    .suscripcion-precio span {
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--muted);
+    }
+
+.btn-gestionar {
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    .btn-gestionar:hover {
+        background: #1519b3;
+        transform: scale(0.97);
+    }
+
+    .btn-gestionar:active {
+        transform: scale(0.95);
+    }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .suscripcion-header {
+        flex-wrap: wrap;
+        padding: 14px 14px 10px;
+    }
+
+    .suscripcion-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+    }
+
+    .suscripcion-nombre {
+        font-size: 14px;
+    }
+
+    .suscripcion-footer {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 14px 14px;
+    }
+
+    .suscripcion-precio {
+        font-size: 16px;
+    }
+
+    .btn-gestionar {
+        padding: 6px 14px;
+        font-size: 12px;
+        width: 100%;
+        justify-content: center;
+    }
+}

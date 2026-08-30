@@ -1,0 +1,394 @@
+﻿/* ==========================================
+   TIENDA - ESTILOS PREMIUM
+   ========================================== */
+
+/* ===== PROMO BANNER ===== */
+.promo-banner {
+    background: linear-gradient(135deg, var(--orange), #ff8a5c, #ff6b35);
+    color: #fff;
+    border-radius: 24px;
+    padding: 24px 22px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(255, 105, 45, 0.35);
+    transition: 0.3s;
+}
+
+    .promo-banner:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(255, 105, 45, 0.45);
+    }
+
+    .promo-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+    }
+
+    .promo-banner::after {
+        content: '⚡';
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        font-size: 48px;
+        opacity: 0.15;
+    }
+
+    .promo-banner .promo-kicker {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        opacity: 0.85;
+        text-transform: uppercase;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-banner .promo-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin: 6px 0 4px;
+        line-height: 1.2;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-banner .promo-desc {
+        font-size: 13px;
+        opacity: 0.9;
+        line-height: 1.4;
+        max-width: 75%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .promo-banner .btn-cotizar {
+        background: #fff;
+        color: var(--orange);
+        border-radius: 14px;
+        padding: 10px 22px;
+        border: none;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        margin-top: 14px;
+        transition: 0.3s;
+        font-family: inherit;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+        .promo-banner .btn-cotizar:hover {
+            transform: scale(0.96);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+        }
+
+/* ===== CATEGORÍAS ===== */
+.cat-scroll {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+    padding: 0 0 20px 0;
+}
+
+.cat-card {
+    flex: 0 0 46%;
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px 10px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--line);
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+    .cat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--blue), #5a60f5);
+        opacity: 0;
+        transition: 0.4s;
+    }
+
+    .cat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        border-color: var(--blue);
+    }
+
+        .cat-card:hover::before {
+            opacity: 1;
+        }
+
+    .cat-card:active {
+        transform: scale(0.96);
+    }
+
+    .cat-card .cat-icon {
+        font-size: 34px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .cat-card span {
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1.4;
+        display: block;
+        text-align: center;
+    }
+
+/* ===== PRODUCTOS ===== */
+.pgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.prod {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+    .prod:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+        border-color: var(--blue);
+    }
+
+    .prod .img {
+        height: 100px;
+        display: grid;
+        place-items: center;
+        font-size: 38px;
+        background: linear-gradient(135deg, #f7f8fc, #eef0f5);
+        position: relative;
+    }
+
+        .prod .img .badge-oferta {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--red);
+            color: white;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+    .prod .b {
+        padding: 12px 14px 14px;
+    }
+
+    .prod .n {
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.3;
+        min-height: 34px;
+        color: var(--ink);
+    }
+
+    .prod .pr {
+        font-weight: 800;
+        font-size: 16px;
+        margin-top: 6px;
+        color: var(--blue);
+    }
+
+        .prod .pr .old-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: line-through;
+            margin-left: 8px;
+        }
+
+    .prod .add {
+        margin-top: 10px;
+        width: 100%;
+        background: linear-gradient(135deg, var(--orange), #ff8a5c);
+        color: #fff;
+        border: 0;
+        font-weight: 800;
+        font-size: 12px;
+        padding: 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-family: inherit;
+        box-shadow: 0 4px 16px rgba(255, 105, 45, 0.2);
+    }
+
+        .prod .add:hover {
+            transform: scale(0.97);
+            box-shadow: 0 6px 24px rgba(255, 105, 45, 0.3);
+        }
+
+        .prod .add:active {
+            transform: scale(0.94);
+        }
+
+        .prod .add.agregado {
+            background: #2E7D32;
+            box-shadow: 0 4px 16px rgba(46, 125, 50, 0.3);
+        }
+
+/* ===== CARRITO FLOTANTE ===== */
+.carrito-flotante {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    background: var(--blue);
+    color: white;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 8px 30px rgba(30, 35, 230, 0.4);
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 100;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+    .carrito-flotante:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 40px rgba(30, 35, 230, 0.5);
+    }
+
+    .carrito-flotante .contador {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: var(--red);
+        color: white;
+        font-size: 11px;
+        font-weight: 800;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        border: 2px solid white;
+    }
+
+    .carrito-flotante i {
+        font-size: 24px;
+    }
+
+/* ===== TOAST NOTIFICACIÓN ===== */
+.toast-notificacion {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2E7D32;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    animation: slideUp 0.3s ease;
+    max-width: 90%;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .promo-banner {
+        padding: 18px 16px;
+    }
+
+        .promo-banner .promo-title {
+            font-size: 17px;
+        }
+
+        .promo-banner .promo-desc {
+            max-width: 100%;
+            font-size: 12px;
+        }
+
+    .pgrid {
+        gap: 10px;
+    }
+
+    .prod .img {
+        height: 80px;
+        font-size: 30px;
+    }
+
+    .prod .n {
+        font-size: 12px;
+        min-height: 28px;
+    }
+
+    .prod .pr {
+        font-size: 14px;
+    }
+
+    .cat-card {
+        flex: 0 0 46%;
+        padding: 14px 8px;
+    }
+
+        .cat-card .cat-icon {
+            font-size: 28px;
+        }
+
+        .cat-card span {
+            font-size: 11px;
+        }
+
+    .carrito-flotante {
+        width: 48px;
+        height: 48px;
+        bottom: 90px;
+        right: 14px;
+    }
+
+        .carrito-flotante i {
+            font-size: 20px;
+        }
+
+        .carrito-flotante .contador {
+            width: 18px;
+            height: 18px;
+            font-size: 9px;
+        }
+}

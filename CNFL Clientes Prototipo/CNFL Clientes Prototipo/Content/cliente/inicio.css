@@ -1,0 +1,179 @@
+﻿/* ==========================================
+   CLIENTE INICIO - ESTILOS
+   ========================================== */
+
+/* ===== FACTURA ===== */
+.bill {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: #fff;
+    border-radius: 24px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 18px 34px -12px rgba(30, 35, 230, .55);
+}
+
+    .bill .bill-lbl {
+        font-size: 12px;
+        font-weight: 700;
+        opacity: .85;
+        letter-spacing: .05em;
+    }
+
+    .bill .bill-amt {
+        font-size: 34px;
+        font-weight: 800;
+        margin: 6px 0 2px;
+    }
+
+    .bill .bill-due {
+        font-size: 12px;
+        opacity: .85;
+    }
+
+.btn-ghost {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    padding: 13px 18px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+.btn-cta {
+    background: var(--orange);
+    color: #fff;
+    padding: 13px 20px;
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 8px 18px -6px rgba(255, 105, 45, .7);
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .btn-cta:hover {
+        transform: scale(0.97);
+        background: #e85a21;
+    }
+
+/* ===== NISE ===== */
+.nise {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .nise:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .nise .ring {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+.pill {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 5px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.st-normal {
+    background: #e9f7ec;
+    color: #2f8f3e;
+}
+
+.st-prev {
+    background: #fef3e0;
+    color: #b9791a;
+}
+
+.st-inc {
+    background: #fdeaea;
+    color: #c93a3f;
+}
+
+/* ===== CARD ===== */
+.card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 18px;
+    margin-bottom: 15px;
+}
+
+.chip {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #eef0f7;
+    color: var(--muted);
+    cursor: pointer;
+    border: 0;
+    font-family: inherit;
+    transition: 0.2s;
+}
+
+    .chip.active {
+        background: var(--blue);
+        color: #fff;
+    }
+
+    .chip:hover {
+        transform: scale(0.95);
+    }
+
+/* ===== GRÁFICO ===== */
+.barra {
+    flex: 1;
+    border-radius: 8px 8px 4px 4px;
+    transition: height 0.6s ease;
+    min-height: 8px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .bill .bill-amt {
+        font-size: 28px;
+    }
+
+    .btn-ghost,
+    .btn-cta {
+        padding: 10px 14px;
+        font-size: 12px;
+    }
+
+    .nise {
+        padding: 12px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+}

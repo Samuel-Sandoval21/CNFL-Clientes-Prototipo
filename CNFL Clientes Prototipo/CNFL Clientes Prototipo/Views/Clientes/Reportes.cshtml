@@ -1,0 +1,167 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Reportes - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Reportes -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/reportes.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="reportes_titulo">
+        <i class="fas fa-map-marked-alt" style="color:var(--blue);"></i> Reportes y mapa
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="reportes_subtitulo">
+        Reporta una avería con foto y ubicación GPS.
+    </div>
+</div>
+
+<!-- ===== MAPA ===== -->
+<div class="section-pad">
+    <div class="map-container" onclick="verMapaCompleto()">
+        <div class="map-bg"></div>
+        <div class="map-grid"></div>
+        <div class="map-streets"></div>
+        <div class="map-pin">
+            <i class="fas fa-exclamation"></i>
+            <span class="pin-label">Activa</span>
+        </div>
+        <div class="map-pin">
+            <i class="fas fa-clock"></i>
+            <span class="pin-label">Revisión</span>
+        </div>
+        <div class="map-pin">
+            <i class="fas fa-check"></i>
+            <span class="pin-label">Resuelta</span>
+        </div>
+        <div class="map-status">
+            <span class="dot"></span>
+            <span>En vivo</span>
+        </div>
+        <div class="map-overlay">
+            <i class="fas fa-expand-alt"></i> Toca para ver mapa
+        </div>
+    </div>
+
+    <div class="map-legend">
+        <span class="legend-item">
+            <span class="legend-dot rojo"></span>
+            <span data-i18n="averias">Averías activas</span>
+        </span>
+        <span class="legend-item">
+            <span class="legend-dot amarillo"></span>
+            <span data-i18n="recarga_electrica">En revisión</span>
+        </span>
+        <span class="legend-item">
+            <span class="legend-dot verde"></span>
+            <span data-i18n="puntos_verdes">Resueltas</span>
+        </span>
+    </div>
+</div>
+
+<!-- ===== ESTADO DE MIS AVERÍAS ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="estado_mis_averias">
+        <i class="fas fa-clipboard-list" style="color:var(--blue);"></i> ESTADO DE MIS AVERÍAS
+    </div>
+
+    <div class="averia-item" onclick="verDetalleAveria(1)">
+        <div class="averia-header">
+            <div>
+                <div class="averia-titulo">
+                    <span class="icono">⚡</span>
+                    Transformador dañado
+                </div>
+                <div class="averia-detalle">
+                    <span><i class="fas fa-map-pin"></i> Barrio Los Ángeles, Cartago</span>
+                    <span><i class="fas fa-calendar-alt"></i> 29/08/2026 10:49</span>
+                </div>
+            </div>
+            <span class="averia-estado reportado" data-i18n="pendiente">Reportado</span>
+        </div>
+        <div class="averia-descripcion">
+            Se escuchan explosiones y no hay luz en el sector
+        </div>
+        <div class="averia-progreso">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width:25%;"></div>
+            </div>
+            <div class="progress-info">
+                <span class="etapa">
+                    <span class="dot"></span> En proceso
+                </span>
+                <span class="porcentaje">25%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== NUEVO REPORTE ===== -->
+<div class="section-pad">
+    <div class="eyebrow" data-i18n="nuevo_reporte">
+        <i class="fas fa-plus-circle" style="color:var(--green);"></i> NUEVO REPORTE
+    </div>
+
+    <div class="nuevo-reporte-grid">
+        <!-- Alumbrado Público -->
+        <div class="nuevo-reporte-card" data-tipo="alumbrado" onclick="irAReporte('alumbrado')">
+            <span class="card-number">01</span>
+            <div class="icon-wrapper">
+                <span class="icono-grande">💡</span>
+            </div>
+            <div class="titulo" data-i18n="averia_alumbrado">Avería en alumbrado público</div>
+            <div class="subtitulo" data-i18n="foto_poste">Foto + número de poste</div>
+            <span class="badge-tipo alumbrado">Alumbrado</span>
+            <span class="icono-flecha"><i class="fas fa-chevron-right"></i></span>
+        </div>
+
+        <!-- Avería Eléctrica Propia -->
+        <div class="nuevo-reporte-card" data-tipo="propia" onclick="irAReporte('propia')">
+            <span class="card-number">02</span>
+            <div class="icon-wrapper">
+                <span class="icono-grande">🏠</span>
+            </div>
+            <div class="titulo" data-i18n="averia_propia">Avería eléctrica propia</div>
+            <div class="subtitulo" data-i18n="tu_nise">En tu NISE registrado</div>
+            <span class="badge-tipo propia">Propia</span>
+            <span class="icono-flecha"><i class="fas fa-chevron-right"></i></span>
+        </div>
+
+        <!-- Avería Eléctrica Ajena -->
+        <div class="nuevo-reporte-card destacada" data-tipo="ajena" onclick="irAReporte('ajena')">
+            <span class="card-number">03</span>
+            <div class="icon-wrapper">
+                <span class="icono-grande">📍</span>
+            </div>
+            <div class="titulo" data-i18n="averia_ajena">Avería eléctrica ajena</div>
+            <div class="subtitulo" data-i18n="sube_fotos">Sube fotos y ubicación GPS</div>
+            <span class="badge-tipo ajena">Ajena</span>
+            <span class="icono-flecha"><i class="fas fa-chevron-right"></i></span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CONSEJO RÁPIDO ===== -->
+<div class="section-pad">
+    <div class="tip-card">
+        <div class="tip-icon">💡</div>
+        <div class="tip-content">
+            <div class="tip-title">Consejo rápido</div>
+            <div class="tip-text">
+                Para un reporte más rápido, ten a mano tu <strong>NISE</strong> y una <strong>foto</strong> del problema.
+                Así podremos atenderte mejor.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript externo para Reportes -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/reportes.js")"></script>
+}

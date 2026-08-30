@@ -1,0 +1,885 @@
+﻿/* ==========================================
+   CLIENTE REPORTES - ESTILOS PREMIUM
+   ========================================== */
+
+/* ===== MAPA ===== */
+.map-container {
+    height: 220px;
+    background: linear-gradient(135deg, #0a1628, #1a2a4a, #2d4a7a);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 32px rgba(10, 22, 40, 0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+    .map-container:hover {
+        transform: scale(1.01);
+        box-shadow: 0 12px 48px rgba(10, 22, 40, 0.5);
+    }
+
+    .map-container .map-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 30% 80%, rgba(100, 185, 205, 0.1), transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(30, 35, 230, 0.08), transparent 50%);
+        z-index: 0;
+    }
+
+    .map-container .map-grid {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+        z-index: 0;
+    }
+
+    .map-container .map-streets {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        opacity: 0.3;
+    }
+
+        .map-container .map-streets::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 10%;
+            right: 60%;
+            height: 2px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
+            transform: rotate(-15deg);
+        }
+
+        .map-container .map-streets::after {
+            content: '';
+            position: absolute;
+            top: 60%;
+            left: 40%;
+            right: 20%;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            transform: rotate(25deg);
+        }
+
+/* ===== PINES DEL MAPA ===== */
+.map-pin {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50% 50% 50% 2px;
+    transform: rotate(45deg);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    animation: float-pin 3s ease-in-out infinite;
+    cursor: pointer;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+    .map-pin::after {
+        content: '';
+        position: absolute;
+        inset: -6px;
+        border-radius: 50% 50% 50% 2px;
+        border: 2px solid rgba(255,255,255,0.08);
+        animation: ring-pin 2s ease-in-out infinite;
+    }
+
+    .map-pin:hover {
+        transform: rotate(45deg) scale(1.25);
+        z-index: 10;
+    }
+
+    .map-pin i {
+        transform: rotate(-45deg);
+        color: #fff;
+        font-size: 16px;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    .map-pin .pin-label {
+        position: absolute;
+        bottom: -30px;
+        left: 50%;
+        transform: rotate(-45deg) translateX(-50%);
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(8px);
+        color: white;
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 12px;
+        border-radius: 10px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: 0.4s;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .map-pin:hover .pin-label {
+        opacity: 1;
+        transform: rotate(-45deg) translateX(-50%) translateY(-4px);
+    }
+
+    .map-pin:nth-child(3) {
+        top: 18%;
+        left: 12%;
+        animation-delay: 0s;
+    }
+
+    .map-pin:nth-child(4) {
+        top: 42%;
+        left: 68%;
+        animation-delay: 1s;
+    }
+
+    .map-pin:nth-child(5) {
+        top: 72%;
+        left: 25%;
+        animation-delay: 2s;
+    }
+
+    .map-pin:nth-child(3) {
+        background: linear-gradient(135deg, #E5484D, #b71c1c);
+    }
+
+    .map-pin:nth-child(4) {
+        background: linear-gradient(135deg, #F5A623, #e65100);
+    }
+
+    .map-pin:nth-child(5) {
+        background: linear-gradient(135deg, #43A047, #1b5e20);
+    }
+
+@keyframes float-pin {
+    0%, 100% {
+        transform: rotate(45deg) translateY(0);
+    }
+
+    50% {
+        transform: rotate(45deg) translateY(-6px);
+    }
+}
+
+@keyframes ring-pin {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.4);
+        opacity: 0;
+    }
+}
+
+/* ===== MAP OVERLAY ===== */
+.map-container .map-overlay {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    color: white;
+    padding: 8px 22px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 5;
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: 0.4s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+}
+
+    .map-container .map-overlay:hover {
+        background: rgba(0,0,0,0.8);
+        transform: translateX(-50%) scale(1.05);
+    }
+
+    .map-container .map-overlay i {
+        font-size: 13px;
+    }
+
+.map-container .map-status {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+    .map-container .map-status .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #43A047;
+        animation: pulse-dot 2s infinite;
+    }
+
+    .map-container .map-status span {
+        color: rgba(255,255,255,0.75);
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* ===== LEYENDA ===== */
+.map-legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding: 14px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid var(--line);
+    justify-content: center;
+}
+
+    .map-legend .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        padding: 4px 12px 4px 4px;
+        border-radius: 10px;
+        transition: 0.3s;
+        cursor: default;
+    }
+
+        .map-legend .legend-item:hover {
+            background: #f7f8fc;
+            transform: translateX(4px);
+        }
+
+    .map-legend .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        border: 2px solid rgba(255,255,255,0.5);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+        .map-legend .legend-dot.rojo {
+            background: linear-gradient(135deg, #E5484D, #b71c1c);
+        }
+
+        .map-legend .legend-dot.amarillo {
+            background: linear-gradient(135deg, #F5A623, #e65100);
+        }
+
+        .map-legend .legend-dot.verde {
+            background: linear-gradient(135deg, #43A047, #1b5e20);
+        }
+
+/* ===== ESTADO DE AVERÍAS ===== */
+.averia-item {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px 22px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    margin-bottom: 16px;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+    .averia-item:hover {
+        box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+        transform: translateY(-4px);
+    }
+
+    .averia-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, #F5A623, #e68900);
+        border-radius: 4px 0 0 4px;
+    }
+
+    .averia-item .averia-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .averia-item .averia-titulo {
+        font-weight: 700;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+    }
+
+        .averia-item .averia-titulo .icono {
+            font-size: 20px;
+        }
+
+    .averia-item .averia-detalle {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 18px;
+    }
+
+        .averia-item .averia-detalle span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .averia-item .averia-detalle i {
+            color: var(--muted);
+            font-size: 13px;
+            width: 16px;
+        }
+
+    .averia-item .averia-descripcion {
+        font-size: 14px;
+        color: var(--ink);
+        margin-top: 10px;
+        padding: 12px 16px;
+        background: #f7f8fc;
+        border-radius: 12px;
+        line-height: 1.6;
+        border: 1px solid #f0f1f5;
+        position: relative;
+        padding-left: 32px;
+    }
+
+        .averia-item .averia-descripcion::before {
+            content: '"';
+            font-size: 28px;
+            color: var(--blue);
+            opacity: 0.15;
+            position: absolute;
+            top: 2px;
+            left: 10px;
+            font-family: Georgia, serif;
+        }
+
+    .averia-item .averia-estado {
+        display: inline-block;
+        padding: 6px 18px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        flex-shrink: 0;
+        border: 1px solid transparent;
+    }
+
+        .averia-item .averia-estado.reportado {
+            background: #FFEBEE;
+            color: #C62828;
+            border-color: #FFCDD2;
+        }
+
+        .averia-item .averia-estado.revision {
+            background: #FFF8E1;
+            color: #E65100;
+            border-color: #FFE0B2;
+        }
+
+        .averia-item .averia-estado.camino {
+            background: #E3F2FD;
+            color: #0D47A1;
+            border-color: #BBDEFB;
+        }
+
+        .averia-item .averia-estado.resuelto {
+            background: #E8F5E9;
+            color: #1B5E20;
+            border-color: #C8E6C9;
+        }
+
+/* ===== PROGRESO ===== */
+.averia-progreso {
+    margin-top: 14px;
+}
+
+    .averia-progreso .progress-bar {
+        height: 8px;
+        background: #eef0f5;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .averia-progreso .progress-bar .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #1E23E6, #5a60f5, #7c4dff);
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            width: 25%;
+        }
+
+            .averia-progreso .progress-bar .progress-fill::after {
+                content: '';
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 40px;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4));
+                border-radius: 10px;
+                animation: shimmer-progress 2s infinite;
+            }
+
+@keyframes shimmer-progress {
+    0% {
+        transform: translateX(-40px);
+    }
+
+    100% {
+        transform: translateX(40px);
+    }
+}
+
+.averia-progreso .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+    .averia-progreso .progress-info .porcentaje {
+        color: var(--blue);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .averia-progreso .progress-info .etapa {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .averia-progreso .progress-info .etapa .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--blue);
+            animation: pulse-dot-progress 1.5s infinite;
+        }
+
+@keyframes pulse-dot-progress {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(0.7);
+    }
+}
+
+/* ===== NUEVO REPORTE - CARDS PREMIUM ===== */
+.nuevo-reporte-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-top: 4px;
+}
+
+.nuevo-reporte-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px 16px 20px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+    .nuevo-reporte-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue), #5a60f5, #7c4dff);
+        opacity: 0;
+        transition: 0.5s;
+    }
+
+    .nuevo-reporte-card:hover::before {
+        opacity: 1;
+    }
+
+    .nuevo-reporte-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        border-color: var(--blue);
+    }
+
+    .nuevo-reporte-card:active {
+        transform: scale(0.96);
+    }
+
+    .nuevo-reporte-card .icon-wrapper {
+        display: inline-block;
+        padding: 16px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #f0f2ff, #e8f0fe);
+        transition: 0.5s;
+        margin-bottom: 12px;
+    }
+
+    .nuevo-reporte-card:hover .icon-wrapper {
+        background: linear-gradient(135deg, #e8f0fe, #dce8f5);
+        transform: scale(1.05) rotate(-4deg);
+    }
+
+    .nuevo-reporte-card .icono-grande {
+        font-size: 36px;
+        display: block;
+        line-height: 1;
+    }
+
+    .nuevo-reporte-card .titulo {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--ink);
+        margin-top: 4px;
+        line-height: 1.3;
+    }
+
+    .nuevo-reporte-card .subtitulo {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+        line-height: 1.4;
+    }
+
+    .nuevo-reporte-card .badge-tipo {
+        display: inline-block;
+        padding: 4px 16px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 700;
+        margin-top: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+        .nuevo-reporte-card .badge-tipo.alumbrado {
+            background: #fef3e0;
+            color: #b9791a;
+        }
+
+        .nuevo-reporte-card .badge-tipo.propia {
+            background: #fdeaea;
+            color: #c93a3f;
+        }
+
+        .nuevo-reporte-card .badge-tipo.ajena {
+            background: #eef6ff;
+            color: #1a3a7a;
+        }
+
+    .nuevo-reporte-card .icono-flecha {
+        color: #c3c8d4;
+        font-size: 13px;
+        margin-top: 12px;
+        display: block;
+        transition: 0.4s;
+    }
+
+    .nuevo-reporte-card:hover .icono-flecha {
+        transform: translateX(8px);
+        color: var(--blue);
+    }
+
+    .nuevo-reporte-card .card-number {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        font-size: 11px;
+        font-weight: 800;
+        color: rgba(0,0,0,0.05);
+        letter-spacing: 1px;
+    }
+
+    /* ===== CARD DESTACADA ===== */
+    .nuevo-reporte-card.destacada {
+        background: linear-gradient(135deg, #fff5f0, #fff0e8);
+        border-color: var(--orange);
+    }
+
+        .nuevo-reporte-card.destacada::before {
+            background: linear-gradient(90deg, var(--orange), #ff8a5c);
+        }
+
+        .nuevo-reporte-card.destacada .icon-wrapper {
+            background: linear-gradient(135deg, #fff0e8, #ffe8e0);
+        }
+
+        .nuevo-reporte-card.destacada .badge-tipo.ajena {
+            background: rgba(255, 105, 45, 0.15);
+            color: var(--orange);
+        }
+
+        .nuevo-reporte-card.destacada:hover {
+            border-color: var(--orange);
+            box-shadow: 0 20px 60px rgba(255, 105, 45, 0.2);
+        }
+
+/* ===== CONSEJO RÁPIDO ===== */
+.tip-card {
+    background: linear-gradient(135deg, #f0f2ff, #e8f0fe);
+    border-radius: 16px;
+    padding: 16px 20px;
+    border: 1px solid #dce8f5;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: 0.4s;
+    margin-top: 8px;
+    cursor: default;
+}
+
+    .tip-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 32px rgba(30, 35, 230, 0.08);
+    }
+
+    .tip-card .tip-icon {
+        font-size: 28px;
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        background: rgba(30, 35, 230, 0.08);
+        border-radius: 14px;
+    }
+
+    .tip-card .tip-content .tip-title {
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--blue);
+    }
+
+    .tip-card .tip-content .tip-text {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.5;
+        margin-top: 2px;
+    }
+
+        .tip-card .tip-content .tip-text strong {
+            color: var(--ink);
+        }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .map-container {
+        height: 180px;
+    }
+
+    .map-pin {
+        width: 34px;
+        height: 34px;
+    }
+
+        .map-pin i {
+            font-size: 14px;
+        }
+
+        .map-pin .pin-label {
+            display: none;
+        }
+
+    .map-container .map-overlay {
+        font-size: 10px;
+        padding: 6px 16px;
+        bottom: 12px;
+    }
+
+    .map-container .map-status {
+        top: 12px;
+        right: 12px;
+        padding: 4px 10px;
+    }
+
+        .map-container .map-status span {
+            font-size: 10px;
+        }
+
+    .map-legend {
+        padding: 10px 14px;
+        gap: 10px;
+    }
+
+        .map-legend .legend-item {
+            font-size: 10px;
+            padding: 2px 8px 2px 2px;
+        }
+
+        .map-legend .legend-dot {
+            width: 10px;
+            height: 10px;
+        }
+
+    .nuevo-reporte-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+    }
+
+    .nuevo-reporte-card {
+        padding: 16px 10px 14px;
+    }
+
+        .nuevo-reporte-card .icon-wrapper {
+            padding: 12px;
+            border-radius: 16px;
+        }
+
+        .nuevo-reporte-card .icono-grande {
+            font-size: 28px;
+        }
+
+        .nuevo-reporte-card .titulo {
+            font-size: 11px;
+        }
+
+        .nuevo-reporte-card .subtitulo {
+            font-size: 10px;
+        }
+
+        .nuevo-reporte-card .badge-tipo {
+            font-size: 9px;
+            padding: 3px 12px;
+            margin-top: 8px;
+        }
+
+        .nuevo-reporte-card .card-number {
+            display: none;
+        }
+
+    .averia-item {
+        padding: 14px 16px;
+    }
+
+        .averia-item .averia-titulo {
+            font-size: 14px;
+        }
+
+        .averia-item .averia-descripcion {
+            font-size: 13px;
+            padding: 10px 12px 10px 28px;
+        }
+
+            .averia-item .averia-descripcion::before {
+                font-size: 22px;
+                top: 0;
+                left: 8px;
+            }
+
+        .averia-item .averia-detalle {
+            font-size: 12px;
+            gap: 2px 12px;
+        }
+
+    .tip-card {
+        padding: 12px 16px;
+        gap: 10px;
+    }
+
+        .tip-card .tip-icon {
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+        }
+}
+
+/* ===== ANIMACIONES DE ENTRADA ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.nuevo-reporte-card {
+    animation: fadeInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    opacity: 0;
+}
+
+    .nuevo-reporte-card:nth-child(1) {
+        animation-delay: 0.05s;
+    }
+
+    .nuevo-reporte-card:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+
+    .nuevo-reporte-card:nth-child(3) {
+        animation-delay: 0.25s;
+    }
+
+.averia-item {
+    animation: fadeInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    opacity: 0;
+}
+
+    .averia-item:nth-child(1) {
+        animation-delay: 0.1s;
+    }

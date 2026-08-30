@@ -1,0 +1,113 @@
+﻿/* ==========================================
+   SERVICIOS CONTRATADOS - ESTILOS
+   ========================================== */
+
+.servicio-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    margin-bottom: 10px;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+}
+
+    .servicio-card:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        transform: translateX(6px);
+        border-color: #d0d7e0;
+    }
+
+    .servicio-card:active {
+        transform: scale(0.98);
+    }
+
+.servicio-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.servicio-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.servicio-nombre {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+}
+
+.servicio-detalle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.servicio-estado {
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+    .servicio-estado.activo {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+    .servicio-estado.inactivo {
+        background: #FFEBEE;
+        color: #C62828;
+    }
+
+.servicio-card .fa-chevron-right {
+    color: #c3c8d4;
+    font-size: 14px;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+
+.servicio-card:hover .fa-chevron-right {
+    color: var(--blue);
+    transform: translateX(4px);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .servicio-card {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .servicio-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+    }
+
+    .servicio-nombre {
+        font-size: 14px;
+    }
+
+    .servicio-detalle {
+        font-size: 11px;
+    }
+
+    .servicio-estado {
+        font-size: 10px;
+        padding: 3px 10px;
+    }
+}

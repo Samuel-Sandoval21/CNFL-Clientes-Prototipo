@@ -1,0 +1,80 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Calculadora - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS externo para Calculadora -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/calculadora.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2" data-i18n="calculadora_titulo">
+        <i class="fas fa-calculator" style="color:var(--amber);"></i> Calculadora energética
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="calculadora_subtitulo">
+        Estima el costo de tus equipos según las horas de uso.
+    </div>
+</div>
+
+<div class="section-pad">
+    <div class="calculadora-card">
+        <!-- ===== INPUT ===== -->
+        <div class="form-group">
+            <label for="kwhInput" data-i18n="cuantos_kwh">¿Cuántos kWh consumiste?</label>
+            <div class="input-wrapper">
+                <input type="number" id="kwhInput" placeholder="Ej: 200" class="form-input" />
+                <span class="input-suffix">kWh</span>
+            </div>
+        </div>
+
+        <!-- ===== RESULTADO ===== -->
+        <div id="resultadoConsumo" style="display:none;">
+            <div class="resultado-card">
+                <div class="resultado-icon">💰</div>
+                <div>
+                    <div class="resultado-label" data-i18n="costo_aproximado">El costo aproximado es:</div>
+                    <div class="resultado-monto" id="costoCalculado">₡ 19.000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== BOTÓN CALCULAR ===== -->
+        <button class="btn-calcular" onclick="calcularConsumo()">
+            <i class="fas fa-calculator"></i> <span data-i18n="calcular_costo">Calcular costo estimado</span>
+        </button>
+
+        <!-- ===== EQUIPOS COMUNES ===== -->
+        <div class="equipos-comunes">
+            <div class="equipos-label">⚡ Equipos comunes</div>
+            <div class="equipos-grid">
+                <div class="equipo-item" onclick="setKwh(50)">
+                    <span class="equipo-icon">💡</span>
+                    <span>Foco LED<br><small>50 kWh</small></span>
+                </div>
+                <div class="equipo-item" onclick="setKwh(200)">
+                    <span class="equipo-icon">📺</span>
+                    <span>TV<br><small>200 kWh</small></span>
+                </div>
+                <div class="equipo-item" onclick="setKwh(350)">
+                    <span class="equipo-icon">🧊</span>
+                    <span>Refrigerador<br><small>350 kWh</small></span>
+                </div>
+                <div class="equipo-item" onclick="setKwh(500)">
+                    <span class="equipo-icon">❄️</span>
+                    <span>Aire acond.<br><small>500 kWh</small></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript externo para Calculadora -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/calculadora.js")"></script>
+}

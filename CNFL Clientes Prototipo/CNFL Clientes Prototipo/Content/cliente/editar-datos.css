@@ -1,0 +1,98 @@
+﻿/* ==========================================
+   EDITAR DATOS - ESTILOS PREMIUM
+   ========================================== */
+
+.editar-form {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+    .editar-form .form-group {
+        margin-bottom: 18px;
+    }
+
+        .editar-form .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .editar-form .form-group .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--line);
+            border-radius: 14px;
+            font-family: inherit;
+            font-size: 15px;
+            transition: 0.3s;
+            background: white;
+            color: var(--ink);
+        }
+
+            .editar-form .form-group .form-input:focus {
+                outline: none;
+                border-color: var(--blue);
+                box-shadow: 0 0 0 4px rgba(30, 35, 230, 0.08);
+            }
+
+            .editar-form .form-group .form-input::placeholder {
+                color: var(--muted);
+                opacity: 0.7;
+            }
+
+        .editar-form .form-group .input-hint {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+.btn-guardar {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--blue), #5a60f5);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: inherit;
+    box-shadow: 0 6px 20px rgba(30, 35, 230, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+    .btn-guardar:hover {
+        transform: scale(0.98);
+        box-shadow: 0 8px 30px rgba(30, 35, 230, 0.4);
+    }
+
+    .btn-guardar:active {
+        transform: scale(0.95);
+    }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .editar-form {
+        padding: 16px;
+    }
+
+        .editar-form .form-group .form-input {
+            font-size: 14px;
+            padding: 10px 14px;
+        }
+
+    .btn-guardar {
+        font-size: 14px;
+        padding: 12px;
+    }
+}

@@ -1,128 +1,96 @@
-﻿@{
+﻿@model dynamic
+
+@{
     ViewBag.Title = "Iniciar Sesión";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<style>
-    .field {
-        margin-top: 16px;
-    }
+<!-- CSS externo para Cuenta -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/cuenta.css")" />
 
-        .field label {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--muted);
-            display: block;
-            margin-bottom: 7px;
-        }
-
-        .field .inp {
-            background: #fff;
-            border: 1.5px solid var(--line);
-            border-radius: 14px;
-            padding: 14px 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-            .field .inp input {
-                border: none;
-                outline: none;
-                width: 100%;
-                font-family: inherit;
-                font-size: 14px;
-                background: transparent;
-            }
-
-    .btn-login {
-        background: var(--orange);
-        color: #fff;
-        border: none;
-        border-radius: 14px;
-        padding: 14px;
-        width: 100%;
-        font-size: 15px;
-        font-weight: 800;
-        cursor: pointer;
-        margin-top: 20px;
-        box-shadow: 0 8px 18px -6px rgba(255,105,45,.7);
-    }
-
-    .footer-text {
-        font-size: 14px;
-        color: var(--muted);
-        text-align: center;
-        margin-top: 24px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        gap: 5px;
-    }
-
-        .footer-text a {
-            color: var(--blue);
-            font-weight: 800;
-            text-decoration: none;
-            font-size: 14px;
-        }
-</style>
-
-<div class="login-wrap" style="padding: 20px 20px 0; margin-top: 60px;">
-    <div style="margin-top: -50px; margin-bottom: 20px;">
-        <div class="brand-logo" style="display: flex; align-items: center;">
-            <svg width="55" height="55" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25 5L10 25H18L12 45L35 22H25L30 5Z" stroke="#1E23E6" stroke-width="4" stroke-linejoin="round" />
-                <path d="M12 33C15 43 25 48 35 44C42 41 47 34 46 28" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
-                <path d="M38 5C30 1 20 3 15 10" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
-            </svg>
-            <span style="font-family:'Montserrat'; font-weight:900; font-size:32px; color:#FF692D; letter-spacing: -2px;">cnfl</span>
-        </div>
+<div class="login-wrap">
+    <div class="brand-logo">
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M25 5L10 25H18L12 45L35 22H25L30 5Z" stroke="#1E23E6" stroke-width="4" stroke-linejoin="round" />
+            <path d="M12 33C15 43 25 48 35 44C42 41 47 34 46 28" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
+            <path d="M38 5C30 1 20 3 15 10" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
+        </svg>
+        <span>cnfl</span>
     </div>
 
-    <div style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin-top: 20px; line-height: 1.15;">Tu energía,<br>en una sola app.</div>
-    <div style="color: var(--muted); font-size: 13.5px; margin-top: 8px; line-height: 1.5;">Ingresa con las credenciales de tu Agencia Virtual.</div>
+    <div class="login-title">Tu energía,<br>en una sola app.</div>
+    <div class="login-subtitle">Ingresa con las credenciales de tu Agencia Virtual.</div>
 
-    @if (TempData["RegistroExitoso"] != null)
+    @if (TempData["Mensaje"] != null)
     {
-        <div class="alert alert-success mt-3" style="font-size: 14px; font-weight: 700;">
-            ✅ @TempData["RegistroExitoso"]
+        <div class="alert alert-success mt-3" style="font-size: 14px; font-weight: 700; padding:12px 16px; border-radius:12px;">
+            ✅ @TempData["Mensaje"]
         </div>
     }
 
-    @if (ViewBag.Error != null)
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
     {
-        <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+        <div class="alert alert-danger mt-3" style="font-size: 14px; font-weight: 700; padding:12px 16px; border-radius:12px;">
+            ❌ @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage
+        </div>
     }
 
     @using (Html.BeginForm("Login", "Cuenta", FormMethod.Post))
     {
+        @Html.AntiForgeryToken()
+
         <div class="field">
             <label>USUARIO</label>
             <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="12" r="2.5" /><path d="M14 10h4M14 14h4" /></svg>
-                <input type="text" name="usuario" placeholder="admin o cliente" />
+                <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="12" r="2.5" /><path d="M14 10h4M14 14h4" /></svg>
+                <input type="text" name="UserName" id="UserName" placeholder="admin o cliente" value="cliente" />
             </div>
         </div>
+
         <div class="field">
             <label>CONTRASEÑA</label>
             <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="contrasena" placeholder="••••••••" />
+                <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                <input type="password" name="Contraseña" id="Contraseña" placeholder="••••••••" value="123456" />
             </div>
         </div>
+
         <button type="submit" class="btn-login">Ingresar</button>
     }
 
     <div style="margin-top: 22px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
-        <div style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--navy)); display: grid; place-items: center; cursor: pointer; box-shadow: 0 12px 24px -8px rgba(30,35,230,.6);" onclick="alert('📱 Face ID no disponible en este prototipo, use sus credenciales.')">
+        <div class="face-id-btn" onclick="alert('📱 Face ID no disponible en este prototipo, use sus credenciales.')">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" width="34" height="34"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" /><path d="M9 10v1M15 10v1M12 10v3l-1 1M9 15c1.5 1 4.5 1 6 0" /></svg>
         </div>
         <small style="font-size: 12px; color: var(--muted); font-weight: 700;">Ingresar con Face ID / Huella</small>
     </div>
 
     <div class="footer-text">
-        <span>¿Aún no tienes cuenta?</span> <a href="/Cuenta/Registro">Regístrate con tu cédula</a><br />
+        <span>¿Aún no tienes cuenta?</span> <a href="@Url.Action("Registro", "Cuenta")">Regístrate con tu cédula</a><br />
         <span style="opacity: .8;">Consentimiento informado · Política de privacidad</span>
     </div>
 </div>
+
+<!-- CSS adicional para el botón Face ID -->
+<style>
+    .face-id-btn {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--blue), var(--navy));
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        box-shadow: 0 12px 24px -8px rgba(30,35,230,.6);
+        transition: 0.2s;
+    }
+
+        .face-id-btn:hover {
+            transform: scale(0.95);
+        }
+</style>
+
+<!-- JavaScript externo para Cuenta -->
+@section scripts {
+    <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
+}
