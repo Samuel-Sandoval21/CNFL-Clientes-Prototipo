@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
+
 namespace CNFL_Clientes_Prototipo.Models
 {
     public class Averia
@@ -17,5 +18,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public string FotoUrl { get; set; } // Ruta de la imagen
         public string Latitud { get; set; }
         public string Longitud { get; set; }
+        public string NISE { get; set; } // <-- NUEVO: Agregar esta propiedad
     }
 }

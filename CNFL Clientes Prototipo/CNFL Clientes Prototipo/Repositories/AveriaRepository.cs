@@ -10,7 +10,16 @@ namespace CNFL_Clientes_Prototipo.Repositories
     {
         private static List<Averia> _averias = new List<Averia>()
         {
-            new Averia { Id = 1, Titulo = "Transformador dañado", Descripcion = "Se escuchan explosiones y no hay luz", Direccion = "Barrio Los Ángeles, Cartago", Estado = "En revisión", Fecha = System.DateTime.Now.AddHours(-2), Tipo = "Eléctrica" }
+            new Averia {
+                Id = 1,
+                Titulo = "Transformador dañado",
+                Descripcion = "Se escuchan explosiones y no hay luz",
+                Direccion = "Barrio Los Ángeles, Cartago",
+                Estado = "En revisión",
+                Fecha = System.DateTime.Now.AddHours(-2),
+                Tipo = "Eléctrica",
+                NISE = "402112345" // <-- NUEVO
+            }
         };
 
         public List<Averia> ObtenerTodas()
@@ -20,7 +29,7 @@ namespace CNFL_Clientes_Prototipo.Repositories
 
         public void Agregar(Averia averia)
         {
-            averia.Id = _averias.Max(a => a.Id) + 1;
+            averia.Id = _averias.Count > 0 ? _averias.Max(a => a.Id) + 1 : 1;
             averia.Fecha = System.DateTime.Now;
             averia.Estado = "Reportado";
             _averias.Add(averia);

@@ -3,25 +3,22 @@
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
-<!-- CSS externo para Home Público -->
 <link rel="stylesheet" href="@Url.Content("~/Content/home-publico.css")" />
 
 <div class="public-home">
     <div style="text-align:center; padding: 20px 16px;">
-        <!-- LOGO -->
-        <div style="display:flex; justify-content:center; align-items:center; gap:4px;">
-            <svg width="55" height="55" viewBox="0 0 50 50" fill="none">
-                <path d="M25 5L10 25H18L12 45L35 22H25L30 5Z" stroke="#1E23E6" stroke-width="4" stroke-linejoin="round" />
-                <path d="M12 33C15 43 25 48 35 44C42 41 47 34 46 28" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
-                <path d="M38 5C30 1 20 3 15 10" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
+        <!-- LOGO CORRECTO -->
+        <div style="display:flex; justify-content:center; align-items:center; gap:8px;">
+            <svg width="48" height="48" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="25" cy="25" r="22" stroke="#1E23E6" stroke-width="2.5" />
+                <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#1E23E6" />
             </svg>
-            <span class="logo">cnfl</span>
+            <span style="font-family:'Inter',sans-serif; font-weight:900; font-size:48px; color:#FF692D; letter-spacing:-2px; text-transform:lowercase;">cnfl</span>
         </div>
 
         <h1 class="titulo">Tu energía, en una sola app</h1>
         <p class="subtitulo">Gestiona tu servicio eléctrico desde tu celular</p>
 
-        <!-- BOTONES -->
         <div class="btn-container">
             <a href="@Url.Action("Login", "Cuenta")" class="btn-cta-home">
                 Iniciar Sesión
@@ -31,7 +28,6 @@
             </a>
         </div>
 
-        <!-- CARACTERÍSTICAS -->
         <div class="feature-grid">
             <div class="feature-item">
                 <div class="icon">⚡</div>
@@ -47,7 +43,6 @@
             </div>
         </div>
 
-        <!-- PIE DE PÁGINA -->
         <div class="footer-publico">
             <p>Consentimiento informado · Política de privacidad</p>
             <p>© 2026 CNFL - Todos los derechos reservados</p>

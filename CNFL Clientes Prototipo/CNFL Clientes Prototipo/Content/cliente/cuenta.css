@@ -1,269 +1,246 @@
 ﻿/* ==========================================
-   CUENTA / PERFIL - ESTILOS PREMIUM
+   CUENTA / LOGIN / REGISTRO - ESTILOS
    ========================================== */
 
-/* ===== HEADER DE PERFIL ===== */
-.perfil-header {
-    background: linear-gradient(135deg, var(--navy), var(--blue));
-    border-radius: 24px;
-    padding: 24px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 16px 40px -12px rgba(0, 20, 130, 0.5);
-    position: relative;
-    overflow: hidden;
+/* ===== LOGIN ===== */
+.login-wrap {
+    padding: 20px 20px 0;
+    margin-top: 40px;
 }
 
-    .perfil-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -20%;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 50%;
+    .login-wrap .brand-logo {
+        display: flex;
+        align-items: center;
+        margin-top: -50px;
+        margin-bottom: 20px;
     }
 
-    .perfil-header .perfil-avatar {
-        width: 64px;
-        height: 64px;
-        border-radius: 20px;
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(4px);
-        display: grid;
-        place-items: center;
-        font-size: 26px;
+    .login-wrap .login-title {
+        font-size: 28px;
         font-weight: 800;
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        flex-shrink: 0;
-        position: relative;
-        z-index: 1;
+        letter-spacing: -0.02em;
+        margin-top: 20px;
+        line-height: 1.15;
     }
 
-    .perfil-header .perfil-info {
-        flex: 1;
-        min-width: 0;
-        position: relative;
-        z-index: 1;
+    .login-wrap .login-subtitle {
+        color: var(--muted);
+        font-size: 13.5px;
+        margin-top: 8px;
+        line-height: 1.5;
     }
 
-    .perfil-header .perfil-nombre {
-        font-size: 20px;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-    }
-
-    .perfil-header .perfil-email {
-        font-size: 13px;
-        opacity: 0.8;
-        margin-top: 2px;
-    }
-
-    .perfil-header .perfil-badge {
-        background: rgba(255, 255, 255, 0.15);
-        padding: 4px 14px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 700;
-        backdrop-filter: blur(4px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-/* ===== DATOS PROTEGIDOS ===== */
-.perfil-protegido {
-    background: #e9f7ec;
-    border: 1px solid #cdeed4;
-    border-radius: 16px;
-    padding: 14px 18px;
-    margin-top: 14px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    transition: 0.3s;
+/* ===== CAMPOS ===== */
+.field {
+    margin-top: 16px;
 }
 
-    .perfil-protegido:hover {
-        transform: translateX(4px);
-    }
-
-    .perfil-protegido .icon {
-        color: #2f8f3e;
-        font-size: 20px;
-        width: 40px;
-        height: 40px;
-        display: grid;
-        place-items: center;
-        background: rgba(47, 143, 62, 0.1);
-        border-radius: 12px;
-        flex-shrink: 0;
-    }
-
-    .perfil-protegido .titulo {
-        font-size: 13px;
-        font-weight: 800;
-        color: #2f8f3e;
-    }
-
-    .perfil-protegido .subtitulo {
+    .field label {
         font-size: 12px;
-        color: #4a9a57;
-        margin-top: 1px;
+        font-weight: 800;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 7px;
     }
 
-/* ===== ITEMS DE ACTIVIDAD ===== */
-.perfil-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 14px 18px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    overflow: hidden;
-}
-
-    .perfil-item::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 3px;
-        height: 100%;
-        background: transparent;
-        transition: 0.3s;
+    .field .inp {
+        background: #fff;
+        border: 1.5px solid var(--line);
+        border-radius: 14px;
+        padding: 14px 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
-    .perfil-item:hover {
-        transform: translateX(6px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-        border-color: #d0d7e0;
-    }
-
-        .perfil-item:hover::before {
-            background: var(--blue);
-        }
-
-    .perfil-item .ic {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        display: grid;
-        place-items: center;
-        flex: none;
-        font-size: 18px;
-        transition: 0.3s;
-    }
-
-    .perfil-item:hover .ic {
-        transform: scale(1.05);
-    }
-
-    .perfil-item .tx {
-        flex: 1;
-        min-width: 0;
-    }
-
-        .perfil-item .tx .t {
-            font-weight: 700;
+        .field .inp input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-family: inherit;
             font-size: 14px;
+            background: transparent;
             color: var(--ink);
         }
 
-        .perfil-item .tx .s {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-    .perfil-item .fa-chevron-right {
-        color: #c3c8d4;
-        font-size: 14px;
-        transition: 0.3s;
-    }
-
-    .perfil-item:hover .fa-chevron-right {
-        color: var(--blue);
-        transform: translateX(4px);
-    }
-
-    /* ===== CERRAR SESIÓN ===== */
-    .perfil-item.cerrar-sesion {
-        border-color: #ffcdd2;
-        background: #fdeaea;
-        margin-top: 12px;
-    }
-
-        .perfil-item.cerrar-sesion:hover {
-            background: #ffebee;
-            border-color: var(--red);
-            transform: translateX(6px);
-        }
-
-        .perfil-item.cerrar-sesion::before {
-            background: var(--red);
-        }
-
-        .perfil-item.cerrar-sesion .tx .t {
-            color: var(--red);
-        }
-
-        .perfil-item.cerrar-sesion .tx .s {
-            color: var(--red);
-        }
-
-        .perfil-item.cerrar-sesion .ic {
-            background: #fdeaea;
-        }
-
-            .perfil-item.cerrar-sesion .ic i {
-                color: var(--red);
+            .field .inp input::placeholder {
+                color: var(--muted);
+                opacity: 0.7;
             }
 
-        .perfil-item.cerrar-sesion .fa-chevron-right {
-            color: var(--red);
+        .field .inp .icon {
+            color: var(--muted);
+            flex-shrink: 0;
         }
+
+/* ===== BOTONES ===== */
+.btn-login {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 8px 18px -6px rgba(255, 105, 45, .7);
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+    .btn-login:hover {
+        background: #e85a21;
+        transform: scale(0.98);
+    }
+
+.btn-register {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 8px 18px -6px rgba(30, 35, 230, .7);
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+    .btn-register:hover {
+        background: var(--navy);
+        transform: scale(0.98);
+    }
+
+/* ===== FOOTER ===== */
+.footer-text {
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+    .footer-text a {
+        color: var(--blue);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .footer-text a:hover {
+            text-decoration: underline;
+        }
+
+/* ===== ALERTAS ===== */
+.alert {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 12px;
+}
+
+.alert-success {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #A5D6A7;
+}
+
+.alert-danger {
+    background: #FFEBEE;
+    color: #C62828;
+    border: 1px solid #FFCDD2;
+}
+
+/* ===== REGISTRO ===== */
+.registro-title {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.registro-subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+.registro-hint {
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.card-cliente {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+}
+
+/* ===== FACE ID ===== */
+.face-id-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--navy));
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 12px 24px -8px rgba(30, 35, 230, .6);
+    transition: 0.2s;
+}
+
+    .face-id-btn:hover {
+        transform: scale(0.95);
+    }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
-    .perfil-header {
-        flex-direction: column;
-        text-align: center;
-        padding: 18px;
+    .login-wrap {
+        padding: 16px 16px 0;
+        margin-top: 20px;
     }
 
-        .perfil-header .perfil-avatar {
-            width: 56px;
-            height: 56px;
-            font-size: 22px;
+        .login-wrap .login-title {
+            font-size: 24px;
         }
 
-        .perfil-header .perfil-nombre {
-            font-size: 18px;
-        }
+    .registro-title {
+        font-size: 24px;
+    }
 
-    .perfil-item {
+    .field .inp {
         padding: 12px 14px;
-        gap: 12px;
     }
 
-        .perfil-item .ic {
-            width: 36px;
-            height: 36px;
-            font-size: 16px;
-        }
-
-        .perfil-item .tx .t {
+        .field .inp input {
             font-size: 13px;
         }
 
-        .perfil-item .tx .s {
-            font-size: 11px;
+    .btn-login,
+    .btn-register {
+        font-size: 14px;
+        padding: 13px;
+    }
+
+    .face-id-btn {
+        width: 60px;
+        height: 60px;
+    }
+
+        .face-id-btn svg {
+            width: 28px;
+            height: 28px;
         }
 }

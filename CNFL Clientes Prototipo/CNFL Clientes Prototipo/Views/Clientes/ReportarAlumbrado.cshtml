@@ -5,10 +5,8 @@
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
-<!-- CSS externo para Reportes Form -->
 <link rel="stylesheet" href="@Url.Content("~/Content/cliente/reportes-form.css")" />
 
-<!-- ===== BOTÓN VOLVER ===== -->
 <button class="btn-volver" onclick="history.back();">
     <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
 </button>
@@ -27,19 +25,16 @@
 <div class="section-pad">
     <form class="reporte-form" onsubmit="event.preventDefault(); enviarReporte('alumbrado');">
 
-        <!-- ===== TÍTULO ===== -->
         <div class="form-group">
             <label for="tituloAveria" data-i18n="titulo_averia">Título de la avería</label>
             <input type="text" id="tituloAveria" placeholder="Ej: Poste con cable caído" class="form-input" required />
         </div>
 
-        <!-- ===== DIRECCIÓN ===== -->
         <div class="form-group">
             <label for="direccionAveria" data-i18n="direccion">Dirección</label>
             <input type="text" id="direccionAveria" placeholder="Ej: Avenida 2, Calles 3-5" class="form-input" required />
         </div>
 
-        <!-- ===== TIPO DE PROBLEMA ===== -->
         <div class="form-group">
             <label for="tipoProblema" data-i18n="tipo_problema">Tipo de problema</label>
             <select id="tipoProblema" class="form-input">
@@ -52,19 +47,16 @@
             </select>
         </div>
 
-        <!-- ===== NÚMERO DE POSTE ===== -->
         <div class="form-group">
             <label for="numeroPoste">Número de poste (opcional)</label>
             <input type="text" id="numeroPoste" placeholder="Ej: P-12345" class="form-input" />
         </div>
 
-        <!-- ===== DESCRIPCIÓN ===== -->
         <div class="form-group">
             <label for="descripcionAveria" data-i18n="descripcion_problema">Descripción del problema</label>
             <textarea id="descripcionAveria" rows="3" placeholder="Explique brevemente la situación..." class="form-input" required></textarea>
         </div>
 
-        <!-- ===== ADJUNTAR FOTO ===== -->
         <div class="form-group">
             <label data-i18n="adjuntar_foto">Adjuntar foto / video</label>
             <div class="dropzone" id="dropzone">
@@ -75,7 +67,6 @@
             </div>
         </div>
 
-        <!-- ===== UBICACIÓN ===== -->
         <div class="form-group">
             <button type="button" class="btn-gps" onclick="obtenerUbicacionReporte()">
                 <i class="fas fa-map-pin"></i> <span data-i18n="obtener_ubicacion">Obtener mi ubicación en tiempo real</span>
@@ -83,15 +74,12 @@
             <div class="ubicacion-texto" id="ubicacionTexto"></div>
         </div>
 
-        <!-- ===== ENVIAR ===== -->
         <button type="submit" class="btn-enviar-reporte">
             <i class="fas fa-paper-plane"></i> <span data-i18n="enviar_reporte">Enviar Reporte</span>
         </button>
-
     </form>
 </div>
 
-<!-- JavaScript externo para Reportes Form -->
 @section scriptsVista {
     <script src="@Url.Content("~/Scripts/cliente/reportes-form.js")"></script>
 }

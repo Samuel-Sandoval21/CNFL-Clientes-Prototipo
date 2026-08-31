@@ -5,20 +5,22 @@
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<!-- CSS externo para Cuenta -->
+<!-- CSS separado -->
 <link rel="stylesheet" href="@Url.Content("~/Content/cliente/cuenta.css")" />
 
 <div class="login-wrap">
+    <!-- LOGO CORRECTO -->
     <div class="brand-logo">
-        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M25 5L10 25H18L12 45L35 22H25L30 5Z" stroke="#1E23E6" stroke-width="4" stroke-linejoin="round" />
-            <path d="M12 33C15 43 25 48 35 44C42 41 47 34 46 28" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
-            <path d="M38 5C30 1 20 3 15 10" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
-        </svg>
-        <span>cnfl</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+            <svg width="44" height="44" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="25" cy="25" r="22" stroke="#1E23E6" stroke-width="2.5" />
+                <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#1E23E6" />
+            </svg>
+            <span style="font-family:'Inter',sans-serif; font-weight:900; font-size:36px; color:#FF692D; letter-spacing:-2px; text-transform:lowercase;">cnfl</span>
+        </div>
     </div>
 
-    <div class="login-title">Tu energía,<br>en una sola app.</div>
+    <div class="login-title">Tu energía,<br />en una sola app.</div>
     <div class="login-subtitle">Ingresa con las credenciales de tu Agencia Virtual.</div>
 
     @if (TempData["Mensaje"] != null)
@@ -58,7 +60,13 @@
         <button type="submit" class="btn-login">Ingresar</button>
     }
 
-    <div style="margin-top: 22px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+    <div style="margin-top: 14px; text-align: center;">
+        <a href="#" onclick="recuperarContraseña()" style="color: var(--blue); font-weight: 700; font-size: 13px; text-decoration: none;">
+            ¿Olvidó su clave?
+        </a>
+    </div>
+
+    <div style="margin-top: 12px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
         <div class="face-id-btn" onclick="alert('📱 Face ID no disponible en este prototipo, use sus credenciales.')">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" width="34" height="34"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" /><path d="M9 10v1M15 10v1M12 10v3l-1 1M9 15c1.5 1 4.5 1 6 0" /></svg>
         </div>
@@ -71,7 +79,7 @@
     </div>
 </div>
 
-<!-- CSS adicional para el botón Face ID -->
+<!-- CSS separado para el botón Face ID (puede ir en cuenta.css) -->
 <style>
     .face-id-btn {
         width: 70px;
@@ -90,7 +98,7 @@
         }
 </style>
 
-<!-- JavaScript externo para Cuenta -->
+<!-- JS separado -->
 @section scripts {
     <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
 }

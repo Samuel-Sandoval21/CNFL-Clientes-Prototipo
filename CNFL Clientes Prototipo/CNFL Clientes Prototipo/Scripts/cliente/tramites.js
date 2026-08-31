@@ -1,11 +1,9 @@
 ﻿// ==========================================
-// CLIENTE TRÁMITES - JAVASCRIPT
+// TRÁMITES - JAVASCRIPT CON ENVÍO REAL
 // ==========================================
 
-// ===== VARIABLES GLOBALES =====
 var tramiteSeleccionado = '';
 
-// ===== SELECCIONAR TRÁMITE Y ABRIR FORMULARIO =====
 function seleccionarTramite(tipo) {
     var nombres = {
         'cambio_nombre': 'Cambio de nombre de abonado',
@@ -36,17 +34,14 @@ function seleccionarTramite(tipo) {
 
     tramiteSeleccionado = tipo;
 
-    // Crear modal si no existe
     if (!document.getElementById('modalTramite')) {
         crearModalTramite();
     }
 
-    // Actualizar contenido del modal
     document.getElementById('modalTitulo').textContent = iconos[tipo] + ' ' + nombres[tipo];
     document.getElementById('modalDescripcionTramite').textContent = descripciones[tipo];
     document.getElementById('modalTipo').value = tipo;
 
-    // Limpiar campos
     document.getElementById('modalNise').value = '';
     document.getElementById('modalNombre').value = '';
     document.getElementById('modalCedula').value = '';
@@ -54,7 +49,6 @@ function seleccionarTramite(tipo) {
     document.getElementById('modalCorreo').value = '';
     document.getElementById('modalDescripcion').value = '';
 
-    // Mostrar campos adicionales según el tipo
     var camposAdicionales = document.getElementById('camposAdicionales');
     var htmlAdicional = '';
 
@@ -71,6 +65,7 @@ function seleccionarTramite(tipo) {
                 </div>
             `;
             break;
+
         case 'desconexion_reconexion':
             htmlAdicional = `
                 <div class="form-group">
@@ -86,6 +81,7 @@ function seleccionarTramite(tipo) {
                 </div>
             `;
             break;
+
         case 'solicitud_servicio':
             htmlAdicional = `
                 <div class="form-group">
@@ -101,6 +97,7 @@ function seleccionarTramite(tipo) {
                 </div>
             `;
             break;
+
         case 'traslado_medidor':
             htmlAdicional = `
                 <div class="form-group">
@@ -117,6 +114,7 @@ function seleccionarTramite(tipo) {
                 </div>
             `;
             break;
+
         case 'traspaso_servicio':
             htmlAdicional = `
                 <div class="form-group">
@@ -133,6 +131,7 @@ function seleccionarTramite(tipo) {
                 </div>
             `;
             break;
+
         case 'reclamo_danos':
             htmlAdicional = `
                 <div class="form-group">
@@ -150,19 +149,18 @@ function seleccionarTramite(tipo) {
                 </div>
             `;
             break;
+
         default:
             htmlAdicional = '';
     }
 
     camposAdicionales.innerHTML = htmlAdicional;
 
-    // Mostrar modal
     document.getElementById('modalTramite').style.display = 'block';
     document.getElementById('modalOverlay').style.display = 'block';
     document.body.style.overflow = 'hidden';
 }
 
-// ===== CREAR MODAL DE TRÁMITE =====
 function crearModalTramite() {
     var overlay = document.createElement('div');
     overlay.id = 'modalOverlay';
@@ -174,6 +172,7 @@ function crearModalTramite() {
     var modal = document.createElement('div');
     modal.id = 'modalTramite';
     modal.className = 'modal-tramite';
+
     modal.innerHTML = `
         <div class="modal-header">
             <h3 id="modalTitulo">Trámite</h3>
@@ -221,16 +220,15 @@ function crearModalTramite() {
     document.body.appendChild(modal);
 }
 
-// ===== CERRAR MODAL =====
 function cerrarModalTramite() {
     var modal = document.getElementById('modalTramite');
     var overlay = document.getElementById('modalOverlay');
+
     if (modal) modal.style.display = 'none';
     if (overlay) overlay.style.display = 'none';
     document.body.style.overflow = 'auto';
 }
 
-// ===== ENVIAR TRÁMITE =====
 function enviarTramite() {
     var nise = document.getElementById('modalNise').value.trim();
     var nombre = document.getElementById('modalNombre').value.trim();
@@ -261,30 +259,128 @@ function enviarTramite() {
 
     var btn = document.querySelector('.btn-enviar-tramite');
     var textoOriginal = btn.textContent;
+
     btn.textContent = '⏳ Enviando...';
     btn.disabled = true;
 
-    setTimeout(function () {
-        var tipos = {
-            'cambio_nombre': 'Cambio de nombre de abonado',
-            'desconexion_reconexion': 'Desconexión y reconexión',
-            'solicitud_servicio': 'Solicitud de servicio nuevo',
-            'traslado_medidor': 'Traslado de medidor',
-            'traspaso_servicio': 'Traspaso de servicio eléctrico',
-            'reclamo_danos': 'Reclamo por daños'
-        };
+    var datos = {
+        NombreTramite: document.getElementById('modalTipo').value,
+        NISE: nise,
+        NombreCliente: nombre,
+        Cedula: cedula,
+        Telefono: telefono,
+        Correo: correo,
+        Detalle: descripcion
+    };
 
-        var tipo = document.getElementById('modalTipo').value;
-        var nombreTramite = tipos[tipo] || 'Trámite';
+    var tipo = document.getElementById('modalTipo').value;
 
-        alert('✅ ¡Solicitud enviada exitosamente!\n\n' +
-            '📋 Trámite: ' + nombreTramite + '\n' +
-            '📩 Número de seguimiento: #TR-' + Date.now().toString().slice(-6) + '\n' +
-            '📧 Recibirás un correo con los detalles en 24 horas.\n\n' +
-            '📞 Para consultas, llama al 800-ENERGÍA');
+    switch (tipo) {
+        case 'cambio_nombre':
+            var nuevoTitular = document.getElementById('modalNuevoTitular');
+            var cedulaNuevo = document.getElementById('modalCedulaNuevo');
+            if (nuevoTitular && nuevoTitular.value) {
+                datos.Detalle += '\n📌 Nuevo titular: ' + nuevoTitular.value;
+            }
+            if (cedulaNuevo && cedulaNuevo.value) {
+                datos.Detalle += '\n📌 Cédula nuevo titular: ' + cedulaNuevo.value;
+            }
+            break;
 
-        btn.textContent = textoOriginal;
-        btn.disabled = false;
-        cerrarModalTramite();
-    }, 1500);
+        case 'desconexion_reconexion':
+            var tipoSolicitud = document.getElementById('modalTipoSolicitud');
+            var fecha = document.getElementById('modalFecha');
+            if (tipoSolicitud) {
+                datos.Detalle += '\n📌 Tipo: ' + tipoSolicitud.value;
+            }
+            if (fecha && fecha.value) {
+                datos.Detalle += '\n📌 Fecha deseada: ' + fecha.value;
+            }
+            break;
+
+        case 'solicitud_servicio':
+            var tipoServicio = document.getElementById('modalTipoServicio');
+            var direccion = document.getElementById('modalDireccion');
+            if (tipoServicio) {
+                datos.Detalle += '\n📌 Tipo de servicio: ' + tipoServicio.value;
+            }
+            if (direccion && direccion.value) {
+                datos.Detalle += '\n📌 Dirección: ' + direccion.value;
+            }
+            break;
+
+        case 'traslado_medidor':
+            var nuevaDireccion = document.getElementById('modalNuevaDireccion');
+            var motivo = document.getElementById('modalMotivoTraslado');
+            if (nuevaDireccion && nuevaDireccion.value) {
+                datos.Detalle += '\n📌 Nueva dirección: ' + nuevaDireccion.value;
+            }
+            if (motivo) {
+                datos.Detalle += '\n📌 Motivo: ' + motivo.value;
+            }
+            break;
+
+        case 'traspaso_servicio':
+            var nuevoTitularTraspaso = document.getElementById('modalNuevoTitularTraspaso');
+            var cedulaTraspaso = document.getElementById('modalCedulaTraspaso');
+            var parentesco = document.getElementById('modalParentesco');
+            if (nuevoTitularTraspaso && nuevoTitularTraspaso.value) {
+                datos.Detalle += '\n📌 Nuevo titular: ' + nuevoTitularTraspaso.value;
+            }
+            if (cedulaTraspaso && cedulaTraspaso.value) {
+                datos.Detalle += '\n📌 Cédula nuevo titular: ' + cedulaTraspaso.value;
+            }
+            if (parentesco && parentesco.value) {
+                datos.Detalle += '\n📌 Parentesco: ' + parentesco.value;
+            }
+            break;
+
+        case 'reclamo_danos':
+            var tipoDano = document.getElementById('modalTipoDano');
+            var montoDano = document.getElementById('modalMontoDano');
+            if (tipoDano) {
+                datos.Detalle += '\n📌 Tipo de daño: ' + tipoDano.value;
+            }
+            if (montoDano && montoDano.value) {
+                datos.Detalle += '\n📌 Monto estimado: ₡' + montoDano.value;
+            }
+            break;
+    }
+
+    $.ajax({
+        url: '/Clientes/RegistrarTramite',
+        type: 'POST',
+        data: JSON.stringify(datos),
+        contentType: 'application/json',
+        success: function (response) {
+            if (response.success) {
+                var tipos = {
+                    'cambio_nombre': 'Cambio de nombre de abonado',
+                    'desconexion_reconexion': 'Desconexión y reconexión',
+                    'solicitud_servicio': 'Solicitud de servicio nuevo',
+                    'traslado_medidor': 'Traslado de medidor',
+                    'traspaso_servicio': 'Traspaso de servicio eléctrico',
+                    'reclamo_danos': 'Reclamo por daños'
+                };
+                var nombreTramite = tipos[document.getElementById('modalTipo').value] || 'Trámite';
+
+                alert('✅ ¡Solicitud enviada exitosamente!\n\n' +
+                    '📋 Trámite: ' + nombreTramite + '\n' +
+                    '📩 Número de seguimiento: #TR-' + String(response.id).padStart(6, '0') + '\n' +
+                    '📧 Recibirás un correo con los detalles en 24 horas.\n\n' +
+                    '📞 Para consultas, llama al 800-ENERGÍA');
+
+                cerrarModalTramite();
+            } else {
+                alert('❌ ' + response.message);
+            }
+        },
+        error: function () {
+            alert('❌ Error al enviar el trámite. Intente nuevamente.');
+        },
+        complete: function () {
+            btn.textContent = textoOriginal;
+            btn.disabled = false;
+        }
+    });
 }

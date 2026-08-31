@@ -9,11 +9,20 @@ namespace CNFL_Clientes_Prototipo.Controllers
 {
     public class CuentaController : Controller
     {
-        // Lista de usuarios registrados (simulada)
         private static List<Usuario> _usuarios = new List<Usuario>
         {
             new Usuario { Id = 1, Nombre = "Admin", Apellidos = "Sistema", Cedula = "1-0000-0000", Telefono = "0000-0000", Correo = "admin@cnfl.go.cr", NISE = "000000000", UserName = "admin", Contraseña = "12345$", Rol = "Admin" },
             new Usuario { Id = 2, Nombre = "Katherine", Apellidos = "Villalobos", Cedula = "1-2345-6789", Telefono = "8888-7777", Correo = "k.villalobos@correo.cr", NISE = "402112345", UserName = "cliente", Contraseña = "123456", Rol = "Cliente" }
+        };
+
+        // DATOS PARA VALIDACIÓN DE CÉDULA (TSE SIMULADO)
+        private static Dictionary<string, (string Nombre, string Apellidos, List<string> NISEs)> _datosTSE = new Dictionary<string, (string, string, List<string>)>
+        {
+            { "1-2345-6789", ("Katherine", "Villalobos", new List<string> { "402112345", "402198765" }) },
+            { "1-1234-5678", ("Juan", "Pérez", new List<string> { "123456789" }) },
+            { "1-8765-4321", ("María", "Gómez", new List<string> { "987654321" }) },
+            { "1-5555-6666", ("Carlos", "Rodríguez", new List<string> { "456789123" }) },
+            { "1-1111-2222", ("Ana", "Mora", new List<string> { "111222333" }) }
         };
 
         public static List<Usuario> ObtenerUsuarios()
@@ -21,9 +30,45 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return _usuarios;
         }
 
-        // ==========================================================
-        // GET: /Cuenta (Redirige según sesión)
-        // ==========================================================
+        [HttpPost]
+        public JsonResult ValidarCedula(string cedula)
+        {
+            if (string.IsNullOrEmpty(cedula))
+            {
+                return Json(new { success = false, message = "Ingrese una cédula" });
+            }
+
+            if (_datosTSE.TryGetValue(cedula, out var datos))
+            {
+                return Json(new
+                {
+                    success = true,
+                    nombre = datos.Nombre,
+                    apellidos = datos.Apellidos,
+                    nises = datos.NISEs
+                });
+            }
+
+            return Json(new { success = false, message = "Cédula no encontrada en el sistema TSE" });
+        }
+
+        [HttpPost]
+        public JsonResult RecuperarContraseña(string correo)
+        {
+            if (string.IsNullOrEmpty(correo))
+            {
+                return Json(new { success = false, message = "Ingrese un correo electrónico" });
+            }
+
+            var usuario = _usuarios.FirstOrDefault(u => u.Correo == correo);
+            if (usuario != null)
+            {
+                return Json(new { success = true, message = "✅ Se ha enviado un enlace de recuperación a su correo" });
+            }
+
+            return Json(new { success = false, message = "❌ Correo no encontrado en el sistema" });
+        }
+
         public ActionResult Index()
         {
             if (Session["Rol"] == null)
@@ -35,9 +80,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return RedirectToAction("Inicio", "Clientes");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/Login
-        // ==========================================================
         public ActionResult Login(string returnUrl = "")
         {
             if (Session["Rol"] != null)
@@ -47,13 +89,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 else
                     return RedirectToAction("Inicio", "Clientes");
             }
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
-        // ==========================================================
-        // POST: /Cuenta/Login
-        // ==========================================================
         [HttpPost]
         public ActionResult Login(LoginViewModel model, string returnUrl = "")
         {
@@ -83,12 +123,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     ModelState.AddModelError("", "❌ Usuario o contraseña incorrectos");
                 }
             }
+
             return View(model);
         }
 
-        // ==========================================================
-        // GET: /Cuenta/Registro
-        // ==========================================================
         public ActionResult Registro()
         {
             if (Session["Rol"] != null)
@@ -98,12 +136,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 else
                     return RedirectToAction("Inicio", "Clientes");
             }
+
             return View();
         }
 
-        // ==========================================================
-        // POST: /Cuenta/Registro
-        // ==========================================================
         [HttpPost]
         public ActionResult Registro(RegistroViewModel model)
         {
@@ -144,9 +180,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View(model);
         }
 
-        // ==========================================================
-        // GET: /Cuenta/Logout
-        // ==========================================================
         public ActionResult Logout()
         {
             Session.Clear();
@@ -154,9 +187,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return RedirectToAction("Login");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/Cuenta (REDIRIGE A PERFIL DEL CLIENTE)
-        // ==========================================================
         public ActionResult Cuenta()
         {
             if (Session["Rol"] == null)
@@ -168,78 +198,63 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return RedirectToAction("Perfil", "Clientes");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/MisDatos (REDIRIGE A EDITAR DATOS)
-        // ==========================================================
         public ActionResult MisDatos()
         {
             if (Session["Rol"] == null)
                 return RedirectToAction("Login");
+
             return RedirectToAction("EditarDatos", "Clientes");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/Suscripciones (REDIRIGE A SUSCRIPCIONES)
-        // ==========================================================
         public ActionResult Suscripciones()
         {
             if (Session["Rol"] == null)
                 return RedirectToAction("Login");
+
             return RedirectToAction("Suscripciones", "Clientes");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/ServiciosContratados (REDIRIGE)
-        // ==========================================================
         public ActionResult ServiciosContratados()
         {
             if (Session["Rol"] == null)
                 return RedirectToAction("Login");
+
             return RedirectToAction("ServiciosContratados", "Clientes");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/Calculadora (REDIRIGE)
-        // ==========================================================
         public ActionResult Calculadora()
         {
             if (Session["Rol"] == null)
                 return RedirectToAction("Login");
+
             return RedirectToAction("Calculadora", "Clientes");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/Chat (REDIRIGE)
-        // ==========================================================
         public ActionResult Chat()
         {
             if (Session["Rol"] == null)
                 return RedirectToAction("Login");
+
             return RedirectToAction("Chat", "Clientes");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/HistorialCompras (REDIRIGE)
-        // ==========================================================
         public ActionResult HistorialCompras()
         {
             if (Session["Rol"] == null)
                 return RedirectToAction("Login");
+
             return RedirectToAction("HistorialCompras", "Clientes");
         }
 
-        // ==========================================================
-        // GET: /Cuenta/EditarDatos (REDIRIGE)
-        // ==========================================================
         public ActionResult EditarDatos()
         {
             if (Session["Rol"] == null)
                 return RedirectToAction("Login");
+
             return RedirectToAction("EditarDatos", "Clientes");
         }
     }
 
-    // ===== MODELOS =====
     public class Usuario
     {
         public int Id { get; set; }

@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<!-- CSS externo para Cuenta -->
+<!-- CSS separado -->
 <link rel="stylesheet" href="@Url.Content("~/Content/cliente/cuenta.css")" />
 
 <div class="section-pad" style="margin-top: 20px;">
@@ -19,7 +19,6 @@
         {
             @Html.AntiForgeryToken()
 
-            <!-- CÉDULA -->
             <div class="field">
                 <label>CÉDULA (Autocompleta tus datos)</label>
                 <div class="inp">
@@ -29,7 +28,6 @@
                 <div class="registro-hint">Al escribir tu cédula, se cargan tus datos y tus NISEs automáticamente.</div>
             </div>
 
-            <!-- NOMBRE -->
             <div class="field">
                 <label>NOMBRE</label>
                 <div class="inp">
@@ -38,7 +36,6 @@
                 </div>
             </div>
 
-            <!-- APELLIDOS -->
             <div class="field">
                 <label>APELLIDOS</label>
                 <div class="inp">
@@ -47,7 +44,6 @@
                 </div>
             </div>
 
-            <!-- NISES -->
             <div class="field">
                 <label>NISE(S) ASOCIADO(S)</label>
                 <div class="inp" style="background: #f7f8fc;">
@@ -56,7 +52,6 @@
                 </div>
             </div>
 
-            <!-- CORREO -->
             <div class="field">
                 <label>CORREO</label>
                 <div class="inp">
@@ -65,7 +60,6 @@
                 </div>
             </div>
 
-            <!-- TELÉFONO -->
             <div class="field">
                 <label>TELÉFONO</label>
                 <div class="inp">
@@ -74,7 +68,6 @@
                 </div>
             </div>
 
-            <!-- USUARIO -->
             <div class="field">
                 <label>USUARIO (Para iniciar sesión)</label>
                 <div class="inp">
@@ -83,7 +76,6 @@
                 </div>
             </div>
 
-            <!-- CONTRASEÑA -->
             <div class="field">
                 <label>CONTRASEÑA</label>
                 <div class="inp">
@@ -92,7 +84,6 @@
                 </div>
             </div>
 
-            <!-- CONFIRMAR CONTRASEÑA -->
             <div class="field">
                 <label>CONFIRMAR CONTRASEÑA</label>
                 <div class="inp">
@@ -106,7 +97,7 @@
     </div>
 </div>
 
-<!-- JavaScript externo para Cuenta -->
+<!-- JS separado -->
 @section scripts {
     <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
 }

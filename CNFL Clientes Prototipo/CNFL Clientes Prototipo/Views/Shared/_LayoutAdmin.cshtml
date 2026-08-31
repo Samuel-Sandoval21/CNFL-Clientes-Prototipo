@@ -13,7 +13,10 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- ===== BARRA DE ESTADO ===== -->
+
+        <!-- ========================================================== -->
+        <!-- ===== BARRA DE ESTADO CON IDIOMA ===== -->
+        <!-- ========================================================== -->
         <header class="status-bar">
             <span class="time" id="statusTime">10:44</span>
             <div class="status-icons">
@@ -33,20 +36,49 @@
                     <rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" />
                     <rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" />
                 </svg>
+                <button class="lang-toggle-top" onclick="cambiarIdiomaAdmin('es')" title="Cambiar idioma">
+                    ES ▼
+                </button>
             </div>
         </header>
 
-        <!-- ===== ENCABEZADO ADMIN ===== -->
+        <!-- ========================================================== -->
+        <!-- ===== ENCABEZADO ADMIN - CORREGIDO ===== -->
+        <!-- ========================================================== -->
         <section class="admin-header">
-            <button class="back-btn" onclick="history.back();">← Volver</button>
-            <div class="user-badge">
-                <span class="avatar">A</span>
-                <div class="user-info">
-                    <span class="user-name">@(Session["Nombre"] ?? "Admin Sistema")</span>
-                    <span class="user-email">@(Session["Correo"] ?? "admin@cnfl.go.cr")</span>
+
+            <!-- ===== FILA 1: BOTÓN VOLVER ===== -->
+            <div class="admin-row-top">
+                <button class="back-btn" onclick="history.back();">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+            </div>
+
+            <!-- ===== FILA 2: LOGO + cnfl + USUARIO (TODO EN UNA LÍNEA) ===== -->
+            <div class="admin-row-bottom">
+                <div style="display:flex; align-items:center; gap:12px; width:100%; flex-wrap:wrap;">
+
+                    <!-- LOGO + cnfl -->
+                    <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+                        <svg width="32" height="32" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="25" cy="25" r="22" stroke="#1E23E6" stroke-width="2.5" />
+                            <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#1E23E6" />
+                        </svg>
+                        <span style="font-family:'Inter',sans-serif; font-weight:900; font-size:20px; color:#FF692D; letter-spacing:-1px; text-transform:lowercase;">cnfl</span>
+                    </div>
+
+                    <!-- USUARIO (junto al logo) -->
+                    <div style="display:flex; align-items:center; gap:8px; background:white; padding:3px 14px 3px 3px; border-radius:40px; box-shadow:0 4px 14px rgba(16,20,40,0.06); flex-shrink:0;">
+                        <span style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg, #FF692D, #ff8a4c); color:white; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; text-transform:uppercase; flex-shrink:0;">@(Session["Nombre"]?.ToString()?.Substring(0, 1) ?? "A")</span>
+                        <div style="line-height:1.2;">
+                            <span style="font-weight:700; font-size:12px; color:#0E1116;">@(Session["Nombre"] ?? "Admin Sistema")</span>
+                            <span style="font-size:10px; color:#727A86; display:block;">@(Session["Correo"] ?? "admin@cnfl.go.cr")</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-            <button class="lang-toggle" title="Cambiar idioma">ES ▼</button>
+
         </section>
 
         <!-- ===== CONTENIDO DINÁMICO ===== -->
@@ -54,7 +86,7 @@
             @RenderBody()
         </main>
 
-        <!-- ===== MENÚ INFERIOR CON ICONOS FONT AWESOME ===== -->
+        <!-- ===== MENÚ INFERIOR ===== -->
         <nav class="bottom-nav">
             <a href="@Url.Action("Dashboard", "Admin")" class="nav-item @(ViewContext.RouteData.Values["action"].ToString() == "Dashboard" ? "active" : "")">
                 <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
@@ -96,12 +128,10 @@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 
-    <!-- ===== PASAR URL DE LOGOUT AL JAVASCRIPT ===== -->
     <script>
         window.logoutUrl = '@Url.Action("Logout", "Cuenta", new { area = "" })';
     </script>
 
-    <!-- JavaScript externo para el Layout Admin -->
     <script src="@Url.Content("~/Scripts/admin-layout.js")"></script>
 </body>
 </html>
