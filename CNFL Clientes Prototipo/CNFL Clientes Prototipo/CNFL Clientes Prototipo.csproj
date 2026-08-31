@@ -215,6 +215,7 @@
     <Content Include="Content\cliente\notificaciones.css" />
     <Content Include="Content\cliente\pagos.css" />
     <Content Include="Content\cliente\perfil.css" />
+    <Content Include="Content\cliente\recuperar-clave.css" />
     <Content Include="Content\cliente\reportes-form.css" />
     <Content Include="Content\cliente\reportes.css" />
     <Content Include="Content\cliente\servicios-contratados.css" />
@@ -237,6 +238,7 @@
     <Content Include="Scripts\cliente\notificaciones.js" />
     <Content Include="Scripts\cliente\pagos.js" />
     <Content Include="Scripts\cliente\perfil.js" />
+    <Content Include="Scripts\cliente\recuperar-clave.js" />
     <Content Include="Scripts\cliente\reportes-form.js" />
     <Content Include="Scripts\cliente\reportes.js" />
     <Content Include="Scripts\cliente\servicios-contratados.js" />
@@ -328,6 +330,7 @@
     <Content Include="Views\Cuenta\Registro.cshtml" />
     <Content Include="Views\Clientes\Dashboard.cshtml" />
     <Content Include="Views\Clientes\ServiciosContratados.cshtml" />
+    <Content Include="Views\Cuenta\RecuperarClave.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

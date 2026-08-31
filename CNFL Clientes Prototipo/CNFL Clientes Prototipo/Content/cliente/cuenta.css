@@ -2,6 +2,22 @@
    CUENTA / LOGIN / REGISTRO - ESTILOS
    ========================================== */
 
+:root {
+    --blue: #1E23E6;
+    --orange: #FF692D;
+    --navy: #001482;
+    --sky: #64B9CD;
+    --green: #64B95A;
+    --amber: #F5A623;
+    --red: #E5484D;
+    --ink: #0E1116;
+    --muted: #727A86;
+    --line: #EDEFF3;
+    --bg: #F5F6FA;
+    --card: #FFFFFF;
+    --shadow: 0 4px 14px rgba(16, 20, 40, 0.06);
+}
+
 /* ===== LOGIN ===== */
 .login-wrap {
     padding: 20px 20px 0;
@@ -51,9 +67,12 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        position: relative;
+        transition: border-color 0.3s, box-shadow 0.3s;
     }
 
-        .field .inp input {
+        .field .inp input,
+        .field .inp select {
             border: none;
             outline: none;
             width: 100%;
@@ -63,15 +82,163 @@
             color: var(--ink);
         }
 
-            .field .inp input::placeholder {
-                color: var(--muted);
-                opacity: 0.7;
+        .field .inp select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23727A86'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right center;
+        }
+
+            .field .inp select:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
             }
+
+        .field .inp input::placeholder {
+            color: var(--muted);
+            opacity: 0.7;
+        }
 
         .field .inp .icon {
             color: var(--muted);
             flex-shrink: 0;
         }
+
+        .field .inp .validation-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            display: none;
+        }
+
+/* ===== TOGGLE PASSWORD ===== */
+.toggle-password {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+
+    .toggle-password:hover {
+        color: var(--blue);
+    }
+
+/* ===== CAMPO VÁLIDO ===== */
+.field.valid .inp {
+    border-color: #2E7D32;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+}
+
+.field.valid .validation-icon {
+    display: block;
+    color: #2E7D32;
+}
+
+    .field.valid .validation-icon::after {
+        content: '✅';
+    }
+
+/* ===== CAMPO INVÁLIDO ===== */
+.field.invalid .inp {
+    border-color: #C62828;
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+}
+
+.field.invalid .validation-icon {
+    display: block;
+    color: #C62828;
+}
+
+    .field.invalid .validation-icon::after {
+        content: '❌';
+    }
+
+/* ===== MENSAJES DE ERROR ===== */
+.field-error {
+    font-size: 12px;
+    color: #C62828;
+    margin-top: 5px;
+    display: none;
+    font-weight: 600;
+}
+
+    .field-error.show {
+        display: block;
+        animation: fadeInError 0.3s ease;
+    }
+
+@keyframes fadeInError {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== HINT ===== */
+.registro-hint {
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 12px;
+    margin-top: 6px;
+    transition: all 0.3s;
+}
+
+    .registro-hint.success {
+        color: #2E7D32;
+    }
+
+    .registro-hint.error {
+        color: #C62828;
+    }
+
+/* ===== TAGS DE NISES ===== */
+.nises-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.nise-tag {
+    background: #E8F0FE;
+    color: var(--blue);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(30, 35, 230, 0.15);
+}
+
+    .nise-tag.active {
+        background: var(--blue);
+        color: white;
+        border-color: var(--blue);
+    }
+
+/* ===== SELECT DE NISES ===== */
+#niseSelectContainer {
+    display: none;
+}
+
+    #niseSelectContainer.visible {
+        display: block;
+    }
 
 /* ===== BOTONES ===== */
 .btn-login {
@@ -95,6 +262,10 @@
         transform: scale(0.98);
     }
 
+    .btn-login:active {
+        transform: scale(0.95);
+    }
+
 .btn-register {
     background: var(--blue);
     color: #fff;
@@ -114,6 +285,16 @@
     .btn-register:hover {
         background: var(--navy);
         transform: scale(0.98);
+    }
+
+    .btn-register:active {
+        transform: scale(0.95);
+    }
+
+    .btn-register:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
     }
 
 /* ===== FOOTER ===== */
@@ -173,13 +354,6 @@
     margin-top: 6px;
 }
 
-.registro-hint {
-    color: var(--blue);
-    font-weight: 600;
-    font-size: 12px;
-    margin-top: 4px;
-}
-
 .card-cliente {
     background: #fff;
     border-radius: 20px;
@@ -188,7 +362,10 @@
     border: 1px solid var(--line);
 }
 
+/* ========================================================== */
 /* ===== FACE ID ===== */
+/* ========================================================== */
+
 .face-id-btn {
     width: 70px;
     height: 70px;
@@ -199,11 +376,43 @@
     cursor: pointer;
     box-shadow: 0 12px 24px -8px rgba(30, 35, 230, .6);
     transition: 0.2s;
+    position: relative;
+    border: none;
 }
 
     .face-id-btn:hover {
         transform: scale(0.95);
     }
+
+    .face-id-btn:active {
+        transform: scale(0.9);
+    }
+
+    .face-id-btn .face-id-pulse {
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid rgba(30, 35, 230, 0.3);
+        animation: pulse-ring 2s ease-out infinite;
+        pointer-events: none;
+    }
+
+    .face-id-btn.scanning .face-id-pulse {
+        border-color: rgba(46, 125, 50, 0.5);
+        animation-duration: 0.8s;
+    }
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
@@ -224,7 +433,8 @@
         padding: 12px 14px;
     }
 
-        .field .inp input {
+        .field .inp input,
+        .field .inp select {
             font-size: 13px;
         }
 

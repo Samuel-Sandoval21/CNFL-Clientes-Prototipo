@@ -3,69 +3,91 @@
 @{
     ViewBag.Title = "Mi Cuenta - CNFL";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    // ==========================================================
+    // OBTENER INICIALES DEL NOMBRE
+    // ==========================================================
+    var nombreCompleto = Session["Nombre"]?.ToString() ?? "Katherine Villalobos";
+    var iniciales = string.Join("", nombreCompleto.Split(' ').Select(s => s.Length > 0 ? s[0].ToString() : ""));
+    if (iniciales.Length > 2)
+    {
+        iniciales = iniciales.Substring(0, 2);
+    }
+    iniciales = iniciales.ToUpper();
 }
 
-<!-- CSS externo para Perfil -->
-<link rel="stylesheet" href="@Url.Content("~/Content/cliente/cuenta.css")" />
+<!-- CSS específico para Perfil -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/perfil.css")" />
 
 <!-- ===== BOTÓN VOLVER ===== -->
 <button class="btn-volver" onclick="history.back();">
-    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
+    <i class="fas fa-arrow-left"></i> Volver
 </button>
 
 <div class="section-pad">
-    <!-- ===== PERFIL HEADER ===== -->
+    <!-- ========================================================== -->
+    <!-- PERFIL HEADER -->
+    <!-- ========================================================== -->
     <div class="perfil-header">
-        <div class="perfil-avatar">KV</div>
+        <div class="perfil-avatar">
+            @iniciales
+        </div>
         <div class="perfil-info">
-            <div class="perfil-nombre">Katherine Villalobos</div>
-            <div class="perfil-email">k.villalobos@correo.cr</div>
+            <div class="perfil-nombre">@nombreCompleto</div>
+            <div class="perfil-email">@(Session["Correo"]?.ToString() ?? "k.villalobos@correo.cr")</div>
         </div>
         <span class="perfil-badge">Cliente</span>
     </div>
 
-    <!-- ===== DATOS PROTEGIDOS ===== -->
+    <!-- ========================================================== -->
+    <!-- DATOS PROTEGIDOS -->
+    <!-- ========================================================== -->
     <div class="perfil-protegido">
-        <div class="icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="icon">
+            <i class="fas fa-shield-alt"></i>
+        </div>
         <div>
-            <div class="titulo" data-i18n="datos_protegidos">Datos protegidos</div>
-            <div class="subtitulo" data-i18n="cifrado_biometria">Cifrado extremo a extremo · biometría</div>
+            <div class="titulo">Datos protegidos</div>
+            <div class="subtitulo">Cifrado extremo a extremo · biometría</div>
         </div>
     </div>
 </div>
 
-<!-- ===== MI ACTIVIDAD ===== -->
+<!-- ========================================================== -->
+<!-- MI ACTIVIDAD -->
+<!-- ========================================================== -->
 <div class="section-pad">
-    <div class="eyebrow" data-i18n="mi_actividad">
-        <i class="fas fa-chart-line" style="color:var(--blue);"></i> Mi actividad
+    <div class="section-title">
+        <i class="fas fa-chart-line" style="color:var(--blue);"></i>
+        Mi actividad
     </div>
 
-    <!-- Historial de compras -->
-    <div class="perfil-item" onclick="verHistorial()">
+    <!-- ===== Historial de compras ===== -->
+    <a href="@Url.Action("HistorialCompras", "Clientes")" class="perfil-item">
         <div class="ic" style="background:#fff3ec;">
             <i class="fas fa-shopping-bag" style="color:var(--orange);"></i>
         </div>
         <div class="tx">
-            <div class="t" data-i18n="historial_compras">Historial de compras</div>
-            <div class="s" data-i18n="marketplace">Marketplace</div>
+            <div class="t">Historial de compras</div>
+            <div class="s">Marketplace</div>
         </div>
-        <i class="fas fa-chevron-right"></i>
-    </div>
+        <i class="fas fa-chevron-right chevron"></i>
+    </a>
 
-    <!-- Suscripciones -->
-    <div class="perfil-item" onclick="verSuscripciones()">
+    <!-- ===== Suscripciones ===== -->
+    <a href="@Url.Action("Suscripciones", "Clientes")" class="perfil-item">
         <div class="ic" style="background:#eefbf0;">
             <i class="fas fa-check-circle" style="color:var(--green);"></i>
         </div>
         <div class="tx">
-            <div class="t" data-i18n="suscripciones">Suscripciones</div>
-            <div class="s" data-i18n="activas_inactivas">2 activas · 1 inactiva</div>
+            <div class="t">Suscripciones</div>
+            <div class="s">2 activas · 1 inactiva</div>
         </div>
-        <i class="fas fa-chevron-right"></i>
-    </div>
+        <i class="fas fa-chevron-right chevron"></i>
+    </a>
 
-    <!-- Servicios contratados -->
-    <div class="perfil-item" onclick="verServiciosContratados()">
+    <!-- ===== Servicios contratados ===== -->
+    <a href="@Url.Action("ServiciosContratados", "Clientes")" class="perfil-item">
         <div class="ic" style="background:#eef6ff;">
             <i class="fas fa-list" style="color:var(--blue);"></i>
         </div>
@@ -73,59 +95,61 @@
             <div class="t">Servicios contratados</div>
             <div class="s">Todos tus servicios activos</div>
         </div>
-        <i class="fas fa-chevron-right"></i>
-    </div>
+        <i class="fas fa-chevron-right chevron"></i>
+    </a>
 
-    <!-- Editar datos -->
-    <div class="perfil-item" onclick="editarDatos()">
+    <!-- ===== Editar Mis Datos ===== -->
+    <a href="@Url.Action("EditarDatos", "Clientes")" class="perfil-item">
         <div class="ic" style="background:#e8f0fe;">
             <i class="fas fa-user-edit" style="color:var(--blue);"></i>
         </div>
         <div class="tx">
-            <div class="t" data-i18n="editar_datos">Editar Mis Datos</div>
-            <div class="s" data-i18n="nombre">Nombre, correo, teléfono</div>
+            <div class="t">Editar Mis Datos</div>
+            <div class="s">Nombre, correo, teléfono</div>
         </div>
-        <i class="fas fa-chevron-right"></i>
-    </div>
+        <i class="fas fa-chevron-right chevron"></i>
+    </a>
 
-    <!-- Calculadora -->
-    <div class="perfil-item" onclick="abrirCalculadora()">
+    <!-- ===== Calculadora energética ===== -->
+    <a href="@Url.Action("Calculadora", "Clientes")" class="perfil-item">
         <div class="ic" style="background:#fef3e0;">
             <i class="fas fa-calculator" style="color:var(--amber);"></i>
         </div>
         <div class="tx">
-            <div class="t" data-i18n="calculadora_titulo">Calculadora energética</div>
-            <div class="s" data-i18n="calculadora_subtitulo">Estima el costo de tus equipos</div>
+            <div class="t">Calculadora energética</div>
+            <div class="s">Estima el costo de tus equipos.</div>
         </div>
-        <i class="fas fa-chevron-right"></i>
-    </div>
+        <i class="fas fa-chevron-right chevron"></i>
+    </a>
 
-    <!-- Chat / Asistente -->
-    <div class="perfil-item" onclick="abrirChat()">
+    <!-- ===== Asistente Virtual ===== -->
+    <a href="@Url.Action("Chat", "Clientes")" class="perfil-item">
         <div class="ic" style="background:#f0f2ff;">
             <i class="fas fa-robot" style="color:var(--blue);"></i>
         </div>
         <div class="tx">
-            <div class="t" data-i18n="asistente_titulo">Asistente Virtual</div>
-            <div class="s" data-i18n="asistente_subtitulo">800 ENERGÍA · 1026</div>
+            <div class="t">Asistente Virtual</div>
+            <div class="s">800 ENERGÍA · 1026</div>
         </div>
-        <i class="fas fa-chevron-right"></i>
-    </div>
+        <i class="fas fa-chevron-right chevron"></i>
+    </a>
 
-    <!-- Cerrar sesión -->
+    <!-- ========================================================== -->
+    <!-- CERRAR SESIÓN -->
+    <!-- ========================================================== -->
     <div class="perfil-item cerrar-sesion" onclick="cerrarSesion()">
-        <div class="ic">
+        <div class="ic" style="background:#fdeaea;">
             <i class="fas fa-sign-out-alt" style="color:var(--red);"></i>
         </div>
         <div class="tx">
-            <div class="t" data-i18n="cerrar_sesion">Cerrar Sesión</div>
+            <div class="t">Cerrar Sesión</div>
             <div class="s">Salir de tu cuenta</div>
         </div>
-        <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-chevron-right chevron"></i>
     </div>
 </div>
 
-<!-- JavaScript externo para Perfil -->
+<!-- JS específico para Perfil -->
 @section scriptsVista {
-    <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
+    <script src="@Url.Content("~/Scripts/cliente/perfil.js")"></script>
 }

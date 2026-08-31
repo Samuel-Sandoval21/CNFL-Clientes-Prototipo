@@ -15,89 +15,201 @@
 
 <div class="section-pad mt-3">
     <div class="card-cliente">
-        @using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post))
+        @using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post, new { id = "registroForm" }))
         {
             @Html.AntiForgeryToken()
 
-            <div class="field">
-                <label>CÉDULA (Autocompleta tus datos)</label>
+            <!-- ========================================================== -->
+            <!-- CÉDULA -->
+            <!-- ========================================================== -->
+            <div class="field" id="cedulaGroup">
+                <label>CÉDULA <span style="color:var(--red);">*</span></label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="12" r="2.5" /><path d="M14 10h4M14 14h4" /></svg>
-                    <input type="text" name="Cedula" id="cedula" required placeholder="1-2345-6789" onblur="autocompletarPorCedula()" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="5" width="18" height="14" rx="2" />
+                        <circle cx="9" cy="12" r="2.5" />
+                        <path d="M14 10h4M14 14h4" />
+                    </svg>
+                    <input type="text" name="Cedula" id="cedula" required placeholder="1-2345-6789" />
+                    <span class="validation-icon" id="cedulaIcon"></span>
                 </div>
-                <div class="registro-hint">Al escribir tu cédula, se cargan tus datos y tus NISEs automáticamente.</div>
+                <div class="registro-hint" id="cedulaHint">Al escribir tu cédula, se cargan tus datos y tus NISEs automáticamente.</div>
+                <div class="field-error" id="cedulaError"></div>
             </div>
 
-            <div class="field">
-                <label>NOMBRE</label>
+            <!-- ========================================================== -->
+            <!-- NOMBRE -->
+            <!-- ========================================================== -->
+            <div class="field" id="nombreGroup">
+                <label>NOMBRE <span style="color:var(--red);">*</span></label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                    </svg>
                     <input type="text" name="Nombre" id="nombre" required placeholder="Su nombre" />
+                    <span class="validation-icon" id="nombreIcon"></span>
                 </div>
+                <div class="field-error" id="nombreError"></div>
             </div>
 
-            <div class="field">
-                <label>APELLIDOS</label>
+            <!-- ========================================================== -->
+            <!-- APELLIDOS -->
+            <!-- ========================================================== -->
+            <div class="field" id="apellidosGroup">
+                <label>APELLIDOS <span style="color:var(--red);">*</span></label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                    </svg>
                     <input type="text" name="Apellidos" id="apellidos" required placeholder="Sus apellidos" />
+                    <span class="validation-icon" id="apellidosIcon"></span>
                 </div>
+                <div class="field-error" id="apellidosError"></div>
             </div>
 
-            <div class="field">
-                <label>NISE(S) ASOCIADO(S)</label>
-                <div class="inp" style="background: #f7f8fc;">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" /></svg>
-                    <input type="text" name="NISE" id="nises" readonly placeholder="Se cargarán automáticamente" style="color: var(--muted);" />
-                </div>
-            </div>
-
-            <div class="field">
-                <label>CORREO</label>
+            <!-- ========================================================== -->
+            <!-- FECHA DE NACIMIENTO -->
+            <!-- ========================================================== -->
+            <div class="field" id="fechaGroup">
+                <label>FECHA DE NACIMIENTO <span style="color:var(--red);">*</span></label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
-                    <input type="email" name="Correo" required placeholder="usuario@correo.com" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <path d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
+                    <input type="date" name="FechaNacimiento" id="fechaNacimiento" required />
+                    <span class="validation-icon" id="fechaIcon"></span>
                 </div>
+                <div class="registro-hint" id="fechaHint">Ingresa tu fecha de nacimiento.</div>
+                <div class="field-error" id="fechaError"></div>
             </div>
 
-            <div class="field">
-                <label>TELÉFONO</label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-                    <input type="text" name="Telefono" required placeholder="8888-8888" />
+            <!-- ========================================================== -->
+            <!-- NISE (SELECTOR DE NISES ASOCIADOS) -->
+            <!-- ========================================================== -->
+            <div class="field" id="nisesGroup">
+                <label>NISE(S) ASOCIADO(S) <span style="color:var(--red);">*</span></label>
+
+                <!-- Contenedor del select (se oculta si no hay NISEs) -->
+                <div id="niseSelectContainer" style="display:none;">
+                    <div class="inp" style="background: #f7f8fc;">
+                        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" />
+                        </svg>
+                        <select name="NISE" id="niseSelect" required disabled style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);">
+                            <option value="">-- Selecciona un NISE --</option>
+                        </select>
+                        <span class="validation-icon" id="nisesIcon"></span>
+                    </div>
                 </div>
+
+                <!-- Tags visuales de NISEs -->
+                <div id="nisesTags" class="nises-tags"></div>
+
+                <div class="field-error" id="nisesError"></div>
+                <div class="registro-hint" id="niseHint">Selecciona uno de los NISEs asociados a tu cédula.</div>
             </div>
 
-            <div class="field">
-                <label>USUARIO (Para iniciar sesión)</label>
+            <!-- ========================================================== -->
+            <!-- CORREO -->
+            <!-- ========================================================== -->
+            <div class="field" id="correoGroup">
+                <label>CORREO <span style="color:var(--red);">*</span></label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                    <input type="text" name="UserName" required placeholder="Escribe tu usuario" />
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <path d="m22 7-10 5L2 7" />
+                    </svg>
+                    <input type="email" name="Correo" id="correo" required placeholder="usuario@correo.com" />
+                    <span class="validation-icon" id="correoIcon"></span>
                 </div>
+                <div class="field-error" id="correoError"></div>
             </div>
 
-            <div class="field">
-                <label>CONTRASEÑA</label>
+            <!-- ========================================================== -->
+            <!-- TELÉFONO -->
+            <!-- ========================================================== -->
+            <div class="field" id="telefonoGroup">
+                <label>TELÉFONO <span style="color:var(--red);">*</span></label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                    <input type="text" name="Telefono" id="telefono" required placeholder="8888-8888" />
+                    <span class="validation-icon" id="telefonoIcon"></span>
+                </div>
+                <div class="field-error" id="telefonoError"></div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- USUARIO -->
+            <!-- ========================================================== -->
+            <div class="field" id="usuarioGroup">
+                <label>USUARIO (Para iniciar sesión) <span style="color:var(--red);">*</span></label>
+                <div class="inp">
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                    </svg>
+                    <input type="text" name="UserName" id="userName" required placeholder="Escribe tu usuario" />
+                    <span class="validation-icon" id="usuarioIcon"></span>
+                </div>
+                <div class="field-error" id="usuarioError"></div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- CONTRASEÑA -->
+            <!-- ========================================================== -->
+            <div class="field" id="contrasenaGroup">
+                <label>CONTRASEÑA <span style="color:var(--red);">*</span></label>
+                <div class="inp">
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="10" width="16" height="10" rx="2" />
+                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                    </svg>
                     <input type="password" name="Contraseña" id="contrasena" required placeholder="••••••••" />
+                    <span class="validation-icon" id="contrasenaIcon"></span>
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
                 </div>
+                <div class="field-error" id="contrasenaError"></div>
             </div>
 
-            <div class="field">
-                <label>CONFIRMAR CONTRASEÑA</label>
+            <!-- ========================================================== -->
+            <!-- CONFIRMAR CONTRASEÑA -->
+            <!-- ========================================================== -->
+            <div class="field" id="confirmGroup">
+                <label>CONFIRMAR CONTRASEÑA <span style="color:var(--red);">*</span></label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="4" y="10" width="16" height="10" rx="2" />
+                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                    </svg>
                     <input type="password" name="Confirm" id="confirm" required placeholder="••••••••" />
+                    <span class="validation-icon" id="confirmIcon"></span>
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
                 </div>
+                <div class="field-error" id="confirmError"></div>
             </div>
 
-            <button type="submit" class="btn-register">Registrarme</button>
+            <button type="submit" class="btn-register" id="btnRegistrar">
+                Registrarme
+            </button>
         }
     </div>
 </div>
 
-<!-- JS separado -->
 @section scripts {
     <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
 }

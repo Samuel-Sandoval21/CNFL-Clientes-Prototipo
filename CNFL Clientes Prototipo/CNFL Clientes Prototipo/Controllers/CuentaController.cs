@@ -9,26 +9,56 @@ namespace CNFL_Clientes_Prototipo.Controllers
 {
     public class CuentaController : Controller
     {
+        // ==========================================================
+        // DATOS DE USUARIOS REGISTRADOS
+        // ==========================================================
         private static List<Usuario> _usuarios = new List<Usuario>
         {
-            new Usuario { Id = 1, Nombre = "Admin", Apellidos = "Sistema", Cedula = "1-0000-0000", Telefono = "0000-0000", Correo = "admin@cnfl.go.cr", NISE = "000000000", UserName = "admin", Contraseña = "12345$", Rol = "Admin" },
-            new Usuario { Id = 2, Nombre = "Katherine", Apellidos = "Villalobos", Cedula = "1-2345-6789", Telefono = "8888-7777", Correo = "k.villalobos@correo.cr", NISE = "402112345", UserName = "cliente", Contraseña = "123456", Rol = "Cliente" }
+            new Usuario {
+                Id = 1,
+                Nombre = "Admin",
+                Apellidos = "Sistema",
+                Cedula = "1-0000-0000",
+                Telefono = "0000-0000",
+                Correo = "admin@cnfl.go.cr",
+                NISE = "000000000",
+                UserName = "admin",
+                Contraseña = "12345$",
+                Rol = "Admin",
+                FechaNacimiento = DateTime.Now.AddYears(-30)
+            },
+            new Usuario {
+                Id = 2,
+                Nombre = "Katherine",
+                Apellidos = "Villalobos",
+                Cedula = "1-2345-6789",
+                Telefono = "8888-7777",
+                Correo = "k.villalobos@correo.cr",
+                NISE = "402112345",
+                UserName = "cliente",
+                Contraseña = "123456",
+                Rol = "Cliente",
+                FechaNacimiento = new DateTime(1990, 5, 15)
+            }
         };
 
-        // DATOS PARA VALIDACIÓN DE CÉDULA (TSE SIMULADO)
-        private static Dictionary<string, (string Nombre, string Apellidos, List<string> NISEs)> _datosTSE = new Dictionary<string, (string, string, List<string>)>
+        // ==========================================================
+        // DATOS TSE SIMULADO
+        // ==========================================================
+        private static Dictionary<string, (string Nombre, string Apellidos, List<string> NISEs, DateTime FechaNacimiento)> _datosTSE =
+            new Dictionary<string, (string, string, List<string>, DateTime)>
         {
-            { "1-2345-6789", ("Katherine", "Villalobos", new List<string> { "402112345", "402198765" }) },
-            { "1-1234-5678", ("Juan", "Pérez", new List<string> { "123456789" }) },
-            { "1-8765-4321", ("María", "Gómez", new List<string> { "987654321" }) },
-            { "1-5555-6666", ("Carlos", "Rodríguez", new List<string> { "456789123" }) },
-            { "1-1111-2222", ("Ana", "Mora", new List<string> { "111222333" }) }
+            { "2-0874-0716", ("Samuel", "Sandoval Ramírez", new List<string> { "402112345", "402198765", "123456789" }, new DateTime(2001, 2, 21)) },
+            { "1-2345-6789", ("Katherine", "Villalobos", new List<string> { "402112345", "402198765" }, new DateTime(1990, 5, 15)) },
+            { "1-1234-5678", ("Juan", "Pérez Rodríguez", new List<string> { "123456789" }, new DateTime(1985, 3, 10)) },
+            { "1-8765-4321", ("María", "Gómez Fernández", new List<string> { "987654321" }, new DateTime(1992, 8, 22)) },
+            { "1-5555-6666", ("Carlos", "Rodríguez Mora", new List<string> { "456789123" }, new DateTime(1988, 11, 5)) },
+            { "1-1111-2222", ("Ana", "Mora Solís", new List<string> { "111222333", "444555666" }, new DateTime(1995, 12, 1)) }
         };
 
-        public static List<Usuario> ObtenerUsuarios()
-        {
-            return _usuarios;
-        }
+        // ==========================================================
+        // MÉTODOS DE VALIDACIÓN (AJAX)
+        // ==========================================================
 
         [HttpPost]
         public JsonResult ValidarCedula(string cedula)
@@ -45,11 +75,71 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     success = true,
                     nombre = datos.Nombre,
                     apellidos = datos.Apellidos,
-                    nises = datos.NISEs
+                    nises = datos.NISEs,
+                    fechaNacimiento = datos.FechaNacimiento.ToString("yyyy-MM-dd")
                 });
             }
 
             return Json(new { success = false, message = "Cédula no encontrada en el sistema TSE" });
+        }
+
+        [HttpPost]
+        public JsonResult ValidarUsuario(string userName)
+        {
+            if (string.IsNullOrEmpty(userName))
+            {
+                return Json(new { success = false, message = "Ingrese un usuario" });
+            }
+
+            var existe = _usuarios.Any(u => u.UserName == userName);
+            return Json(new { success = !existe, message = existe ? "❌ Usuario no disponible" : "✅ Usuario disponible" });
+        }
+
+        [HttpPost]
+        public JsonResult ValidarFormatoCedula(string cedula)
+        {
+            if (string.IsNullOrEmpty(cedula))
+            {
+                return Json(new { success = false, message = "Ingrese una cédula" });
+            }
+
+            bool esValida = System.Text.RegularExpressions.Regex.IsMatch(cedula, @"^\d{1}-\d{4}-\d{4}$") ||
+                            System.Text.RegularExpressions.Regex.IsMatch(cedula, @"^\d{9,10}$");
+
+            return Json(new { success = esValida, message = esValida ? "✅ Formato válido" : "❌ Formato inválido (use 1-2345-6789)" });
+        }
+
+        [HttpPost]
+        public JsonResult ValidarFormatoTelefono(string telefono)
+        {
+            if (string.IsNullOrEmpty(telefono))
+            {
+                return Json(new { success = false, message = "Ingrese un teléfono" });
+            }
+
+            bool esValida = System.Text.RegularExpressions.Regex.IsMatch(telefono, @"^\d{4}-\d{4}$") ||
+                            System.Text.RegularExpressions.Regex.IsMatch(telefono, @"^\d{8}$");
+
+            return Json(new { success = esValida, message = esValida ? "✅ Formato válido" : "❌ Formato inválido (use 8888-8888)" });
+        }
+
+        [HttpPost]
+        public JsonResult ValidarFormatoNISE(string nise)
+        {
+            if (string.IsNullOrEmpty(nise))
+            {
+                return Json(new { success = false, message = "Ingrese un NISE" });
+            }
+
+            bool esValida = System.Text.RegularExpressions.Regex.IsMatch(nise, @"^\d{9}$");
+
+            bool existeEnTSE = _datosTSE.Values.Any(d => d.NISEs.Contains(nise));
+
+            return Json(new
+            {
+                success = esValida && existeEnTSE,
+                message = esValida ? (existeEnTSE ? "✅ NISE válido" : "❌ NISE no asociado a su cédula") : "❌ Formato inválido (use 9 dígitos)"
+            });
         }
 
         [HttpPost]
@@ -68,6 +158,62 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             return Json(new { success = false, message = "❌ Correo no encontrado en el sistema" });
         }
+
+        // ==========================================================
+        // RECUPERAR CONTRASEÑA - VISTA
+        // ==========================================================
+        public ActionResult RecuperarClave()
+        {
+            // Si ya está logueado, redirigir al inicio
+            if (Session["Rol"] != null)
+            {
+                if (Session["Rol"].ToString() == "Admin")
+                    return RedirectToAction("Dashboard", "Admin");
+                else
+                    return RedirectToAction("Inicio", "Clientes");
+            }
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult RecuperarClave(string correo, string nuevaClave, string confirmarClave)
+        {
+            if (string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(nuevaClave) || string.IsNullOrEmpty(confirmarClave))
+            {
+                ViewBag.Error = "❌ Todos los campos son obligatorios.";
+                return View();
+            }
+
+            if (nuevaClave.Length < 6)
+            {
+                ViewBag.Error = "❌ La contraseña debe tener al menos 6 caracteres.";
+                return View();
+            }
+
+            if (nuevaClave != confirmarClave)
+            {
+                ViewBag.Error = "❌ Las contraseñas no coinciden.";
+                return View();
+            }
+
+            var usuario = _usuarios.FirstOrDefault(u => u.Correo == correo);
+            if (usuario == null)
+            {
+                ViewBag.Error = "❌ Correo no encontrado en el sistema.";
+                return View();
+            }
+
+            // Actualizar contraseña
+            usuario.Contraseña = nuevaClave;
+            TempData["Mensaje"] = "✅ ¡Contraseña actualizada exitosamente! Ahora puedes iniciar sesión.";
+
+            return RedirectToAction("Login");
+        }
+
+        // ==========================================================
+        // ACCIONES DE VISTA
+        // ==========================================================
 
         public ActionResult Index()
         {
@@ -145,6 +291,41 @@ namespace CNFL_Clientes_Prototipo.Controllers
         {
             if (ModelState.IsValid)
             {
+                // ==========================================================
+                // 1. VALIDACIÓN DE NISE (CON NULL CHECK)
+                // ==========================================================
+                if (string.IsNullOrEmpty(model.NISE))
+                {
+                    ModelState.AddModelError("", "❌ El NISE es obligatorio.");
+                    return View(model);
+                }
+
+                if (!System.Text.RegularExpressions.Regex.IsMatch(model.NISE, @"^\d{9}$"))
+                {
+                    ModelState.AddModelError("", "❌ El NISE debe tener 9 dígitos.");
+                    return View(model);
+                }
+
+                // Validar que el NISE exista en el TSE
+                bool niseValido = _datosTSE.Values.Any(d => d.NISEs.Contains(model.NISE));
+                if (!niseValido)
+                {
+                    ModelState.AddModelError("", "❌ El NISE ingresado no es válido o no está asociado a su cédula.");
+                    return View(model);
+                }
+
+                // ==========================================================
+                // 2. VALIDAR FECHA DE NACIMIENTO
+                // ==========================================================
+                if (model.FechaNacimiento == null || model.FechaNacimiento == DateTime.MinValue)
+                {
+                    ModelState.AddModelError("", "❌ La fecha de nacimiento es obligatoria.");
+                    return View(model);
+                }
+
+                // ==========================================================
+                // 3. VERIFICAR QUE EL USUARIO NO EXISTA
+                // ==========================================================
                 if (_usuarios.Any(u => u.UserName == model.UserName))
                 {
                     ModelState.AddModelError("", "❌ El usuario ya existe. Por favor, elige otro.");
@@ -157,6 +338,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     return View(model);
                 }
 
+                // ==========================================================
+                // 4. CREAR EL NUEVO USUARIO
+                // ==========================================================
                 var nuevoUsuario = new Usuario
                 {
                     Id = _usuarios.Count + 1,
@@ -168,11 +352,13 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     NISE = model.NISE,
                     UserName = model.UserName,
                     Contraseña = model.Contraseña,
-                    Rol = "Cliente"
+                    Rol = "Cliente",
+                    FechaNacimiento = model.FechaNacimiento
                 };
 
                 _usuarios.Add(nuevoUsuario);
 
+                // REDIRIGE AL LOGIN CON MENSAJE DE ÉXITO
                 TempData["Mensaje"] = "✅ ¡Registro exitoso! Ya puedes iniciar sesión.";
                 return RedirectToAction("Login");
             }
@@ -255,6 +441,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
     }
 
+    // ==========================================================
+    // MODELOS
+    // ==========================================================
     public class Usuario
     {
         public int Id { get; set; }
@@ -267,6 +456,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         public string UserName { get; set; }
         public string Contraseña { get; set; }
         public string Rol { get; set; }
+        public DateTime FechaNacimiento { get; set; }
     }
 
     public class LoginViewModel
@@ -285,5 +475,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         public string NISE { get; set; }
         public string UserName { get; set; }
         public string Contraseña { get; set; }
+        public DateTime FechaNacimiento { get; set; }
     }
 }

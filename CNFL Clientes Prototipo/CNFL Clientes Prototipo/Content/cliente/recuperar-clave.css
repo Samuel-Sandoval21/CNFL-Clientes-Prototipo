@@ -1,0 +1,155 @@
+﻿/* ==========================================
+   RECUPERAR CONTRASEÑA - ESTILOS ESPECÍFICOS
+   ========================================== */
+
+.recuperar-wrap {
+    padding: 20px 20px 0;
+    margin-top: 20px;
+}
+
+.recuperar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+    .recuperar-header .back-link {
+        color: var(--blue);
+        text-decoration: none;
+        font-size: 22px;
+        font-weight: 300;
+        transition: 0.2s;
+        padding: 4px 8px;
+        border-radius: 8px;
+    }
+
+        .recuperar-header .back-link:hover {
+            background: #f0f2ff;
+        }
+
+    .recuperar-header .recuperar-title {
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0;
+        color: var(--ink);
+    }
+
+.recuperar-subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* ===== CARD DE RECUPERACIÓN ===== */
+.recuperar-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+}
+
+/* ===== ICONO DE ÉXITO ===== */
+.recuperar-success-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+    .recuperar-success-icon svg {
+        width: 64px;
+        height: 64px;
+        color: #2E7D32;
+    }
+
+/* ===== SEPARADOR ===== */
+.recuperar-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0 20px;
+}
+
+    .recuperar-divider::before,
+    .recuperar-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+    }
+
+    .recuperar-divider span {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+/* ===== VALIDACIÓN EN TIEMPO REAL ===== */
+.recuperar-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-weight: 400;
+    transition: all 0.3s;
+}
+
+    .recuperar-hint.success {
+        color: #2E7D32;
+    }
+
+    .recuperar-hint.error {
+        color: #C62828;
+    }
+
+.password-strength {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    height: 4px;
+}
+
+    .password-strength .bar {
+        flex: 1;
+        height: 100%;
+        background: var(--line);
+        border-radius: 4px;
+        transition: 0.3s;
+    }
+
+        .password-strength .bar.weak {
+            background: #C62828;
+        }
+
+        .password-strength .bar.medium {
+            background: #F5A623;
+        }
+
+        .password-strength .bar.strong {
+            background: #2E7D32;
+        }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .recuperar-wrap {
+        padding: 16px 16px 0;
+    }
+
+    .recuperar-header .recuperar-title {
+        font-size: 20px;
+    }
+
+    .recuperar-card {
+        padding: 16px;
+    }
+
+    .recuperar-success-icon svg {
+        width: 48px;
+        height: 48px;
+    }
+}

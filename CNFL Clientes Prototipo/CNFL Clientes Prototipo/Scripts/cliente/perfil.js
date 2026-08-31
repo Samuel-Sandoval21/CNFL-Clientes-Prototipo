@@ -1,65 +1,135 @@
 ﻿// ==========================================
-// CLIENTE PERFIL - JAVASCRIPT
+// PERFIL DEL CLIENTE - JAVASCRIPT
 // ==========================================
 
-// ===== FUNCIONES DE PERFIL =====
-function editarDatos() {
-    window.location.href = '/Clientes/EditarDatos';
-}
+// ==========================================================
+// ===== NAVEGACIÓN =====
+// ==========================================================
 
-function verHistorial() {
+function irAHistorial() {
     window.location.href = '/Clientes/HistorialCompras';
 }
 
-function verSuscripciones() {
+function irASuscripciones() {
     window.location.href = '/Clientes/Suscripciones';
 }
 
-// ===== CERRAR SESIÓN CON CONFIRMACIÓN =====
+function irAServiciosContratados() {
+    window.location.href = '/Clientes/ServiciosContratados';
+}
+
+function irAEditarDatos() {
+    window.location.href = '/Clientes/EditarDatos';
+}
+
+function irACalculadora() {
+    window.location.href = '/Clientes/Calculadora';
+}
+
+function irAChat() {
+    window.location.href = '/Clientes/Chat';
+}
+
+function irANotificaciones() {
+    window.location.href = '/Clientes/Notificaciones';
+}
+
+// ==========================================================
+// ===== CERRAR SESIÓN =====
+// ==========================================================
+
 function cerrarSesion() {
     if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
         window.location.href = '/Cuenta/Logout';
     }
 }
 
-// ===== ABRIR CALCULADORA =====
-function abrirCalculadora() {
-    window.location.href = '/Clientes/Calculadora';
-}
+// ==========================================================
+// ===== MOSTRAR TOAST =====
+// ==========================================================
 
-// ===== ABRIR CHAT =====
-function abrirChat() {
-    window.location.href = '/Clientes/Chat';
-}
-
-// ===== MOSTRAR TOAST DE CONFIRMACIÓN =====
 function mostrarToast(mensaje, tipo) {
     var toast = document.createElement('div');
     toast.className = 'toast-notificacion';
+    if (tipo === 'error') {
+        toast.classList.add('error');
+    }
     toast.textContent = mensaje;
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${tipo === 'error' ? '#C62828' : '#2E7D32'};
-        color: white;
-        padding: 12px 24px;
-        border-radius: 16px;
-        font-weight: 600;
-        font-size: 14px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-        z-index: 2000;
-        animation: slideUp 0.3s ease;
-        max-width: 90%;
-    `;
     document.body.appendChild(toast);
 
     setTimeout(function () {
         toast.style.opacity = '0';
         toast.style.transition = 'opacity 0.3s ease';
         setTimeout(function () {
-            document.body.removeChild(toast);
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
         }, 300);
     }, 3000);
 }
+
+// ==========================================================
+// ===== INICIALIZAR =====
+// ==========================================================
+
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('📱 Perfil del cliente cargado correctamente.');
+
+    // ==========================================================
+    // Efecto de entrada para los items
+    // ==========================================================
+    var items = document.querySelectorAll('.perfil-item');
+    items.forEach(function (item, index) {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(10px)';
+        item.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+        setTimeout(function () {
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, 100 + (index * 60));
+    });
+
+    // ==========================================================
+    // Efecto de entrada para el header
+    // ==========================================================
+    var header = document.querySelector('.perfil-header');
+    if (header) {
+        header.style.opacity = '0';
+        header.style.transform = 'translateY(-10px)';
+        header.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+        setTimeout(function () {
+            header.style.opacity = '1';
+            header.style.transform = 'translateY(0)';
+        }, 50);
+    }
+
+    // ==========================================================
+    // Efecto de entrada para datos protegidos
+    // ==========================================================
+    var protegido = document.querySelector('.perfil-protegido');
+    if (protegido) {
+        protegido.style.opacity = '0';
+        protegido.style.transform = 'translateX(-10px)';
+        protegido.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+        setTimeout(function () {
+            protegido.style.opacity = '1';
+            protegido.style.transform = 'translateX(0)';
+        }, 200);
+    }
+
+    // ==========================================================
+    // Prevenir comportamiento por defecto en enlaces
+    // ==========================================================
+    document.querySelectorAll('.perfil-item').forEach(function (item) {
+        item.addEventListener('click', function (e) {
+            // Si tiene href, dejar que navegue normalmente
+            if (this.getAttribute('href') && this.getAttribute('href') !== '#') {
+                return;
+            }
+        });
+    });
+
+});
