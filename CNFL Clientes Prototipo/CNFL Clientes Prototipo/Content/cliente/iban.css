@@ -1,0 +1,122 @@
+﻿/* ==========================================
+   IBAN - ESTILOS ESPECÍFICOS
+   ========================================== */
+
+/* ===== INPUTS ===== */
+.iban-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #f8f9fe;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+    .iban-input:focus {
+        border-color: var(--blue);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(30, 35, 230, 0.1);
+    }
+
+    .iban-input:disabled {
+        background: #f3f4f6;
+        cursor: not-allowed;
+    }
+
+    .iban-input::placeholder {
+        text-transform: none;
+        letter-spacing: normal;
+        color: #9ca3af;
+    }
+
+/* ===== CAMPOS DE FORMULARIO ===== */
+.iban-campo {
+    margin-bottom: 14px;
+}
+
+    .iban-campo label {
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .iban-campo .iban-valor {
+        font-weight: 600;
+        color: var(--ink);
+        font-size: 14px;
+    }
+
+/* ===== DETALLES DE TRANSFERENCIA ===== */
+.iban-detalles {
+    background: #f8f9fe;
+    border-radius: 14px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    margin: 12px 0;
+}
+
+    .iban-detalles .detalle {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+        .iban-detalles .detalle:last-child {
+            border-bottom: none;
+        }
+
+    .iban-detalles .detalle-label {
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+    .iban-detalles .detalle-valor {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+    }
+
+/* ===== BOTÓN ESPECÍFICO ===== */
+.btn-iban {
+    background: linear-gradient(135deg, #1E23E6, #5a60f5);
+    box-shadow: 0 6px 20px rgba(30, 35, 230, 0.3);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .btn-iban:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(30, 35, 230, 0.4);
+    }
+
+    .btn-iban:active {
+        transform: scale(0.97);
+    }
+
+/* ===== RESPONSIVE IBAN ===== */
+@media (max-width: 480px) {
+    .iban-detalles {
+        padding: 12px 14px;
+    }
+
+        .iban-detalles .detalle {
+            flex-direction: column;
+            padding: 8px 0;
+        }
+
+        .iban-detalles .detalle-valor {
+            margin-top: 2px;
+        }
+}

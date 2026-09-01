@@ -1,0 +1,167 @@
+﻿/* ==========================================
+   TARJETA - ESTILOS ESPECÍFICOS
+   ========================================== */
+
+/* ===== INPUTS ===== */
+.tarjeta-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #f8f9fe;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .tarjeta-input:focus {
+        border-color: var(--orange);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 105, 45, 0.1);
+    }
+
+    .tarjeta-input:disabled {
+        background: #f3f4f6;
+        cursor: not-allowed;
+    }
+
+    .tarjeta-input::placeholder {
+        color: #9ca3af;
+    }
+
+/* ===== TARJETA PREVIEW ===== */
+.tarjeta-preview {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 16px;
+    padding: 20px;
+    color: white;
+    margin: 12px 0;
+    position: relative;
+    min-height: 160px;
+}
+
+    .tarjeta-preview .tarjeta-numero {
+        font-size: 20px;
+        letter-spacing: 4px;
+        font-weight: 600;
+        margin: 16px 0;
+    }
+
+    .tarjeta-preview .tarjeta-chip {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .tarjeta-preview .tarjeta-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 12px;
+    }
+
+    .tarjeta-preview .tarjeta-nombre {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .tarjeta-preview .tarjeta-fecha {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+/* ===== CAMPOS DE TARJETA ===== */
+.tarjeta-campos {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+}
+
+    .tarjeta-campos .campo {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .tarjeta-campos .campo label {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .tarjeta-campos .campo .input-wrapper {
+            position: relative;
+        }
+
+            .tarjeta-campos .campo .input-wrapper .icono {
+                position: absolute;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 20px;
+                opacity: 0.5;
+            }
+
+    .tarjeta-campos .campo-row {
+        display: flex;
+        gap: 12px;
+    }
+
+        .tarjeta-campos .campo-row .campo {
+            flex: 1;
+        }
+
+        .tarjeta-campos .campo-row .campo-cvv {
+            flex: 0 0 100px;
+        }
+
+/* ===== BOTÓN ESPECÍFICO ===== */
+.btn-tarjeta {
+    background: linear-gradient(135deg, #FF692D, #ff8a5c);
+    box-shadow: 0 6px 20px rgba(255, 105, 45, 0.3);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    margin-top: 16px;
+}
+
+    .btn-tarjeta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 105, 45, 0.4);
+    }
+
+    .btn-tarjeta:active {
+        transform: scale(0.97);
+    }
+
+/* ===== RESPONSIVE TARJETA ===== */
+@media (max-width: 480px) {
+    .tarjeta-preview {
+        padding: 16px;
+        min-height: 130px;
+    }
+
+        .tarjeta-preview .tarjeta-numero {
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+
+        .tarjeta-preview .tarjeta-chip {
+            font-size: 22px;
+        }
+
+    .tarjeta-campos .campo-row {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+        .tarjeta-campos .campo-row .campo-cvv {
+            flex: 1;
+        }
+}

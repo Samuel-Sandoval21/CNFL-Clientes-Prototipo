@@ -118,17 +118,33 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--muted);
     transition: 0.2s;
     flex-shrink: 0;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 8px;
+    z-index: 5;
 }
 
     .toggle-password:hover {
         color: var(--blue);
+        background: rgba(30, 35, 230, 0.08);
+    }
+
+    .toggle-password:active {
+        transform: scale(0.85);
+    }
+
+    .toggle-password svg {
+        pointer-events: none;
+        display: block;
+        width: 20px;
+        height: 20px;
     }
 
 /* ===== CAMPO VÁLIDO ===== */
@@ -452,5 +468,16 @@
         .face-id-btn svg {
             width: 28px;
             height: 28px;
+        }
+
+    .toggle-password {
+        min-width: 32px;
+        min-height: 32px;
+        padding: 6px;
+    }
+
+        .toggle-password svg {
+            width: 18px;
+            height: 18px;
         }
 }

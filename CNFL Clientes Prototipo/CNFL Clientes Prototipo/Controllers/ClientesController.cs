@@ -21,6 +21,15 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (Session["Rol"].ToString() == "Admin")
                 return RedirectToAction("Dashboard", "Admin");
 
+            // ==========================================================
+            // PASAR DATOS DEL CLIENTE A LA VISTA
+            // ==========================================================
+            ViewBag.Nombre = Session["Nombre"] ?? "Cliente";
+            ViewBag.NISE = Session["NISE"] ?? "000000000";
+            ViewBag.Cedula = Session["Cedula"] ?? "0-0000-0000";
+            ViewBag.Correo = Session["Correo"] ?? "cliente@correo.com";
+            ViewBag.Telefono = Session["Telefono"] ?? "0000-0000";
+
             return View();
         }
 
@@ -39,7 +48,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (Session["Rol"] == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            // Obtener facturas del servicio
             var facturas = _facturaService.ListarFacturas();
             return View(facturas);
         }
@@ -172,7 +180,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (Session["Rol"] == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            // Inicializar lista de notificaciones leídas si no existe
             if (Session["NotificacionesLeidas"] == null)
             {
                 Session["NotificacionesLeidas"] = new List<int>();

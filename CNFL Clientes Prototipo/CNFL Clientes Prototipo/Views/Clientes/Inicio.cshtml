@@ -15,17 +15,17 @@
 
 <div class="section-pad">
     <div style="color: var(--muted); font-weight: 600;" data-i18n="inicio_saludo">Hola,</div>
-    <div class="h-name">@(Session["Nombre"] ?? "Katherine Villalobos")</div>
+    <div class="h-name">@ViewBag.Nombre</div>
+    <div style="font-size:13px; color:var(--muted);">NISE: @ViewBag.NISE</div>
 </div>
 
 <!-- ===== FACTURA PENDIENTE ===== -->
 <div class="section-pad" style="margin-top:16px">
     <div class="bill">
-        <div class="bill-lbl" data-i18n="factura_pendiente">FACTURA PENDIENTE · NISE 4021</div>
+        <div class="bill-lbl" data-i18n="factura_pendiente">FACTURA PENDIENTE · NISE @ViewBag.NISE</div>
         <div class="bill-amt">₡ 18.450</div>
         <div class="bill-due" data-i18n="vence_el">Vence el 28 de agosto</div>
         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:16px; gap:12px;">
-            <!-- ✅ CORREGIDO: /Clientes/ en lugar de /Cliente/ -->
             <button class="btn-ghost" onclick="window.location.href='/Clientes/DetalleFactura/1'">
                 <span data-i18n="ver_detalle">Ver detalle</span>
             </button>
@@ -45,7 +45,7 @@
             <i class="fas fa-home" style="color:#64B95A; font-size:20px;"></i>
         </div>
         <div style="flex:1">
-            <div style="font-weight:700; font-size:14px;">Casa · NISE 4021</div>
+            <div style="font-weight:700; font-size:14px;">Casa · NISE @ViewBag.NISE</div>
             <div style="font-size:12px; color:var(--muted);">Residencial · San José</div>
         </div>
         <span class="pill st-normal"><span style="width:7px; height:7px; border-radius:50%; background:#64B95A;"></span> <span data-i18n="normal">Normal</span></span>
@@ -76,7 +76,7 @@
 
 <!-- ===== CONSUMO ===== -->
 <div class="section-pad">
-    <div class="eyebrow" data-i18n="consumo_kwh">Consumo kWh · NISE 4021</div>
+    <div class="eyebrow" data-i18n="consumo_kwh">Consumo kWh · NISE @ViewBag.NISE</div>
     <div class="card">
         <div id="graficoConsumo" style="display:flex; align-items:flex-end; gap:9px; height:110px; padding:0 4px;">
             <div class="barra" style="flex:1; background:linear-gradient(var(--sky),#a9dce8); height:45%; border-radius:8px 8px 4px 4px; transition:height 0.6s ease;"></div>

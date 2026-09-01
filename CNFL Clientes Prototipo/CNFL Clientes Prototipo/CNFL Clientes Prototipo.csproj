@@ -209,6 +209,7 @@
     <Content Include="Content\cliente\cuenta.css" />
     <Content Include="Content\cliente\editar-datos.css" />
     <Content Include="Content\cliente\historial-compras.css" />
+    <Content Include="Content\cliente\iban.css" />
     <Content Include="Content\cliente\inicio.css" />
     <Content Include="Content\cliente\layout-login.css" />
     <Content Include="Content\cliente\layout.css" />
@@ -219,7 +220,9 @@
     <Content Include="Content\cliente\reportes-form.css" />
     <Content Include="Content\cliente\reportes.css" />
     <Content Include="Content\cliente\servicios-contratados.css" />
+    <Content Include="Content\cliente\sinpe.css" />
     <Content Include="Content\cliente\suscripciones.css" />
+    <Content Include="Content\cliente\tarjeta.css" />
     <Content Include="Content\cliente\tienda.css" />
     <Content Include="Content\cliente\tramites.css" />
     <Content Include="Content\home-publico.css" />
@@ -231,6 +234,7 @@
     <Content Include="Scripts\cliente\cuenta.js" />
     <Content Include="Scripts\cliente\editar-datos.js" />
     <Content Include="Scripts\cliente\historial-compras.js" />
+    <Content Include="Scripts\cliente\iban.js" />
     <Content Include="Scripts\cliente\idiomas.js" />
     <Content Include="Scripts\cliente\inicio.js" />
     <Content Include="Scripts\cliente\layout-login.js" />
@@ -242,7 +246,9 @@
     <Content Include="Scripts\cliente\reportes-form.js" />
     <Content Include="Scripts\cliente\reportes.js" />
     <Content Include="Scripts\cliente\servicios-contratados.js" />
+    <Content Include="Scripts\cliente\sinpe.js" />
     <Content Include="Scripts\cliente\suscripciones.js" />
+    <Content Include="Scripts\cliente\tarjeta.js" />
     <Content Include="Scripts\cliente\tienda.js" />
     <Content Include="Scripts\cliente\tramites.js" />
     <Content Include="Scripts\home-publico.js" />

@@ -7,41 +7,77 @@
     var monto = ViewBag.Monto ?? Request.QueryString["monto"] ?? "0";
 }
 
+<!-- Estilos -->
 <link rel="stylesheet" href="@Url.Content("~/Content/cliente/pagos.css")" />
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/sinpe.css")" />
 
+<!-- Botón Volver -->
 <button class="btn-volver" onclick="history.back();">
     <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
 </button>
 
+<!-- Encabezado -->
 <div class="section-pad">
-    <div class="h-name-2" data-i18n="pago_sinpe">Pago con SINPE Móvil</div>
+    <div class="h-name-2" data-i18n="pago_sinpe">
+        <i class="fas fa-mobile-alt" style="color:var(--green);"></i> Pago con SINPE Móvil
+    </div>
     <div style="font-size:13px; color:var(--muted); margin-top:2px;">
         <span data-i18n="producto_factura">Producto/Factura:</span> Factura #@facturaId
     </div>
 </div>
 
+<!-- Contenido Principal -->
 <div class="section-pad">
     <div class="pago-card" style="text-align:center;">
-        <div style="font-size:20px; font-weight:800; color:var(--green);">₡ @monto</div>
+        <!-- Monto -->
+        <div style="font-size:20px; font-weight:800; color:var(--green);" class="monto-pagar">₡ @monto</div>
         <div style="font-size:13px; color:var(--muted); margin-top:4px;" data-i18n="monto_pagar">Monto a pagar</div>
 
         <hr style="border-color:var(--line); margin:16px 0;" />
 
-        <div style="text-align:left; font-size:14px; line-height:2;">
-            <div><span style="font-weight:700;">1.</span> <span data-i18n="abrir_app_banco">Abra su app del Banco.</span></div>
-            <div><span style="font-weight:700;">2.</span> <span data-i18n="digite_telefono">Digite el teléfono: 8888-8888</span></div>
-            <div><span style="font-weight:700;">3.</span> <span data-i18n="digite_monto">Digite el monto: ₡@monto</span></div>
-            <div><span style="font-weight:700;">4.</span> <span data-i18n="acepte_pago">Acepte el pago en su celular.</span></div>
+        <!-- Teléfono SINPE -->
+        <div style="text-align:left; margin-bottom:16px;">
+            <label style="font-weight:700; font-size:13px; color:var(--muted);">Teléfono SINPE</label>
+            <input type="text" id="telefonoSinpe" class="sinpe-input" placeholder="8888-8888" maxlength="9" />
+        </div>
+
+        <!-- Pasos -->
+        <div class="sinpe-pasos">
+            <div class="paso">
+                <span class="paso-numero">1</span>
+                <span class="paso-texto" data-i18n="abrir_app_banco">Abra su app del Banco.</span>
+            </div>
+            <div class="paso">
+                <span class="paso-numero">2</span>
+                <span class="paso-texto" data-i18n="digite_telefono">Digite el teléfono: <strong>8888-8888</strong></span>
+            </div>
+            <div class="paso">
+                <span class="paso-numero">3</span>
+                <span class="paso-texto" data-i18n="digite_monto">Digite el monto: <strong>₡ @monto</strong></span>
+            </div>
+            <div class="paso">
+                <span class="paso-numero">4</span>
+                <span class="paso-texto" data-i18n="acepte_pago">Acepte el pago en su celular.</span>
+            </div>
         </div>
 
         <input type="hidden" id="facturaId" value="@facturaId" />
 
-        <button class="btn-cta" style="width:100%; margin-top:16px;" onclick="confirmarPago('Sinpe', @facturaId)">
+        <!-- Botón -->
+        <button class="btn-sinpe btn-pagar" id="btnPagarSinpe">
+            <i class="fas fa-check-circle"></i>
             <span data-i18n="confirmar_pago">Confirmar pago</span>
         </button>
+
+        <!-- Seguridad -->
+        <div style="margin-top:12px; font-size:12px; color:var(--muted);">
+            <i class="fas fa-lock" style="margin-right:4px;"></i> Transacción segura
+        </div>
     </div>
 </div>
 
+<!-- Scripts -->
 @section scriptsVista {
     <script src="@Url.Content("~/Scripts/cliente/pagos.js")"></script>
+    <script src="@Url.Content("~/Scripts/cliente/sinpe.js")"></script>
 }

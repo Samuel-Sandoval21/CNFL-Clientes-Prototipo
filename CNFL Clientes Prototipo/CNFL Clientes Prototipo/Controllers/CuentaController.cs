@@ -39,6 +39,19 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 Contraseña = "123456",
                 Rol = "Cliente",
                 FechaNacimiento = new DateTime(1990, 5, 15)
+            },
+            new Usuario {
+                Id = 3,
+                Nombre = "Samuel",
+                Apellidos = "Sandoval Ramírez",
+                Cedula = "2-0874-0716",
+                Telefono = "8888-8888",
+                Correo = "samuel@correo.cr",
+                NISE = "402198765",
+                UserName = "samuel",
+                Contraseña = "123456",
+                Rol = "Cliente",
+                FechaNacimiento = new DateTime(2001, 2, 21)
             }
         };
 
@@ -164,7 +177,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         // ==========================================================
         public ActionResult RecuperarClave()
         {
-            // Si ya está logueado, redirigir al inicio
             if (Session["Rol"] != null)
             {
                 if (Session["Rol"].ToString() == "Admin")
@@ -204,7 +216,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return View();
             }
 
-            // Actualizar contraseña
             usuario.Contraseña = nuevaClave;
             TempData["Mensaje"] = "✅ ¡Contraseña actualizada exitosamente! Ahora puedes iniciar sesión.";
 
@@ -245,15 +256,32 @@ namespace CNFL_Clientes_Prototipo.Controllers
         {
             if (ModelState.IsValid)
             {
-                var usuario = _usuarios.FirstOrDefault(u => u.UserName == model.UserName && u.Contraseña == model.Contraseña);
+                // Buscar por UserName o por Cédula
+                var usuario = _usuarios.FirstOrDefault(u =>
+                    u.UserName == model.UserName && u.Contraseña == model.Contraseña);
+
+                // Si no encuentra por UserName, buscar por Cédula
+                if (usuario == null)
+                {
+                    usuario = _usuarios.FirstOrDefault(u =>
+                        u.Cedula == model.UserName && u.Contraseña == model.Contraseña);
+                }
 
                 if (usuario != null)
                 {
+                    // ==========================================================
+                    // GUARDAR TODOS LOS DATOS DEL USUARIO EN LA SESIÓN
+                    // ==========================================================
                     Session["Id"] = usuario.Id;
                     Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
+                    Session["NombreCompleto"] = usuario.Nombre + " " + usuario.Apellidos;
                     Session["Correo"] = usuario.Correo;
                     Session["Rol"] = usuario.Rol;
                     Session["NISE"] = usuario.NISE;
+                    Session["Cedula"] = usuario.Cedula;
+                    Session["Telefono"] = usuario.Telefono;
+                    Session["UserName"] = usuario.UserName;
+                    Session["FechaNacimiento"] = usuario.FechaNacimiento.ToString("dd/MM/yyyy");
 
                     if (usuario.Rol == "Admin")
                     {
@@ -292,7 +320,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (ModelState.IsValid)
             {
                 // ==========================================================
-                // 1. VALIDACIÓN DE NISE (CON NULL CHECK)
+                // 1. VALIDACIÓN DE NISE
                 // ==========================================================
                 if (string.IsNullOrEmpty(model.NISE))
                 {
@@ -306,7 +334,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     return View(model);
                 }
 
-                // Validar que el NISE exista en el TSE
                 bool niseValido = _datosTSE.Values.Any(d => d.NISEs.Contains(model.NISE));
                 if (!niseValido)
                 {
@@ -358,7 +385,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
                 _usuarios.Add(nuevoUsuario);
 
-                // REDIRIGE AL LOGIN CON MENSAJE DE ÉXITO
                 TempData["Mensaje"] = "✅ ¡Registro exitoso! Ya puedes iniciar sesión.";
                 return RedirectToAction("Login");
             }
@@ -371,6 +397,21 @@ namespace CNFL_Clientes_Prototipo.Controllers
             Session.Clear();
             Session.Abandon();
             return RedirectToAction("Login");
+        }
+
+        public ActionResult CerrarSesion()
+        {
+            Session.Clear();
+            Session.Abandon();
+
+            if (Request.Cookies[".ASPXAUTH"] != null)
+            {
+                var cookie = new HttpCookie(".ASPXAUTH");
+                cookie.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(cookie);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         public ActionResult Cuenta()

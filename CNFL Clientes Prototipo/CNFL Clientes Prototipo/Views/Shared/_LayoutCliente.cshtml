@@ -69,17 +69,16 @@
             </main>
         </div>
 
-        <!-- ========================================================== -->
-        <!-- MENÚ INFERIOR - SIN CLASE active EN NINGÚN LADO -->
-        <!-- ========================================================== -->
+        <!-- ===== MENÚ INFERIOR - CLIENTE (SIN SALIR COMO TAB) ===== -->
         <nav class="bottom-nav" id="bottomNav">
-            <a href="@Url.Action("Index", "Home")" class="tab" data-seccion="inicio">
-                <i class="fas fa-home"></i>
-                <span data-i18n="menu_inicio">Inicio</span>
-            </a>
-
             @if (Session["Rol"] != null)
             {
+                <!-- Usuario logueado - Menú completo -->
+                <a href="@Url.Action("Index", "Home")" class="tab" data-seccion="inicio">
+                    <i class="fas fa-home"></i>
+                    <span data-i18n="menu_inicio">Inicio</span>
+                </a>
+
                 <a href="@Url.Action("Tramites", "Clientes")" class="tab" data-seccion="tramites">
                     <i class="fas fa-file-alt"></i>
                     <span data-i18n="menu_tramites">Trámites</span>
@@ -101,12 +100,30 @@
                     <i class="fas fa-map-marked-alt"></i>
                     <span data-i18n="menu_reportes">Reportes</span>
                 </a>
-            }
 
-            <a href="@Url.Action("Cuenta", "Cuenta")" class="tab" data-seccion="perfil">
-                <i class="fas fa-user-circle"></i>
-                <span data-i18n="menu_cuenta">Cuenta</span>
-            </a>
+                <!-- ========================================================== -->
+                <!-- CUENTA (donde está Cerrar Sesión dentro del perfil) -->
+                <!-- ========================================================== -->
+                <a href="@Url.Action("Perfil", "Clientes")" class="tab" data-seccion="perfil">
+                    <i class="fas fa-user-circle"></i>
+                    <span data-i18n="menu_cuenta">Cuenta</span>
+                </a>
+            }
+            else
+            {
+                <!-- Visitante - Menú público -->
+                <a href="@Url.Action("Index", "Home")" class="tab" data-seccion="inicio">
+                    <i class="fas fa-home"></i>
+                    <span data-i18n="menu_inicio">Inicio</span>
+                </a>
+
+                <a href="@Url.Action("Login", "Cuenta")" class="tab center" data-seccion="perfil">
+                    <div class="fab">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span data-i18n="menu_cuenta">Cuenta</span>
+                </a>
+            }
         </nav>
     </div>
 

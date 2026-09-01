@@ -33,27 +33,14 @@ function marcarTabActivo() {
     // === PASO 2: DETERMINAR QUÉ TAB ACTIVAR ===
     var tabActivo = '';
 
-    // 1. CUENTA / PERFIL
-    if (currentPath === '/cuenta' ||
-        currentPath === '/cuenta/' ||
-        currentPath === '/cuenta/cuenta' ||
-        currentPath === '/cuenta/misdatos' ||
-        currentPath === '/cuenta/suscripciones' ||
-        currentPath === '/cuenta/servicioscontratados' ||
-        currentPath === '/cuenta/calculadora' ||
-        currentPath === '/cuenta/chat' ||
-        currentPath === '/cuenta/historialcompras' ||
-        currentPath === '/cuenta/editardatos' ||
-        currentPath === '/cuenta/perfil' ||
-        currentPath === '/clientes/perfil' ||
-        currentPath === '/clientes/editar-datos' ||
-        currentPath === '/clientes/suscripciones' ||
-        currentPath === '/clientes/historialcompras' ||
-        currentPath === '/clientes/calculadora' ||
-        currentPath === '/clientes/chat' ||
-        currentPath === '/clientes/notificaciones' ||
-        currentPath.indexOf('/cuenta/') === 0) {
-        tabActivo = 'perfil';
+    // 1. INICIO
+    if (currentPath === '/' ||
+        currentPath === '/home' ||
+        currentPath === '/home/index' ||
+        currentPath === '/clientes' ||
+        currentPath === '/clientes/' ||
+        currentPath === '/clientes/inicio') {
+        tabActivo = 'inicio';
     }
     // 2. TRÁMITES
     else if (currentPath === '/clientes/tramites' || currentPath.indexOf('/clientes/tramites/') === 0) {
@@ -71,14 +58,15 @@ function marcarTabActivo() {
     else if (currentPath === '/clientes/reportes' || currentPath.indexOf('/clientes/reportes/') === 0) {
         tabActivo = 'reportes';
     }
-    // 6. INICIO
-    else if (currentPath === '/' ||
-        currentPath === '/home' ||
-        currentPath === '/home/index' ||
-        currentPath === '/clientes' ||
-        currentPath === '/clientes/' ||
-        currentPath === '/clientes/inicio') {
-        tabActivo = 'inicio';
+    // 6. CUENTA / PERFIL (CUALQUIER RUTA DE CLIENTES QUE NO SEA LAS ANTERIORES)
+    else if (currentPath.indexOf('/clientes/') === 0) {
+        tabActivo = 'perfil';
+    }
+    // 7. RUTAS DE CUENTA (para compatibilidad)
+    else if (currentPath === '/cuenta' ||
+        currentPath === '/cuenta/' ||
+        currentPath.indexOf('/cuenta/') === 0) {
+        tabActivo = 'perfil';
     }
 
     // === PASO 3: ACTIVAR SOLO SI SE DETECTO ALGO ===

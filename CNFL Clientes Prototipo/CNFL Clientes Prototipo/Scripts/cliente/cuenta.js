@@ -21,24 +21,81 @@ function togglePasswordLogin() {
 }
 
 // ==========================================================
-// ===== TOGGLE PASSWORD - REGISTRO Y RECUPERAR =====
+// ===== TOGGLE PASSWORD POR ID - PARA REGISTRO =====
 // ==========================================================
-function togglePasswordVisibility() {
-    var passwordInput = document.getElementById('contrasena') || document.getElementById('Contraseña');
-    if (!passwordInput) return;
+function togglePasswordById(inputId) {
+    // Buscar el input por ID
+    var passwordInput = document.getElementById(inputId);
+    if (!passwordInput) {
+        console.warn('⚠️ No se encontró el input con ID:', inputId);
+        return;
+    }
 
-    var container = passwordInput.closest('.inp');
-    if (!container) return;
-
-    var button = container.querySelector('.toggle-password');
-    if (!button) return;
-
+    // Toggle del tipo de input
     var isPassword = passwordInput.type === 'password';
     passwordInput.type = isPassword ? 'text' : 'password';
 
-    button.innerHTML = isPassword
+    // Buscar el botón dentro del mismo contenedor y actualizar ícono
+    var container = passwordInput.closest('.inp');
+    if (container) {
+        var button = container.querySelector('.toggle-password');
+        if (button) {
+            // Cambiar el ícono del botón
+            var iconSvg = isPassword
+                ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+                : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+            button.innerHTML = iconSvg;
+        }
+    }
+
+    // Enfocar el input después del toggle
+    passwordInput.focus();
+
+    console.log('🔍 Toggle en:', passwordInput.id, '→ tipo:', passwordInput.type);
+}
+
+// ==========================================================
+// ===== TOGGLE PASSWORD - REGISTRO Y RECUPERAR =====
+// ==========================================================
+function togglePasswordVisibility(event) {
+    // OBTENER EL BOTÓN CORRECTO usando event.currentTarget
+    var button = event.currentTarget;
+
+    if (!button) {
+        console.warn('⚠️ No se encontró el botón');
+        return;
+    }
+
+    // BUSCAR EL CONTENEDOR .inp MÁS CERCANO AL BOTÓN
+    var container = button.closest('.inp');
+    if (!container) {
+        console.warn('⚠️ No se encontró el contenedor .inp');
+        return;
+    }
+
+    // BUSCAR EL INPUT DENTRO DE ESTE CONTENEDOR ESPECÍFICO
+    var passwordInput = container.querySelector('input[type="password"], input[type="text"]');
+    if (!passwordInput) {
+        console.warn('⚠️ No se encontró el input de contraseña en este contenedor');
+        return;
+    }
+
+    // TOGGLE DEL TIPO DE INPUT
+    var isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+
+    // CAMBIAR EL ÍCONO DEL BOTÓN
+    var iconSvg = isPassword
         ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
         : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+    button.innerHTML = iconSvg;
+
+    // ENFOCAR EL INPUT DESPUÉS DEL TOGGLE
+    passwordInput.focus();
+
+    console.log('🔍 Toggle en:', passwordInput.id, '→ tipo:', passwordInput.type);
 }
 
 // ==========================================================
@@ -151,6 +208,7 @@ function validarCedula(cedula) {
         return false;
     }
 
+    var result = false;
     $.ajax({
         url: '/Cuenta/ValidarCedula',
         type: 'POST',
@@ -163,6 +221,7 @@ function validarCedula(cedula) {
                     hint.textContent = '✅ Cédula verificada en el TSE';
                     hint.className = 'registro-hint success';
                 }
+                result = true;
             } else {
                 mostrarError(errorId, '❌ ' + response.message);
                 marcarInvalido(groupId);
@@ -170,15 +229,17 @@ function validarCedula(cedula) {
                     hint.textContent = '⚠️ ' + response.message;
                     hint.className = 'registro-hint error';
                 }
+                result = false;
             }
         },
         error: function () {
             mostrarError(errorId, '❌ Error al validar la cédula');
             marcarInvalido(groupId);
+            result = false;
         }
     });
 
-    return true;
+    return result;
 }
 
 function validarNombre(nombre) {

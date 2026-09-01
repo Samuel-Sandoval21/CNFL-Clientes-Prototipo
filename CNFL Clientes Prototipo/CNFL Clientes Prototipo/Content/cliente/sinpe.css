@@ -1,0 +1,115 @@
+﻿/* ==========================================
+   SINPE - ESTILOS ESPECÍFICOS
+   ========================================== */
+
+/* ===== INPUTS ===== */
+.sinpe-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #f8f9fe;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .sinpe-input:focus {
+        border-color: var(--green);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(100, 185, 90, 0.1);
+    }
+
+    .sinpe-input:disabled {
+        background: #f3f4f6;
+        cursor: not-allowed;
+    }
+
+/* ===== PASOS SINPE ===== */
+.sinpe-pasos {
+    text-align: left;
+    font-size: 14px;
+    line-height: 2.2;
+}
+
+    .sinpe-pasos .paso {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 0;
+    }
+
+    .sinpe-pasos .paso-numero {
+        font-weight: 700;
+        background: var(--green);
+        color: white;
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    .sinpe-pasos .paso-texto {
+        color: var(--ink);
+    }
+
+        .sinpe-pasos .paso-texto strong {
+            color: var(--green);
+        }
+
+/* ===== TELÉFONO DESTACADO ===== */
+.sinpe-telefono {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--green);
+    letter-spacing: 2px;
+    margin: 12px 0;
+}
+
+/* ===== BOTÓN ESPECÍFICO ===== */
+.btn-sinpe {
+    background: linear-gradient(135deg, #64B95A, #43A047);
+    box-shadow: 0 6px 20px rgba(100, 185, 90, 0.3);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .btn-sinpe:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(100, 185, 90, 0.4);
+    }
+
+    .btn-sinpe:active {
+        transform: scale(0.97);
+    }
+
+/* ===== RESPONSIVE SINPE ===== */
+@media (max-width: 480px) {
+    .sinpe-pasos {
+        font-size: 13px;
+        line-height: 2;
+    }
+
+        .sinpe-pasos .paso {
+            padding: 4px 0;
+        }
+
+    .sinpe-telefono {
+        font-size: 18px;
+        padding: 10px 14px;
+    }
+}

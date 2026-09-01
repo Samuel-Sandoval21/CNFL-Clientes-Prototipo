@@ -5,9 +5,9 @@
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 
     // ==========================================================
-    // OBTENER INICIALES DEL NOMBRE
+    // OBTENER INICIALES DEL NOMBRE DESDE LA SESIÓN
     // ==========================================================
-    var nombreCompleto = Session["Nombre"]?.ToString() ?? "Katherine Villalobos";
+    var nombreCompleto = Session["Nombre"]?.ToString() ?? "Cliente CNFL";
     var iniciales = string.Join("", nombreCompleto.Split(' ').Select(s => s.Length > 0 ? s[0].ToString() : ""));
     if (iniciales.Length > 2)
     {
@@ -33,8 +33,8 @@
             @iniciales
         </div>
         <div class="perfil-info">
-            <div class="perfil-nombre">@nombreCompleto</div>
-            <div class="perfil-email">@(Session["Correo"]?.ToString() ?? "k.villalobos@correo.cr")</div>
+            <div class="perfil-nombre">@(Session["Nombre"] ?? "Cliente CNFL")</div>
+            <div class="perfil-email">@(Session["Correo"] ?? "cliente@correo.cr")</div>
         </div>
         <span class="perfil-badge">Cliente</span>
     </div>
@@ -137,7 +137,7 @@
     <!-- ========================================================== -->
     <!-- CERRAR SESIÓN -->
     <!-- ========================================================== -->
-    <div class="perfil-item cerrar-sesion" onclick="cerrarSesion()">
+    <div class="perfil-item cerrar-sesion" onclick="window.location.href='@Url.Action("CerrarSesion", "Cuenta")'">
         <div class="ic" style="background:#fdeaea;">
             <i class="fas fa-sign-out-alt" style="color:var(--red);"></i>
         </div>
