@@ -2,6 +2,8 @@
 using System.Linq;
 using CNFL_Clientes_Prototipo.Models;
 
+
+
 namespace CNFL_Clientes_Prototipo.Repositories
 {
     public class FacturaRepository
@@ -17,7 +19,6 @@ namespace CNFL_Clientes_Prototipo.Repositories
             return _facturas;
         }
 
-        // NUEVO: Obtener una factura por ID
         public Factura ObtenerPorId(int id)
         {
             return _facturas.FirstOrDefault(f => f.Id == id);
@@ -26,7 +27,10 @@ namespace CNFL_Clientes_Prototipo.Repositories
         public void Pagar(int id)
         {
             var factura = _facturas.Find(f => f.Id == id);
-            if (factura != null) factura.Estado = "Pagada";
+            if (factura != null)
+            {
+                factura.Estado = "Pagada";
+            }
         }
     }
 }

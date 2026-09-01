@@ -5,6 +5,8 @@ using System.Web;
 using CNFL_Clientes_Prototipo.Models;
 using CNFL_Clientes_Prototipo.Repositories;
 
+
+
 namespace CNFL_Clientes_Prototipo.Services
 {
     public class FacturaService
@@ -13,7 +15,6 @@ namespace CNFL_Clientes_Prototipo.Services
 
         public List<Factura> ListarFacturas() => _repository.ObtenerTodas();
 
-        // NUEVO: Obtener una factura por ID
         public Factura ObtenerPorId(int id) => _repository.ObtenerPorId(id);
 
         public void PagarFactura(int id) => _repository.Pagar(id);

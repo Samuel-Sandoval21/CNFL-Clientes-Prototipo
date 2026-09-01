@@ -1,5 +1,5 @@
 ﻿/* ==========================================
-   LAYOUT CLIENTE - ESTILOS BASE
+   CLIENTE LAYOUT - ESTILOS COMPLETOS
    ========================================== */
 
 :root {
@@ -91,7 +91,6 @@ body {
     left: 0;
     right: 0;
     bottom: 84px;
-    /* ESPACIO PARA EL MENÚ */
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
@@ -186,10 +185,11 @@ body {
 /* ===== CONTENIDO PRINCIPAL ===== */
 .main-content {
     padding: 0 18px 20px;
-    padding-bottom: 20px;
 }
 
+/* ========================================================== */
 /* ===== MENÚ INFERIOR FIJO ===== */
+/* ========================================================== */
 .bottom-nav {
     position: absolute;
     bottom: 0;
@@ -230,14 +230,17 @@ body {
         transition: 0.2s;
     }
 
+    /* ===== ESTADO ACTIVO DEL TAB ===== */
     .tab.active {
         color: var(--blue);
     }
 
         .tab.active i {
             transform: scale(1.1);
+            color: var(--blue);
         }
 
+    /* ===== TAB CENTRO (TIENDA) ===== */
     .tab.center .fab {
         width: 52px;
         height: 52px;
@@ -323,7 +326,10 @@ body {
     margin: 22px 0 12px;
 }
 
+/* ========================================================== */
 /* ===== RESPONSIVE ===== */
+/* ========================================================== */
+
 @media (max-width: 480px) {
     body {
         padding: 0;
@@ -379,3 +385,35 @@ body {
         font-size: 18px;
     }
 }
+
+/* ========================================================== */
+/* ===== FORZAR QUE NINGÚN TAB TENGA COLOR AZUL POR DEFECTO ===== */
+/* ========================================================== */
+
+/* TODOS los tabs empiezan en gris */
+.bottom-nav .tab {
+    color: #9aa1b0 !important;
+}
+
+    .bottom-nav .tab i {
+        color: #9aa1b0 !important;
+    }
+
+    /* SOLO el tab con clase 'active' se pone azul */
+    .bottom-nav .tab.active {
+        color: #1E23E6 !important;
+    }
+
+        .bottom-nav .tab.active i {
+            color: #1E23E6 !important;
+            transform: scale(1.1);
+        }
+
+    /* El tab de Tienda (centro) tiene su propio estilo */
+    .bottom-nav .tab.center .fab i {
+        color: #fff !important;
+    }
+
+    .bottom-nav .tab.center.active {
+        color: #FF692D !important;
+    }

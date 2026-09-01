@@ -235,7 +235,9 @@ body {
         border-radius: 10px;
     }
 
+/* ========================================================== */
 /* ===== MENÚ INFERIOR ===== */
+/* ========================================================== */
 .bottom-nav {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
@@ -271,6 +273,12 @@ body {
         transition: 0.2s;
     }
 
+        .nav-item .nav-icon i {
+            color: var(--muted);
+            transition: 0.2s;
+        }
+
+    /* ===== ESTADO ACTIVO DEL MENÚ ===== */
     .nav-item.active {
         color: var(--blue);
         font-weight: 700;
@@ -278,8 +286,11 @@ body {
 
         .nav-item.active .nav-icon {
             transform: scale(1.1);
-            color: var(--blue);
         }
+
+            .nav-item.active .nav-icon i {
+                color: var(--blue);
+            }
 
         .nav-item.active::before {
             content: '';
@@ -293,15 +304,37 @@ body {
             border-radius: 10px;
         }
 
+    /* ===== ESTADO HOVER ===== */
     .nav-item:hover {
         background: rgba(30, 35, 230, 0.06);
+        color: var(--blue);
     }
 
-    .nav-item i {
-        font-size: 22px;
+        .nav-item:hover .nav-icon i {
+            color: var(--blue);
+        }
+
+    /* ===== ÍTEM SALIR - NUNCA SE MARCA COMO ACTIVO ===== */
+    .nav-item[data-action="logout"] {
+        color: var(--muted);
     }
 
+        .nav-item[data-action="logout"] .nav-icon i {
+            color: var(--muted);
+        }
+
+        .nav-item[data-action="logout"]:hover {
+            background: rgba(229, 72, 77, 0.08);
+            color: var(--red);
+        }
+
+            .nav-item[data-action="logout"]:hover .nav-icon i {
+                color: var(--red);
+            }
+
+/* ========================================================== */
 /* ===== MODAL DE CONFIRMACIÓN ===== */
+/* ========================================================== */
 .modal-overlay {
     display: none;
     position: absolute;
@@ -470,6 +503,25 @@ body {
     .lang-toggle-top {
         font-size: 10px;
     }
+
+    .bottom-nav {
+        padding: 6px 6px 14px;
+    }
+
+    .nav-item {
+        padding: 4px 6px;
+        font-size: 9px;
+    }
+
+        .nav-item .nav-icon {
+            font-size: 18px;
+        }
+
+        .nav-item.active::before {
+            width: 14px;
+            height: 3px;
+            top: -4px;
+        }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
@@ -477,4 +529,13 @@ body {
         display: block;
         font-size: 10px;
     }
+
+    .nav-item {
+        padding: 5px 8px;
+        font-size: 10px;
+    }
+
+        .nav-item .nav-icon {
+            font-size: 20px;
+        }
 }

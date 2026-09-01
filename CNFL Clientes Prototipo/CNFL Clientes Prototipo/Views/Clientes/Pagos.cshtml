@@ -5,57 +5,74 @@
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
+<!-- CSS externo para Pagos -->
 <link rel="stylesheet" href="@Url.Content("~/Content/cliente/pagos.css")" />
 
+<!-- ===== BOTÓN VOLVER ===== -->
 <button class="btn-volver" onclick="history.back();">
     <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
 </button>
 
 <div class="section-pad">
-    <div class="h-name-2" data-i18n="pagos_titulo">Mis Pagos</div>
+    <div class="h-name-2" data-i18n="pagos_titulo">
+        <i class="fas fa-credit-card" style="color:var(--blue);"></i> Mis Pagos
+    </div>
     <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="consulta_paga">
         Consulta y paga tus facturas en segundos.
     </div>
 </div>
 
+<!-- ===== FACTURAS ===== -->
 <div class="section-pad">
-    @foreach (var factura in Model)
+    @if (Model != null && Model.Any())
     {
-        <div class="pago-card">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div>
-                    <div class="pago-titulo">Factura @factura.Periodo</div>
-                    <div class="pago-monto">₡ @factura.Monto.ToString("N0")</div>
+        foreach (var factura in Model)
+        {
+            <div class="pago-card">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <div class="pago-titulo">Factura @factura.Periodo</div>
+                        <div class="pago-monto">₡ @factura.Monto.ToString("N0")</div>
+                    </div>
+                    <span class="pago-estado @(factura.Estado == "Pagada" ? "pagada" : "pendiente")">
+                        @factura.Estado
+                    </span>
                 </div>
-                <span class="pago-estado @(factura.Estado == "Pagada" ? "pagada" : "pendiente")">
-                    @(factura.Estado == "Pagada" ? "PAGADA" : "PENDIENTE")
-                </span>
-            </div>
 
-            @if (factura.Estado == "Pagada")
-            {
-                <div class="pago-exitoso" data-i18n="pago_exitoso">✓ Pago realizado con éxito</div>
-            }
-            else
-            {
-                <div class="pago-metodos">
-                    <input type="hidden" id="facturaId" value="@factura.Id" />
-                    <!-- RUTA CORREGIDA: /Clientes/ (con "s") -->
-                    <button class="sinpe" onclick="window.location.href='/Clientes/Sinpe?monto=@factura.Monto&facturaId=@factura.Id'">
-                        <i class="fas fa-mobile-alt"></i> <span data-i18n="sinpe_movil">SINPE Móvil</span>
-                    </button>
-                    <button class="iban" onclick="window.location.href='/Clientes/Iban?monto=@factura.Monto&facturaId=@factura.Id'">
-                        <i class="fas fa-university"></i> <span data-i18n="iban">IBAN</span>
-                    </button>
-                    <button class="tarjeta" onclick="window.location.href='/Clientes/Tarjeta?monto=@factura.Monto&facturaId=@factura.Id'">
-                        <i class="fas fa-credit-card"></i> <span data-i18n="tarjeta">Tarjeta</span>
-                    </button>
-                </div>
-            }
+                @if (factura.Estado == "Pendiente")
+                {
+                    <div class="pago-metodos">
+                        <button class="sinpe" onclick="window.location.href='/Clientes/Sinpe?monto=@factura.Monto'">
+                            <i class="fas fa-mobile-alt"></i> SINPE Móvil
+                        </button>
+                        <button class="iban" onclick="window.location.href='/Clientes/Iban?monto=@factura.Monto'">
+                            <i class="fas fa-university"></i> IBAN
+                        </button>
+                        <button class="tarjeta" onclick="window.location.href='/Clientes/Tarjeta?monto=@factura.Monto'">
+                            <i class="fas fa-credit-card"></i> Tarjeta
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="pago-exitoso">
+                        <i class="fas fa-check-circle"></i> Pago realizado con éxito
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-pagos">
+            <div class="empty-icon">📄</div>
+            <h3>No hay facturas disponibles</h3>
+            <p>No tienes facturas pendientes o emitidas en este momento.</p>
         </div>
     }
 </div>
 
+<!-- JavaScript externo para Pagos -->
 @section scriptsVista {
     <script src="@Url.Content("~/Scripts/cliente/pagos.js")"></script>
 }

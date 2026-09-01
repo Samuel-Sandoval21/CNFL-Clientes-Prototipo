@@ -13,10 +13,8 @@
 <body>
 
     <div class="phone-frame">
-        <!-- ===== NOTCH ===== -->
         <div class="phone-notch"></div>
 
-        <!-- ===== BARRA DE ESTADO ===== -->
         <header class="status-bar">
             <span class="time" id="statusTime">10:44</span>
             <div class="status-icons">
@@ -39,16 +37,13 @@
             </div>
         </header>
 
-        <!-- ===== CONTENIDO SCROLL ===== -->
         <div class="phone-content" id="phoneContent">
 
-            <!-- ===== HEADER ===== -->
             <div class="app-header">
                 <div class="brand">
-                    <svg width="55" height="55" viewBox="0 0 50 50" fill="none">
-                        <path d="M25 5L10 25H18L12 45L35 22H25L30 5Z" stroke="#1E23E6" stroke-width="4" stroke-linejoin="round" />
-                        <path d="M12 33C15 43 25 48 35 44C42 41 47 34 46 28" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
-                        <path d="M38 5C30 1 20 3 15 10" stroke="#1E23E6" stroke-width="4" stroke-linecap="round" />
+                    <svg width="44" height="44" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="25" cy="25" r="22" stroke="#1E23E6" stroke-width="2.5" />
+                        <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#1E23E6" />
                     </svg>
                     <span class="brand-text">cnfl</span>
                 </div>
@@ -69,51 +64,46 @@
                 </div>
             </div>
 
-            <!-- ===== CONTENIDO DINÁMICO ===== -->
             <main class="main-content">
                 @RenderBody()
             </main>
         </div>
 
-        <!-- ===== MENÚ INFERIOR FIJO ===== -->
+        <!-- ========================================================== -->
+        <!-- MENÚ INFERIOR - SIN CLASE active EN NINGÚN LADO -->
+        <!-- ========================================================== -->
         <nav class="bottom-nav" id="bottomNav">
-            <!-- INICIO -->
-            <a href="@Url.Action("Index", "Home")" class="tab @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")" data-seccion="inicio">
+            <a href="@Url.Action("Index", "Home")" class="tab" data-seccion="inicio">
                 <i class="fas fa-home"></i>
                 <span data-i18n="menu_inicio">Inicio</span>
             </a>
 
             @if (Session["Rol"] != null)
             {
-                <!-- TRÁMITES -->
-                <a href="@Url.Action("Tramites", "Clientes")" class="tab @(ViewContext.RouteData.Values["controller"].ToString() == "Clientes" && ViewContext.RouteData.Values["action"].ToString() == "Tramites" ? "active" : "")" data-seccion="tramites">
+                <a href="@Url.Action("Tramites", "Clientes")" class="tab" data-seccion="tramites">
                     <i class="fas fa-file-alt"></i>
                     <span data-i18n="menu_tramites">Trámites</span>
                 </a>
 
-                <!-- PAGOS -->
-                <a href="@Url.Action("Pagos", "Clientes")" class="tab @(ViewContext.RouteData.Values["controller"].ToString() == "Clientes" && ViewContext.RouteData.Values["action"].ToString() == "Pagos" ? "active" : "")" data-seccion="pagos">
+                <a href="@Url.Action("Pagos", "Clientes")" class="tab" data-seccion="pagos">
                     <i class="fas fa-credit-card"></i>
                     <span data-i18n="menu_pagos">Pagos</span>
                 </a>
 
-                <!-- TIENDA -->
-                <a href="@Url.Action("Tienda", "Clientes")" class="tab center @(ViewContext.RouteData.Values["controller"].ToString() == "Clientes" && ViewContext.RouteData.Values["action"].ToString() == "Tienda" ? "active" : "")" data-seccion="tienda">
+                <a href="@Url.Action("Tienda", "Clientes")" class="tab center" data-seccion="tienda">
                     <div class="fab">
                         <i class="fas fa-store"></i>
                     </div>
                     <span data-i18n="menu_tienda">Tienda</span>
                 </a>
 
-                <!-- REPORTES -->
-                <a href="@Url.Action("Reportes", "Clientes")" class="tab @(ViewContext.RouteData.Values["controller"].ToString() == "Clientes" && ViewContext.RouteData.Values["action"].ToString() == "Reportes" ? "active" : "")" data-seccion="reportes">
+                <a href="@Url.Action("Reportes", "Clientes")" class="tab" data-seccion="reportes">
                     <i class="fas fa-map-marked-alt"></i>
                     <span data-i18n="menu_reportes">Reportes</span>
                 </a>
             }
 
-            <!-- CUENTA -->
-            <a href="@Url.Action("Cuenta", "Cuenta")" class="tab @(ViewContext.RouteData.Values["controller"].ToString() == "Cuenta" ? "active" : "")" data-seccion="perfil">
+            <a href="@Url.Action("Cuenta", "Cuenta")" class="tab" data-seccion="perfil">
                 <i class="fas fa-user-circle"></i>
                 <span data-i18n="menu_cuenta">Cuenta</span>
             </a>

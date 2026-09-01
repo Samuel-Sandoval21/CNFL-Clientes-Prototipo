@@ -17,6 +17,76 @@ updateTime();
 setInterval(updateTime, 30000);
 
 // ==========================================================
+// ===== MARCAR ÍTEM ACTIVO DEL MENÚ ADMIN =====
+// ==========================================================
+function marcarItemActivo() {
+    var currentPath = window.location.pathname.toLowerCase();
+
+    console.log('=== MARCAR ITEM ACTIVO ADMIN ===');
+    console.log('Path:', currentPath);
+
+    // REMOVER active de TODOS los items
+    document.querySelectorAll('.nav-item').forEach(function (item) {
+        item.classList.remove('active');
+    });
+
+    // Determinar la acción actual
+    var detectedAction = '';
+
+    // 1. DASHBOARD - raíz o /Admin/Dashboard
+    if (currentPath === '/' ||
+        currentPath === '/home' ||
+        currentPath === '/home/index' ||
+        currentPath === '/admin/dashboard') {
+        detectedAction = 'dashboard';
+    }
+    // 2. AVERÍAS - SOLO /Admin o /Admin/Index
+    else if (currentPath === '/admin' ||
+        currentPath === '/admin/' ||
+        currentPath.includes('/admin/index')) {
+        detectedAction = 'index';
+    }
+    // 3. CLIENTES
+    else if (currentPath.includes('/admin/clientes')) {
+        detectedAction = 'clientes';
+    }
+    // 4. REPORTES
+    else if (currentPath.includes('/admin/reportes')) {
+        detectedAction = 'reportes';
+    }
+    // 5. Si es otra ruta de admin
+    else if (currentPath.includes('/admin/')) {
+        var parts = currentPath.split('/');
+        if (parts.length > 2) {
+            var possibleAction = parts[2].toLowerCase();
+            var validActions = ['dashboard', 'index', 'clientes', 'reportes'];
+            if (validActions.indexOf(possibleAction) !== -1) {
+                detectedAction = possibleAction;
+            }
+        }
+    }
+
+    // Si no se detectó nada, usar DASHBOARD
+    if (!detectedAction) {
+        detectedAction = 'dashboard';
+    }
+
+    console.log('Acción detectada:', detectedAction);
+
+    // Activar SOLO el item que coincide
+    document.querySelectorAll('.nav-item').forEach(function (item) {
+        var dataAction = item.getAttribute('data-action');
+        if (dataAction === 'logout') {
+            return; // Salir nunca se activa
+        }
+        if (dataAction === detectedAction) {
+            item.classList.add('active');
+            console.log('✅ Activado:', dataAction);
+        }
+    });
+}
+
+// ==========================================================
 // ===== MODAL DE CIERRE DE SESIÓN =====
 // ==========================================================
 
@@ -50,8 +120,8 @@ function confirmarCierre() {
 // ==========================================================
 
 document.addEventListener('DOMContentLoaded', function () {
+    marcarItemActivo();
 
-    // Cerrar modal al hacer clic fuera
     var modal = document.getElementById('modalCierre');
     if (modal) {
         modal.addEventListener('click', function (e) {
@@ -61,137 +131,89 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Cerrar modal con tecla ESC
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             cerrarModalCierre();
         }
     });
 
-    // Prevenir comportamiento en enlaces "#"
     document.querySelectorAll('.nav-item[href="#"]').forEach(function (item) {
         item.addEventListener('click', function (e) {
             e.preventDefault();
         });
     });
-
-    // Marcar ítem activo del menú
-    var currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-item').forEach(function (item) {
-        var href = item.getAttribute('href');
-        if (href && href !== '#' && currentPath.includes(href)) {
-            item.classList.add('active');
-        }
-    });
-
 });
 
 // ==========================================================
-// ===== CAMBIAR IDIOMA =====
+// ===== CAMBIAR IDIOMA - SIN TOAST =====
 // ==========================================================
+
+var idiomasAdmin = {
+    es: {
+        'dashboard': 'Dashboard',
+        'averias': 'Averías',
+        'clientes': 'Clientes',
+        'reportes': 'Reportes',
+        'salir': 'Salir',
+        'volver': 'Volver'
+    },
+    en: {
+        'dashboard': 'Dashboard',
+        'averias': 'Faults',
+        'clientes': 'Clients',
+        'reportes': 'Reports',
+        'salir': 'Logout',
+        'volver': 'Back'
+    }
+};
+
+var idiomaActualAdmin = 'es';
 
 function cambiarIdiomaAdmin(lang) {
-    var btn = document.querySelector('.lang-toggle-top');
+    idiomaActualAdmin = lang;
+
+    var btn = document.querySelector('.lang-toggle-top span');
     if (btn) {
         btn.textContent = lang === 'es' ? 'ES ▼' : 'EN ▼';
     }
+
     localStorage.setItem('idioma_admin', lang);
-    mostrarToastAdmin('✅ Idioma cambiado a ' + (lang === 'es' ? 'Español' : 'English'));
+
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        var key = el.getAttribute('data-i18n');
+        if (idiomasAdmin[lang] && idiomasAdmin[lang][key]) {
+            el.textContent = idiomasAdmin[lang][key];
+        }
+    });
 }
 
-// Cargar idioma guardado
 (function cargarIdiomaGuardado() {
     var lang = localStorage.getItem('idioma_admin') || 'es';
-    var btn = document.querySelector('.lang-toggle-top');
+    idiomaActualAdmin = lang;
+    var btn = document.querySelector('.lang-toggle-top span');
     if (btn) {
         btn.textContent = lang === 'es' ? 'ES ▼' : 'EN ▼';
     }
+    setTimeout(function () {
+        cambiarIdiomaAdmin(lang);
+    }, 50);
 })();
-
-// ==========================================================
-// ===== TOAST DE NOTIFICACIÓN =====
-// ==========================================================
-
-function mostrarToastAdmin(mensaje, tipo) {
-    var toast = document.getElementById('toastNotifAdmin');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toastNotifAdmin';
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2E7D32;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-            z-index: 2000;
-            display: none;
-            max-width: 90%;
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-        `;
-        document.body.appendChild(toast);
-
-        if (!document.getElementById('toastAdminStyles')) {
-            var style = document.createElement('style');
-            style.id = 'toastAdminStyles';
-            style.textContent = `
-                @keyframes slideUpToast {
-                    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-                }
-                #toastNotifAdmin.show {
-                    display: block;
-                    animation: slideUpToast 0.3s ease;
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    }
-
-    toast.textContent = mensaje;
-    toast.className = 'show';
-
-    if (tipo === 'error') {
-        toast.style.background = '#C62828';
-    } else if (tipo === 'warning') {
-        toast.style.background = '#F57F17';
-    } else {
-        toast.style.background = '#2E7D32';
-    }
-
-    toast.classList.add('show');
-
-    clearTimeout(toast._timeout);
-    toast._timeout = setTimeout(function () {
-        toast.classList.remove('show');
-        setTimeout(function () {
-            toast.style.display = 'none';
-        }, 300);
-    }, 3000);
-}
 
 // ==========================================================
 // ===== FUNCIONES ADICIONALES =====
 // ==========================================================
 
 function generarReporteAdmin() {
-    mostrarToastAdmin('📊 Generando reporte...');
+    console.log('Generando reporte...');
     setTimeout(function () {
-        mostrarToastAdmin('✅ Reporte generado correctamente');
+        console.log('Reporte generado');
     }, 1500);
 }
 
 function exportarReporteAdmin(formato) {
-    var nombres = { 'pdf': 'PDF', 'excel': 'Excel', 'csv': 'CSV' };
-    mostrarToastAdmin('📥 Exportando ' + (nombres[formato] || formato) + '...');
+    console.log('Exportando ' + formato + '...');
     setTimeout(function () {
-        mostrarToastAdmin('✅ Archivo exportado correctamente');
+        console.log('Exportado');
     }, 1000);
 }
 
@@ -236,7 +258,6 @@ function actualizarEstadoAveria(id, nuevoEstado) {
             badge.textContent = estado;
             badge.className = 'status-badge estado-' + estado.toLowerCase().replace(' ', '-');
             select.value = estado;
-            mostrarToastAdmin('✅ Estado actualizado a: ' + estado);
             btn.innerHTML = textoOriginal;
             btn.disabled = false;
         }, 800);
@@ -251,8 +272,8 @@ window.mostrarModalCierre = mostrarModalCierre;
 window.cerrarModalCierre = cerrarModalCierre;
 window.confirmarCierre = confirmarCierre;
 window.cambiarIdiomaAdmin = cambiarIdiomaAdmin;
-window.mostrarToastAdmin = mostrarToastAdmin;
 window.generarReporteAdmin = generarReporteAdmin;
 window.exportarReporteAdmin = exportarReporteAdmin;
 window.filtrarClientesAdmin = filtrarClientesAdmin;
 window.actualizarEstadoAveria = actualizarEstadoAveria;
+window.marcarItemActivo = marcarItemActivo;

@@ -1,30 +1,36 @@
 ﻿// ==========================================
-// CUENTA / LOGIN / REGISTRO - JAVASCRIPT COMPLETO
+// CUENTA / LOGIN - JAVASCRIPT COMPLETO
 // ==========================================
 
 // ==========================================================
-// ===== VARIABLES GLOBALES =====
+// ===== TOGGLE PASSWORD - LOGIN =====
 // ==========================================================
-var camposValidados = {
-    cedula: false,
-    nombre: false,
-    apellidos: false,
-    correo: false,
-    telefono: false,
-    usuario: false,
-    contrasena: false,
-    confirm: false,
-    nise: false
-};
-
-// ==========================================================
-// ===== TOGGLE PASSWORD VISIBILITY =====
-// ==========================================================
-function togglePasswordVisibility() {
+function togglePasswordLogin() {
     var passwordInput = document.getElementById('Contraseña');
     if (!passwordInput) return;
 
-    var button = document.querySelector('.toggle-password');
+    var button = document.getElementById('togglePasswordBtn');
+    if (!button) return;
+
+    var isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+
+    button.innerHTML = isPassword
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+// ==========================================================
+// ===== TOGGLE PASSWORD - REGISTRO Y RECUPERAR =====
+// ==========================================================
+function togglePasswordVisibility() {
+    var passwordInput = document.getElementById('contrasena') || document.getElementById('Contraseña');
+    if (!passwordInput) return;
+
+    var container = passwordInput.closest('.inp');
+    if (!container) return;
+
+    var button = container.querySelector('.toggle-password');
     if (!button) return;
 
     var isPassword = passwordInput.type === 'password';
@@ -39,12 +45,10 @@ function togglePasswordVisibility() {
 // ===== FACE ID =====
 // ==========================================================
 function iniciarFaceId() {
-    // Verificar si el usuario ya está logueado
     var rolElement = document.getElementById('sessionRol');
     var rol = rolElement ? rolElement.value : '';
 
     if (rol && rol !== '') {
-        // Ya está logueado, redirigir según rol
         if (rol === 'Admin') {
             window.location.href = '/Admin/Dashboard';
         } else {
@@ -53,23 +57,19 @@ function iniciarFaceId() {
         return;
     }
 
-    // Si no está logueado, autocompletar credenciales y hacer login
     var userName = document.getElementById('UserName');
     var password = document.getElementById('Contraseña');
 
     if (userName && password) {
-        // Autocompletar con credenciales de cliente
         userName.value = 'cliente';
         password.value = '123456';
 
-        // Mostrar feedback visual
         var btnFaceId = document.getElementById('faceIdBtn');
         if (btnFaceId) {
             btnFaceId.classList.add('scanning');
             btnFaceId.style.background = 'linear-gradient(135deg, #2E7D32, #64B95A)';
         }
 
-        // Enviar el formulario después de un breve delay
         setTimeout(function () {
             var form = document.getElementById('loginForm');
             if (form) {
@@ -79,6 +79,13 @@ function iniciarFaceId() {
     } else {
         alert('❌ Error al iniciar sesión con Face ID. Usa tus credenciales.');
     }
+}
+
+// ==========================================================
+// ===== RECUPERAR CONTRASEÑA =====
+// ==========================================================
+function recuperarContraseña() {
+    window.location.href = '/Cuenta/RecuperarClave';
 }
 
 // ==========================================================
@@ -854,53 +861,5 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-    // ==========================================================
-    // RECUPERAR CONTRASEÑA - VALIDACIONES
-    // ==========================================================
-    var recuperarForm = document.getElementById('recuperarForm');
-    if (recuperarForm) {
-        recuperarForm.addEventListener('submit', function (e) {
-            var correo = document.getElementById('correoRecuperar');
-            var nuevaClave = document.getElementById('nuevaClave');
-            var confirmarClave = document.getElementById('confirmarClave');
-
-            if (!correo || !correo.value.trim()) {
-                alert('❌ Ingresa tu correo electrónico.');
-                e.preventDefault();
-                return;
-            }
-
-            if (!nuevaClave || !nuevaClave.value.trim() || nuevaClave.value.length < 6) {
-                alert('❌ La contraseña debe tener al menos 6 caracteres.');
-                e.preventDefault();
-                return;
-            }
-
-            if (!confirmarClave || nuevaClave.value !== confirmarClave.value) {
-                alert('❌ Las contraseñas no coinciden.');
-                e.preventDefault();
-                return;
-            }
-        });
-    }
-
-    // ==========================================================
-    // TOGGLE PASSWORD PARA RECUPERAR CLAVE
-    // ==========================================================
-    var toggleButtons = document.querySelectorAll('.toggle-password');
-    toggleButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var input = this.closest('.inp').querySelector('input');
-            if (input) {
-                var isPassword = input.type === 'password';
-                input.type = isPassword ? 'text' : 'password';
-
-                this.innerHTML = isPassword
-                    ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
-                    : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-            }
-        });
-    });
 
 });

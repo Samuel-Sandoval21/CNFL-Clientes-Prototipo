@@ -13,9 +13,11 @@
 </head>
 <body>
 
+    <!-- ===== TELÉFONO ===== -->
     <div class="phone-frame">
         <div class="phone-notch"></div>
 
+        <!-- ===== BARRA DE ESTADO ===== -->
         <header class="status-bar">
             <span class="time" id="statusTime">10:44</span>
             <div class="status-icons">
@@ -35,28 +37,35 @@
                     <rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" />
                     <rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" />
                 </svg>
+                <!-- LANGBAR -->
+                <div class="langbar" id="langbar" style="display:flex; background:#fff; padding:4px; border-radius:20px; border:1px solid var(--line); margin-left:4px;">
+                    <button data-lang="es" class="active" onclick="cambiarIdioma('es')" style="border:none; background:transparent; color:var(--muted); font-family:inherit; font-size:10px; font-weight:800; border-radius:15px; padding:4px 8px; cursor:pointer; transition:0.2s;">ES</button>
+                    <button data-lang="en" onclick="cambiarIdioma('en')" style="border:none; background:transparent; color:var(--muted); font-family:inherit; font-size:10px; font-weight:800; border-radius:15px; padding:4px 8px; cursor:pointer; transition:0.2s;">EN</button>
+                </div>
             </div>
         </header>
 
+        <!-- ===== CONTENIDO ===== -->
         <div class="phone-content">
             <main class="main-content" style="padding: 0 18px 20px; padding-bottom: 20px;">
                 @RenderBody()
             </main>
         </div>
 
+        <!-- ===== MENÚ INFERIOR FIJO (SOLO INICIO + CUENTA) ===== -->
         <nav class="bottom-nav" id="bottomNav">
-            <a href="@Url.Action("Index", "Home")" class="tab @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")" data-seccion="inicio">
+            <a href="@Url.Action("Index", "Home")" class="tab" data-seccion="inicio">
                 <i class="fas fa-home"></i>
                 <span data-i18n="menu_inicio">Inicio</span>
             </a>
-            <a href="@Url.Action("Login", "Cuenta")" class="tab center @(ViewContext.RouteData.Values["controller"].ToString() == "Cuenta" ? "active" : "")" data-seccion="perfil">
+
+            <a href="@Url.Action("Login", "Cuenta")" class="tab center" data-seccion="perfil">
                 <div class="fab">
                     <i class="fas fa-user"></i>
                 </div>
                 <span data-i18n="menu_cuenta">Cuenta</span>
             </a>
         </nav>
-
     </div>
 
     @Scripts.Render("~/bundles/jquery")
@@ -65,6 +74,7 @@
 
     <script src="@Url.Content("~/Scripts/cliente/idiomas.js")"></script>
     <script src="@Url.Content("~/Scripts/cliente/layout-login.js")"></script>
+
     @RenderSection("scriptsVista", required: false)
 
 </body>

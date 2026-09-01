@@ -2,6 +2,52 @@
    NOTIFICACIONES - ESTILOS
    ========================================== */
 
+/* ===== BADGE DEL TÍTULO ===== */
+.notificacion-badge {
+    background: var(--orange);
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    border: 2px solid var(--bg);
+}
+
+/* ===== BOTÓN MARCAR TODAS ===== */
+.btn-marcar-todas {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+}
+
+    .btn-marcar-todas:hover {
+        background: #1519b3;
+        transform: scale(0.98);
+    }
+
+    .btn-marcar-todas:active {
+        transform: scale(0.95);
+    }
+
+/* ===== NOTIFICACIÓN ITEM ===== */
 .notificacion-item {
     display: flex;
     gap: 14px;
@@ -10,16 +56,33 @@
     padding: 14px 18px;
     border: 1px solid var(--line);
     margin-bottom: 12px;
-    transition: 0.2s;
+    transition: all 0.3s ease;
     box-shadow: var(--shadow);
     cursor: pointer;
     position: relative;
+    overflow: hidden;
+    align-items: center;
 }
+
+    .notificacion-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: transparent;
+        transition: 0.3s;
+    }
 
     .notificacion-item:hover {
         box-shadow: var(--shadow-lg);
         transform: translateY(-2px);
     }
+
+        .notificacion-item:hover::before {
+            background: var(--blue);
+        }
 
     .notificacion-item .icono {
         width: 42px;
@@ -29,6 +92,11 @@
         place-items: center;
         flex-shrink: 0;
         font-size: 18px;
+        transition: 0.3s;
+    }
+
+    .notificacion-item:hover .icono {
+        transform: scale(1.05);
     }
 
     .notificacion-item .info {
@@ -60,53 +128,107 @@
         background: none;
         border: none;
         color: var(--blue);
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 600;
         cursor: pointer;
-        padding: 4px 8px;
+        padding: 6px 12px;
         border-radius: 8px;
         transition: 0.2s;
         font-family: inherit;
         flex-shrink: 0;
-        align-self: center;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: #f0f2ff;
     }
 
         .notificacion-item .btn-leer:hover {
-            background: #f0f2ff;
-        }
-
-        .notificacion-item .btn-leer:active {
+            background: var(--blue);
+            color: white;
             transform: scale(0.95);
         }
 
-/* ===== BOTÓN MARCAR TODAS ===== */
-.btn-marcar-todas {
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-family: inherit;
-    margin-bottom: 16px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+        .notificacion-item .btn-leer:active {
+            transform: scale(0.9);
+        }
+
+/* ===== EMPTY STATE ===== */
+.empty-notificaciones {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 20px;
+    border: 1px dashed var(--line);
+    animation: fadeIn 0.5s ease;
 }
 
-    .btn-marcar-todas:hover {
-        background: #1519b3;
-        transform: scale(0.97);
+    .empty-notificaciones .empty-icon {
+        font-size: 64px;
+        display: block;
+        margin-bottom: 16px;
     }
+
+    .empty-notificaciones h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+    }
+
+    .empty-notificaciones p {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 6px;
+    }
+
+/* ===== TOAST ===== */
+.toast-notificacion {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2E7D32;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    animation: slideUp 0.3s ease;
+    max-width: 90%;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
     .notificacion-item {
         padding: 12px 14px;
         gap: 10px;
+        flex-wrap: wrap;
     }
 
         .notificacion-item .icono {
@@ -123,9 +245,25 @@
             font-size: 12px;
         }
 
+        .notificacion-item .btn-leer {
+            font-size: 11px;
+            padding: 4px 10px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
     .btn-marcar-todas {
-        width: 100%;
-        justify-content: center;
         padding: 12px;
+        font-size: 13px;
+        width: 100%;
     }
+
+    .empty-notificaciones {
+        padding: 40px 16px;
+    }
+
+        .empty-notificaciones .empty-icon {
+            font-size: 48px;
+        }
 }

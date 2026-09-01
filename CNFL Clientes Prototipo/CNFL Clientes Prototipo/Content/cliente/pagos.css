@@ -1,5 +1,5 @@
 ﻿/* ==========================================
-   CLIENTE PAGOS - ESTILOS
+   PAGOS - ESTILOS
    ========================================== */
 
 .pago-card {
@@ -19,12 +19,14 @@
     .pago-card .pago-titulo {
         font-weight: 700;
         font-size: 15px;
+        color: var(--ink);
     }
 
     .pago-card .pago-monto {
         font-size: 28px;
         font-weight: 800;
         margin: 4px 0;
+        color: var(--blue);
     }
 
     .pago-card .pago-estado {
@@ -49,6 +51,8 @@
     display: flex;
     gap: 10px;
     margin-top: 14px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
 }
 
     .pago-metodos button {
@@ -62,6 +66,10 @@
         cursor: pointer;
         transition: 0.2s;
         font-family: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
         .pago-metodos button:hover {
@@ -108,16 +116,55 @@
     margin-top: 12px;
 }
 
-@media (max-width: 480px) {
-    .pago-card .pago-monto {
-        font-size: 24px;
+    .pago-exitoso i {
+        margin-right: 8px;
     }
+
+/* ===== EMPTY STATE ===== */
+.empty-pagos {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 20px;
+    border: 1px dashed var(--line);
+}
+
+    .empty-pagos .empty-icon {
+        font-size: 64px;
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .empty-pagos h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--muted);
+        margin: 0;
+    }
+
+    .empty-pagos p {
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 6px;
+    }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .pago-card {
+        padding: 14px 16px;
+    }
+
+        .pago-card .pago-monto {
+            font-size: 24px;
+        }
 
     .pago-metodos {
         flex-direction: column;
+        gap: 8px;
     }
 
         .pago-metodos button {
             padding: 10px;
+            font-size: 12px;
         }
 }
