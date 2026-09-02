@@ -1,16 +1,16 @@
 ﻿// ==========================================
-// TIENDA - JAVASCRIPT CON CARRITO
+// CARRITO DE COMPRAS - JAVASCRIPT
 // ==========================================
 
-// ===== CARRITO =====
 var carrito = [];
+var cuponAplicado = null;
+var descuento = 0;
 
 // ==========================================================
 // CARGAR PRODUCTO A FACTURA (DESDE TIENDA)
 // ==========================================================
 
 function cargarAFactura(producto, precio, elemento) {
-    // Verificar si ya está en el carrito
     var existe = carrito.find(function (item) {
         return item.producto === producto;
     });
@@ -19,58 +19,28 @@ function cargarAFactura(producto, precio, elemento) {
         if (!confirm('⚠️ "' + producto + '" ya está en tu carrito.\n\n¿Deseas agregar otra unidad?')) {
             return;
         }
-        // Incrementar cantidad si ya existe
         existe.cantidad = (existe.cantidad || 1) + 1;
     } else {
-        // Agregar al carrito
         carrito.push({
             producto: producto,
             precio: precio,
-            fecha: new Date().toLocaleDateString('es-CR'),
-            cantidad: 1
+            cantidad: 1,
+            fecha: new Date().toLocaleDateString('es-CR')
         });
     }
 
-    // Feedback visual en el botón
-    var btn = elemento || event.target;
-    var textoOriginal = btn.textContent;
-    btn.textContent = '✅ Agregado';
-    btn.classList.add('agregado');
+    if (elemento) {
+        var textoOriginal = elemento.textContent;
+        elemento.textContent = '✅ Agregado';
+        elemento.classList.add('agregado');
+        setTimeout(function () {
+            elemento.textContent = textoOriginal;
+            elemento.classList.remove('agregado');
+        }, 2000);
+    }
 
-    setTimeout(function () {
-        btn.textContent = textoOriginal;
-        btn.classList.remove('agregado');
-    }, 2000);
-
-    // Actualizar todo
     actualizarCarrito();
-    guardarCarritoLocalStorage();
-
-    // Mostrar notificación
     mostrarNotificacion('🛒 "' + producto + '" agregado a tu carrito');
-}
-
-// ==========================================================
-// GUARDAR Y CARGAR DESDE LOCALSTORAGE
-// ==========================================================
-
-function guardarCarritoLocalStorage() {
-    try {
-        localStorage.setItem('carritoCNFL', JSON.stringify(carrito));
-    } catch (e) {
-        console.log('No se pudo guardar en localStorage');
-    }
-}
-
-function cargarCarritoLocalStorage() {
-    try {
-        var saved = localStorage.getItem('carritoCNFL');
-        if (saved) {
-            carrito = JSON.parse(saved);
-        }
-    } catch (e) {
-        console.log('No se pudo cargar carrito');
-    }
 }
 
 // ==========================================================
@@ -79,23 +49,29 @@ function cargarCarritoLocalStorage() {
 
 function actualizarCarrito() {
     // Actualizar contador en el ícono flotante
-    var badge = document.querySelector('.carrito-flotante .contador');
-    if (badge) {
+    var contador = document.getElementById('carritoContador');
+    if (contador) {
         var totalItems = carrito.reduce(function (sum, item) { return sum + (item.cantidad || 1); }, 0);
-        badge.textContent = totalItems;
-        if (totalItems === 0) {
-            badge.style.display = 'none';
-        } else {
-            badge.style.display = 'grid';
+        contador.textContent = totalItems;
+        var flotante = document.getElementById('carritoFlotante');
+        if (flotante) {
+            flotante.style.display = totalItems > 0 ? 'grid' : 'none';
         }
     }
 
-    // Actualizar resumen en el perfil (si existe)
+    // Actualizar resumen en el perfil
     var resumen = document.getElementById('carritoResumen');
     if (resumen) {
         var totalProductos = carrito.length;
         var totalPrecio = carrito.reduce(function (sum, item) { return sum + (item.precio * (item.cantidad || 1)); }, 0);
         resumen.textContent = totalProductos + ' productos · ₡' + totalPrecio.toLocaleString();
+    }
+
+    // Guardar en localStorage
+    try {
+        localStorage.setItem('carritoCNFL', JSON.stringify(carrito));
+    } catch (e) {
+        console.log('No se pudo guardar en localStorage');
     }
 
     // Actualizar vista del carrito si está abierta
@@ -150,8 +126,7 @@ function renderizarCarrito() {
     });
 
     // Actualizar subtotal
-    var subtotalEl = document.getElementById('subtotalCarrito');
-    if (subtotalEl) subtotalEl.textContent = '₡' + subtotal.toLocaleString();
+    document.getElementById('subtotalCarrito').textContent = '₡' + subtotal.toLocaleString();
 
     // Aplicar descuento si existe
     aplicarDescuento(subtotal);
@@ -165,7 +140,6 @@ function cambiarCantidad(index, cambio) {
     if (carrito[index]) {
         carrito[index].cantidad = Math.max(1, (carrito[index].cantidad || 1) + cambio);
         actualizarCarrito();
-        guardarCarritoLocalStorage();
     }
 }
 
@@ -173,7 +147,6 @@ function eliminarProducto(index) {
     if (confirm('¿Eliminar "' + carrito[index].producto + '" del carrito?')) {
         carrito.splice(index, 1);
         actualizarCarrito();
-        guardarCarritoLocalStorage();
         mostrarNotificacion('🗑️ Producto eliminado del carrito');
     }
 }
@@ -183,7 +156,6 @@ function vaciarCarrito() {
     if (confirm('¿Vaciar todo el carrito?')) {
         carrito = [];
         actualizarCarrito();
-        guardarCarritoLocalStorage();
         mostrarNotificacion('🗑️ Carrito vaciado');
     }
 }
@@ -198,14 +170,9 @@ var cuponesValidos = {
     'BIENVENIDA': 15
 };
 
-var cuponAplicado = null;
-var descuento = 0;
-
 function aplicarCupon() {
     var input = document.getElementById('codigoCupon');
     var mensaje = document.getElementById('mensajeCupon');
-    if (!input || !mensaje) return;
-
     var codigo = input.value.trim().toUpperCase();
 
     if (!codigo) {
@@ -239,19 +206,96 @@ function calcularSubtotal() {
 }
 
 function aplicarDescuento(subtotal) {
-    var totalEl = document.getElementById('totalCarrito');
-    if (!totalEl) return;
-
     var total = subtotal;
     if (descuento > 0) {
         total = subtotal * (1 - descuento / 100);
     }
-    totalEl.textContent = '₡' + Math.round(total).toLocaleString();
+    document.getElementById('totalCarrito').textContent = '₡' + Math.round(total).toLocaleString();
     return total;
 }
 
 // ==========================================================
-// MOSTRAR NOTIFICACIÓN
+// PAGO
+// ==========================================================
+
+function verCarrito() {
+    window.location.href = '/Clientes/Carrito';
+}
+
+function procederPago() {
+    if (carrito.length === 0) {
+        alert('🛒 Tu carrito está vacío');
+        return;
+    }
+    document.getElementById('modalPago').style.display = 'flex';
+}
+
+function cerrarModalPago() {
+    document.getElementById('modalPago').style.display = 'none';
+}
+
+function formatearNumeroTarjeta(input) {
+    var value = input.value.replace(/\D/g, '');
+    var formatted = '';
+    for (var i = 0; i < value.length && i < 16; i++) {
+        if (i > 0 && i % 4 === 0) {
+            formatted += ' ';
+        }
+        formatted += value[i];
+    }
+    input.value = formatted;
+}
+
+function confirmarPago() {
+    var nombre = document.getElementById('nombreTarjeta').value.trim();
+    var numero = document.getElementById('numeroTarjeta').value.replace(/\s/g, '');
+    var mes = document.getElementById('mesTarjeta').value;
+    var anio = document.getElementById('anioTarjeta').value;
+    var cvv = document.getElementById('cvvTarjeta').value;
+
+    var errores = [];
+
+    if (!nombre) errores.push('Ingresa el nombre del propietario');
+    if (numero.length < 16) errores.push('Número de tarjeta inválido');
+    if (cvv.length < 3) errores.push('CVV inválido');
+
+    if (errores.length > 0) {
+        alert('❌ Por favor, corrige los siguientes errores:\n\n- ' + errores.join('\n- '));
+        return;
+    }
+
+    var total = document.getElementById('totalCarrito').textContent.replace('₡', '').replace(/,/g, '');
+
+    alert('✅ ¡Pago procesado con éxito!\n\n' +
+        '💰 Total: ₡' + parseInt(total).toLocaleString() + '\n' +
+        '📦 Productos: ' + carrito.length + '\n' +
+        '📩 Recibirás el comprobante en tu correo.\n\n' +
+        '🔄 Redirigiendo al historial de compras...');
+
+    // Guardar en historial y vaciar carrito
+    var productos = carrito.map(function (item) {
+        return item.producto + ' x' + (item.cantidad || 1);
+    }).join(', ');
+
+    console.log('Compra realizada:', {
+        productos: productos,
+        total: total,
+        fecha: new Date().toISOString()
+    });
+
+    carrito = [];
+    cuponAplicado = null;
+    descuento = 0;
+    actualizarCarrito();
+    cerrarModalPago();
+
+    setTimeout(function () {
+        window.location.href = '/Clientes/HistorialCompras';
+    }, 2000);
+}
+
+// ==========================================================
+// NOTIFICACIONES
 // ==========================================================
 
 function mostrarNotificacion(mensaje) {
@@ -265,34 +309,10 @@ function mostrarNotificacion(mensaje) {
         toast.style.transition = 'opacity 0.3s ease';
         setTimeout(function () {
             if (toast.parentNode) {
-                document.body.removeChild(toast);
+                toast.parentNode.removeChild(toast);
             }
         }, 300);
     }, 3000);
-}
-
-// ==========================================================
-// VER CARRITO (REDIRIGIR A LA PÁGINA DEL CARRITO)
-// ==========================================================
-
-function verCarrito() {
-    window.location.href = '/Clientes/Carrito';
-}
-
-// ==========================================================
-// CREAR CARRITO FLOTANTE
-// ==========================================================
-
-function crearCarritoFlotante() {
-    var carritoBtn = document.createElement('div');
-    carritoBtn.className = 'carrito-flotante';
-    carritoBtn.id = 'carritoFlotante';
-    carritoBtn.innerHTML = `
-        <i class="fas fa-shopping-cart"></i>
-        <span class="contador" style="display:none;">0</span>
-    `;
-    carritoBtn.onclick = verCarrito;
-    document.body.appendChild(carritoBtn);
 }
 
 // ==========================================================
@@ -301,33 +321,16 @@ function crearCarritoFlotante() {
 
 document.addEventListener('DOMContentLoaded', function () {
     // Cargar carrito desde localStorage
-    cargarCarritoLocalStorage();
-
-    // Crear carrito flotante
-    crearCarritoFlotante();
-
-    // Actualizar contador
-    actualizarCarrito();
-
-    // Animar productos al cargar
-    var productos = document.querySelectorAll('.prod');
-    productos.forEach(function (prod, index) {
-        prod.style.opacity = '0';
-        prod.style.transform = 'translateY(20px)';
-        setTimeout(function () {
-            prod.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            prod.style.opacity = '1';
-            prod.style.transform = 'translateY(0)';
-        }, 100 + (index * 80));
-    });
-
-    // Escuchar cambios en localStorage desde otras pestañas
-    window.addEventListener('storage', function (e) {
-        if (e.key === 'carritoCNFL') {
-            cargarCarritoLocalStorage();
-            actualizarCarrito();
+    try {
+        var saved = localStorage.getItem('carritoCNFL');
+        if (saved) {
+            carrito = JSON.parse(saved);
         }
-    });
+    } catch (e) {
+        console.log('No se pudo cargar carrito');
+    }
+
+    actualizarCarrito();
 
     // Renderizar carrito si estamos en la página del carrito
     if (document.getElementById('carritoLleno')) {
@@ -344,8 +347,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-    console.log('🛒 Tienda CNFL - Carrito integrado');
 });
 
 // ==========================================================
@@ -358,5 +359,8 @@ window.cambiarCantidad = cambiarCantidad;
 window.eliminarProducto = eliminarProducto;
 window.vaciarCarrito = vaciarCarrito;
 window.aplicarCupon = aplicarCupon;
+window.procederPago = procederPago;
+window.cerrarModalPago = cerrarModalPago;
+window.confirmarPago = confirmarPago;
+window.formatearNumeroTarjeta = formatearNumeroTarjeta;
 window.mostrarNotificacion = mostrarNotificacion;
-window.actualizarCarrito = actualizarCarrito;

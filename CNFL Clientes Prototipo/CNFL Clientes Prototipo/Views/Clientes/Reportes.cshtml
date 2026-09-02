@@ -1,5 +1,4 @@
 ﻿@model dynamic
-
 @{
     ViewBag.Title = "Reportes - CNFL";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
@@ -22,33 +21,9 @@
     </div>
 </div>
 
-<!-- ===== MAPA ===== -->
+<!-- ===== MAPA (Google Maps) ===== -->
 <div class="section-pad">
-    <div class="map-container" onclick="verMapaCompleto()">
-        <div class="map-bg"></div>
-        <div class="map-grid"></div>
-        <div class="map-streets"></div>
-        <div class="map-pin">
-            <i class="fas fa-exclamation"></i>
-            <span class="pin-label">Activa</span>
-        </div>
-        <div class="map-pin">
-            <i class="fas fa-clock"></i>
-            <span class="pin-label">Revisión</span>
-        </div>
-        <div class="map-pin">
-            <i class="fas fa-check"></i>
-            <span class="pin-label">Resuelta</span>
-        </div>
-        <div class="map-status">
-            <span class="dot"></span>
-            <span>En vivo</span>
-        </div>
-        <div class="map-overlay">
-            <i class="fas fa-expand-alt"></i> Toca para ver mapa
-        </div>
-    </div>
-
+    <div id="mapaAverias" style="height: 400px; border-radius: 20px; margin-bottom: 16px; border: 1px solid var(--line);"></div>
     <div class="map-legend">
         <span class="legend-item">
             <span class="legend-dot rojo"></span>
@@ -70,35 +45,8 @@
     <div class="eyebrow" data-i18n="estado_mis_averias">
         <i class="fas fa-clipboard-list" style="color:var(--blue);"></i> ESTADO DE MIS AVERÍAS
     </div>
-
-    <div class="averia-item" onclick="verDetalleAveria(1)">
-        <div class="averia-header">
-            <div>
-                <div class="averia-titulo">
-                    <span class="icono">⚡</span>
-                    Transformador dañado
-                </div>
-                <div class="averia-detalle">
-                    <span><i class="fas fa-map-pin"></i> Barrio Los Ángeles, Cartago</span>
-                    <span><i class="fas fa-calendar-alt"></i> 29/08/2026 10:49</span>
-                </div>
-            </div>
-            <span class="averia-estado reportado" data-i18n="pendiente">Reportado</span>
-        </div>
-        <div class="averia-descripcion">
-            Se escuchan explosiones y no hay luz en el sector
-        </div>
-        <div class="averia-progreso">
-            <div class="progress-bar">
-                <div class="progress-fill" style="width:25%;"></div>
-            </div>
-            <div class="progress-info">
-                <span class="etapa">
-                    <span class="dot"></span> En proceso
-                </span>
-                <span class="porcentaje">25%</span>
-            </div>
-        </div>
+    <div id="listaAverias">
+        <!-- Las averías se cargarán dinámicamente con JavaScript -->
     </div>
 </div>
 
@@ -107,7 +55,6 @@
     <div class="eyebrow" data-i18n="nuevo_reporte">
         <i class="fas fa-plus-circle" style="color:var(--green);"></i> NUEVO REPORTE
     </div>
-
     <div class="nuevo-reporte-grid">
         <!-- Alumbrado Público -->
         <div class="nuevo-reporte-card" data-tipo="alumbrado" onclick="irAReporte('alumbrado')">
@@ -161,7 +108,203 @@
     </div>
 </div>
 
-<!-- JavaScript externo para Reportes -->
+<!-- ===== SCRIPTS ===== -->
 @section scriptsVista {
     <script src="@Url.Content("~/Scripts/cliente/reportes.js")"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&callback=inicializarMapa" async defer></script>
+    <script>
+        var mapa;
+        var marcadores = [];
+
+        function inicializarMapa() {
+            var centro = { lat: 9.7489, lng: -83.7534 };
+            mapa = new google.maps.Map(document.getElementById('mapaAverias'), {
+                zoom: 8,
+                center: centro,
+                mapTypeId: 'roadmap'
+            });
+
+            cargarAverias();
+        }
+
+        function cargarAverias() {
+            $.ajax({
+                url: '/Clientes/ObtenerAverias',
+                type: 'GET',
+                success: function (data) {
+                    mostrarAveriasEnMapa(data);
+                    mostrarListaAverias(data);
+                },
+                error: function () {
+                    console.error('Error al cargar las averías');
+                }
+            });
+        }
+
+        function mostrarAveriasEnMapa(averias) {
+            marcadores.forEach(function (marcador) {
+                marcador.setMap(null);
+            });
+            marcadores = [];
+
+            var colores = {
+                'Reportado': '#E5484D',
+                'En revisión': '#F5A623',
+                'En camino': '#1E23E6',
+                'Resuelto': '#64B95A'
+            };
+
+            averias.forEach(function (averia) {
+                if (averia.Latitud && averia.Longitud) {
+                    var posicion = {
+                        lat: parseFloat(averia.Latitud),
+                        lng: parseFloat(averia.Longitud)
+                    };
+
+                    var marcador = new google.maps.Marker({
+                        position: posicion,
+                        map: mapa,
+                        title: averia.TipoAveria,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            fillColor: colores[averia.Estado] || '#1E23E6',
+                            fillOpacity: 0.8,
+                            strokeColor: '#FFFFFF',
+                            strokeWeight: 1,
+                            scale: 8
+                        }
+                    });
+
+                    var infoWindow = new google.maps.InfoWindow({
+                        content: `
+                                <div style="font-family: 'Inter', sans-serif; max-width: 250px;">
+                                    <h4 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700;">${averia.TipoAveria}</h4>
+                                    <p style="margin: 0 0 4px 0; font-size: 13px; color: #6b7280;">${averia.Direccion}</p>
+                                    <p style="margin: 0 0 4px 0; font-size: 13px; color: #6b7280;">📅 ${averia.FechaReporte}</p>
+                                    <span style="display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; background: ${colores[averia.Estado]}; color: white;">${averia.Estado}</span>
+                                </div>
+                            `
+                    });
+
+                    marcador.addListener('click', function () {
+                        infoWindow.open(mapa, marcador);
+                    });
+
+                    marcadores.push(marcador);
+                }
+            });
+
+            if (marcadores.length > 0) {
+                var bounds = new google.maps.LatLngBounds();
+                marcadores.forEach(function (marcador) {
+                    bounds.extend(marcador.getPosition());
+                });
+                mapa.fitBounds(bounds);
+            }
+        }
+
+        function mostrarListaAverias(averias) {
+            var container = document.getElementById('listaAverias');
+            container.innerHTML = '';
+
+            if (averias.length === 0) {
+                container.innerHTML = `
+                        <div style="text-align: center; padding: 40px 20px; background: white; border-radius: 16px; border: 1px dashed var(--line);">
+                            <div style="font-size: 48px; display: block; margin-bottom: 12px;">✅</div>
+                            <h3 style="font-size: 18px; font-weight: 700; color: var(--muted); margin: 0;">No tienes averías reportadas</h3>
+                            <p style="font-size: 14px; color: var(--muted); margin-top: 6px;">Tus averías aparecerán aquí cuando las reportes.</p>
+                        </div>
+                    `;
+                return;
+            }
+
+            var colores = {
+                'Reportado': { bg: '#FFEBEE', color: '#C62828' },
+                'En revisión': { bg: '#FFF8E1', color: '#E65100' },
+                'En camino': { bg: '#E3F2FD', color: '#0D47A1' },
+                'Resuelto': { bg: '#E8F5E9', color: '#1B5E20' }
+            };
+
+            averias.forEach(function (averia) {
+                var estadoInfo = colores[averia.Estado] || { bg: '#F5F6FA', color: '#727A86' };
+                var item = document.createElement('div');
+                item.className = 'averia-item';
+                item.setAttribute('onclick', `verDetalleAveria(${averia.Id})`);
+
+                var progreso = 0;
+                if (averia.Estado === 'Reportado') progreso = 25;
+                else if (averia.Estado === 'En revisión') progreso = 50;
+                else if (averia.Estado === 'En camino') progreso = 75;
+                else if (averia.Estado === 'Resuelto') progreso = 100;
+
+                item.innerHTML = `
+                        <div class="averia-header">
+                            <div>
+                                <div class="averia-titulo">
+                                    <span class="icono">⚡</span>
+                                    ${averia.TipoAveria}
+                                </div>
+                                <div class="averia-detalle">
+                                    <span><i class="fas fa-map-pin"></i> ${averia.Direccion}</span>
+                                    <span><i class="fas fa-calendar-alt"></i> ${averia.FechaReporte}</span>
+                                </div>
+                            </div>
+                            <span class="averia-estado" style="background: ${estadoInfo.bg}; color: ${estadoInfo.color};">${averia.Estado}</span>
+                        </div>
+                        <div class="averia-descripcion">
+                            ${averia.Descripcion}
+                        </div>
+                        <div class="averia-progreso">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progreso}%;"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span class="etapa">
+                                    <span class="dot"></span> ${averia.Estado}
+                                </span>
+                                <span class="porcentaje">${progreso}%</span>
+                            </div>
+                        </div>
+                    `;
+
+                container.appendChild(item);
+            });
+        }
+
+        function irAReporte(tipo) {
+            window.location.href = tipo === 'alumbrado' ? '/Clientes/ReportarAlumbrado' :
+                tipo === 'propia' ? '/Clientes/ReportarPropia' :
+                    '/Clientes/ReportarAjena';
+        }
+
+        function verDetalleAveria(id) {
+            // Modal de detalle
+            var modal = document.createElement('div');
+            modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.55); backdrop-filter: blur(12px);
+                    z-index: 2000; display: flex; justify-content: center;
+                    align-items: center; padding: 20px;
+                `;
+            modal.innerHTML = `
+                    <div style="background: white; border-radius: 28px; max-width: 400px; width: 100%; padding: 28px 24px 24px; box-shadow: 0 32px 80px rgba(0,0,0,0.35);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <span style="font-weight: 800; font-size: 18px;">⚡ Detalle de avería</span>
+                            <button onclick="this.closest('div[style]').remove()" style="background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer;">✕</button>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <h3 style="font-weight: 800; font-size: 17px; margin: 0;">Cargando detalles...</h3>
+                        </div>
+                        <button onclick="this.closest('div[style]').remove()" style="width: 100%; padding: 14px; border-radius: 16px; border: none; background: linear-gradient(135deg, #1E23E6, #5a60f5); color: white; font-weight: 700; font-size: 15px; cursor: pointer;">
+                            Entendido
+                        </button>
+                    </div>
+                `;
+            document.body.appendChild(modal);
+        }
+
+        // Exponer funciones globalmente
+        window.verDetalleAveria = verDetalleAveria;
+        window.irAReporte = irAReporte;
+    </script>
 }

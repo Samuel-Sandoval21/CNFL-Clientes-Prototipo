@@ -192,6 +192,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ActividadEconomica.cs" />
     <Compile Include="Models\Averia.cs" />
     <Compile Include="Models\Cliente.cs" />
     <Compile Include="Models\Factura.cs" />
@@ -220,6 +221,7 @@
     <Content Include="Content\admin-layout.css" />
     <Content Include="Content\admin-reportes.css" />
     <Content Include="Content\cliente\calculadora.css" />
+    <Content Include="Content\cliente\carrito.css" />
     <Content Include="Content\cliente\chat.css" />
     <Content Include="Content\cliente\cuenta.css" />
     <Content Include="Content\cliente\editar-datos.css" />
@@ -247,6 +249,7 @@
     <Content Include="Scripts\admin-layout.js" />
     <Content Include="Scripts\admin-reportes.js" />
     <Content Include="Scripts\cliente\calculadora.js" />
+    <Content Include="Scripts\cliente\carrito.js" />
     <Content Include="Scripts\cliente\chat.js" />
     <Content Include="Scripts\cliente\cuenta.js" />
     <Content Include="Scripts\cliente\editar-datos.js" />
@@ -354,10 +357,11 @@
     <Content Include="Views\Clientes\Dashboard.cshtml" />
     <Content Include="Views\Clientes\ServiciosContratados.cshtml" />
     <Content Include="Views\Cuenta\RecuperarClave.cshtml" />
+    <Content Include="Views\Clientes\Carrito.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="ViewModels\" />
+    <Folder Include="images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

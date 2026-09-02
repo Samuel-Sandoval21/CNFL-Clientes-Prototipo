@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+
 namespace CNFL_Clientes_Prototipo.Models
 {
     public class Usuario
@@ -19,13 +20,21 @@ namespace CNFL_Clientes_Prototipo.Models
         public string NISE { get; set; }
         public string UserName { get; set; }
         public string Contraseña { get; set; }
-        // ELIMINAR: public string Rol { get; set; }   <--- ¡QUITA ESTA LÍNEA!
         public int RolId { get; set; }
         public DateTime FechaNacimiento { get; set; }
         public DateTime FechaRegistro { get; set; }
         public bool Activo { get; set; }
         public bool AceptaPolitica { get; set; }
         public bool AceptaConsentimiento { get; set; }
+
+        // ==========================================================
+        // NUEVAS PROPIEDADES
+        // ==========================================================
+        public bool? FacturaElectronica { get; set; }
+        public string ActividadEconomicaCodigo { get; set; }
+        public string Provincia { get; set; }
+        public string Canton { get; set; }
+        public string Distrito { get; set; }
 
         // Propiedades de navegación
         public virtual Rol RolNavigation { get; set; }

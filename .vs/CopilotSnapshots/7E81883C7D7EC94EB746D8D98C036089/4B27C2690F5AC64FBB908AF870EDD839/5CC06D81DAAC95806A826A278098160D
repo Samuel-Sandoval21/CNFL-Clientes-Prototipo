@@ -302,14 +302,11 @@
             <div class="field" style="margin-top:20px;">
                 <div style="display:flex; flex-direction:column; gap:12px; background:#f8f9fe; padding:16px; border-radius:14px; border:1px solid var(--line);">
                     <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);">
-                        @* Hidden field ensures a false value posts when unchecked *@
-                        <input type="hidden" name="AceptaPolitica" value="false" />
-                        <input type="checkbox" name="AceptaPolitica" id="aceptaPolitica" value="true" required style="margin-top:2px; width:18px; height:18px; cursor:pointer;" />
+                        <input type="checkbox" name="AceptaPolitica" id="aceptaPolitica" required style="margin-top:2px; width:18px; height:18px; cursor:pointer;" />
                         <span>Acepto la <a href="#" onclick="abrirDocumento('politica')" style="color:var(--blue); text-decoration:underline;">Política de Privacidad</a> de la CNFL</span>
                     </label>
                     <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);">
-                        <input type="hidden" name="AceptaConsentimiento" value="false" />
-                        <input type="checkbox" name="AceptaConsentimiento" id="aceptaConsentimiento" value="true" required style="margin-top:2px; width:18px; height:18px; cursor:pointer;" />
+                        <input type="checkbox" name="AceptaConsentimiento" id="aceptaConsentimiento" required style="margin-top:2px; width:18px; height:18px; cursor:pointer;" />
                         <span>Acepto el <a href="#" onclick="abrirDocumento('consentimiento')" style="color:var(--blue); text-decoration:underline;">Consentimiento Informado</a> (F-085)</span>
                     </label>
                 </div>

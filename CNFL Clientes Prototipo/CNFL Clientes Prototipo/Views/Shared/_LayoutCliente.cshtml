@@ -38,13 +38,10 @@
         </header>
 
         <div class="phone-content" id="phoneContent">
-
             <div class="app-header">
                 <div class="brand">
-                    <svg width="44" height="44" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="25" cy="25" r="22" stroke="#1E23E6" stroke-width="2.5" />
-                        <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#1E23E6" />
-                    </svg>
+                    <!-- LOGO CNFL - usando imagen PNG (sin "ice") -->
+                    <img src="@Url.Content("~/images/logo-cnfl.png")" alt="CNFL" style="height:44px; width:auto;" />
                     <span class="brand-text">cnfl</span>
                 </div>
 
@@ -69,41 +66,32 @@
             </main>
         </div>
 
-        <!-- ===== MENÚ INFERIOR - CLIENTE (SIN SALIR COMO TAB) ===== -->
+        <!-- ===== MENÚ INFERIOR - CLIENTE ===== -->
         <nav class="bottom-nav" id="bottomNav">
             @if (Session["Rol"] != null)
             {
-                <!-- Usuario logueado - Menú completo -->
                 <a href="@Url.Action("Index", "Home")" class="tab" data-seccion="inicio">
                     <i class="fas fa-home"></i>
                     <span data-i18n="menu_inicio">Inicio</span>
                 </a>
-
                 <a href="@Url.Action("Tramites", "Clientes")" class="tab" data-seccion="tramites">
                     <i class="fas fa-file-alt"></i>
                     <span data-i18n="menu_tramites">Trámites</span>
                 </a>
-
                 <a href="@Url.Action("Pagos", "Clientes")" class="tab" data-seccion="pagos">
                     <i class="fas fa-credit-card"></i>
                     <span data-i18n="menu_pagos">Pagos</span>
                 </a>
-
                 <a href="@Url.Action("Tienda", "Clientes")" class="tab center" data-seccion="tienda">
                     <div class="fab">
                         <i class="fas fa-store"></i>
                     </div>
                     <span data-i18n="menu_tienda">Tienda</span>
                 </a>
-
                 <a href="@Url.Action("Reportes", "Clientes")" class="tab" data-seccion="reportes">
                     <i class="fas fa-map-marked-alt"></i>
                     <span data-i18n="menu_reportes">Reportes</span>
                 </a>
-
-                <!-- ========================================================== -->
-                <!-- CUENTA (donde está Cerrar Sesión dentro del perfil) -->
-                <!-- ========================================================== -->
                 <a href="@Url.Action("Perfil", "Clientes")" class="tab" data-seccion="perfil">
                     <i class="fas fa-user-circle"></i>
                     <span data-i18n="menu_cuenta">Cuenta</span>
@@ -111,12 +99,10 @@
             }
             else
             {
-                <!-- Visitante - Menú público -->
                 <a href="@Url.Action("Index", "Home")" class="tab" data-seccion="inicio">
                     <i class="fas fa-home"></i>
                     <span data-i18n="menu_inicio">Inicio</span>
                 </a>
-
                 <a href="@Url.Action("Login", "Cuenta")" class="tab center" data-seccion="perfil">
                     <div class="fab">
                         <i class="fas fa-user"></i>
@@ -133,7 +119,6 @@
 
     <script src="@Url.Content("~/Scripts/cliente/idiomas.js")"></script>
     <script src="@Url.Content("~/Scripts/cliente/layout.js")"></script>
-
     @RenderSection("scriptsVista", required: false)
 
 </body>

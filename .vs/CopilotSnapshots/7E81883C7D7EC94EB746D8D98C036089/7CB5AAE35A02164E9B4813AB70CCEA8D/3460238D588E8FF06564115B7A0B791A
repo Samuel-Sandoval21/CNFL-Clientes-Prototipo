@@ -348,7 +348,17 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return View(model);
             }
 
-            // El NISE ya no se solicita en el formulario; se gestiona desde la base de datos por el sistema.
+            if (string.IsNullOrEmpty(model.NISE))
+            {
+                ModelState.AddModelError("", "❌ El NISE es obligatorio.");
+                return View(model);
+            }
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(model.NISE, @"^\d{9}$"))
+            {
+                ModelState.AddModelError("", "❌ El NISE debe tener 9 dígitos.");
+                return View(model);
+            }
 
             if (model.FechaNacimiento == null || model.FechaNacimiento == DateTime.MinValue)
             {
@@ -524,7 +534,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 Sexo = model.Sexo,
                 SexoPersonalizado = model.SexoPersonalizado,
                 Direccion = model.Direccion,
-                NISE = null,
+                NISE = model.NISE,
                 UserName = model.UserName,
                 Contraseña = model.Contraseña,
                 RolId = 1,
@@ -559,15 +569,41 @@ namespace CNFL_Clientes_Prototipo.Controllers
             _db.Clientes.Add(nuevoCliente);
             _db.SaveChanges();
 
+            // ==========================================================
+            // CREAR NISE ASOCIADO
+            // ==========================================================
+
+            var nuevoNISE = new NISE
+            {
+                ClienteId = nuevoCliente.Id,
+                Numero = model.NISE,
+                Direccion = "Principal",
+                Activo = true
+            };
+
+            _db.NISEs.Add(nuevoNISE);
+            _db.SaveChanges();
+
             System.Diagnostics.Debug.WriteLine($"✅ USUARIO REGISTRADO EN BD: {model.UserName}");
             System.Diagnostics.Debug.WriteLine($"ID: {nuevoUsuario.Id}");
 
-            // No iniciar sesión automáticamente. Redirigir a Login con credenciales precargadas.
-            TempData["UserName"] = nuevoUsuario.UserName;
-            TempData["Contraseña"] = nuevoUsuario.Contraseña;
-            TempData["Mensaje"] = "Registro exitoso. Usa las credenciales precargadas para iniciar sesión.";
+            // ==========================================================
+            // INICIAR SESIÓN AUTOMÁTICAMENTE Y REDIRIGIR
+            // ==========================================================
 
-            return RedirectToAction("Login", "Cuenta");
+            Session["Id"] = nuevoUsuario.Id;
+            Session["Nombre"] = nuevoUsuario.Nombre + " " + nuevoUsuario.Apellidos;
+            Session["NombreCompleto"] = nuevoUsuario.Nombre + " " + nuevoUsuario.Apellidos;
+            Session["Correo"] = nuevoUsuario.Correo;
+            Session["Rol"] = "Cliente";
+            Session["RolId"] = nuevoUsuario.RolId;
+            Session["NISE"] = nuevoUsuario.NISE;
+            Session["Cedula"] = nuevoUsuario.Cedula;
+            Session["Telefono"] = nuevoUsuario.Telefono;
+            Session["UserName"] = nuevoUsuario.UserName;
+            Session["FechaNacimiento"] = nuevoUsuario.FechaNacimiento.ToString("dd/MM/yyyy");
+
+            return RedirectToAction("Inicio", "Clientes");
         }
 
         // ==========================================================

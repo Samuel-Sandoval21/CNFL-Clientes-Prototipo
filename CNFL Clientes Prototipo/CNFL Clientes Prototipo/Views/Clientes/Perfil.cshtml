@@ -1,12 +1,8 @@
 ﻿@model dynamic
-
 @{
     ViewBag.Title = "Mi Cuenta - CNFL";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 
-    // ==========================================================
-    // OBTENER INICIALES DEL NOMBRE DESDE LA SESIÓN
-    // ==========================================================
     var nombreCompleto = Session["Nombre"]?.ToString() ?? "Cliente CNFL";
     var iniciales = string.Join("", nombreCompleto.Split(' ').Select(s => s.Length > 0 ? s[0].ToString() : ""));
     if (iniciales.Length > 2)
@@ -25,9 +21,7 @@
 </button>
 
 <div class="section-pad">
-    <!-- ========================================================== -->
-    <!-- PERFIL HEADER -->
-    <!-- ========================================================== -->
+    <!-- ===== PERFIL HEADER ===== -->
     <div class="perfil-header">
         <div class="perfil-avatar">
             @iniciales
@@ -39,9 +33,7 @@
         <span class="perfil-badge">Cliente</span>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- DATOS PROTEGIDOS -->
-    <!-- ========================================================== -->
+    <!-- ===== DATOS PROTEGIDOS ===== -->
     <div class="perfil-protegido">
         <div class="icon">
             <i class="fas fa-shield-alt"></i>
@@ -62,10 +54,22 @@
         Mi actividad
     </div>
 
+    <!-- ===== MI CARRITO (NUEVO) ===== -->
+    <div class="perfil-item" onclick="verCarrito()">
+        <div class="ic" style="background:#fff3ec;">
+            <i class="fas fa-shopping-cart" style="color:var(--orange);"></i>
+        </div>
+        <div class="tx">
+            <div class="t">Mi Carrito</div>
+            <div class="s" id="carritoResumen">0 productos · ₡0</div>
+        </div>
+        <i class="fas fa-chevron-right chevron"></i>
+    </div>
+
     <!-- ===== Historial de compras ===== -->
     <a href="@Url.Action("HistorialCompras", "Clientes")" class="perfil-item">
-        <div class="ic" style="background:#fff3ec;">
-            <i class="fas fa-shopping-bag" style="color:var(--orange);"></i>
+        <div class="ic" style="background:#f0f2ff;">
+            <i class="fas fa-shopping-bag" style="color:var(--blue);"></i>
         </div>
         <div class="tx">
             <div class="t">Historial de compras</div>

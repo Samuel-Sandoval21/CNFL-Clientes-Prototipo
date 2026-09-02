@@ -1,0 +1,131 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Mi Carrito - CNFL";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- CSS específico para Carrito -->
+<link rel="stylesheet" href="@Url.Content("~/Content/cliente/carrito.css")" />
+
+<!-- ===== BOTÓN VOLVER ===== -->
+<button class="btn-volver" onclick="history.back();">
+    <i class="fas fa-arrow-left"></i> Volver
+</button>
+
+<div class="section-pad">
+    <div class="h-name-2">
+        <i class="fas fa-shopping-cart" style="color:var(--orange);"></i> Mi Carrito
+    </div>
+    <div style="font-size:13px; color:var(--muted); margin-top:2px;">
+        Revisa los productos que deseas comprar
+    </div>
+</div>
+
+<!-- ===== CONTENIDO DEL CARRITO ===== -->
+<div class="section-pad">
+    <div id="carritoVacio" style="display: none;">
+        <div class="empty-carrito">
+            <div class="empty-icon">🛒</div>
+            <h3>Tu carrito está vacío</h3>
+            <p>Explora nuestros productos y servicios en la tienda.</p>
+            <button class="btn-ir-tienda" onclick="window.location.href='/Clientes/Tienda'">
+                <i class="fas fa-store"></i> Ir a la tienda
+            </button>
+        </div>
+    </div>
+
+    <div id="carritoLleno" style="display: none;">
+        <!-- Lista de productos -->
+        <div id="listaProductosCarrito"></div>
+
+        <!-- Resumen de Compra -->
+        <div class="resumen-compra">
+            <div class="resumen-titulo">Resumen de Compra</div>
+
+            <div class="resumen-item">
+                <span>Subtotal</span>
+                <span id="subtotalCarrito">₡0</span>
+            </div>
+
+            <!-- Cupón de Descuento -->
+            <div class="cupon-container">
+                <label>Cupón de Descuento (Opcional)</label>
+                <div class="cupon-input">
+                    <input type="text" id="codigoCupon" placeholder="Código del cupón" />
+                    <button id="aplicarCupon" onclick="aplicarCupon()">Aplicar</button>
+                </div>
+                <div id="mensajeCupon" style="font-size:12px; margin-top:4px; color:var(--muted);"></div>
+            </div>
+
+            <!-- Total -->
+            <div class="resumen-item total">
+                <span>Total</span>
+                <span id="totalCarrito">₡0</span>
+            </div>
+
+            <!-- Botón Pagar -->
+            <button class="btn-pagar-carrito" onclick="procederPago()">
+                <i class="fas fa-credit-card"></i> Proceder al Pago
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL DE PAGO ===== -->
+<div class="modal-pago" id="modalPago" style="display: none;">
+    <div class="modal-contenido">
+        <div class="modal-header">
+            <h2>Información de Pago</h2>
+            <button class="modal-cerrar" onclick="cerrarModalPago()">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Nombre del Propietario -->
+            <div class="campo-pago">
+                <label>Nombre del Propietario</label>
+                <input type="text" id="nombreTarjeta" placeholder="Nombre como aparece en la tarjeta" />
+            </div>
+
+            <!-- Número de Tarjeta -->
+            <div class="campo-pago">
+                <label>Número de Tarjeta</label>
+                <input type="text" id="numeroTarjeta" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatearNumeroTarjeta(this)" />
+            </div>
+
+            <!-- Fila: Mes, Año, CVV -->
+            <div class="row-pago">
+                <div class="campo-pago" style="flex:1;">
+                    <label>Mes</label>
+                    <select id="mesTarjeta">
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            <option value="@i.ToString("D2")">@i.ToString("D2")</option>
+                        }
+                    </select>
+                </div>
+                <div class="campo-pago" style="flex:1;">
+                    <label>Año</label>
+                    <select id="anioTarjeta">
+                        @for (int i = DateTime.Now.Year; i <= DateTime.Now.Year + 10; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+                <div class="campo-pago" style="flex:0.7;">
+                    <label>CVV</label>
+                    <input type="text" id="cvvTarjeta" placeholder="123" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                </div>
+            </div>
+
+            <button class="btn-confirmar-pago" onclick="confirmarPago()">
+                Confirmar Pago
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript externo para Carrito -->
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/cliente/carrito.js")"></script>
+}

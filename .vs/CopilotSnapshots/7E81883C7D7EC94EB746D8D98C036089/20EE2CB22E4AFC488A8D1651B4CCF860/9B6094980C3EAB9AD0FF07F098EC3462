@@ -677,6 +677,7 @@ function validarFormularioRegistro() {
     var usuario = document.getElementById('userName');
     var contrasena = document.getElementById('contrasena');
     var confirm = document.getElementById('confirm');
+    var niseSelect = document.getElementById('niseSelect');
     var fecha = document.getElementById('fechaNacimiento');
     var sexo = document.querySelector('input[name="Sexo"]:checked');
     var facturaElectronica = document.querySelector('input[name="FacturaElectronica"]:checked');

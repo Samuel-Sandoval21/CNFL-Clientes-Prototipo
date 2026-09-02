@@ -180,8 +180,23 @@ function validarCedula(cedula) {
                     document.getElementById('apellidos').value = response.apellidos;
                     document.getElementById('fechaNacimiento').value = response.fechaNacimiento;
 
-                    // NISEs gestionados por el sistema; no se muestran en el formulario.
-                    var tagsCleanup = document.getElementById('nisesTags'); if (tagsCleanup) tagsCleanup.innerHTML = '';
+                    var niseSelect = document.getElementById('niseSelect');
+                    if (niseSelect && response.nises && response.nises.length > 0) {
+                        niseSelect.innerHTML = '';
+                        response.nises.forEach(function (nise) {
+                            var option = document.createElement('option');
+                            option.value = nise;
+                            option.textContent = nise;
+                            niseSelect.appendChild(option);
+                        });
+                        niseSelect.value = response.nises[0];
+                        niseSelect.disabled = false;
+                        document.getElementById('niseSelectContainer').style.display = 'block';
+                        mostrarNisesComoTags(response.nises, response.nises[0]);
+                    } else {
+                        document.getElementById('niseSelectContainer').style.display = 'none';
+                        document.getElementById('nisesTags').innerHTML = '';
+                    }
 
                     marcarValido(groupId);
                     if (hint) {
@@ -557,9 +572,52 @@ function validarAceptacion() {
     return true;
 }
 
-// La validación de NISE se eliminó: NISE no forma parte del formulario de registro.
+function validarNISE(nise) {
+    var errorId = 'nisesError';
+    var groupId = 'nisesGroup';
 
-// Mostrar NISEs eliminado del formulario; las llamadas se ignoran si el elemento no existe.
+    limpiarError(errorId);
+    limpiarEstado(groupId);
+
+    if (!nise || nise.trim() === '' || nise === '-- Selecciona un NISE --' || nise === '-- No hay NISEs asociados --') {
+        mostrarError(errorId, '⚠️ Selecciona un NISE válido');
+        marcarInvalido(groupId);
+        return false;
+    }
+
+    if (!/^\d{9}$/.test(nise.trim())) {
+        mostrarError(errorId, '❌ El NISE debe tener 9 dígitos');
+        marcarInvalido(groupId);
+        return false;
+    }
+
+    marcarValido(groupId);
+    return true;
+}
+
+function mostrarNisesComoTags(nises, niseSeleccionado) {
+    var container = document.getElementById('nisesTags');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (!nises || nises.length === 0) {
+        container.innerHTML = `<span style="font-size:12px; color:var(--muted);">No hay NISEs asociados</span>`;
+        return;
+    }
+
+    nises.forEach(function (nise) {
+        var tag = document.createElement('span');
+        tag.className = 'nise-tag';
+        if (nise === niseSeleccionado) {
+            tag.classList.add('active');
+            tag.innerHTML = '✅ ' + nise;
+        } else {
+            tag.textContent = '⚡ ' + nise;
+        }
+        container.appendChild(tag);
+    });
+}
 
 function autocompletarPorCedula() {
     var cedula = document.getElementById('cedula');
@@ -573,8 +631,17 @@ function autocompletarPorCedula() {
         document.getElementById('apellidos').value = '';
         document.getElementById('fechaNacimiento').value = '';
 
+        var niseSelect = document.getElementById('niseSelect');
+        if (niseSelect) {
+            niseSelect.innerHTML = '<option value="">-- Selecciona un NISE --</option>';
+            niseSelect.disabled = true;
+        }
+
+        document.getElementById('nisesTags').innerHTML = '';
+        document.getElementById('niseSelectContainer').style.display = 'none';
+
         if (hint) {
-            hint.textContent = 'Al escribir tu cédula, se cargan tus datos automáticamente.';
+            hint.textContent = 'Al escribir tu cédula, se cargan tus datos y tus NISEs automáticamente.';
             hint.className = 'registro-hint';
             hint.style.color = '';
         }
@@ -597,7 +664,10 @@ function autocompletarPorCedula() {
         success: function (response) {
             var nombre = document.getElementById('nombre');
             var apellidos = document.getElementById('apellidos');
+            var niseSelect = document.getElementById('niseSelect');
             var fechaInput = document.getElementById('fechaNacimiento');
+            var container = document.getElementById('niseSelectContainer');
+
             if (response.success) {
                 if (response.nombre && response.nombre !== '') {
                     if (nombre) nombre.value = response.nombre;
@@ -607,10 +677,28 @@ function autocompletarPorCedula() {
                         validarFechaNacimiento(response.fechaNacimiento);
                     }
 
-                    // NISEs ya no se muestran en el formulario. Si existe el contenedor de tags, limpiarlo.
-                    var tagsContainer = document.getElementById('nisesTags');
-                    if (tagsContainer) {
-                        tagsContainer.innerHTML = '';
+                    if (niseSelect && response.nises && response.nises.length > 0) {
+                        if (container) container.style.display = 'block';
+                        niseSelect.innerHTML = '';
+                        response.nises.forEach(function (nise) {
+                            var option = document.createElement('option');
+                            option.value = nise;
+                            option.textContent = nise;
+                            niseSelect.appendChild(option);
+                        });
+
+                        var primerNise = response.nises[0];
+                        niseSelect.value = primerNise;
+                        niseSelect.disabled = false;
+                        validarNISE(primerNise);
+                        mostrarNisesComoTags(response.nises, primerNise);
+                    } else {
+                        if (container) container.style.display = 'none';
+                        if (niseSelect) {
+                            niseSelect.innerHTML = '<option value="">-- No hay NISEs asociados --</option>';
+                            niseSelect.disabled = true;
+                        }
+                        document.getElementById('nisesTags').innerHTML = '';
                     }
 
                     if (hint) {
@@ -633,15 +721,12 @@ function autocompletarPorCedula() {
                 if (nombre) nombre.value = '';
                 if (apellidos) apellidos.value = '';
                 if (fechaInput) fechaInput.value = '';
-                var niseSelect = document.getElementById('niseSelect');
                 if (niseSelect) {
                     niseSelect.innerHTML = '<option value="">-- Selecciona un NISE --</option>';
                     niseSelect.disabled = true;
                 }
-                var container = document.getElementById('niseSelectContainer');
                 if (container) container.style.display = 'none';
-                var nisesTagsEl = document.getElementById('nisesTags');
-                if (nisesTagsEl) nisesTagsEl.innerHTML = '';
+                document.getElementById('nisesTags').innerHTML = '';
 
                 if (hint) {
                     hint.textContent = '⚠️ ' + response.message;
@@ -677,6 +762,7 @@ function validarFormularioRegistro() {
     var usuario = document.getElementById('userName');
     var contrasena = document.getElementById('contrasena');
     var confirm = document.getElementById('confirm');
+    var niseSelect = document.getElementById('niseSelect');
     var fecha = document.getElementById('fechaNacimiento');
     var sexo = document.querySelector('input[name="Sexo"]:checked');
     var facturaElectronica = document.querySelector('input[name="FacturaElectronica"]:checked');
@@ -730,7 +816,11 @@ function validarFormularioRegistro() {
         errores.push('Debe seleccionar un distrito');
     }
 
-    // NISE asociado ya no es parte del formulario: no validar aquí.
+    var niseValue = niseSelect ? niseSelect.value : '';
+    // NISE asociado ya no es obligatorio: validar solo si el usuario seleccionó uno
+    if (niseValue && niseValue !== '' && niseValue !== '-- Selecciona un NISE --' && niseValue !== '-- No hay NISEs asociados --') {
+        if (!validarNISE(niseValue)) errores.push('NISE inválido');
+    }
 
     if (!validarAceptacion()) errores.push('Aceptación requerida');
 
@@ -791,8 +881,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     niseSelect.disabled = true;
                 }
 
-                var tags = document.getElementById('nisesTags'); if (tags) tags.innerHTML = '';
-                var container = document.getElementById('niseSelectContainer'); if (container) container.style.display = 'none';
+                document.getElementById('nisesTags').innerHTML = '';
+                document.getElementById('niseSelectContainer').style.display = 'none';
 
                 var hint = document.querySelector('#cedulaGroup .registro-hint');
                 if (hint) {

@@ -105,16 +105,6 @@ CUENTA / LOGIN / REGISTRO - ESTILOS
             background-position: right center;
         }
 
-/* Evitar que el texto de las opciones se corte y mejorar ancho visual de los selects */
-.field .inp select, .field .inp select option {
-    white-space: normal;
-    box-sizing: border-box;
-}
-
-.field .inp select {
-    min-width: 160px;
-}
-
             .field .inp select:disabled {
                 opacity: 0.6;
                 cursor: not-allowed;
@@ -244,7 +234,40 @@ CUENTA / LOGIN / REGISTRO - ESTILOS
     }
 
 /* ===== TAGS DE NISES ===== */
-/* NISE visual removed from registration form; related styles removed */
+.nises-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.nise-tag {
+    background: #E8F0FE;
+    color: var(--blue);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(30, 35, 230, 0.15);
+}
+
+    .nise-tag.active {
+        background: var(--blue);
+        color: white;
+        border-color: var(--blue);
+    }
+
+/* ===== SELECT DE NISES ===== */
+#niseSelectContainer {
+    display: none;
+}
+
+    #niseSelectContainer.visible {
+        display: block;
+    }
 
 /* ===== BOTONES ===== */
 .btn-login {

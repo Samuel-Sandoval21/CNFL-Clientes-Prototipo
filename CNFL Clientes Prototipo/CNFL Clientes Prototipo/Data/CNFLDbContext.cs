@@ -23,10 +23,17 @@ namespace CNFL_Clientes_Prototipo.Data
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
         public DbSet<Suscripcion> Suscripciones { get; set; }
+        public DbSet<ActividadEconomica> ActividadesEconomicas { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // ==========================================================
+            // CONFIGURAR NOMBRE DE TABLA ActividadesEconomicas
+            // ==========================================================
+            modelBuilder.Entity<ActividadEconomica>()
+                .ToTable("ActividadesEconomicas");
 
             // ==========================================================
             // CONFIGURAR RELACIÓN Usuario -> Rol

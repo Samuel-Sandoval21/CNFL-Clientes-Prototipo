@@ -1,5 +1,4 @@
 ﻿@model dynamic
-
 @{
     ViewBag.Title = "Iniciar Sesión";
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
@@ -12,13 +11,10 @@
 <input type="hidden" id="sessionRol" value="@(Session["Rol"] ?? "")" />
 
 <div class="login-wrap">
-    <!-- LOGO CORRECTO CNFL -->
+    <!-- LOGO CORRECTO CNFL - CON CÍRCULO INCOMPLETO -->
     <div class="brand-logo">
         <div style="display:flex; align-items:center; gap:6px;">
-            <!-- LOGO CNFL - SOLO EL RAYO CON PUNTA HACIA ABAJO -->
-            <svg width="44" height="44" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#FF692D" />
-            </svg>
+            <img src="@Url.Content("~/images/logo-cnfl.png")" alt="CNFL" style="height:44px; width:auto;" />
             <span style="font-family:'Inter',sans-serif; font-weight:900; font-size:36px; color:#FF692D; letter-spacing:-2px; text-transform:lowercase;">cnfl</span>
         </div>
     </div>
@@ -52,7 +48,7 @@
                     <circle cx="9" cy="12" r="2.5" />
                     <path d="M14 10h4M14 14h4" />
                 </svg>
-                <input type="text" name="UserName" id="UserName" placeholder="admin, cliente o cédula" value="cliente" />
+                <input type="text" name="UserName" id="UserName" placeholder="admin, cliente o cédula" value="@(TempData["UserName"] ?? "cliente")" />
                 <span class="validation-icon" id="usuarioIcon"></span>
             </div>
             <div class="field-error" id="usuarioError"></div>
@@ -65,7 +61,7 @@
                     <rect x="4" y="10" width="16" height="10" rx="2" />
                     <path d="M8 10V7a4 4 0 0 1 8 0v3" />
                 </svg>
-                <input type="password" name="Contraseña" id="Contraseña" placeholder="••••••••" value="123456" />
+                <input type="password" name="Contraseña" id="Contraseña" placeholder="••••••••" value="@(TempData["Contraseña"] ?? "123456")" />
                 <span class="validation-icon" id="contrasenaIcon"></span>
                 <button type="button" class="toggle-password" id="togglePasswordBtn" onclick="togglePasswordLogin()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

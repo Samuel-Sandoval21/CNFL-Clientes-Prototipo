@@ -9,14 +9,13 @@
     @Scripts.Render("~/bundles/modernizr")
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'><text y='32' font-size='32'>⚡</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'><text y='32' font-size='32'>⚡</text></svg>" />
 </head>
 <body>
+
     <div class="app-container">
 
-        <!-- ========================================================== -->
         <!-- ===== BARRA DE ESTADO CON IDIOMA ===== -->
-        <!-- ========================================================== -->
         <header class="status-bar">
             <span class="time" id="statusTime">10:44</span>
             <div class="status-icons">
@@ -36,33 +35,30 @@
                     <rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" />
                     <rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" />
                 </svg>
+
                 <button class="lang-toggle-top" onclick="cambiarIdiomaAdmin(idiomaActualAdmin === 'es' ? 'en' : 'es')" title="Cambiar idioma">
                     <span id="langLabel">ES ▼</span>
                 </button>
             </div>
         </header>
 
-        <!-- ========================================================== -->
         <!-- ===== ENCABEZADO ADMIN ===== -->
-        <!-- ========================================================== -->
         <section class="admin-header">
 
-            <!-- ===== FILA 1: BOTÓN VOLVER ===== -->
+            <!-- FILA 1: BOTÓN VOLVER -->
             <div class="admin-row-top">
                 <button class="back-btn" onclick="history.back();">
                     <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
                 </button>
             </div>
 
-            <!-- ===== FILA 2: LOGO + cnfl + USUARIO ===== -->
+            <!-- FILA 2: LOGO + cnfl + USUARIO -->
             <div class="admin-row-bottom">
                 <div class="admin-logo-group">
-                    <!-- LOGO + cnfl -->
+
+                    <!-- LOGO CNFL - usando imagen PNG (sin "ice") -->
                     <div class="admin-logo">
-                        <svg width="32" height="32" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="25" cy="25" r="22" stroke="#1E23E6" stroke-width="2.5" />
-                            <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#1E23E6" />
-                        </svg>
+                        <img src="@Url.Content("~/images/logo-cnfl.png")" alt="CNFL" style="height:32px; width:auto;" />
                         <span class="logo-text">cnfl</span>
                     </div>
 
@@ -74,6 +70,7 @@
                             <span class="user-email">@(Session["Correo"] ?? "admin@cnfl.go.cr")</span>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -84,9 +81,7 @@
             @RenderBody()
         </main>
 
-        <!-- ========================================================== -->
         <!-- ===== MENÚ INFERIOR ===== -->
-        <!-- ========================================================== -->
         <nav class="bottom-nav">
             <a href="@Url.Action("Dashboard", "Admin")" class="nav-item" data-action="dashboard">
                 <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
@@ -110,9 +105,7 @@
             </a>
         </nav>
 
-        <!-- ========================================================== -->
         <!-- ===== MODAL DE CONFIRMACIÓN ===== -->
-        <!-- ========================================================== -->
         <div class="modal-overlay" id="modalCierre">
             <div class="modal-box">
                 <span class="modal-icon">🤔</span>
@@ -133,7 +126,6 @@
 
     <script>
         window.logoutUrl = '@Url.Action("Logout", "Cuenta", new { area = "" })';
-
         var idiomaActualAdmin = localStorage.getItem('idioma_admin') || 'es';
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -145,10 +137,6 @@
     </script>
 
     <script src="@Url.Content("~/Scripts/admin-layout.js")"></script>
-
-    <!-- ========================================================== -->
-    <!-- ===== SECCIÓN PARA SCRIPTS DE VISTA ===== -->
-    <!-- ========================================================== -->
     @RenderSection("scriptsVista", required: false)
 
 </body>
