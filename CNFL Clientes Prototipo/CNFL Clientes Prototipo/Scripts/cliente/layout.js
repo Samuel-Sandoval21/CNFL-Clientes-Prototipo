@@ -22,18 +22,14 @@ setInterval(updateTime, 30000);
 function marcarTabActivo() {
     var currentPath = window.location.pathname.toLowerCase();
 
-    // === PASO 1: FORZAR REMOVER TODAS LAS CLASES active ===
     document.querySelectorAll('.tab').forEach(function (tab) {
         tab.classList.remove('active');
-        // También remover cualquier estilo inline
         tab.style.color = '';
         tab.style.fontWeight = '';
     });
 
-    // === PASO 2: DETERMINAR QUÉ TAB ACTIVAR ===
     var tabActivo = '';
 
-    // 1. INICIO
     if (currentPath === '/' ||
         currentPath === '/home' ||
         currentPath === '/home/index' ||
@@ -41,35 +37,22 @@ function marcarTabActivo() {
         currentPath === '/clientes/' ||
         currentPath === '/clientes/inicio') {
         tabActivo = 'inicio';
-    }
-    // 2. TRÁMITES
-    else if (currentPath === '/clientes/tramites' || currentPath.indexOf('/clientes/tramites/') === 0) {
+    } else if (currentPath === '/clientes/tramites' || currentPath.indexOf('/clientes/tramites/') === 0) {
         tabActivo = 'tramites';
-    }
-    // 3. PAGOS
-    else if (currentPath === '/clientes/pagos' || currentPath.indexOf('/clientes/pagos/') === 0) {
+    } else if (currentPath === '/clientes/pagos' || currentPath.indexOf('/clientes/pagos/') === 0) {
         tabActivo = 'pagos';
-    }
-    // 4. TIENDA
-    else if (currentPath === '/clientes/tienda' || currentPath.indexOf('/clientes/tienda/') === 0) {
+    } else if (currentPath === '/clientes/tienda' || currentPath.indexOf('/clientes/tienda/') === 0) {
         tabActivo = 'tienda';
-    }
-    // 5. REPORTES
-    else if (currentPath === '/clientes/reportes' || currentPath.indexOf('/clientes/reportes/') === 0) {
+    } else if (currentPath === '/clientes/reportes' || currentPath.indexOf('/clientes/reportes/') === 0) {
         tabActivo = 'reportes';
-    }
-    // 6. CUENTA / PERFIL (CUALQUIER RUTA DE CLIENTES QUE NO SEA LAS ANTERIORES)
-    else if (currentPath.indexOf('/clientes/') === 0) {
+    } else if (currentPath.indexOf('/clientes/') === 0) {
         tabActivo = 'perfil';
-    }
-    // 7. RUTAS DE CUENTA (para compatibilidad)
-    else if (currentPath === '/cuenta' ||
+    } else if (currentPath === '/cuenta' ||
         currentPath === '/cuenta/' ||
         currentPath.indexOf('/cuenta/') === 0) {
         tabActivo = 'perfil';
     }
 
-    // === PASO 3: ACTIVAR SOLO SI SE DETECTO ALGO ===
     if (tabActivo) {
         document.querySelectorAll('.tab').forEach(function (tab) {
             var seccion = tab.getAttribute('data-seccion');
@@ -144,7 +127,6 @@ function cargarIdiomaGuardado() {
 document.addEventListener('DOMContentLoaded', function () {
     cargarIdiomaGuardado();
 
-    // Ejecutar varias veces para asegurar
     setTimeout(function () {
         marcarTabActivo();
     }, 50);

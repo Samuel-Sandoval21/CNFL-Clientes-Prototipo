@@ -5,10 +5,8 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<!-- CSS externo para Reportes -->
 <link rel="stylesheet" href="@Url.Content("~/Content/admin-reportes.css")" />
 
-<!-- Toast de notificación -->
 <div class="toast-notification" id="toastNotif"></div>
 
 <div class="report-header">
@@ -18,7 +16,6 @@
     </div>
 </div>
 
-<!-- Filtros -->
 <div class="report-filters">
     <select id="periodoFilter">
         <option value="7d">Últimos 7 días</option>
@@ -29,12 +26,9 @@
     </select>
     <input type="date" id="fechaInicio" placeholder="Fecha inicio" />
     <input type="date" id="fechaFin" placeholder="Fecha fin" />
-    <button class="btn-generar" onclick="generarReporte()">
-        <i class="fas fa-sync-alt"></i> Generar Reporte
-    </button>
+    <button class="btn-generar" onclick="generarReporte()"><i class="fas fa-sync-alt"></i> Generar Reporte</button>
 </div>
 
-<!-- Tarjetas de resumen -->
 <div class="report-grid">
     <div class="report-card">
         <span class="icon"><i class="fas fa-clipboard-list" style="color:var(--blue);"></i></span>
@@ -46,9 +40,7 @@
             if (Model.TrendAverias > 0) { trendClassAverias = "trend-up"; trendIconAverias = "▲"; }
             else if (Model.TrendAverias < 0) { trendClassAverias = "trend-down"; trendIconAverias = "▼"; }
         }
-        <span class="trend @trendClassAverias">
-            @trendIconAverias @Math.Abs(Model.TrendAverias)% vs mes anterior
-        </span>
+        <span class="trend @trendClassAverias">@trendIconAverias @Math.Abs(Model.TrendAverias)% vs mes anterior</span>
     </div>
     <div class="report-card">
         <span class="icon"><i class="fas fa-clock" style="color:var(--orange);"></i></span>
@@ -60,9 +52,7 @@
             if (Model.TrendTiempo < 0) { trendClassTiempo = "trend-up"; trendIconTiempo = "▲"; }
             else if (Model.TrendTiempo > 0) { trendClassTiempo = "trend-down"; trendIconTiempo = "▼"; }
         }
-        <span class="trend @trendClassTiempo">
-            @trendIconTiempo @Math.Abs(Model.TrendTiempo)% más rápido
-        </span>
+        <span class="trend @trendClassTiempo">@trendIconTiempo @Math.Abs(Model.TrendTiempo)% más rápido</span>
     </div>
     <div class="report-card">
         <span class="icon"><i class="fas fa-check-circle" style="color:var(--green);"></i></span>
@@ -74,13 +64,10 @@
             if (Model.TrendTasa > 0) { trendClassTasa = "trend-up"; trendIconTasa = "▲"; }
             else if (Model.TrendTasa < 0) { trendClassTasa = "trend-down"; trendIconTasa = "▼"; }
         }
-        <span class="trend @trendClassTasa">
-            @trendIconTasa @Math.Abs(Model.TrendTasa)% vs mes anterior
-        </span>
+        <span class="trend @trendClassTasa">@trendIconTasa @Math.Abs(Model.TrendTasa)% vs mes anterior</span>
     </div>
 </div>
 
-<!-- Gráfico -->
 <div class="report-chart-container">
     <h4><i class="fas fa-chart-bar" style="color:var(--blue);"></i> Averías por mes</h4>
     <div class="chart-bars" id="chartBars">
@@ -92,33 +79,32 @@
                     int barHeight = (item.Cantidad > 0) ? (item.Cantidad * 8 + 10) : 10;
                     string barColor = (item.Cantidad > 0) ? "var(--blue)" : "#e0e0e0";
                 }
-                <div class="chart-bar" style="height: @(barHeight)px; background: @(barColor);"></div>
+                <div class="chart-bar" style="height:@(barHeight)px;background:@(barColor);"></div>
                 <div class="chart-bar-label">@item.Mes</div>
             </div>
         }
     </div>
 </div>
 
-<!-- Tabla -->
 <div class="report-table-container">
     <h4><i class="fas fa-table" style="color:var(--blue);"></i> Detalle de averías recientes</h4>
     <table class="report-table" id="reportTable">
         <thead>
-            <tr><th>ID</th><th>Título</th><th>Ubicación</th><th>Fecha</th><th>Estado</th><th>Tiempo</th></tr>
+            <tr><th>ID</th><th>Tipo</th><th>Ubicación</th><th>Fecha</th><th>Estado</th><th>Tiempo</th></tr>
         </thead>
         <tbody>
             @foreach (var averia in Model.AveriasRecientes)
             {
                 string estadoClass = "estado-reportado";
-                if (averia.Estado == "En revisión") { estadoClass = "estado-revision"; }
+                if (averia.Estado == "En Proceso") { estadoClass = "estado-revision"; }
                 else if (averia.Estado == "En camino") { estadoClass = "estado-camino"; }
                 else if (averia.Estado == "Resuelto") { estadoClass = "estado-resuelto"; }
 
                 <tr>
                     <td><strong>#@averia.Id</strong></td>
-                    <td>@averia.Titulo</td>
+                    <td>@averia.TipoAveria</td>
                     <td>@averia.Direccion</td>
-                    <td>@averia.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@averia.FechaReporte.ToString("dd/MM/yyyy HH:mm")</td>
                     <td><span class="badge-estado @estadoClass">@averia.Estado</span></td>
                     <td>@averia.TiempoTranscurrido</td>
                 </tr>
@@ -126,19 +112,11 @@
         </tbody>
     </table>
 
-    <!-- Botones de exportación -->
     <div class="report-export-buttons">
-        <button class="btn-export pdf" onclick="exportarReporte('pdf')">
-            <i class="fas fa-file-pdf"></i> Exportar PDF
-        </button>
-        <button class="btn-export excel" onclick="exportarReporte('excel')">
-            <i class="fas fa-file-excel"></i> Exportar Excel
-        </button>
-        <button class="btn-export csv" onclick="exportarReporte('csv')">
-            <i class="fas fa-file-csv"></i> Exportar CSV
-        </button>
+        <button class="btn-export pdf" onclick="exportarReporte('pdf')"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+        <button class="btn-export excel" onclick="exportarReporte('excel')"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+        <button class="btn-export csv" onclick="exportarReporte('csv')"><i class="fas fa-file-csv"></i> Exportar CSV</button>
     </div>
 </div>
 
-<!-- JavaScript externo para Reportes -->
 <script src="@Url.Content("~/Scripts/admin-reportes.js")"></script>

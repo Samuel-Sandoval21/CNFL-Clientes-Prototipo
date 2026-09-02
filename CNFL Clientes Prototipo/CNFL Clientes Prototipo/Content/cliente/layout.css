@@ -230,7 +230,6 @@ body {
         transition: 0.2s;
     }
 
-    /* ===== ESTADO ACTIVO DEL TAB ===== */
     .tab.active {
         color: var(--blue);
     }
@@ -240,7 +239,6 @@ body {
             color: var(--blue);
         }
 
-    /* ===== TAB CENTRO (TIENDA) ===== */
     .tab.center .fab {
         width: 52px;
         height: 52px;
@@ -326,10 +324,6 @@ body {
     margin: 22px 0 12px;
 }
 
-/* ========================================================== */
-/* ===== RESPONSIVE ===== */
-/* ========================================================== */
-
 @media (max-width: 480px) {
     body {
         padding: 0;
@@ -386,11 +380,7 @@ body {
     }
 }
 
-/* ========================================================== */
 /* ===== FORZAR QUE NINGÚN TAB TENGA COLOR AZUL POR DEFECTO ===== */
-/* ========================================================== */
-
-/* TODOS los tabs empiezan en gris */
 .bottom-nav .tab {
     color: #9aa1b0 !important;
 }
@@ -399,7 +389,6 @@ body {
         color: #9aa1b0 !important;
     }
 
-    /* SOLO el tab con clase 'active' se pone azul */
     .bottom-nav .tab.active {
         color: #1E23E6 !important;
     }
@@ -409,7 +398,6 @@ body {
             transform: scale(1.1);
         }
 
-    /* El tab de Tienda (centro) tiene su propio estilo */
     .bottom-nav .tab.center .fab i {
         color: #fff !important;
     }

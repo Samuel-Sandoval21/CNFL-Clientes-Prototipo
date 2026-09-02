@@ -1,84 +1,63 @@
 ﻿// ==========================================
-// CLIENTE INICIO - JAVASCRIPT
+// CLIENTE - INICIO (Dashboard)
 // ==========================================
 
-// ===== CAMBIAR PERIODO DEL GRÁFICO =====
+// ===== CAMBIAR PERÍODO DEL GRÁFICO =====
 function cambiarPeriodo(periodo) {
     // Actualizar chips
     document.querySelectorAll('.chip').forEach(function (chip) {
         chip.classList.remove('active');
     });
-
     var chips = document.querySelectorAll('.chip');
-    var mapa = {
-        '6m': 0,
-        '31d': 1,
-        'lecturas': 2
-    };
-
-    if (mapa[periodo] !== undefined && chips[mapa[periodo]]) {
-        chips[mapa[periodo]].classList.add('active');
-    }
-
-    // Obtener las barras del gráfico
-    var barras = document.querySelectorAll('.barra');
-
-    if (barras.length === 0) {
-        barras = document.querySelectorAll('#graficoConsumo > div');
-    }
-
-    if (barras.length === 0) {
-        barras = document.querySelectorAll('.chart-container > div');
-    }
-
-    if (barras.length === 0) {
-        var card = document.querySelector('.card');
-        if (card) {
-            barras = card.querySelectorAll('div[style*="height:"]');
+    for (var i = 0; i < chips.length; i++) {
+        if (chips[i].getAttribute('onclick') && chips[i].getAttribute('onclick').indexOf(periodo) !== -1) {
+            chips[i].classList.add('active');
         }
     }
 
-    var alturas = {
-        '6m': ['45%', '62%', '53%', '71%', '58%', '84%'],
-        '31d': ['60%', '40%', '75%', '50%', '65%'],
-        'lecturas': ['80%', '60%', '70%', '45%', '55%', '75%']
-    };
-
-    var nuevasAlturas = alturas[periodo] || alturas['6m'];
+    // Simular cambio de datos en el gráfico
+    var barras = document.querySelectorAll('.barra');
+    var randomHeights = [];
+    for (var j = 0; j < barras.length; j++) {
+        randomHeights.push(Math.floor(Math.random() * 70) + 30);
+    }
 
     barras.forEach(function (barra, index) {
-        if (index < nuevasAlturas.length) {
-            barra.style.height = nuevasAlturas[index];
-            barra.style.transition = 'height 0.6s ease';
-        }
+        var height = randomHeights[index] || 50;
+        barra.style.height = height + '%';
+        barra.style.background = 'linear-gradient(var(--sky), #a9dce8)';
     });
+
+    // Resaltar la última barra
+    if (barras.length > 0) {
+        var lastBar = barras[barras.length - 1];
+        lastBar.style.background = 'linear-gradient(var(--blue), #5a60f5)';
+    }
+
+    mostrarToast('✅ Período actualizado: ' + periodo);
 }
 
-// ===== INICIALIZAR =====
-document.addEventListener('DOMContentLoaded', function () {
-    var barras = document.querySelectorAll('.barra');
-
-    if (barras.length === 0) {
-        barras = document.querySelectorAll('#graficoConsumo > div');
+// ===== MOSTRAR TOAST =====
+function mostrarToast(mensaje, tipo) {
+    var toast = document.getElementById('toastNotif');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastNotif';
+        toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#2E7D32;color:white;padding:12px 24px;border-radius:16px;font-weight:600;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,0.2);z-index:2000;display:none;max-width:90%;';
+        document.body.appendChild(toast);
     }
 
-    if (barras.length === 0) {
-        barras = document.querySelectorAll('.chart-container > div');
-    }
+    toast.textContent = mensaje;
+    toast.className = 'toast-notification' + (tipo === 'error' ? ' error' : '');
+    toast.style.background = tipo === 'error' ? '#C62828' : '#2E7D32';
+    toast.style.display = 'block';
 
-    if (barras.length === 0) {
-        var card = document.querySelector('.card');
-        if (card) {
-            barras = card.querySelectorAll('div[style*="height:"]');
-        }
-    }
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function () {
+        toast.style.display = 'none';
+    }, 3000);
+}
 
-    if (barras.length > 0) {
-        var alturasDefecto = ['45%', '62%', '53%', '71%', '58%', '84%'];
-        barras.forEach(function (barra, index) {
-            if (index < alturasDefecto.length && !barra.style.height) {
-                barra.style.height = alturasDefecto[index];
-            }
-        });
-    }
-});
+// Exponer funciones
+window.cambiarPeriodo = cambiarPeriodo;
+window.mostrarToast = mostrarToast;

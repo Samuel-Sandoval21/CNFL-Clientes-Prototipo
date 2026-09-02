@@ -5,20 +5,13 @@ namespace CNFL_Clientes_Prototipo.Models
 {
     public class ReportesViewModel
     {
-        // Tarjetas de resumen
         public int TotalAverias { get; set; }
         public string TiempoPromedioResolucion { get; set; } = "0 hrs";
         public int TasaResolucion { get; set; } = 0;
-
-        // Tendencias (variación porcentual)
         public int TrendAverias { get; set; } = 0;
         public int TrendTiempo { get; set; } = 0;
         public int TrendTasa { get; set; } = 0;
-
-        // Datos para el gráfico de barras
         public List<AveriaPorMes> AveriasPorMes { get; set; } = new List<AveriaPorMes>();
-
-        // Averías recientes con tiempo transcurrido
         public List<AveriaConTiempo> AveriasRecientes { get; set; } = new List<AveriaConTiempo>();
     }
 
@@ -28,8 +21,19 @@ namespace CNFL_Clientes_Prototipo.Models
         public int Cantidad { get; set; }
     }
 
-    public class AveriaConTiempo : Averia
+    // NO HEREDA DE Averia - ES UN MODELO DE VISTA INDEPENDIENTE
+    public class AveriaConTiempo
     {
+        public int Id { get; set; }
+        public int UsuarioId { get; set; }
+        public int NISEId { get; set; }
+        public string TipoAveria { get; set; }
+        public string Descripcion { get; set; }
+        public string Direccion { get; set; }
+        public decimal? Latitud { get; set; }
+        public decimal? Longitud { get; set; }
+        public string Estado { get; set; }
+        public DateTime FechaReporte { get; set; }
         public string TiempoTranscurrido { get; set; }
     }
 }

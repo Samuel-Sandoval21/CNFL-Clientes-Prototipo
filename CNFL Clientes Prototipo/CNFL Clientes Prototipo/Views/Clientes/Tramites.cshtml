@@ -1,6 +1,4 @@
-﻿@model dynamic
-
-@{
+﻿@{
     ViewBag.Title = "Trámites - CNFL";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
@@ -18,7 +16,7 @@
         <i class="fas fa-file-alt" style="color:var(--blue);"></i> Trámites
     </div>
     <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="tramites_subtitulo">
-        16 solicitudes en línea, sin filas.
+        Gestiona tus trámites desde la app
     </div>
 </div>
 
@@ -32,6 +30,24 @@
         <div class="tramite-estado">
             <span class="estado-dot proceso"></span>
             <span class="estado-label" data-i18n="estado">Estado: <span data-i18n="en_proceso">En proceso</span></span>
+        </div>
+    </div>
+
+    <div class="tramite-card">
+        <div class="tramite-titulo">Cambio de nombre de abonado</div>
+        <div class="tramite-ref">#TR-20481 · NISE 4021</div>
+        <div class="tramite-estado">
+            <span class="estado-dot completado"></span>
+            <span class="estado-label">Estado: <span style="color:var(--green);">Completado</span></span>
+        </div>
+    </div>
+
+    <div class="tramite-card">
+        <div class="tramite-titulo">Desconexión y reconexión</div>
+        <div class="tramite-ref">#TR-20480 · NISE 7788</div>
+        <div class="tramite-estado">
+            <span class="estado-dot pendiente"></span>
+            <span class="estado-label">Estado: <span style="color:var(--orange);">Pendiente</span></span>
         </div>
     </div>
 </div>

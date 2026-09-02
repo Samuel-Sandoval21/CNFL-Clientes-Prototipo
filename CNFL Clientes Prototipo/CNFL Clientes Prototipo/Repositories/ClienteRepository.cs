@@ -1,29 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using CNFL_Clientes_Prototipo.Models;
 
 namespace CNFL_Clientes_Prototipo.Repositories
 {
     public class ClienteRepository
     {
-        // Lista estática para simular la base de datos
-        private static List<Cliente> _clientes = new List<Cliente>()
-        {
-            new Cliente { Id = 1, Nombre = "Samuel", Apellidos = "Sandoval", Identificacion = "123456789", Telefono = "8888-8888", Correo = "samuel@cnfl.com" },
-            new Cliente { Id = 2, Nombre = "Ana", Apellidos = "Rodríguez", Identificacion = "987654321", Telefono = "7777-7777", Correo = "ana@cnfl.com" }
-        };
+        private static List<Cliente> _clientes = new List<Cliente>();
 
         public List<Cliente> ObtenerTodos()
         {
             return _clientes;
         }
 
+        public Cliente ObtenerPorId(int id)
+        {
+            return _clientes.FirstOrDefault(c => c.Id == id);
+        }
+
+        public Cliente ObtenerPorUsuarioId(int usuarioId)
+        {
+            return _clientes.FirstOrDefault(c => c.UsuarioId == usuarioId);
+        }
+
         public void Agregar(Cliente cliente)
         {
-            cliente.Id = _clientes.Max(c => c.Id) + 1;
+            cliente.Id = _clientes.Count > 0 ? _clientes.Max(c => c.Id) + 1 : 1;
             _clientes.Add(cliente);
+        }
+
+        public void Actualizar(Cliente cliente)
+        {
+            var index = _clientes.FindIndex(c => c.Id == cliente.Id);
+            if (index != -1)
+            {
+                _clientes[index] = cliente;
+            }
+        }
+
+        public void Eliminar(int id)
+        {
+            var cliente = _clientes.FirstOrDefault(c => c.Id == id);
+            if (cliente != null)
+            {
+                _clientes.Remove(cliente);
+            }
         }
     }
 }

@@ -12,12 +12,12 @@
 <input type="hidden" id="sessionRol" value="@(Session["Rol"] ?? "")" />
 
 <div class="login-wrap">
-    <!-- LOGO CORRECTO -->
+    <!-- LOGO CORRECTO CNFL -->
     <div class="brand-logo">
         <div style="display:flex; align-items:center; gap:6px;">
+            <!-- LOGO CNFL - SOLO EL RAYO CON PUNTA HACIA ABAJO -->
             <svg width="44" height="44" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="25" cy="25" r="22" stroke="#1E23E6" stroke-width="2.5" />
-                <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#1E23E6" />
+                <path d="M25 10L12 28H20L14 42L34 22H26L30 10Z" fill="#FF692D" />
             </svg>
             <span style="font-family:'Inter',sans-serif; font-weight:900; font-size:36px; color:#FF692D; letter-spacing:-2px; text-transform:lowercase;">cnfl</span>
         </div>
@@ -45,14 +45,14 @@
         @Html.AntiForgeryToken()
 
         <div class="field" id="usuarioGroup">
-            <label>USUARIO</label>
+            <label>USUARIO O CÉDULA</label>
             <div class="inp">
                 <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="5" width="18" height="14" rx="2" />
                     <circle cx="9" cy="12" r="2.5" />
                     <path d="M14 10h4M14 14h4" />
                 </svg>
-                <input type="text" name="UserName" id="UserName" placeholder="admin o cliente" value="cliente" />
+                <input type="text" name="UserName" id="UserName" placeholder="admin, cliente o cédula" value="cliente" />
                 <span class="validation-icon" id="usuarioIcon"></span>
             </div>
             <div class="field-error" id="usuarioError"></div>
@@ -88,9 +88,7 @@
         </a>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- FACE ID - SOLO EL ÍCONO -->
-    <!-- ========================================================== -->
+    <!-- FACE ID -->
     <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 6px;">
         <button class="face-id-btn" id="faceIdBtn" onclick="iniciarFaceId()" title="Iniciar sesión con Face ID">
             <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" width="34" height="34">

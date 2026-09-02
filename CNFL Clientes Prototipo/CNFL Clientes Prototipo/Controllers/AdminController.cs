@@ -4,19 +4,19 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Web.Mvc;
-using CNFL_Clientes_Prototipo.Services;
 using CNFL_Clientes_Prototipo.Models;
+using CNFL_Clientes_Prototipo.Data;
+using ClosedXML.Excel;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using ClosedXML.Excel;
 
 namespace CNFL_Clientes_Prototipo.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly AveriaService _service = new AveriaService();
+        private readonly CNFLDbContext _db = new CNFLDbContext();
 
-        // GET: Admin (Listado de averías para el operador)
+        // GET: Admin
         public ActionResult Index()
         {
             if (Session["Rol"] == null || Session["Rol"].ToString() != "Admin")
@@ -24,14 +24,118 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return RedirectToAction("Login", "Cuenta");
             }
 
-            var averias = _service.ListarAverias();
+            var averias = _db.Averias.OrderByDescending(a => a.FechaReporte).ToList();
 
             ViewBag.TotalAverias = averias.Count;
-            ViewBag.AveriasPendientes = averias.FindAll(a => a.Estado != "Resuelto").Count;
-            ViewBag.AveriasEnRevision = averias.FindAll(a => a.Estado == "En revisión").Count;
-            ViewBag.AveriasEnCamino = averias.FindAll(a => a.Estado == "En camino").Count;
+            ViewBag.AveriasPendientes = averias.Count(a => a.Estado != "Resuelto");
+            ViewBag.AveriasEnRevision = averias.Count(a => a.Estado == "En Proceso");
 
             return View(averias);
+        }
+
+        // GET: Admin/Dashboard
+        public ActionResult Dashboard()
+        {
+            if (Session["Rol"] == null || Session["Rol"].ToString() != "Admin")
+            {
+                return RedirectToAction("Login", "Cuenta");
+            }
+
+            var averias = _db.Averias.OrderByDescending(a => a.FechaReporte).ToList();
+
+            ViewBag.TotalAverias = averias.Count;
+            ViewBag.AveriasPendientes = averias.Count(a => a.Estado != "Resuelto");
+            ViewBag.AveriasEnRevision = averias.Count(a => a.Estado == "En Proceso");
+            ViewBag.AveriasResueltas = averias.Count(a => a.Estado == "Resuelto");
+
+            ViewBag.UltimasAverias = averias.Take(5).ToList();
+
+            return View(averias);
+        }
+
+        // GET: Admin/Clientes
+        public ActionResult Clientes()
+        {
+            if (Session["Rol"] == null || Session["Rol"].ToString() != "Admin")
+            {
+                return RedirectToAction("Login", "Cuenta");
+            }
+
+            var clientes = _db.Usuarios
+                .Where(u => u.RolId == 1)
+                .Select(u => new ClienteViewModel
+                {
+                    Id = u.Id,
+                    Nombre = u.Nombre,
+                    Apellidos = u.Apellidos,
+                    Cedula = u.Cedula,
+                    NISE = u.NISE,
+                    Telefono = u.Telefono,
+                    Correo = u.Correo
+                })
+                .ToList();
+
+            return View(clientes);
+        }
+
+        // GET: Admin/Reportes
+        public ActionResult Reportes()
+        {
+            if (Session["Rol"] == null || Session["Rol"].ToString() != "Admin")
+            {
+                return RedirectToAction("Login", "Cuenta");
+            }
+
+            var averias = _db.Averias.ToList();
+
+            int tasaResolucion = 0;
+            if (averias.Count > 0)
+            {
+                int resueltas = averias.Count(a => a.Estado == "Resuelto");
+                tasaResolucion = (int)((double)resueltas / averias.Count * 100);
+            }
+
+            var averiasPorMes = new List<AveriaPorMes>();
+            for (int i = 6; i >= 0; i--)
+            {
+                var fecha = DateTime.Now.AddMonths(-i);
+                var mes = fecha.ToString("MMM");
+                var cantidad = averias.Count(a => a.FechaReporte.Month == fecha.Month && a.FechaReporte.Year == fecha.Year);
+                averiasPorMes.Add(new AveriaPorMes { Mes = mes, Cantidad = cantidad });
+            }
+
+            var averiasRecientes = new List<AveriaConTiempo>();
+            foreach (var a in averias.OrderByDescending(a => a.FechaReporte).Take(10))
+            {
+                averiasRecientes.Add(new AveriaConTiempo
+                {
+                    Id = a.Id,
+                    UsuarioId = a.UsuarioId,
+                    NISEId = a.NISEId,
+                    TipoAveria = a.TipoAveria,
+                    Descripcion = a.Descripcion,
+                    Direccion = a.Direccion,
+                    Latitud = a.Latitud,
+                    Longitud = a.Longitud,
+                    Estado = a.Estado,
+                    FechaReporte = a.FechaReporte,
+                    TiempoTranscurrido = CalcularTiempoTranscurrido(a.FechaReporte)
+                });
+            }
+
+            var viewModel = new ReportesViewModel
+            {
+                TotalAverias = averias.Count,
+                TiempoPromedioResolucion = CalcularTiempoPromedio(averias),
+                TasaResolucion = tasaResolucion,
+                TrendAverias = 12,
+                TrendTiempo = -8,
+                TrendTasa = 5,
+                AveriasPorMes = averiasPorMes,
+                AveriasRecientes = averiasRecientes
+            };
+
+            return View(viewModel);
         }
 
         // POST: Admin/CambiarEstado
@@ -43,7 +147,14 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return Json(new { success = false, message = "No autorizado" });
             }
 
-            _service.CambiarEstado(id, estado);
+            var averia = _db.Averias.Find(id);
+            if (averia == null)
+            {
+                return Json(new { success = false, message = "Avería no encontrada" });
+            }
+
+            averia.Estado = estado;
+            _db.SaveChanges();
 
             if (Request.IsAjaxRequest())
             {
@@ -53,103 +164,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Admin/Clientes
-        public ActionResult Clientes()
-        {
-            if (Session["Rol"] == null || Session["Rol"].ToString() != "Admin")
-            {
-                return RedirectToAction("Login", "Cuenta");
-            }
-
-            var clientes = new List<Cliente>
-            {
-                new Cliente { Id = 1, Nombre = "Juan", Apellidos = "Pérez Rodríguez", Identificacion = "1-1234-5678", Cedula = "1-1234-5678", NISE = "123456789", Telefono = "8888-1234", Correo = "juan.perez@email.com" },
-                new Cliente { Id = 2, Nombre = "María", Apellidos = "Gómez Fernández", Identificacion = "1-8765-4321", Cedula = "1-8765-4321", NISE = "987654321", Telefono = "8888-5678", Correo = "maria.gomez@email.com" },
-                new Cliente { Id = 3, Nombre = "Carlos", Apellidos = "Rodríguez Mora", Identificacion = "1-5555-6666", Cedula = "1-5555-6666", NISE = "456789123", Telefono = "8888-9999", Correo = "carlos.rodriguez@email.com" }
-            };
-
-            return View(clientes);
-        }
-
-        // GET: Admin/Dashboard
-        public ActionResult Dashboard()
-        {
-            if (Session["Rol"] == null || Session["Rol"].ToString() != "Admin")
-            {
-                return RedirectToAction("Login", "Cuenta");
-            }
-
-            var averias = _service.ListarAverias();
-            ViewBag.TotalAverias = averias.Count;
-            ViewBag.AveriasPendientes = averias.FindAll(a => a.Estado != "Resuelto").Count;
-            ViewBag.AveriasEnRevision = averias.FindAll(a => a.Estado == "En revisión").Count;
-            ViewBag.AveriasEnCamino = averias.FindAll(a => a.Estado == "En camino").Count;
-            ViewBag.AveriasResueltas = averias.FindAll(a => a.Estado == "Resuelto").Count;
-
-            return View(averias);
-        }
-
-        // GET: Admin/Reportes
-        public ActionResult Reportes()
-        {
-            if (Session["Rol"] == null || Session["Rol"].ToString() != "Admin")
-            {
-                return RedirectToAction("Login", "Cuenta");
-            }
-
-            var averias = _service.ListarAverias();
-
-            int tasaResolucion = 0;
-            if (averias.Count > 0)
-            {
-                int resueltas = averias.FindAll(a => a.Estado == "Resuelto").Count;
-                tasaResolucion = (int)((double)resueltas / averias.Count * 100);
-            }
-
-            var averiasPorMes = new List<AveriaPorMes>();
-            var meses = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
-            var random = new Random();
-            int baseCount = Math.Max(1, averias.Count / 8);
-
-            foreach (var mes in meses)
-            {
-                averiasPorMes.Add(new AveriaPorMes
-                {
-                    Mes = mes,
-                    Cantidad = random.Next(baseCount, baseCount * 3)
-                });
-            }
-
-            var viewModel = new ReportesViewModel
-            {
-                TotalAverias = averias.Count,
-                TiempoPromedioResolucion = averias.Count > 0 ? CalcularTiempoPromedio(averias) : "0 hrs",
-                TasaResolucion = tasaResolucion,
-                TrendAverias = averias.Count > 0 ? 12 : 0,
-                TrendTiempo = averias.Count > 0 ? -8 : 0,
-                TrendTasa = averias.Count > 0 ? 5 : 0,
-                AveriasPorMes = averiasPorMes,
-                AveriasRecientes = averias.OrderByDescending(a => a.Fecha).Take(10).Select(a => new AveriaConTiempo
-                {
-                    Id = a.Id,
-                    Titulo = a.Titulo,
-                    Direccion = a.Direccion,
-                    Fecha = a.Fecha,
-                    Estado = a.Estado,
-                    Descripcion = a.Descripcion,
-                    FotoUrl = a.FotoUrl,
-                    TiempoTranscurrido = CalcularTiempoTranscurrido(a.Fecha)
-                }).ToList()
-            };
-
-            return View(viewModel);
-        }
-
         // POST: Admin/GenerarReporte
         [HttpPost]
         public JsonResult GenerarReporte(string periodo, string fechaInicio, string fechaFin)
         {
-            var averias = _service.ListarAverias();
+            var averias = _db.Averias.AsQueryable();
 
             DateTime fechaDesde = DateTime.Now;
             switch (periodo)
@@ -166,7 +185,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 fechaDesde = ini;
             }
 
-            var filtradas = averias.Where(a => a.Fecha >= fechaDesde).ToList();
+            var filtradas = averias.Where(a => a.FechaReporte >= fechaDesde).ToList();
 
             return Json(new
             {
@@ -179,11 +198,12 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ==========================================================
-        // ===== EXPORTACIÓN REAL A PDF (iTextSharp) =====
+        // EXPORTACIONES
         // ==========================================================
+
         public ActionResult ExportarPDF()
         {
-            var averias = _service.ListarAverias();
+            var averias = _db.Averias.OrderByDescending(a => a.FechaReporte).ToList();
 
             using (var ms = new MemoryStream())
             {
@@ -191,12 +211,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 var writer = PdfWriter.GetInstance(doc, ms);
                 doc.Open();
 
-                // Fuentes
                 var titleFont = FontFactory.GetFont("Arial", 18, Font.BOLD);
                 var headerFont = FontFactory.GetFont("Arial", 12, Font.BOLD);
                 var normalFont = FontFactory.GetFont("Arial", 10, Font.NORMAL);
 
-                // Título
                 var title = new Paragraph("Reporte de Averías - CNFL", titleFont);
                 title.Alignment = Element.ALIGN_CENTER;
                 doc.Add(title);
@@ -205,24 +223,21 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 doc.Add(new Paragraph($"Total de averías: {averias.Count}", normalFont));
                 doc.Add(new Paragraph(" ", normalFont));
 
-                // Tabla
                 var table = new PdfPTable(5);
                 table.WidthPercentage = 100;
 
-                // Encabezados
                 table.AddCell(new PdfPCell(new Phrase("ID", headerFont)) { BackgroundColor = BaseColor.LIGHT_GRAY });
-                table.AddCell(new PdfPCell(new Phrase("Título", headerFont)) { BackgroundColor = BaseColor.LIGHT_GRAY });
+                table.AddCell(new PdfPCell(new Phrase("Tipo", headerFont)) { BackgroundColor = BaseColor.LIGHT_GRAY });
                 table.AddCell(new PdfPCell(new Phrase("Ubicación", headerFont)) { BackgroundColor = BaseColor.LIGHT_GRAY });
                 table.AddCell(new PdfPCell(new Phrase("Fecha", headerFont)) { BackgroundColor = BaseColor.LIGHT_GRAY });
                 table.AddCell(new PdfPCell(new Phrase("Estado", headerFont)) { BackgroundColor = BaseColor.LIGHT_GRAY });
 
-                // Datos
                 foreach (var a in averias)
                 {
                     table.AddCell(new PdfPCell(new Phrase(a.Id.ToString(), normalFont)));
-                    table.AddCell(new PdfPCell(new Phrase(a.Titulo ?? "N/A", normalFont)));
+                    table.AddCell(new PdfPCell(new Phrase(a.TipoAveria ?? "N/A", normalFont)));
                     table.AddCell(new PdfPCell(new Phrase(a.Direccion ?? "N/A", normalFont)));
-                    table.AddCell(new PdfPCell(new Phrase(a.Fecha.ToString("dd/MM/yyyy HH:mm"), normalFont)));
+                    table.AddCell(new PdfPCell(new Phrase(a.FechaReporte.ToString("dd/MM/yyyy HH:mm"), normalFont)));
                     table.AddCell(new PdfPCell(new Phrase(a.Estado ?? "N/A", normalFont)));
                 }
 
@@ -233,12 +248,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
             }
         }
 
-        // ==========================================================
-        // ===== EXPORTACIÓN REAL A EXCEL (ClosedXML - GRATIS) =====
-        // ==========================================================
         public ActionResult ExportarExcel()
         {
-            var averias = _service.ListarAverias();
+            var averias = _db.Averias.OrderByDescending(a => a.FechaReporte).ToList();
 
             using (var ms = new MemoryStream())
             {
@@ -246,36 +258,31 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 {
                     var worksheet = workbook.Worksheets.Add("Averías");
 
-                    // Encabezados
                     worksheet.Cell(1, 1).Value = "ID";
-                    worksheet.Cell(1, 2).Value = "Título";
+                    worksheet.Cell(1, 2).Value = "Tipo";
                     worksheet.Cell(1, 3).Value = "Ubicación";
                     worksheet.Cell(1, 4).Value = "Fecha";
                     worksheet.Cell(1, 5).Value = "Estado";
                     worksheet.Cell(1, 6).Value = "Descripción";
 
-                    // Estilo de encabezados
                     var headerRange = worksheet.Range(1, 1, 1, 6);
                     headerRange.Style.Font.Bold = true;
                     headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
                     headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                    // Datos
                     int row = 2;
                     foreach (var a in averias)
                     {
                         worksheet.Cell(row, 1).Value = a.Id;
-                        worksheet.Cell(row, 2).Value = a.Titulo ?? "N/A";
+                        worksheet.Cell(row, 2).Value = a.TipoAveria ?? "N/A";
                         worksheet.Cell(row, 3).Value = a.Direccion ?? "N/A";
-                        worksheet.Cell(row, 4).Value = a.Fecha.ToString("dd/MM/yyyy HH:mm");
+                        worksheet.Cell(row, 4).Value = a.FechaReporte.ToString("dd/MM/yyyy HH:mm");
                         worksheet.Cell(row, 5).Value = a.Estado ?? "N/A";
                         worksheet.Cell(row, 6).Value = a.Descripcion ?? "N/A";
                         row++;
                     }
 
-                    // Autoajustar columnas
                     worksheet.Columns().AdjustToContents();
-
                     workbook.SaveAs(ms);
                 }
 
@@ -283,31 +290,27 @@ namespace CNFL_Clientes_Prototipo.Controllers
             }
         }
 
-        // ==========================================================
-        // ===== EXPORTACIÓN REAL A CSV =====
-        // ==========================================================
         public ActionResult ExportarCSV()
         {
-            var averias = _service.ListarAverias();
+            var averias = _db.Averias.OrderByDescending(a => a.FechaReporte).ToList();
             var sb = new StringBuilder();
 
-            // BOM para UTF-8 (compatible con Excel)
             sb.Append('\uFEFF');
+            sb.AppendLine("ID,Tipo,Ubicación,Fecha,Estado,Descripción");
 
-            // Encabezados
-            sb.AppendLine("ID,Título,Ubicación,Fecha,Estado,Descripción");
-
-            // Datos
             foreach (var a in averias)
             {
-                sb.AppendLine($"{a.Id},{EscapeCsv(a.Titulo)},{EscapeCsv(a.Direccion)},{a.Fecha:dd/MM/yyyy HH:mm},{EscapeCsv(a.Estado)},{EscapeCsv(a.Descripcion)}");
+                sb.AppendLine($"{a.Id},{EscapeCsv(a.TipoAveria)},{EscapeCsv(a.Direccion)},{a.FechaReporte:dd/MM/yyyy HH:mm},{EscapeCsv(a.Estado)},{EscapeCsv(a.Descripcion)}");
             }
 
             byte[] bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", $"Reporte_Averias_{DateTime.Now:yyyyMMdd_HHmmss}.csv");
         }
 
-        // ===== MÉTODO AUXILIAR PARA ESCAPAR CSV =====
+        // ==========================================================
+        // MÉTODOS AUXILIARES
+        // ==========================================================
+
         private string EscapeCsv(string value)
         {
             if (string.IsNullOrEmpty(value)) return "";
@@ -318,7 +321,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return value;
         }
 
-        // ===== MÉTODOS AUXILIARES =====
         private string CalcularTiempoTranscurrido(DateTime fecha)
         {
             var diff = DateTime.Now - fecha;
@@ -331,8 +333,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
         private string CalcularTiempoPromedio(List<Averia> averias)
         {
-            var resueltas = averias.FindAll(a => a.Estado == "Resuelto");
+            var resueltas = averias.Where(a => a.Estado == "Resuelto").ToList();
             if (resueltas.Count == 0) return "N/A";
+
             var random = new Random();
             int totalHoras = 0;
             foreach (var a in resueltas)
@@ -342,5 +345,26 @@ namespace CNFL_Clientes_Prototipo.Controllers
             int promedio = totalHoras / resueltas.Count;
             return $"{promedio} hrs";
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                _db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+
+    // ==========================================================
+    // MODELO DE VISTA (SOLO PARA CLIENTES)
+    // ==========================================================
+    public class ClienteViewModel
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Apellidos { get; set; }
+        public string Cedula { get; set; }
+        public string NISE { get; set; }
+        public string Telefono { get; set; }
+        public string Correo { get; set; }
     }
 }

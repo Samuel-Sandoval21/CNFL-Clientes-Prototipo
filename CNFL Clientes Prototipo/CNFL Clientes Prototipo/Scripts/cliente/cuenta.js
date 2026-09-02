@@ -24,77 +24,26 @@ function togglePasswordLogin() {
 // ===== TOGGLE PASSWORD POR ID - PARA REGISTRO =====
 // ==========================================================
 function togglePasswordById(inputId) {
-    // Buscar el input por ID
     var passwordInput = document.getElementById(inputId);
     if (!passwordInput) {
         console.warn('⚠️ No se encontró el input con ID:', inputId);
         return;
     }
 
-    // Toggle del tipo de input
     var isPassword = passwordInput.type === 'password';
     passwordInput.type = isPassword ? 'text' : 'password';
 
-    // Buscar el botón dentro del mismo contenedor y actualizar ícono
     var container = passwordInput.closest('.inp');
     if (container) {
         var button = container.querySelector('.toggle-password');
         if (button) {
-            // Cambiar el ícono del botón
-            var iconSvg = isPassword
+            button.innerHTML = isPassword
                 ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
                 : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-
-            button.innerHTML = iconSvg;
         }
     }
 
-    // Enfocar el input después del toggle
     passwordInput.focus();
-
-    console.log('🔍 Toggle en:', passwordInput.id, '→ tipo:', passwordInput.type);
-}
-
-// ==========================================================
-// ===== TOGGLE PASSWORD - REGISTRO Y RECUPERAR =====
-// ==========================================================
-function togglePasswordVisibility(event) {
-    // OBTENER EL BOTÓN CORRECTO usando event.currentTarget
-    var button = event.currentTarget;
-
-    if (!button) {
-        console.warn('⚠️ No se encontró el botón');
-        return;
-    }
-
-    // BUSCAR EL CONTENEDOR .inp MÁS CERCANO AL BOTÓN
-    var container = button.closest('.inp');
-    if (!container) {
-        console.warn('⚠️ No se encontró el contenedor .inp');
-        return;
-    }
-
-    // BUSCAR EL INPUT DENTRO DE ESTE CONTENEDOR ESPECÍFICO
-    var passwordInput = container.querySelector('input[type="password"], input[type="text"]');
-    if (!passwordInput) {
-        console.warn('⚠️ No se encontró el input de contraseña en este contenedor');
-        return;
-    }
-
-    // TOGGLE DEL TIPO DE INPUT
-    var isPassword = passwordInput.type === 'password';
-    passwordInput.type = isPassword ? 'text' : 'password';
-
-    // CAMBIAR EL ÍCONO DEL BOTÓN
-    var iconSvg = isPassword
-        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
-        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-
-    button.innerHTML = iconSvg;
-
-    // ENFOCAR EL INPUT DESPUÉS DEL TOGGLE
-    passwordInput.focus();
-
     console.log('🔍 Toggle en:', passwordInput.id, '→ tipo:', passwordInput.type);
 }
 
@@ -209,6 +158,8 @@ function validarCedula(cedula) {
     }
 
     var result = false;
+
+    // Verificar si la cédula existe en el TSE simulado
     $.ajax({
         url: '/Cuenta/ValidarCedula',
         type: 'POST',
@@ -216,12 +167,46 @@ function validarCedula(cedula) {
         async: false,
         success: function (response) {
             if (response.success) {
-                marcarValido(groupId);
-                if (hint) {
-                    hint.textContent = '✅ Cédula verificada en el TSE';
-                    hint.className = 'registro-hint success';
+                // Si existe en TSE, autocompletar datos
+                if (response.nombre && response.nombre !== '') {
+                    document.getElementById('nombre').value = response.nombre;
+                    document.getElementById('apellidos').value = response.apellidos;
+                    document.getElementById('fechaNacimiento').value = response.fechaNacimiento;
+
+                    // Cargar NISEs
+                    var niseSelect = document.getElementById('niseSelect');
+                    if (niseSelect && response.nises && response.nises.length > 0) {
+                        niseSelect.innerHTML = '';
+                        response.nises.forEach(function (nise) {
+                            var option = document.createElement('option');
+                            option.value = nise;
+                            option.textContent = nise;
+                            niseSelect.appendChild(option);
+                        });
+                        niseSelect.value = response.nises[0];
+                        niseSelect.disabled = false;
+                        document.getElementById('niseSelectContainer').style.display = 'block';
+                        mostrarNisesComoTags(response.nises, response.nises[0]);
+                    } else {
+                        document.getElementById('niseSelectContainer').style.display = 'none';
+                        document.getElementById('nisesTags').innerHTML = '';
+                    }
+
+                    marcarValido(groupId);
+                    if (hint) {
+                        hint.textContent = '✅ Cédula verificada, datos cargados automáticamente';
+                        hint.className = 'registro-hint success';
+                    }
+                    result = true;
+                } else {
+                    // Cédula válida pero no en TSE - permitir registro manual
+                    marcarValido(groupId);
+                    if (hint) {
+                        hint.textContent = '✅ Cédula válida. Complete los datos manualmente.';
+                        hint.className = 'registro-hint success';
+                    }
+                    result = true;
                 }
-                result = true;
             } else {
                 mostrarError(errorId, '❌ ' + response.message);
                 marcarInvalido(groupId);
@@ -317,6 +302,32 @@ function validarFechaNacimiento(fecha) {
     return true;
 }
 
+function validarSexo(sexo) {
+    var errorId = 'sexoError';
+    var groupId = 'sexoGroup';
+
+    limpiarError(errorId);
+    limpiarEstado(groupId);
+
+    if (!sexo) {
+        mostrarError(errorId, '⚠️ Seleccione su sexo');
+        marcarInvalido(groupId);
+        return false;
+    }
+
+    if (sexo === 'Personalizado') {
+        var personalizado = document.getElementById('sexoPersonalizado');
+        if (!personalizado || personalizado.value.trim() === '') {
+            mostrarError(errorId, '⚠️ Especifique su sexo');
+            marcarInvalido(groupId);
+            return false;
+        }
+    }
+
+    marcarValido(groupId);
+    return true;
+}
+
 function validarCorreo(correo) {
     var errorId = 'correoError';
     var groupId = 'correoGroup';
@@ -341,6 +352,28 @@ function validarCorreo(correo) {
     return true;
 }
 
+function validarCorreoSecundario(correo) {
+    var errorId = 'correo2Error';
+    var groupId = 'correo2Group';
+
+    limpiarError(errorId);
+    limpiarEstado(groupId);
+
+    if (!correo || correo.trim() === '') {
+        return true; // Opcional
+    }
+
+    var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(correo.trim())) {
+        mostrarError(errorId, '❌ Ingrese un correo secundario válido');
+        marcarInvalido(groupId);
+        return false;
+    }
+
+    marcarValido(groupId);
+    return true;
+}
+
 function validarTelefono(telefono) {
     var errorId = 'telefonoError';
     var groupId = 'telefonoGroup';
@@ -357,6 +390,51 @@ function validarTelefono(telefono) {
     var formatoValido = /^\d{4}-\d{4}$/.test(telefono.trim()) || /^\d{8}$/.test(telefono.trim());
     if (!formatoValido) {
         mostrarError(errorId, '❌ Formato inválido. Use 8888-8888');
+        marcarInvalido(groupId);
+        return false;
+    }
+
+    marcarValido(groupId);
+    return true;
+}
+
+function validarTelefonoSecundario(telefono) {
+    var errorId = 'telefono2Error';
+    var groupId = 'telefono2Group';
+
+    limpiarError(errorId);
+    limpiarEstado(groupId);
+
+    if (!telefono || telefono.trim() === '') {
+        return true; // Opcional
+    }
+
+    var formatoValido = /^\d{4}-\d{4}$/.test(telefono.trim()) || /^\d{8}$/.test(telefono.trim());
+    if (!formatoValido) {
+        mostrarError(errorId, '❌ Formato inválido. Use 8888-8888');
+        marcarInvalido(groupId);
+        return false;
+    }
+
+    marcarValido(groupId);
+    return true;
+}
+
+function validarDireccion(direccion) {
+    var errorId = 'direccionError';
+    var groupId = 'direccionGroup';
+
+    limpiarError(errorId);
+    limpiarEstado(groupId);
+
+    if (!direccion || direccion.trim() === '') {
+        mostrarError(errorId, '⚠️ La dirección es obligatoria');
+        marcarInvalido(groupId);
+        return false;
+    }
+
+    if (direccion.trim().length < 5) {
+        mostrarError(errorId, '⚠️ Ingrese una dirección más detallada');
         marcarInvalido(groupId);
         return false;
     }
@@ -457,6 +535,26 @@ function validarConfirmacion(confirm) {
     return true;
 }
 
+function validarAceptacion() {
+    var errorId = 'aceptacionError';
+    var politica = document.getElementById('aceptaPolitica');
+    var consentimiento = document.getElementById('aceptaConsentimiento');
+
+    limpiarError(errorId);
+
+    if (!politica || !politica.checked) {
+        mostrarError(errorId, '⚠️ Debe aceptar la Política de Privacidad');
+        return false;
+    }
+
+    if (!consentimiento || !consentimiento.checked) {
+        mostrarError(errorId, '⚠️ Debe aceptar el Consentimiento Informado');
+        return false;
+    }
+
+    return true;
+}
+
 function validarNISE(nise) {
     var errorId = 'nisesError';
     var groupId = 'nisesGroup';
@@ -476,30 +574,8 @@ function validarNISE(nise) {
         return false;
     }
 
-    var valido = false;
-    $.ajax({
-        url: '/Cuenta/ValidarFormatoNISE',
-        type: 'POST',
-        data: { nise: nise.trim() },
-        async: false,
-        success: function (response) {
-            if (response.success) {
-                marcarValido(groupId);
-                valido = true;
-            } else {
-                mostrarError(errorId, '❌ ' + response.message);
-                marcarInvalido(groupId);
-                valido = false;
-            }
-        },
-        error: function () {
-            mostrarError(errorId, '❌ Error al validar el NISE');
-            marcarInvalido(groupId);
-            valido = false;
-        }
-    });
-
-    return valido;
+    marcarValido(groupId);
+    return true;
 }
 
 function mostrarNisesComoTags(nises, niseSeleccionado) {
@@ -554,7 +630,7 @@ function autocompletarPorCedula() {
     }
 
     if (hint) {
-        hint.textContent = '⏳ Validando cédula con el TSE...';
+        hint.textContent = '⏳ Validando cédula...';
         hint.className = 'registro-hint';
         hint.style.color = '#1E23E6';
     }
@@ -571,50 +647,60 @@ function autocompletarPorCedula() {
             var container = document.getElementById('niseSelectContainer');
 
             if (response.success) {
-                if (nombre) nombre.value = response.nombre;
-                if (apellidos) apellidos.value = response.apellidos;
+                // Si la cédula existe en TSE, autocompletar
+                if (response.nombre && response.nombre !== '') {
+                    if (nombre) nombre.value = response.nombre;
+                    if (apellidos) apellidos.value = response.apellidos;
 
-                if (fechaInput && response.fechaNacimiento) {
-                    fechaInput.value = response.fechaNacimiento;
-                    validarFechaNacimiento(response.fechaNacimiento);
-                }
-
-                if (niseSelect && response.nises && response.nises.length > 0) {
-                    if (container) container.style.display = 'block';
-
-                    niseSelect.innerHTML = '';
-                    response.nises.forEach(function (nise) {
-                        var option = document.createElement('option');
-                        option.value = nise;
-                        option.textContent = nise;
-                        niseSelect.appendChild(option);
-                    });
-
-                    var primerNise = response.nises[0];
-                    niseSelect.value = primerNise;
-                    niseSelect.disabled = false;
-
-                    validarNISE(primerNise);
-                    mostrarNisesComoTags(response.nises, primerNise);
-
-                } else {
-                    if (container) container.style.display = 'none';
-                    if (niseSelect) {
-                        niseSelect.innerHTML = '<option value="">-- No hay NISEs asociados --</option>';
-                        niseSelect.disabled = true;
+                    if (fechaInput && response.fechaNacimiento) {
+                        fechaInput.value = response.fechaNacimiento;
+                        validarFechaNacimiento(response.fechaNacimiento);
                     }
-                    document.getElementById('nisesTags').innerHTML = '';
+
+                    if (niseSelect && response.nises && response.nises.length > 0) {
+                        if (container) container.style.display = 'block';
+
+                        niseSelect.innerHTML = '';
+                        response.nises.forEach(function (nise) {
+                            var option = document.createElement('option');
+                            option.value = nise;
+                            option.textContent = nise;
+                            niseSelect.appendChild(option);
+                        });
+
+                        var primerNise = response.nises[0];
+                        niseSelect.value = primerNise;
+                        niseSelect.disabled = false;
+
+                        validarNISE(primerNise);
+                        mostrarNisesComoTags(response.nises, primerNise);
+
+                    } else {
+                        if (container) container.style.display = 'none';
+                        if (niseSelect) {
+                            niseSelect.innerHTML = '<option value="">-- No hay NISEs asociados --</option>';
+                            niseSelect.disabled = true;
+                        }
+                        document.getElementById('nisesTags').innerHTML = '';
+                    }
+
+                    if (hint) {
+                        hint.textContent = '✅ Datos cargados automáticamente desde el TSE';
+                        hint.className = 'registro-hint success';
+                    }
+
+                    validarNombre(response.nombre);
+                    validarApellidos(response.apellidos);
+                    marcarValido('cedulaGroup');
+                } else {
+                    // Cédula válida pero no en TSE - permitir registro manual
+                    if (hint) {
+                        hint.textContent = '✅ Cédula válida. Complete los datos manualmente.';
+                        hint.className = 'registro-hint success';
+                    }
+                    marcarValido('cedulaGroup');
+                    limpiarError('cedulaError');
                 }
-
-                if (hint) {
-                    hint.textContent = '✅ Datos cargados automáticamente desde el TSE';
-                    hint.className = 'registro-hint success';
-                }
-
-                validarNombre(response.nombre);
-                validarApellidos(response.apellidos);
-                marcarValido('cedulaGroup');
-
             } else {
                 if (nombre) nombre.value = '';
                 if (apellidos) apellidos.value = '';
@@ -649,22 +735,41 @@ function validarFormularioRegistro() {
     var nombre = document.getElementById('nombre');
     var apellidos = document.getElementById('apellidos');
     var correo = document.getElementById('correo');
+    var correoSecundario = document.getElementById('correoSecundario');
     var telefono = document.getElementById('telefono');
+    var telefonoSecundario = document.getElementById('telefonoSecundario');
+    var direccion = document.getElementById('direccion');
     var usuario = document.getElementById('userName');
     var contrasena = document.getElementById('contrasena');
     var confirm = document.getElementById('confirm');
     var niseSelect = document.getElementById('niseSelect');
     var fecha = document.getElementById('fechaNacimiento');
+    var sexo = document.querySelector('input[name="Sexo"]:checked');
 
-    if (!validarCedula(cedula ? cedula.value : '')) errores.push('Cédula inválida');
+    // Solo validar cédula si tiene valor
+    if (cedula && cedula.value) {
+        var cedulaValue = cedula.value.trim();
+        if (cedulaValue.length > 0) {
+            var formatoValido = /^\d{1}-\d{4}-\d{4}$/.test(cedulaValue) || /^\d{9,10}$/.test(cedulaValue);
+            if (!formatoValido) {
+                errores.push('Formato de cédula inválido. Use 1-2345-6789');
+            }
+            // Si el formato es válido pero no está en TSE, igual permite continuar
+        }
+    }
+
     if (!validarNombre(nombre ? nombre.value : '')) errores.push('Nombre obligatorio');
     if (!validarApellidos(apellidos ? apellidos.value : '')) errores.push('Apellidos obligatorios');
-    if (!validarCorreo(correo ? correo.value : '')) errores.push('Correo inválido');
-    if (!validarTelefono(telefono ? telefono.value : '')) errores.push('Teléfono inválido');
+    if (!validarCorreo(correo ? correo.value : '')) errores.push('Correo principal inválido');
+    if (!validarCorreoSecundario(correoSecundario ? correoSecundario.value : '')) errores.push('Correo secundario inválido');
+    if (!validarTelefono(telefono ? telefono.value : '')) errores.push('Teléfono principal inválido');
+    if (!validarTelefonoSecundario(telefonoSecundario ? telefonoSecundario.value : '')) errores.push('Teléfono secundario inválido');
+    if (!validarDireccion(direccion ? direccion.value : '')) errores.push('Dirección obligatoria');
     if (!validarUsuario(usuario ? usuario.value : '')) errores.push('Usuario inválido');
     if (!validarContrasena(contrasena ? contrasena.value : '')) errores.push('Contraseña inválida');
     if (!validarConfirmacion(confirm ? confirm.value : '')) errores.push('Las contraseñas no coinciden');
     if (!validarFechaNacimiento(fecha ? fecha.value : '')) errores.push('Fecha de nacimiento inválida');
+    if (!validarSexo(sexo ? sexo.value : '')) errores.push('Sexo no seleccionado');
 
     var niseValue = niseSelect ? niseSelect.value : '';
     if (niseValue && niseValue !== '' && niseValue !== '-- Selecciona un NISE --' && niseValue !== '-- No hay NISEs asociados --') {
@@ -672,6 +777,8 @@ function validarFormularioRegistro() {
     } else {
         errores.push('Selecciona un NISE');
     }
+
+    if (!validarAceptacion()) errores.push('Aceptación requerida');
 
     if (errores.length > 0) {
         alert('❌ Por favor, corrige los siguientes errores:\n\n- ' + errores.join('\n- '));
@@ -682,103 +789,31 @@ function validarFormularioRegistro() {
 }
 
 // ==========================================================
-// ===== INICIALIZAR EVENTOS =====
+// ===== EVENTOS PARA SEXO PERSONALIZADO =====
 // ==========================================================
 document.addEventListener('DOMContentLoaded', function () {
+    var radios = document.querySelectorAll('input[name="Sexo"]');
+    var personalizadoInput = document.getElementById('sexoPersonalizado');
 
-    // ==========================================================
-    // EVENTOS DE LOGIN
-    // ==========================================================
-
-    var userName = document.getElementById('UserName');
-    if (userName) {
-        userName.addEventListener('blur', function () {
-            if (this.value.trim() === '') {
-                document.getElementById('usuarioError').textContent = '⚠️ Ingrese su usuario';
-                document.getElementById('usuarioError').classList.add('show');
-                document.getElementById('usuarioGroup').classList.add('invalid');
+    radios.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            if (this.value === 'Personalizado') {
+                personalizadoInput.style.display = 'inline-block';
+                personalizadoInput.focus();
             } else {
-                document.getElementById('usuarioError').classList.remove('show');
-                document.getElementById('usuarioGroup').classList.remove('invalid');
-                document.getElementById('usuarioGroup').classList.add('valid');
+                personalizadoInput.style.display = 'none';
+                personalizadoInput.value = '';
             }
         });
-        userName.addEventListener('input', function () {
-            document.getElementById('usuarioError').classList.remove('show');
-            document.getElementById('usuarioGroup').classList.remove('invalid');
-            if (this.value.trim() !== '') {
-                document.getElementById('usuarioGroup').classList.add('valid');
-            } else {
-                document.getElementById('usuarioGroup').classList.remove('valid');
-            }
-        });
-    }
-
-    var contrasena = document.getElementById('Contraseña');
-    if (contrasena) {
-        contrasena.addEventListener('blur', function () {
-            if (this.value.trim() === '') {
-                document.getElementById('contrasenaError').textContent = '⚠️ Ingrese su contraseña';
-                document.getElementById('contrasenaError').classList.add('show');
-                document.getElementById('contrasenaGroup').classList.add('invalid');
-            } else {
-                document.getElementById('contrasenaError').classList.remove('show');
-                document.getElementById('contrasenaGroup').classList.remove('invalid');
-                document.getElementById('contrasenaGroup').classList.add('valid');
-            }
-        });
-        contrasena.addEventListener('input', function () {
-            document.getElementById('contrasenaError').classList.remove('show');
-            document.getElementById('contrasenaGroup').classList.remove('invalid');
-            if (this.value.trim() !== '') {
-                document.getElementById('contrasenaGroup').classList.add('valid');
-            } else {
-                document.getElementById('contrasenaGroup').classList.remove('valid');
-            }
-        });
-    }
-
-    var loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function (e) {
-            var userName = document.getElementById('UserName');
-            var contrasena = document.getElementById('Contraseña');
-            var errores = [];
-
-            if (!userName || userName.value.trim() === '') {
-                errores.push('Usuario obligatorio');
-                if (document.getElementById('usuarioError')) {
-                    document.getElementById('usuarioError').textContent = '⚠️ Ingrese su usuario';
-                    document.getElementById('usuarioError').classList.add('show');
-                }
-                document.getElementById('usuarioGroup').classList.add('invalid');
-            }
-
-            if (!contrasena || contrasena.value.trim() === '') {
-                errores.push('Contraseña obligatoria');
-                if (document.getElementById('contrasenaError')) {
-                    document.getElementById('contrasenaError').textContent = '⚠️ Ingrese su contraseña';
-                    document.getElementById('contrasenaError').classList.add('show');
-                }
-                document.getElementById('contrasenaGroup').classList.add('invalid');
-            }
-
-            if (errores.length > 0) {
-                e.preventDefault();
-                alert('❌ Por favor, complete todos los campos.');
-            }
-        });
-    }
+    });
 
     // ==========================================================
     // EVENTOS DE REGISTRO
     // ==========================================================
-
     var cedula = document.getElementById('cedula');
     if (cedula) {
         cedula.addEventListener('blur', function () {
             if (this.value.length >= 9) {
-                validarCedula(this.value);
                 autocompletarPorCedula();
             }
         });
@@ -850,6 +885,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    var correoSecundario = document.getElementById('correoSecundario');
+    if (correoSecundario) {
+        correoSecundario.addEventListener('blur', function () {
+            validarCorreoSecundario(this.value);
+        });
+        correoSecundario.addEventListener('input', function () {
+            limpiarError('correo2Error');
+            limpiarEstado('correo2Group');
+        });
+    }
+
     var telefono = document.getElementById('telefono');
     if (telefono) {
         telefono.addEventListener('blur', function () {
@@ -858,6 +904,28 @@ document.addEventListener('DOMContentLoaded', function () {
         telefono.addEventListener('input', function () {
             limpiarError('telefonoError');
             limpiarEstado('telefonoGroup');
+        });
+    }
+
+    var telefonoSecundario = document.getElementById('telefonoSecundario');
+    if (telefonoSecundario) {
+        telefonoSecundario.addEventListener('blur', function () {
+            validarTelefonoSecundario(this.value);
+        });
+        telefonoSecundario.addEventListener('input', function () {
+            limpiarError('telefono2Error');
+            limpiarEstado('telefono2Group');
+        });
+    }
+
+    var direccion = document.getElementById('direccion');
+    if (direccion) {
+        direccion.addEventListener('blur', function () {
+            validarDireccion(this.value);
+        });
+        direccion.addEventListener('input', function () {
+            limpiarError('direccionError');
+            limpiarEstado('direccionGroup');
         });
     }
 
@@ -922,5 +990,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
 });
+
+// Exponer funciones globalmente
+window.togglePasswordLogin = togglePasswordLogin;
+window.togglePasswordById = togglePasswordById;
+window.iniciarFaceId = iniciarFaceId;
+window.recuperarContraseña = recuperarContraseña;
+window.validarCedula = validarCedula;
+window.validarUsuario = validarUsuario;
+window.validarFormularioRegistro = validarFormularioRegistro;

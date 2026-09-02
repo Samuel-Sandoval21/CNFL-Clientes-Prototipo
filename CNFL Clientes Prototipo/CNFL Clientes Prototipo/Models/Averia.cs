@@ -9,15 +9,17 @@ namespace CNFL_Clientes_Prototipo.Models
     public class Averia
     {
         public int Id { get; set; }
-        public string Titulo { get; set; }
+        public int UsuarioId { get; set; }
+        public int NISEId { get; set; }
+        public string TipoAveria { get; set; }
         public string Descripcion { get; set; }
         public string Direccion { get; set; }
-        public string Estado { get; set; } // "Reportado", "En revisión", "En camino", "Resuelto"
-        public DateTime Fecha { get; set; }
-        public string Tipo { get; set; } // "Eléctrica", "Alumbrado" o "Ajena"
-        public string FotoUrl { get; set; } // Ruta de la imagen
-        public string Latitud { get; set; }
-        public string Longitud { get; set; }
-        public string NISE { get; set; } // <-- NUEVO: Agregar esta propiedad
+        public decimal? Latitud { get; set; }
+        public decimal? Longitud { get; set; }
+        public string Estado { get; set; }
+        public DateTime FechaReporte { get; set; }
+
+        public virtual Usuario Usuario { get; set; }
+        public virtual NISE NISE { get; set; }
     }
 }

@@ -1,50 +1,61 @@
 ﻿// ==========================================
-// ADMIN REPORTES - JAVASCRIPT
+// ADMIN - REPORTES Y ESTADÍSTICAS
 // ==========================================
 
-// ===== GENERAR REPORTE =====
 function generarReporte() {
-    var periodo = document.getElementById('periodoFilter').value;
-    var fechaInicio = document.getElementById('fechaInicio').value;
-    var fechaFin = document.getElementById('fechaFin').value;
+    var periodo = document.getElementById('periodoFilter');
+    var fechaInicio = document.getElementById('fechaInicio');
+    var fechaFin = document.getElementById('fechaFin');
 
+    var data = {
+        periodo: periodo ? periodo.value : '30d',
+        fechaInicio: fechaInicio ? fechaInicio.value : '',
+        fechaFin: fechaFin ? fechaFin.value : ''
+    };
+
+    // Mostrar loading en el botón
     var btn = document.querySelector('.btn-generar');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
-    btn.disabled = true;
+    if (btn) {
+        var originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+        btn.disabled = true;
 
-    $.ajax({
-        url: '/Admin/GenerarReporte',
-        type: 'POST',
-        data: {
-            periodo: periodo,
-            fechaInicio: fechaInicio,
-            fechaFin: fechaFin
-        },
-        success: function (response) {
-            mostrarToast(response.message || '✅ Reporte generado correctamente');
-            setTimeout(function () {
-                location.reload();
-            }, 1000);
-        },
-        error: function () {
-            mostrarToast('❌ Error al generar el reporte', 'error');
-        },
-        complete: function () {
-            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Generar Reporte';
-            btn.disabled = false;
-        }
-    });
+        $.ajax({
+            url: '/Admin/GenerarReporte',
+            type: 'POST',
+            data: data,
+            success: function (response) {
+                if (response.success) {
+                    mostrarToast(response.message);
+                    // Actualizar datos si es necesario
+                    actualizarEstadisticas(response);
+                } else {
+                    mostrarToast(response.message || '❌ Error al generar reporte', 'error');
+                }
+            },
+            error: function () {
+                mostrarToast('❌ Error de conexión', 'error');
+            },
+            complete: function () {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
 }
 
-// ===== EXPORTAR REPORTE (PDF, EXCEL, CSV) =====
-function exportarReporte(formato) {
-    var btn = event.target.closest('button');
-    var originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportando...';
-    btn.disabled = true;
+function actualizarEstadisticas(data) {
+    // Actualizar tarjetas de resumen
+    var totalCard = document.querySelector('.report-card .number');
+    if (totalCard) {
+        // Solo actualizar si hay datos
+    }
+}
 
+function exportarReporte(tipo) {
     var url = '';
-    switch (formato) {
+
+    switch (tipo) {
         case 'pdf':
             url = '/Admin/ExportarPDF';
             break;
@@ -55,34 +66,50 @@ function exportarReporte(formato) {
             url = '/Admin/ExportarCSV';
             break;
         default:
-            url = '/Admin/ExportarCSV';
+            return;
     }
 
-    // Abrir en nueva ventana/pestaña para descarga
+    // Abrir en nueva ventana para descarga
     window.open(url, '_blank');
-
-    var mensaje = '';
-    switch (formato) {
-        case 'pdf': mensaje = '📄 Exportando archivo PDF'; break;
-        case 'excel': mensaje = '📊 Exportando archivo Excel'; break;
-        case 'csv': mensaje = '📋 Exportando archivo CSV'; break;
-        default: mensaje = '📥 Exportando archivo';
-    }
-    mostrarToast(mensaje);
-
-    setTimeout(function () {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }, 2000);
 }
 
-// ===== MOSTRAR TOAST =====
 function mostrarToast(mensaje, tipo) {
     var toast = document.getElementById('toastNotif');
+    if (!toast) return;
+
     toast.textContent = mensaje;
     toast.className = 'toast-notification' + (tipo === 'error' ? ' error' : '');
-    toast.classList.add('show');
-    setTimeout(function () {
-        toast.classList.remove('show');
+    toast.style.display = 'block';
+
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function () {
+        toast.style.display = 'none';
     }, 3000);
 }
+
+// Evento para mostrar/ocultar fechas personalizadas
+document.addEventListener('DOMContentLoaded', function () {
+    var periodoSelect = document.getElementById('periodoFilter');
+    var fechaInicio = document.getElementById('fechaInicio');
+    var fechaFin = document.getElementById('fechaFin');
+
+    if (periodoSelect) {
+        periodoSelect.addEventListener('change', function () {
+            if (this.value === 'personalizado') {
+                if (fechaInicio) fechaInicio.style.display = 'inline-block';
+                if (fechaFin) fechaFin.style.display = 'inline-block';
+            } else {
+                if (fechaInicio) fechaInicio.style.display = 'none';
+                if (fechaFin) fechaFin.style.display = 'none';
+            }
+        });
+    }
+
+    if (fechaInicio) fechaInicio.style.display = 'none';
+    if (fechaFin) fechaFin.style.display = 'none';
+});
+
+// Exponer funciones globalmente
+window.generarReporte = generarReporte;
+window.exportarReporte = exportarReporte;
+window.mostrarToast = mostrarToast;

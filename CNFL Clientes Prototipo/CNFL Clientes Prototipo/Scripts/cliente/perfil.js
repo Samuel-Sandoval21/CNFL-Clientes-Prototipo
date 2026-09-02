@@ -133,3 +133,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+// Exponer funciones globalmente
+window.irAHistorial = irAHistorial;
+window.irASuscripciones = irASuscripciones;
+window.irAServiciosContratados = irAServiciosContratados;
+window.irAEditarDatos = irAEditarDatos;
+window.irACalculadora = irACalculadora;
+window.irAChat = irAChat;
+window.irANotificaciones = irANotificaciones;
+window.cerrarSesion = cerrarSesion;
+window.mostrarToast = mostrarToast;

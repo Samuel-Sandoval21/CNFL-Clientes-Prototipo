@@ -23,24 +23,17 @@ setInterval(updateTime, 30000);
 function marcarTabActivoLogin() {
     var currentPath = window.location.pathname.toLowerCase();
 
-    console.log('=== MARCAR TAB ACTIVO LOGIN ===');
-    console.log('Path:', currentPath);
-
-    // Quitar active de TODOS los tabs
     document.querySelectorAll('.tab').forEach(function (tab) {
         tab.classList.remove('active');
     });
 
     var tabActivo = '';
 
-    // 1. INICIO - SOLO en Home
     if (currentPath === '/' ||
         currentPath === '/home' ||
         currentPath === '/home/index') {
         tabActivo = 'inicio';
-    }
-    // 2. CUENTA - en Login, Registro, RecuperarClave y TODAS las rutas de Cuenta
-    else if (currentPath.indexOf('/cuenta/login') === 0 ||
+    } else if (currentPath.indexOf('/cuenta/login') === 0 ||
         currentPath.indexOf('/cuenta/registro') === 0 ||
         currentPath.indexOf('/cuenta/recuperarclave') === 0 ||
         currentPath === '/cuenta' ||
@@ -49,21 +42,14 @@ function marcarTabActivoLogin() {
         tabActivo = 'perfil';
     }
 
-    console.log('Tab activo detectado:', tabActivo);
-
-    // Activar el tab correspondiente (SOLO si se detectó algo)
     if (tabActivo) {
         document.querySelectorAll('.tab').forEach(function (tab) {
             var seccion = tab.getAttribute('data-seccion');
             if (seccion === tabActivo) {
                 tab.classList.add('active');
-                console.log('✅ Activado:', seccion);
             }
         });
-    } else {
-        console.log('❌ No se detectó ningún tab activo en Login');
     }
-    // IMPORTANTE: NO HAY FALLBACK - si no se detecta nada, ningún tab se marca
 }
 
 // ==========================================================
@@ -108,7 +94,6 @@ function cambiarIdiomaLogin(lang) {
     localStorage.setItem('idioma', lang);
 }
 
-// ===== CARGAR IDIOMA GUARDADO =====
 function cargarIdiomaGuardado() {
     var lang = localStorage.getItem('idioma') || 'es';
     cambiarIdiomaLogin(lang);
@@ -119,7 +104,6 @@ function cargarIdiomaGuardado() {
 // ==========================================================
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('🔵 Login Layout inicializado');
     cargarIdiomaGuardado();
 
     setTimeout(function () {

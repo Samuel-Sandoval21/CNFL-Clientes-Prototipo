@@ -1,44 +1,49 @@
-﻿@model dynamic
+﻿@model List<CNFL_Clientes_Prototipo.Models.Notificacion>
 
 @{
     ViewBag.Title = "Notificaciones - CNFL";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
-<!-- CSS externo para Notificaciones -->
 <link rel="stylesheet" href="@Url.Content("~/Content/cliente/notificaciones.css")" />
 
-<!-- ===== BOTÓN VOLVER ===== -->
 <button class="btn-volver" onclick="history.back();">
     <i class="fas fa-arrow-left"></i> Volver
 </button>
 
 <div class="section-pad">
-    <div class="h-name-2" style="display:flex; align-items:center; gap:10px;">
+    <div class="h-name-2" style="display:flex;align-items:center;gap:10px;">
         <i class="fas fa-bell" style="color:var(--blue);"></i> Notificaciones
-        <span class="notificacion-badge" id="notificacionBadge">3</span>
+        <span class="notificacion-badge" id="notificacionBadge">@Model.Count(n => !n.Leida)</span>
     </div>
-    <div style="font-size:13px; color:var(--muted); margin-top:2px;">
-        Tus alertas y notificaciones del sistema
-    </div>
+    <div style="font-size:13px;color:var(--muted);margin-top:2px;">Tus alertas y notificaciones del sistema</div>
 </div>
 
 <div class="section-pad">
-    @if (Session["NotificacionesLeidas"] != null)
+    @if (Model.Any())
     {
-        var leidas = Session["NotificacionesLeidas"] as List<int> ?? new List<int>();
-        var notificaciones = new List<dynamic>
-{
-            new { Id = 1, Icono = "fa-exclamation-triangle", Color = "#fdeaea", IconColor = "var(--red)", Titulo = "Avería · NISE 9950", Descripcion = "En atención · estimado 4:30pm", Fecha = "Hoy, 2:30 PM" },
-            new { Id = 2, Icono = "fa-clock", Color = "#fef3e0", IconColor = "var(--amber)", Titulo = "Suspensión programada", Descripcion = "NISE 7788 · mañana 8:00–10:00am", Fecha = "Hoy, 10:15 AM" },
-            new { Id = 3, Icono = "fa-file-invoice", Color = "#fff3ec", IconColor = "var(--orange)", Titulo = "Factura por vencer", Descripcion = "₡18.450 · vence en 5 días", Fecha = "Ayer, 8:00 AM" },
-            new { Id = 4, Icono = "fa-check-circle", Color = "#e8f0fe", IconColor = "var(--blue)", Titulo = "Reporte de avería recibido", Descripcion = "Tu reporte #REP-1234 ha sido recibido", Fecha = "Hace 2 días" }
-        };
+        var noLeidas = Model.Where(n => !n.Leida).ToList();
 
-        // Filtrar notificaciones no leídas
-        var notificacionesNoLeidas = notificaciones.Where(n => !leidas.Contains(n.Id)).ToList();
+        @if (noLeidas.Any())
+        {
+            <button class="btn-marcar-todas" onclick="marcarTodasLeidas()"><i class="fas fa-check-double"></i> Marcar todas como leídas</button>
 
-        if (!notificacionesNoLeidas.Any())
+            foreach (var notificacion in noLeidas)
+            {
+                <div class="notificacion-item" data-id="@notificacion.Id" onclick="marcarLeida(this, @notificacion.Id)">
+                    <div class="icono" style="background:@(notificacion.Tipo == "Bienvenida" ? "#e8f0fe" : "#fdeaea");">
+                        <i class="fas @(notificacion.Tipo == "Bienvenida" ? "fa-hand-peace" : "fa-bell")" style="color:@(notificacion.Tipo == "Bienvenida" ? "var(--blue)" : "var(--red)");"></i>
+                    </div>
+                    <div class="info">
+                        <div class="titulo">@notificacion.Titulo</div>
+                        <div class="descripcion">@notificacion.Mensaje</div>
+                        <div class="fecha">@notificacion.FechaEnvio.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                    <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, @notificacion.Id)"><i class="fas fa-check"></i> Marcar leída</button>
+                </div>
+            }
+        }
+        else
         {
             <div class="empty-notificaciones">
                 <div class="empty-icon">🎉</div>
@@ -46,96 +51,39 @@
                 <p>Todas tus notificaciones han sido leídas.</p>
             </div>
         }
-        else
-        {
-            <button class="btn-marcar-todas" onclick="marcarTodasLeidas()">
-                <i class="fas fa-check-double"></i> Marcar todas como leídas
-            </button>
 
-            foreach (var notificacion in notificacionesNoLeidas)
-            {
-                <div class="notificacion-item" data-id="@notificacion.Id" onclick="marcarLeida(this, @notificacion.Id)">
-                    <div class="icono" style="background:@notificacion.Color;">
-                        <i class="fas @notificacion.Icono" style="color:@notificacion.IconColor;"></i>
+        var leidas = Model.Where(n => n.Leida).ToList();
+        if (leidas.Any())
+        {
+            <div style="margin-top:20px;">
+                <div class="eyebrow">Notificaciones leídas</div>
+                @foreach (var notificacion in leidas)
+                {
+                    <div class="notificacion-item leida" data-id="@notificacion.Id">
+                        <div class="icono" style="background:#f0f0f0;">
+                            <i class="fas fa-check-circle" style="color:#999;"></i>
+                        </div>
+                        <div class="info">
+                            <div class="titulo" style="color:#999;">@notificacion.Titulo</div>
+                            <div class="descripcion" style="color:#999;">@notificacion.Mensaje</div>
+                            <div class="fecha" style="color:#ccc;">@notificacion.FechaEnvio.ToString("dd/MM/yyyy HH:mm")</div>
+                        </div>
+                        <span style="color:#999;font-size:12px;">✓ Leída</span>
                     </div>
-                    <div class="info">
-                        <div class="titulo">@notificacion.Titulo</div>
-                        <div class="descripcion">@notificacion.Descripcion</div>
-                        <div class="fecha">@notificacion.Fecha</div>
-                    </div>
-                    <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, @notificacion.Id)">
-                        <i class="fas fa-check"></i> Marcar leída
-                    </button>
-                </div>
-            }
+                }
+            </div>
         }
     }
     else
     {
-        // Estado inicial - mostrar todas las notificaciones
-        <button class="btn-marcar-todas" onclick="marcarTodasLeidas()">
-            <i class="fas fa-check-double"></i> Marcar todas como leídas
-        </button>
-
-        <div class="notificacion-item" data-id="1" onclick="marcarLeida(this, 1)">
-            <div class="icono" style="background:#fdeaea;">
-                <i class="fas fa-exclamation-triangle" style="color:var(--red);"></i>
-            </div>
-            <div class="info">
-                <div class="titulo">Avería · NISE 9950</div>
-                <div class="descripcion">En atención · estimado 4:30pm</div>
-                <div class="fecha">Hoy, 2:30 PM</div>
-            </div>
-            <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, 1)">
-                <i class="fas fa-check"></i> Marcar leída
-            </button>
-        </div>
-
-        <div class="notificacion-item" data-id="2" onclick="marcarLeida(this, 2)">
-            <div class="icono" style="background:#fef3e0;">
-                <i class="fas fa-clock" style="color:var(--amber);"></i>
-            </div>
-            <div class="info">
-                <div class="titulo">Suspensión programada</div>
-                <div class="descripcion">NISE 7788 · mañana 8:00–10:00am</div>
-                <div class="fecha">Hoy, 10:15 AM</div>
-            </div>
-            <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, 2)">
-                <i class="fas fa-check"></i> Marcar leída
-            </button>
-        </div>
-
-        <div class="notificacion-item" data-id="3" onclick="marcarLeida(this, 3)">
-            <div class="icono" style="background:#fff3ec;">
-                <i class="fas fa-file-invoice" style="color:var(--orange);"></i>
-            </div>
-            <div class="info">
-                <div class="titulo">Factura por vencer</div>
-                <div class="descripcion">₡18.450 · vence en 5 días</div>
-                <div class="fecha">Ayer, 8:00 AM</div>
-            </div>
-            <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, 3)">
-                <i class="fas fa-check"></i> Marcar leída
-            </button>
-        </div>
-
-        <div class="notificacion-item" data-id="4" onclick="marcarLeida(this, 4)">
-            <div class="icono" style="background:#e8f0fe;">
-                <i class="fas fa-check-circle" style="color:var(--blue);"></i>
-            </div>
-            <div class="info">
-                <div class="titulo">Reporte de avería recibido</div>
-                <div class="descripcion">Tu reporte #REP-1234 ha sido recibido</div>
-                <div class="fecha">Hace 2 días</div>
-            </div>
-            <button class="btn-leer" onclick="event.stopPropagation(); marcarLeida(this, 4)">
-                <i class="fas fa-check"></i> Marcar leída
-            </button>
+        <div class="empty-notificaciones">
+            <div class="empty-icon">🔔</div>
+            <h3>No tienes notificaciones</h3>
+            <p>Las notificaciones aparecerán aquí cuando tengas novedades.</p>
         </div>
     }
 </div>
 
-<!-- JavaScript externo para Notificaciones -->
 @section scriptsVista {
     <script src="@Url.Content("~/Scripts/cliente/notificaciones.js")"></script>
 }

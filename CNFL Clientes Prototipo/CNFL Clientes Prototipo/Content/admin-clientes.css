@@ -1,37 +1,33 @@
-﻿/* ===== ESTILOS PARA LA VISTA DE CLIENTES ADMIN ===== */
+﻿/* ==========================================
+   ADMIN - GESTIÓN DE CLIENTES
+   ========================================== */
 
 .client-search {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-}
-
-    .client-search input {
-        flex: 1;
-        padding: 12px 16px;
-        border-radius: 14px;
-        border: 1.5px solid var(--line);
-        font-size: 14px;
-        font-family: inherit;
-        min-width: 200px;
-        background: white;
-    }
-
-        .client-search input:focus {
-            outline: none;
-            border-color: var(--blue);
-        }
-
-.client-total {
-    font-size: 14px;
-    color: var(--muted);
     margin-bottom: 16px;
 }
 
-    .client-total strong {
-        color: var(--ink);
+    .client-search input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1.5px solid var(--line);
+        border-radius: 14px;
+        font-family: inherit;
+        font-size: 14px;
+        background: white;
+        transition: 0.2s;
     }
+
+        .client-search input:focus {
+            border-color: var(--blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(30, 35, 230, 0.1);
+        }
+
+.client-total {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 14px;
+}
 
 .client-table {
     width: 100%;
@@ -39,137 +35,130 @@
     background: white;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     border: 1px solid var(--line);
 }
 
-    .client-table th {
-        background: var(--bg);
-        padding: 12px 16px;
-        text-align: left;
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--muted);
-        border-bottom: 2px solid var(--line);
-    }
-
-    .client-table td {
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--line);
-        font-size: 14px;
-    }
-
-    .client-table tr:hover td {
+    .client-table thead {
         background: #f8f9fe;
     }
 
+    .client-table th {
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .client-table td {
+        padding: 12px 14px;
+        font-size: 14px;
+        border-top: 1px solid var(--line);
+    }
+
+    .client-table tbody tr:hover {
+        background: #f8f9fe;
+    }
+
+.client-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .client-avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--orange), #ff8a4c);
+    background: var(--blue);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px;
     flex-shrink: 0;
 }
-
-.client-name-cell {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.btn-edit-client {
-    background: var(--blue);
-    color: white;
-    border: none;
-    padding: 6px 16px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: 0.2s;
-}
-
-    .btn-edit-client:hover {
-        background: #1519b3;
-        transform: scale(0.95);
-    }
-
-.btn-save-client {
-    background: var(--green);
-    color: white;
-    border: none;
-    padding: 6px 16px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: 0.2s;
-}
-
-    .btn-save-client:hover {
-        background: #2E7D32;
-        transform: scale(0.95);
-    }
-
-.btn-cancel-client {
-    background: var(--red);
-    color: white;
-    border: none;
-    padding: 6px 16px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: 0.2s;
-}
-
-    .btn-cancel-client:hover {
-        background: #c0392b;
-        transform: scale(0.95);
-    }
-
-.client-email-input {
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1.5px solid var(--line);
-    font-size: 13px;
-    font-family: inherit;
-    width: 100%;
-    min-width: 180px;
-    background: #f8f9fe;
-    transition: 0.2s;
-}
-
-    .client-email-input:focus {
-        outline: none;
-        border-color: var(--blue);
-        background: white;
-    }
-
-    .client-email-input.editing {
-        background: white;
-        border-color: var(--blue);
-    }
 
 .client-actions-cell {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
-    align-items: center;
 }
 
-/* ===== TOAST ===== */
+.btn-edit-client {
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    background: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    color: var(--blue);
+}
+
+    .btn-edit-client:hover {
+        background: var(--blue);
+        color: white;
+        border-color: var(--blue);
+    }
+
+.btn-save-client {
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--green);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+    .btn-save-client:hover {
+        background: #2E7D32;
+    }
+
+.btn-cancel-client {
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    background: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    color: var(--red);
+}
+
+    .btn-cancel-client:hover {
+        background: var(--red);
+        color: white;
+        border-color: var(--red);
+    }
+
+.client-email-input {
+    padding: 4px 10px;
+    border: 1.5px solid var(--blue);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    width: 100%;
+    max-width: 200px;
+}
+
+    .client-email-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(30, 35, 230, 0.1);
+    }
+
 .toast-notification {
     position: fixed;
     bottom: 100px;
@@ -181,32 +170,16 @@
     border-radius: 16px;
     font-weight: 600;
     font-size: 14px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
     z-index: 2000;
     display: none;
+    animation: slideUp 0.3s ease;
     max-width: 90%;
 }
 
     .toast-notification.error {
         background: #C62828;
     }
-
-    .toast-notification.show {
-        display: block;
-        animation: slideUp 0.3s ease;
-    }
-
-@-webkit-keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-}
 
 @keyframes slideUp {
     from {
@@ -220,16 +193,19 @@
     }
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
-    .client-table th,
-    .client-table td {
-        padding: 8px 10px;
-        font-size: 12px;
+    .client-table {
+        font-size: 13px;
     }
 
-    .client-table {
-        font-size: 12px;
+        .client-table th,
+        .client-table td {
+            padding: 8px 10px;
+        }
+
+    .client-actions-cell {
+        flex-direction: column;
+        gap: 4px;
     }
 
     .btn-edit-client,
@@ -237,15 +213,5 @@
     .btn-cancel-client {
         padding: 4px 10px;
         font-size: 11px;
-    }
-
-    .client-email-input {
-        min-width: 100px;
-        font-size: 12px;
-    }
-
-    .client-actions-cell {
-        flex-direction: column;
-        align-items: stretch;
     }
 }

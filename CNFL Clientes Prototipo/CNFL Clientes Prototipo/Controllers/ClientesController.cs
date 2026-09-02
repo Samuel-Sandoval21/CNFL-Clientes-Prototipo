@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using CNFL_Clientes_Prototipo.Models;
-using CNFL_Clientes_Prototipo.Services;
+using CNFL_Clientes_Prototipo.Data;
 
 namespace CNFL_Clientes_Prototipo.Controllers
 {
     public class ClientesController : Controller
     {
-        private readonly FacturaService _facturaService = new FacturaService();
+        private readonly CNFLDbContext _db = new CNFLDbContext();
 
         // GET: /Clientes/Inicio
         public ActionResult Inicio()
@@ -21,14 +20,28 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (Session["Rol"].ToString() == "Admin")
                 return RedirectToAction("Dashboard", "Admin");
 
-            // ==========================================================
-            // PASAR DATOS DEL CLIENTE A LA VISTA
-            // ==========================================================
-            ViewBag.Nombre = Session["Nombre"] ?? "Cliente";
-            ViewBag.NISE = Session["NISE"] ?? "000000000";
-            ViewBag.Cedula = Session["Cedula"] ?? "0-0000-0000";
-            ViewBag.Correo = Session["Correo"] ?? "cliente@correo.com";
-            ViewBag.Telefono = Session["Telefono"] ?? "0000-0000";
+            var usuarioId = (int)Session["Id"];
+            var usuario = _db.Usuarios.Find(usuarioId);
+
+            if (usuario == null)
+            {
+                Session.Clear();
+                return RedirectToAction("Login", "Cuenta");
+            }
+
+            ViewBag.Nombre = usuario.Nombre + " " + usuario.Apellidos;
+            ViewBag.NISE = usuario.NISE;
+            ViewBag.Cedula = usuario.Cedula;
+            ViewBag.Correo = usuario.Correo;
+            ViewBag.Telefono = usuario.Telefono;
+
+            // Facturas pendientes
+            var facturasPendientes = _db.Facturas
+                .Where(f => f.NISE.Cliente.UsuarioId == usuarioId && f.Estado == "Pendiente")
+                .ToList();
+
+            ViewBag.FacturasPendientes = facturasPendientes;
+            ViewBag.TotalPendiente = facturasPendientes.Sum(f => f.Saldo);
 
             return View();
         }
@@ -48,7 +61,12 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (Session["Rol"] == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            var facturas = _facturaService.ListarFacturas();
+            var usuarioId = (int)Session["Id"];
+            var facturas = _db.Facturas
+                .Where(f => f.NISE.Cliente.UsuarioId == usuarioId)
+                .OrderByDescending(f => f.FechaVencimiento)
+                .ToList();
+
             return View(facturas);
         }
 
@@ -94,7 +112,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (Session["Rol"] == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            var factura = _facturaService.ObtenerPorId(id);
+            var factura = _db.Facturas.Find(id);
+            if (factura == null)
+                return HttpNotFound();
+
             ViewBag.FacturaId = id;
             return View(factura);
         }
@@ -180,12 +201,13 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (Session["Rol"] == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            if (Session["NotificacionesLeidas"] == null)
-            {
-                Session["NotificacionesLeidas"] = new List<int>();
-            }
+            var usuarioId = (int)Session["Id"];
+            var notificaciones = _db.Notificaciones
+                .Where(n => n.UsuarioId == usuarioId)
+                .OrderByDescending(n => n.FechaEnvio)
+                .ToList();
 
-            return View();
+            return View(notificaciones);
         }
 
         // POST: /Clientes/MarcarNotificacionLeida
@@ -197,15 +219,15 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return Json(new { success = false, message = "No autorizado" });
             }
 
-            var leidas = Session["NotificacionesLeidas"] as List<int> ?? new List<int>();
-
-            if (!leidas.Contains(id))
+            var notificacion = _db.Notificaciones.Find(id);
+            if (notificacion != null)
             {
-                leidas.Add(id);
-                Session["NotificacionesLeidas"] = leidas;
+                notificacion.Leida = true;
+                _db.SaveChanges();
+                return Json(new { success = true, message = "Notificación marcada como leída" });
             }
 
-            return Json(new { success = true, message = "Notificación marcada como leída" });
+            return Json(new { success = false, message = "Notificación no encontrada" });
         }
 
         // POST: /Clientes/MarcarTodasLeidas
@@ -217,8 +239,14 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return Json(new { success = false, message = "No autorizado" });
             }
 
-            var todasLasNotificaciones = new List<int> { 1, 2, 3, 4 };
-            Session["NotificacionesLeidas"] = todasLasNotificaciones;
+            var usuarioId = (int)Session["Id"];
+            var notificaciones = _db.Notificaciones.Where(n => n.UsuarioId == usuarioId && n.Leida == false);
+
+            foreach (var n in notificaciones)
+            {
+                n.Leida = true;
+            }
+            _db.SaveChanges();
 
             return Json(new { success = true, message = "Todas las notificaciones marcadas como leídas" });
         }
@@ -248,6 +276,13 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return RedirectToAction("Login", "Cuenta");
 
             return View();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                _db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

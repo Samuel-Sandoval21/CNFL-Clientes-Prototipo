@@ -5,144 +5,7 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<style>
-    .dash-stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        margin-bottom: 24px;
-    }
-
-    .dash-stat {
-        background: white;
-        border-radius: 18px;
-        padding: 18px 16px;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        border: 1px solid var(--line);
-        transition: all 0.2s;
-    }
-
-        .dash-stat:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-        }
-
-        .dash-stat .num {
-            font-size: 32px;
-            font-weight: 800;
-        }
-
-        .dash-stat .lbl {
-            font-size: 12px;
-            color: var(--muted);
-            font-weight: 600;
-            margin-top: 4px;
-        }
-
-        .dash-stat .emoji {
-            font-size: 28px;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .dash-stat.blue .num {
-            color: var(--blue);
-        }
-
-        .dash-stat.orange .num {
-            color: var(--orange);
-        }
-
-        .dash-stat.green .num {
-            color: var(--green);
-        }
-
-        .dash-stat.red .num {
-            color: var(--red);
-        }
-
-    .dash-section-title {
-        font-size: 16px;
-        font-weight: 700;
-        margin: 20px 0 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .recent-item {
-        background: white;
-        border-radius: 14px;
-        padding: 14px 16px;
-        border-left: 4px solid var(--blue);
-        margin-bottom: 10px;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-        border: 1px solid var(--line);
-        border-left-width: 4px;
-        transition: 0.2s;
-    }
-
-        .recent-item:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }
-
-        .recent-item .titulo {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .recent-item .detalle {
-            font-size: 13px;
-            color: var(--muted);
-            margin-top: 3px;
-        }
-
-        .recent-item .estado {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 700;
-            margin-top: 4px;
-        }
-
-    .tip-card {
-        background: white;
-        border-radius: 16px;
-        padding: 16px;
-        border: 1px solid var(--line);
-        margin-top: 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-        .tip-card .tip-icon {
-            font-size: 28px;
-        }
-
-        .tip-card .tip-title {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .tip-card .tip-text {
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-    @@media (max-width: 480px) {
-        .dash-stats {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .dash-stat .num {
-            font-size: 24px;
-        }
-    }
-</style>
+<link rel="stylesheet" href="@Url.Content("~/Content/admin-dashboard.css")" />
 
 <h2 style="font-weight: 800; font-size: 22px; margin: 0;">📊 Resumen General</h2>
 <p style="color: var(--muted); font-size: 13px; margin: 2px 0 18px;">Vista rápida de las operaciones del sistema</p>
@@ -174,9 +37,9 @@
     <span>🕐</span> Últimas averías reportadas
 </div>
 
-@if (Model.Any())
+@if (Model != null && Model.Any())
 {
-    var ultimas = Model.OrderByDescending(a => a.Fecha).Take(3);
+    var ultimas = Model.OrderByDescending(a => a.FechaReporte).Take(3);
     foreach (var averia in ultimas)
     {
         string colorBorder = averia.Estado == "Resuelto" ? "var(--green)" : "var(--orange)";
@@ -184,11 +47,11 @@
         <div class="recent-item" style="border-left-color: @colorBorder;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
-                    <div class="titulo">⚡ @averia.Titulo</div>
+                    <div class="titulo">⚡ @averia.TipoAveria</div>
                     <div class="detalle">📍 @averia.Direccion</div>
-                    <div class="detalle">🕐 @averia.Fecha.ToString("dd/MM/yyyy HH:mm")</div>
+                    <div class="detalle">🕐 @averia.FechaReporte.ToString("dd/MM/yyyy HH:mm")</div>
                 </div>
-                <span class="estado @estadoClase" style="background: #E3F2FD; color: #0D47A1; padding:4px 14px; border-radius:999px; font-size:11px; font-weight:700;">
+                <span class="estado @estadoClase">
                     @averia.Estado
                 </span>
             </div>
@@ -209,3 +72,7 @@ else
         <div class="tip-text">Mantén actualizados los estados de las averías para un mejor seguimiento y atención al cliente.</div>
     </div>
 </div>
+
+@section scriptsVista {
+    <script src="@Url.Content("~/Scripts/admin-dashboard.js")"></script>
+}

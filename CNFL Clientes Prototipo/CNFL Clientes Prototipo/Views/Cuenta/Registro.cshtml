@@ -87,12 +87,31 @@
             </div>
 
             <!-- ========================================================== -->
-            <!-- NISE (SELECTOR DE NISES ASOCIADOS) -->
+            <!-- SEXO -->
+            <!-- ========================================================== -->
+            <div class="field" id="sexoGroup">
+                <label>SEXO <span style="color:var(--red);">*</span></label>
+                <div class="inp" style="flex-wrap:wrap; gap:8px; padding:10px 15px;">
+                    <label style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px; cursor:pointer;">
+                        <input type="radio" name="Sexo" value="Masculino" required /> Masculino
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px; cursor:pointer;">
+                        <input type="radio" name="Sexo" value="Femenino" required /> Femenino
+                    </label>
+                    <label style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px; cursor:pointer;">
+                        <input type="radio" name="Sexo" value="Personalizado" required /> Personalizado
+                    </label>
+                    <input type="text" name="SexoPersonalizado" id="sexoPersonalizado" placeholder="Especificar..." style="display:none; border:1.5px solid var(--line); border-radius:8px; padding:6px 12px; font-family:inherit; font-size:13px; width:150px;" />
+                </div>
+                <div class="field-error" id="sexoError"></div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- NISE (SELECTOR DE NISES ASOCIADOS - AUTOMÁTICO) -->
             <!-- ========================================================== -->
             <div class="field" id="nisesGroup">
                 <label>NISE(S) ASOCIADO(S) <span style="color:var(--red);">*</span></label>
 
-                <!-- Contenedor del select (se oculta si no hay NISEs) -->
                 <div id="niseSelectContainer" style="display:none;">
                     <div class="inp" style="background: #f7f8fc;">
                         <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -105,18 +124,17 @@
                     </div>
                 </div>
 
-                <!-- Tags visuales de NISEs -->
                 <div id="nisesTags" class="nises-tags"></div>
 
                 <div class="field-error" id="nisesError"></div>
-                <div class="registro-hint" id="niseHint">Selecciona uno de los NISEs asociados a tu cédula.</div>
+                <div class="registro-hint" id="niseHint">El NISE se carga automáticamente al escribir tu cédula.</div>
             </div>
 
             <!-- ========================================================== -->
-            <!-- CORREO -->
+            <!-- CORREO PRINCIPAL -->
             <!-- ========================================================== -->
             <div class="field" id="correoGroup">
-                <label>CORREO <span style="color:var(--red);">*</span></label>
+                <label>CORREO PRINCIPAL <span style="color:var(--red);">*</span></label>
                 <div class="inp">
                     <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -129,10 +147,26 @@
             </div>
 
             <!-- ========================================================== -->
-            <!-- TELÉFONO -->
+            <!-- CORREO SECUNDARIO (OPCIONAL) -->
+            <!-- ========================================================== -->
+            <div class="field" id="correo2Group">
+                <label>CORREO SECUNDARIO <span style="color:var(--muted);">(Opcional)</span></label>
+                <div class="inp">
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <path d="m22 7-10 5L2 7" />
+                    </svg>
+                    <input type="email" name="CorreoSecundario" id="correoSecundario" placeholder="secundario@correo.com" />
+                    <span class="validation-icon" id="correo2Icon"></span>
+                </div>
+                <div class="field-error" id="correo2Error"></div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- TELÉFONO PRINCIPAL -->
             <!-- ========================================================== -->
             <div class="field" id="telefonoGroup">
-                <label>TELÉFONO <span style="color:var(--red);">*</span></label>
+                <label>TELÉFONO PRINCIPAL <span style="color:var(--red);">*</span></label>
                 <div class="inp">
                     <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
@@ -141,6 +175,37 @@
                     <span class="validation-icon" id="telefonoIcon"></span>
                 </div>
                 <div class="field-error" id="telefonoError"></div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- TELÉFONO SECUNDARIO (OPCIONAL) -->
+            <!-- ========================================================== -->
+            <div class="field" id="telefono2Group">
+                <label>TELÉFONO SECUNDARIO <span style="color:var(--muted);">(Opcional)</span></label>
+                <div class="inp">
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                    <input type="text" name="TelefonoSecundario" id="telefonoSecundario" placeholder="8888-8888" />
+                    <span class="validation-icon" id="telefono2Icon"></span>
+                </div>
+                <div class="field-error" id="telefono2Error"></div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- DIRECCIÓN -->
+            <!-- ========================================================== -->
+            <div class="field" id="direccionGroup">
+                <label>DIRECCIÓN <span style="color:var(--red);">*</span></label>
+                <div class="inp">
+                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                        <circle cx="12" cy="9" r="3" />
+                    </svg>
+                    <input type="text" name="Direccion" id="direccion" required placeholder="Provincia, Cantón, Distrito, Detalles" />
+                    <span class="validation-icon" id="direccionIcon"></span>
+                </div>
+                <div class="field-error" id="direccionError"></div>
             </div>
 
             <!-- ========================================================== -->
@@ -201,6 +266,26 @@
                     </button>
                 </div>
                 <div class="field-error" id="confirmError"></div>
+            </div>
+
+            <!-- ========================================================== -->
+            <!-- CHECKBOXES DE ACEPTACIÓN -->
+            <!-- ========================================================== -->
+            <div class="field" style="margin-top:20px;">
+                <div style="display:flex; flex-direction:column; gap:12px; background:#f8f9fe; padding:16px; border-radius:14px; border:1px solid var(--line);">
+                    <!-- Política de Privacidad -->
+                    <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);">
+                        <input type="checkbox" name="AceptaPolitica" id="aceptaPolitica" required style="margin-top:2px; width:18px; height:18px; cursor:pointer;" />
+                        <span>Acepto la <a href="#" onclick="alert('Documento de Política de Privacidad')" style="color:var(--blue); text-decoration:underline;">Política de Privacidad</a> de la CNFL</span>
+                    </label>
+
+                    <!-- Consentimiento Informado -->
+                    <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);">
+                        <input type="checkbox" name="AceptaConsentimiento" id="aceptaConsentimiento" required style="margin-top:2px; width:18px; height:18px; cursor:pointer;" />
+                        <span>Acepto el <a href="#" onclick="alert('Documento de Consentimiento Informado F-085')" style="color:var(--blue); text-decoration:underline;">Consentimiento Informado</a> (F-085)</span>
+                    </label>
+                </div>
+                <div class="field-error" id="aceptacionError" style="margin-top:8px;"></div>
             </div>
 
             <button type="submit" class="btn-register" id="btnRegistrar">

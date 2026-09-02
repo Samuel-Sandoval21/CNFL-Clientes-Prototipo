@@ -1,241 +1,113 @@
 ﻿// ==========================================
-// NOTIFICACIONES - JAVASCRIPT COMPLETO
+// CLIENTE - NOTIFICACIONES
 // ==========================================
 
-// ==========================================================
-// ===== VARIABLES GLOBALES =====
-// ==========================================================
-var notificacionesLeidas = [];
-
-// ==========================================================
-// ===== CARGAR NOTIFICACIONES LEÍDAS DE SESSION =====
-// ==========================================================
-function cargarNotificacionesLeidas() {
-    // Intentar obtener de SessionStorage (persistente)
-    var stored = sessionStorage.getItem('notificacionesLeidas');
-    if (stored) {
-        try {
-            notificacionesLeidas = JSON.parse(stored);
-            return notificacionesLeidas;
-        } catch (e) {
-            notificacionesLeidas = [];
-        }
+function marcarLeida(element, id) {
+    // Si el elemento es un botón, obtener el contenedor padre
+    var item = element.closest ? element.closest('.notificacion-item') : null;
+    if (!item) {
+        // Si no se pasó elemento o es el botón, buscar por data-id
+        item = document.querySelector('.notificacion-item[data-id="' + id + '"]');
     }
 
-    // Si no hay en sessionStorage, intentar obtener de la sesión del servidor
-    var leidasElement = document.getElementById('notificacionesLeidas');
-    if (leidasElement) {
-        try {
-            var leidas = JSON.parse(leidasElement.value);
-            notificacionesLeidas = leidas;
-            sessionStorage.setItem('notificacionesLeidas', JSON.stringify(leidas));
-            return notificacionesLeidas;
-        } catch (e) {
-            notificacionesLeidas = [];
+    // Realizar petición AJAX
+    $.ajax({
+        url: '/Clientes/MarcarNotificacionLeida',
+        type: 'POST',
+        data: { id: id },
+        success: function (response) {
+            if (response.success) {
+                // Marcar visualmente
+                if (item) {
+                    item.classList.add('leida');
+                    var btnLeer = item.querySelector('.btn-leer');
+                    if (btnLeer) {
+                        btnLeer.textContent = '✓ Leída';
+                        btnLeer.disabled = true;
+                        btnLeer.style.opacity = '0.5';
+                    }
+                }
+
+                // Actualizar badge
+                actualizarBadge();
+
+                mostrarToast('✅ Notificación marcada como leída');
+            } else {
+                mostrarToast('❌ ' + response.message, 'error');
+            }
+        },
+        error: function () {
+            mostrarToast('❌ Error al marcar notificación', 'error');
         }
-    }
-
-    notificacionesLeidas = [];
-    return notificacionesLeidas;
+    });
 }
 
-// ==========================================================
-// ===== GUARDAR NOTIFICACIONES LEÍDAS =====
-// ==========================================================
-function guardarNotificacionesLeidas() {
-    sessionStorage.setItem('notificacionesLeidas', JSON.stringify(notificacionesLeidas));
+function marcarTodasLeidas() {
+    $.ajax({
+        url: '/Clientes/MarcarTodasLeidas',
+        type: 'POST',
+        success: function (response) {
+            if (response.success) {
+                // Marcar todas visualmente
+                document.querySelectorAll('.notificacion-item:not(.leida)').forEach(function (item) {
+                    item.classList.add('leida');
+                    var btnLeer = item.querySelector('.btn-leer');
+                    if (btnLeer) {
+                        btnLeer.textContent = '✓ Leída';
+                        btnLeer.disabled = true;
+                        btnLeer.style.opacity = '0.5';
+                    }
+                });
 
-    // Actualizar badge
-    actualizarBadge();
-
-    // Actualizar contador de notificaciones en el header
-    actualizarContadorHeader();
+                actualizarBadge();
+                mostrarToast('✅ Todas las notificaciones marcadas como leídas');
+            } else {
+                mostrarToast('❌ ' + response.message, 'error');
+            }
+        },
+        error: function () {
+            mostrarToast('❌ Error al marcar notificaciones', 'error');
+        }
+    });
 }
 
-// ==========================================================
-// ===== ACTUALIZAR BADGE =====
-// ==========================================================
 function actualizarBadge() {
-    var items = document.querySelectorAll('.notificacion-item');
     var badge = document.getElementById('notificacionBadge');
     if (!badge) return;
 
-    var pendientes = items.length;
-    badge.textContent = pendientes;
-    badge.style.display = pendientes > 0 ? 'inline-flex' : 'none';
-}
+    var noLeidas = document.querySelectorAll('.notificacion-item:not(.leida)');
+    var count = noLeidas.length;
 
-// ==========================================================
-// ===== ACTUALIZAR CONTADOR EN HEADER =====
-// ==========================================================
-function actualizarContadorHeader() {
-    var headerBadge = document.querySelector('.icon-btn .badge');
-    if (!headerBadge) return;
-
-    var pendientes = document.querySelectorAll('.notificacion-item').length;
-    headerBadge.textContent = pendientes;
-    headerBadge.style.display = pendientes > 0 ? 'grid' : 'none';
-}
-
-// ==========================================================
-// ===== MARCAR NOTIFICACIÓN COMO LEÍDA =====
-// ==========================================================
-function marcarLeida(elemento, id) {
-    var card = elemento.closest ? elemento.closest('.notificacion-item') : elemento;
-    if (!card) return;
-
-    var idNotificacion = card.dataset.id || id;
-
-    // Verificar si ya está leída
-    if (notificacionesLeidas.includes(parseInt(idNotificacion))) {
-        // Si ya está en la lista, simplemente ocultar
-        ocultarNotificacion(card);
-        return;
-    }
-
-    // Agregar a la lista de leídas
-    notificacionesLeidas.push(parseInt(idNotificacion));
-    guardarNotificacionesLeidas();
-
-    // Ocultar la notificación con animación
-    ocultarNotificacion(card);
-
-    // Mostrar mensaje
-    mostrarToast('✅ Notificación marcada como leída');
-}
-
-// ==========================================================
-// ===== OCULTAR NOTIFICACIÓN CON ANIMACIÓN =====
-// ==========================================================
-function ocultarNotificacion(card) {
-    card.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-    card.style.opacity = '0';
-    card.style.transform = 'translateX(30px)';
-    card.style.height = card.offsetHeight + 'px';
-
-    setTimeout(function () {
-        card.style.height = '0';
-        card.style.margin = '0';
-        card.style.padding = '0';
-        card.style.overflow = 'hidden';
-        card.style.border = 'none';
-    }, 400);
-
-    setTimeout(function () {
-        card.remove();
-        actualizarBadge();
-        actualizarContadorHeader();
-
-        // Verificar si no hay más notificaciones
-        var items = document.querySelectorAll('.notificacion-item');
-        if (items.length === 0) {
-            mostrarMensajeVacio();
-        }
-    }, 800);
-}
-
-// ==========================================================
-// ===== MARCAR TODAS COMO LEÍDAS =====
-// ==========================================================
-function marcarTodasLeidas() {
-    var items = document.querySelectorAll('.notificacion-item');
-    if (items.length === 0) {
-        mostrarToast('ℹ️ No hay notificaciones pendientes');
-        return;
-    }
-
-    if (!confirm('¿Marcar todas las notificaciones como leídas?')) return;
-
-    var ids = [];
-    items.forEach(function (item) {
-        var id = parseInt(item.dataset.id);
-        if (id && !notificacionesLeidas.includes(id)) {
-            ids.push(id);
-            notificacionesLeidas.push(id);
-        }
-        ocultarNotificacion(item);
-    });
-
-    guardarNotificacionesLeidas();
-
-    if (ids.length > 0) {
-        mostrarToast('✅ Todas las notificaciones marcadas como leídas');
+    if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
     }
 }
 
-// ==========================================================
-// ===== MOSTRAR MENSAJE VACÍO =====
-// ==========================================================
-function mostrarMensajeVacio() {
-    var container = document.querySelector('.section-pad:last-child');
-    if (!container) return;
+function mostrarToast(mensaje, tipo) {
+    // Crear toast si no existe
+    var toast = document.getElementById('toastNotif');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastNotif';
+        toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#2E7D32;color:white;padding:12px 24px;border-radius:16px;font-weight:600;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,0.2);z-index:2000;display:none;max-width:90%;';
+        document.body.appendChild(toast);
+    }
 
-    // Eliminar botón de marcar todas si existe
-    var btnMarcar = container.querySelector('.btn-marcar-todas');
-    if (btnMarcar) btnMarcar.remove();
-
-    var empty = document.createElement('div');
-    empty.className = 'empty-notificaciones';
-    empty.innerHTML = `
-        <div class="empty-icon">🎉</div>
-        <h3>¡No tienes notificaciones pendientes!</h3>
-        <p>Todas tus notificaciones han sido leídas.</p>
-        <button class="btn-volver" onclick="location.reload()" style="margin-top:16px;">
-            <i class="fas fa-sync"></i> Recargar
-        </button>
-    `;
-    container.appendChild(empty);
-}
-
-// ==========================================================
-// ===== MOSTRAR TOAST =====
-// ==========================================================
-function mostrarToast(mensaje) {
-    var toast = document.createElement('div');
-    toast.className = 'toast-notificacion';
     toast.textContent = mensaje;
-    document.body.appendChild(toast);
+    toast.className = 'toast-notification' + (tipo === 'error' ? ' error' : '');
+    toast.style.background = tipo === 'error' ? '#C62828' : '#2E7D32';
+    toast.style.display = 'block';
 
-    setTimeout(function () {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s ease';
-        setTimeout(function () {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function () {
+        toast.style.display = 'none';
     }, 3000);
 }
 
-// ==========================================================
-// ===== INICIALIZAR =====
-// ==========================================================
-document.addEventListener('DOMContentLoaded', function () {
-    // Cargar notificaciones leídas
-    cargarNotificacionesLeidas();
-    actualizarBadge();
-    actualizarContadorHeader();
-
-    // Ocultar notificaciones que ya están leídas
-    var items = document.querySelectorAll('.notificacion-item');
-    items.forEach(function (item) {
-        var id = parseInt(item.dataset.id);
-        if (notificacionesLeidas.includes(id)) {
-            item.style.display = 'none';
-        }
-    });
-
-    // Verificar si no hay notificaciones
-    var visibleItems = document.querySelectorAll('.notificacion-item:not([style*="display: none"])');
-    if (visibleItems.length === 0 && items.length > 0) {
-        mostrarMensajeVacio();
-    }
-
-    // Si no hay notificaciones desde el inicio
-    var itemsTotal = document.querySelectorAll('.notificacion-item');
-    if (itemsTotal.length === 0) {
-        mostrarMensajeVacio();
-    }
-
-    console.log('🔔 Notificaciones cargadas correctamente');
-});
+// Exponer funciones globalmente
+window.marcarLeida = marcarLeida;
+window.marcarTodasLeidas = marcarTodasLeidas;
+window.mostrarToast = mostrarToast;
