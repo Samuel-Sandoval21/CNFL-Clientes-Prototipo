@@ -2,57 +2,67 @@
 using System.Collections.Generic;
 using System.Linq;
 using CNFL_Clientes_Prototipo.Models;
+using CNFL_Clientes_Prototipo.Data;
 
 namespace CNFL_Clientes_Prototipo.Services
 {
     public class TramiteService
     {
-        // Simulación de Base de Datos en memoria
-        private static List<Tramite> _tramites = new List<Tramite>
-        {
-            new Tramite
-            {
-                Id = 1,
-                UsuarioId = 2,
-                NISEId = 1,
-                TipoTramite = "Cambio de nombre",
-                Estado = "En Proceso",
-                Detalle = "Solicitud de cambio de titular",
-                FechaSolicitud = DateTime.Now.AddDays(-5)
-            }
-        };
-
-        public List<Tramite> ObtenerTodos()
-        {
-            return _tramites;
-        }
+        private CNFLDbContext _db = new CNFLDbContext();
 
         public List<Tramite> ObtenerPorUsuario(int usuarioId)
         {
-            return _tramites.Where(t => t.UsuarioId == usuarioId).ToList();
+            return _db.Tramites
+                .Where(t => t.UsuarioId == usuarioId)
+                .OrderByDescending(t => t.FechaSolicitud)
+                .ToList();
         }
 
-        public void CrearTramite(string tipoTramite, string detalle, int usuarioId, int niseId)
+        public Tramite ObtenerPorId(int id)
         {
-            _tramites.Add(new Tramite
-            {
-                Id = _tramites.Count + 1,
-                UsuarioId = usuarioId,
-                NISEId = niseId,
-                TipoTramite = tipoTramite,
-                Detalle = detalle,
-                Estado = "En Proceso",
-                FechaSolicitud = DateTime.Now
-            });
+            return _db.Tramites.Find(id);
         }
 
-        public void ActualizarEstado(int id, string nuevoEstado)
+        public void Agregar(Tramite tramite)
         {
-            var tramite = _tramites.FirstOrDefault(t => t.Id == id);
+            tramite.FechaSolicitud = DateTime.Now;
+            tramite.Estado = "Solicitado";
+            _db.Tramites.Add(tramite);
+            _db.SaveChanges();
+        }
+
+        public void ActualizarEstado(int tramiteId, string nuevoEstado)
+        {
+            var tramite = _db.Tramites.Find(tramiteId);
             if (tramite != null)
             {
                 tramite.Estado = nuevoEstado;
+                _db.SaveChanges();
             }
+        }
+
+        public void AgregarTramite(int usuarioId, string tipo, string descripcion)
+        {
+            var tramite = new Tramite
+            {
+                UsuarioId = usuarioId,
+                Tipo = tipo,
+                Descripcion = descripcion,
+                FechaSolicitud = DateTime.Now,
+                Estado = "Solicitado"
+            };
+            _db.Tramites.Add(tramite);
+            _db.SaveChanges();
+        }
+
+        public List<Tramite> ObtenerTodos()
+        {
+            return _db.Tramites.OrderByDescending(t => t.FechaSolicitud).ToList();
+        }
+
+        public List<Tramite> ObtenerPorEstado(string estado)
+        {
+            return _db.Tramites.Where(t => t.Estado == estado).OrderByDescending(t => t.FechaSolicitud).ToList();
         }
     }
 }

@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "Historial de Compras";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<div class="historial-container">
+    <h2>Historial de Compras</h2>
+    <p>Productos y servicios adquiridos.</p>
+
+    <table class="historial-table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cargador EV 7kW</td>
+                <td>₡615,000</td>
+                <td>15/08/2026</td>
+                <td><span class="estado-completado">Completado</span></td>
+            </tr>
+            <tr>
+                <td>Kit LED inteligente</td>
+                <td>₡42,900</td>
+                <td>10/08/2026</td>
+                <td><span class="estado-completado">Completado</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/Content/cliente/historial-compras.css" />
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CNFL - @ViewBag.Title</title>
+    <link rel="stylesheet" href="~/Content/site.css" />
+    <link rel="stylesheet" href="~/Content/cliente/app.css" />
+    @RenderSection("Styles", required: false)
+    <link rel="icon" type="image/x-icon" href="~/images/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- NOTCH -->
+        <div class="app-notch"></div>
+
+        <!-- STATUSBAR -->
+        <div class="app-statusbar">
+            <span id="clock">9:41</span>
+            <span class="r">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#0E1116" /><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#0E1116" /><rect x="9" y="2" width="3" height="10" rx="1" fill="#0E1116" /><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#0E1116" opacity=".3" /></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.5 2.5 12.7 3.5 14.3 5.1L15.7 3.6C13.7 1.6 11 .5 8 .5S2.3 1.6.3 3.6l1.4 1.5C3.3 3.5 5.5 2.5 8 2.5Z" fill="#0E1116" /><path d="M8 6.5c1.1 0 2.1.4 2.8 1.2l1.4-1.5C11.1 5.1 9.6 4.5 8 4.5s-3.1.6-4.2 1.7l1.4 1.5C5.9 6.9 6.9 6.5 8 6.5Z" fill="#0E1116" /><circle cx="8" cy="10" r="1.6" fill="#0E1116" /></svg>
+                <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="#0E1116" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" /><rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" /></svg>
+            </span>
+        </div>
+
+        <!-- HEADER -->
+        @{
+            var estaLogueado = Session["UsuarioId"] != null;
+        }
+        <header class="app-header">
+            <div class="brand">
+                <img src="~/images/logo-cnfl.png" alt="CNFL" style="height:38px; width:auto;" />
+            </div>
+            <div class="actions">
+                @if (estaLogueado)
+                {
+                    <div class="icon-btn" onclick="location.href='@Url.Action("MisNotificaciones", "Clientes")'">
+                        <span class="badge">3</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+                    </div>
+                }
+                <div class="icon-btn" onclick="location.href='@Url.Action("MiPerfil", "Clientes")'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENIDO -->
+        <main class="app-content" role="main">
+            @RenderBody()
+        </main>
+
+        <!-- TAB BAR -->
+        @{
+            var rol = Session["Rol"] as string ?? "";
+            var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+            var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+        }
+
+        @if (estaLogueado)
+        {
+                if (rol == "Admin")
+            {
+                <nav class="app-tabbar">
+                    <a href="@Url.Action("Dashboard", "Admin")" class="tab-item @(controller == "Admin" && action == "Dashboard" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 14v-6"/><path d="M12 18V8"/><path d="M17 12V6"/></svg>
+                        </span>
+                        <span class="tab-label">Dashboard</span>
+                    </a>
+                    <a href="@Url.Action("Clientes", "Admin")" class="tab-item @(controller == "Admin" && action == "Clientes" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><circle cx="9" cy="7" r="3"/><path d="M2 21v-1a4 4 0 0 1 4-4h6"/><circle cx="18" cy="8" r="2"/><path d="M15 20v-1a3 3 0 0 1 3-3h1"/></svg>
+                        </span>
+                        <span class="tab-label">Clientes</span>
+                    </a>
+                    <a href="@Url.Action("Averias", "Admin")" class="tab-item @(controller == "Admin" && action == "Averias" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8L21 10h-9l1-8z"/></svg>
+                        </span>
+                        <span class="tab-label">Averías</span>
+                    </a>
+                    <a href="@Url.Action("CerrarSesion", "Cuenta")" class="tab-item">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/><path d="M9 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"/></svg>
+                        </span>
+                        <span class="tab-label">Salir</span>
+                    </a>
+                </nav>
+            }
+            else
+                {
+                <nav class="app-tabbar">
+                    <a href="@Url.Action("Dashboard", "Clientes")" class="tab-item @(controller == "Clientes" && action == "Dashboard" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 21V12h14v9"/></svg>
+                        </span>
+                        <span class="tab-label">Inicio</span>
+                    </a>
+                    <a href="@Url.Action("MisFacturas", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MisFacturas" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><rect x="3" y="3" width="14" height="18" rx="2"/><path d="M7 7h6"/></svg>
+                        </span>
+                        <span class="tab-label">Facturas</span>
+                    </a>
+                    <a href="@Url.Action("Reportes", "Clientes")" class="tab-item @(controller == "Clientes" && action == "Reportes" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+                        </span>
+                        <span class="tab-label">Reportes</span>
+                    </a>
+                    <a href="@Url.Action("Tienda", "Clientes")" class="tab-item @(controller == "Clientes" && action == "Tienda" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M6 6h15l-1 9H6z"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+                        </span>
+                        <span class="tab-label">Tienda</span>
+                    </a>
+                    <a href="@Url.Action("MiPerfil", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MiPerfil" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><circle cx="12" cy="8" r="3"/><path d="M5 20v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1"/></svg>
+                        </span>
+                        <span class="tab-label">Perfil</span>
+                    </a>
+                </nav>
+            }
+        }
+        else
+        {
+            <!-- Mostrar solo Inicio y Perfil cuando no se está logueado -->
+            <nav class="app-tabbar">
+                <a href="@Url.Action("Index", "Home")" class="tab-item @(controller == "Home" && action == "Index" ? "active" : "")">
+                    <span class="tab-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 21V12h14v9"/></svg>
+                    </span>
+                    <span class="tab-label">Inicio</span>
+                </a>
+                <a href="@Url.Action("MiPerfil", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MiPerfil" ? "active" : "")">
+                    <span class="tab-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><circle cx="12" cy="8" r="3"/><path d="M5 20c1.5-3.5 5-5 7-5s5.5 1.5 7 5"/></svg>
+                    </span>
+                    <span class="tab-label">Perfil</span>
+                </a>
+            </nav>
+        }
+    </div>
+
+    <script>
+        // Reloj
+        setInterval(function () {
+            var d = new Date();
+            var h = String(d.getHours()).padStart(2, '0');
+            var m = String(d.getMinutes()).padStart(2, '0');
+            var clock = document.getElementById('clock');
+            if (clock) clock.textContent = h + ':' + m;
+        }, 10000);
+    </script>
+
+    <script src="~/Scripts/cliente/app.js"></script>
+    <script src="~/Scripts/site.js"></script>
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

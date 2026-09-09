@@ -1,63 +1,44 @@
-﻿@model dynamic
+﻿@model CNFL_Clientes_Prototipo.Models.Usuario
 
 @{
-    ViewBag.Title = "Editar Datos - CNFL";
+    ViewBag.Title = "Editar Perfil";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
-<!-- CSS externo para Editar Datos -->
-<link rel="stylesheet" href="@Url.Content("~/Content/cliente/editar-datos.css")" />
+<div class="editar-container">
+    <h2>Editar Perfil</h2>
 
-<!-- ===== BOTÓN VOLVER ===== -->
-<button class="btn-volver" onclick="history.back();">
-    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
-</button>
+    @using (Html.BeginForm("EditarDatos", "Clientes", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
 
-<div class="section-pad">
-    <div class="h-name-2" data-i18n="editar_datos">
-        <i class="fas fa-user-edit" style="color:var(--blue);"></i> Editar Mis Datos
-    </div>
-    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="nombre">
-        Actualiza tu información personal
-    </div>
+        <div class="editar-card">
+            <div class="form-group">
+                <label>Nombre</label>
+                @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label>Apellidos</label>
+                @Html.TextBoxFor(m => m.Apellidos, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label>Correo</label>
+                @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", type = "email" })
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                @Html.TextBoxFor(m => m.Telefono, new { @class = "form-control" })
+            </div>
+            <button type="submit" class="btn-guardar">Guardar Cambios</button>
+            <a href="@Url.Action("MiPerfil", "Clientes")" class="btn-cancelar">Cancelar</a>
+        </div>
+    }
 </div>
 
-<div class="section-pad">
-    <form class="editar-form" onsubmit="guardarCambios(event)">
-        <!-- Nombre -->
-        <div class="form-group">
-            <label for="nombre" data-i18n="nombre">Nombre</label>
-            <input type="text" id="nombre" value="Katherine" class="form-input" required />
-        </div>
+@section Styles {
+    <link rel="stylesheet" href="~/Content/cliente/editar-datos.css" />
+}
 
-        <!-- Apellidos -->
-        <div class="form-group">
-            <label for="apellidos" data-i18n="apellidos">Apellidos</label>
-            <input type="text" id="apellidos" value="Villalobos" class="form-input" required />
-        </div>
-
-        <!-- Teléfono -->
-        <div class="form-group">
-            <label for="telefono" data-i18n="telefono">Teléfono</label>
-            <input type="text" id="telefono" value="8888-7777" class="form-input" required />
-            <span class="input-hint">Formato: 8888-8888</span>
-        </div>
-
-        <!-- Correo -->
-        <div class="form-group">
-            <label for="correo" data-i18n="correo">Correo</label>
-            <input type="email" id="correo" value="k.villalobos@correo.cr" class="form-input" required />
-            <span class="input-hint">Recibirás notificaciones en este correo</span>
-        </div>
-
-        <!-- Botón Guardar -->
-        <button type="submit" class="btn-guardar">
-            <i class="fas fa-save"></i> <span data-i18n="guardar_cambios">Guardar Cambios</span>
-        </button>
-    </form>
-</div>
-
-<!-- JavaScript externo para Editar Datos -->
-@section scriptsVista {
-    <script src="@Url.Content("~/Scripts/cliente/editar-datos.js")"></script>
+@section Scripts {
+    <script src="~/Scripts/cliente/editar-datos.js"></script>
 }

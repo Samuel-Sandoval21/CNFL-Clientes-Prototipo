@@ -1,0 +1,41 @@
+@{
+    ViewBag.Title = "Mis Facturas";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/cliente/mis-facturas.css" />
+
+<div class="facturas-container">
+    <h2>Mis Facturas</h2>
+
+    <div class="factura-card">
+        <div class="factura-info">
+            <span class="nise">NISE 4021</span>
+            <span class="monto">₡18,450</span>
+            <span class="fecha">Vence: 28 de agosto</span>
+        </div>
+        <button class="btn-pagar" onclick="alert('Pagar factura')">Pagar</button>
+    </div>
+
+    <div class="factura-card pagada">
+        <div class="factura-info">
+            <span class="nise">NISE 7788</span>
+            <span class="monto">₡32,000</span>
+            <span class="fecha">Pagada el 15 de agosto</span>
+        </div>
+        <span class="estado-pagada">Pagada</span>
+    </div>
+
+    <div class="factura-card">
+        <div class="factura-info">
+            <span class="nise">NISE 9950</span>
+            <span class="monto">₡25,000</span>
+            <span class="fecha">Vence: 2 de septiembre</span>
+        </div>
+        <button class="btn-pagar" onclick="alert('Pagar factura')">Pagar</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/cliente/mis-facturas.js"></script>
+}

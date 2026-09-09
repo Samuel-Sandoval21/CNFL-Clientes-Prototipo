@@ -1,0 +1,30 @@
+﻿using System.Collections.Generic;
+
+namespace CNFL_Clientes_Prototipo.Models
+{
+    public class ReportesViewModel
+    {
+        public int TotalAverias { get; set; }
+        public string TiempoPromedioResolucion { get; set; } = "0 hrs";
+        public int TasaResolucion { get; set; } = 0;
+        public List<AveriaPorMes> AveriasPorMes { get; set; } = new List<AveriaPorMes>();
+        public List<AveriaConTiempo> AveriasRecientes { get; set; } = new List<AveriaConTiempo>();
+    }
+
+    public class AveriaPorMes
+    {
+        public string Mes { get; set; }
+        public int Cantidad { get; set; }
+    }
+
+    public class AveriaConTiempo
+    {
+        public int AveriaId { get; set; }
+        public int UsuarioId { get; set; }
+        public int NiseId { get; set; }
+        public string Tipo { get; set; }
+        public string Descripcion { get; set; }
+        public string Estado { get; set; }
+        public string TiempoTranscurrido { get; set; }
+    }
+}

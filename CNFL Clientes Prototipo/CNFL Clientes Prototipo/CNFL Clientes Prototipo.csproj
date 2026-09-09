@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\EntityFramework.6.5.2\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.props')" />
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -62,10 +62,10 @@
       <HintPath>..\packages\DocumentFormat.OpenXml.Framework.3.1.1\lib\net46\DocumentFormat.OpenXml.Framework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.5.2\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.5.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="EPPlus.Interfaces, Version=8.6.2.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.Interfaces.8.6.2\lib\net462\EPPlus.Interfaces.dll</HintPath>
@@ -189,89 +189,91 @@
     <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Data\CNFLDbContext.cs" />
+    <Compile Include="Filters\SessionAuthorizeAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ActividadEconomica.cs" />
     <Compile Include="Models\Averia.cs" />
-    <Compile Include="Models\Cliente.cs" />
     <Compile Include="Models\Factura.cs" />
-    <Compile Include="Models\FormularioTramite.cs" />
     <Compile Include="Models\NISE.cs" />
     <Compile Include="Models\Notificacion.cs" />
-    <Compile Include="Models\Pago.cs" />
     <Compile Include="Models\ReportesViewModel.cs" />
     <Compile Include="Models\Rol.cs" />
     <Compile Include="Models\Suscripcion.cs" />
+    <Compile Include="Models\Suspension.cs" />
     <Compile Include="Models\Tramite.cs" />
     <Compile Include="Models\Usuario.cs" />
+    <Compile Include="Models\UsuarioRol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AveriaRepository.cs" />
-    <Compile Include="Repositories\ClienteRepository.cs" />
     <Compile Include="Repositories\FacturaRepository.cs" />
     <Compile Include="Repositories\NotificacionRepository.cs" />
-    <Compile Include="Services\AveriaService.cs" />
-    <Compile Include="Services\ClienteService.cs" />
-    <Compile Include="Services\FacturaService.cs" />
-    <Compile Include="Services\NotificacionService.cs" />
+    <Compile Include="Services\DashboardService.cs" />
+    <Compile Include="Services\NISEService.cs" />
+    <Compile Include="Services\SuscripcionService.cs" />
+    <Compile Include="Services\SuspensionService.cs" />
     <Compile Include="Services\TramiteService.cs" />
-    <Content Include="Content\admin-clientes.css" />
-    <Content Include="Content\admin-dashboard.css" />
-    <Content Include="Content\admin-index.css" />
-    <Content Include="Content\admin-layout.css" />
-    <Content Include="Content\admin-reportes.css" />
+    <Compile Include="Services\UsuarioService.cs" />
+    <Content Include="Content\admin\admin.css" />
+    <Content Include="Content\admin\averias.css" />
+    <Content Include="Content\admin\clientes.css" />
+    <Content Include="Content\admin\dashboard.css" />
+    <Content Include="Content\admin\detalle-averia.css" />
+    <Content Include="Content\admin\detalle-cliente.css" />
+    <Content Include="Content\admin\reportes.css" />
+    <Content Include="Content\cliente\app.css" />
     <Content Include="Content\cliente\calculadora.css" />
     <Content Include="Content\cliente\carrito.css" />
     <Content Include="Content\cliente\chat.css" />
     <Content Include="Content\cliente\cuenta.css" />
+    <Content Include="Content\cliente\dashboard.css" />
+    <Content Include="Content\cliente\detalle-tramite.css" />
     <Content Include="Content\cliente\editar-datos.css" />
+    <Content Include="Content\cliente\estado-averia.css" />
     <Content Include="Content\cliente\historial-compras.css" />
-    <Content Include="Content\cliente\iban.css" />
-    <Content Include="Content\cliente\inicio.css" />
-    <Content Include="Content\cliente\layout-login.css" />
-    <Content Include="Content\cliente\layout.css" />
+    <Content Include="Content\cliente\mis-facturas.css" />
     <Content Include="Content\cliente\notificaciones.css" />
+    <Content Include="Content\cliente\nuevo-tramite.css" />
     <Content Include="Content\cliente\pagos.css" />
     <Content Include="Content\cliente\perfil.css" />
     <Content Include="Content\cliente\recuperar-clave.css" />
-    <Content Include="Content\cliente\reportes-form.css" />
+    <Content Include="Content\cliente\reportar-averia.css" />
     <Content Include="Content\cliente\reportes.css" />
     <Content Include="Content\cliente\servicios-contratados.css" />
-    <Content Include="Content\cliente\sinpe.css" />
     <Content Include="Content\cliente\suscripciones.css" />
-    <Content Include="Content\cliente\tarjeta.css" />
     <Content Include="Content\cliente\tienda.css" />
     <Content Include="Content\cliente\tramites.css" />
     <Content Include="Content\home-publico.css" />
-    <Content Include="Scripts\admin-clientes.js" />
-    <Content Include="Scripts\admin-dashboard.js" />
-    <Content Include="Scripts\admin-index.js" />
-    <Content Include="Scripts\admin-layout.js" />
-    <Content Include="Scripts\admin-reportes.js" />
+    <Content Include="Scripts\admin\admin.js" />
+    <Content Include="Scripts\admin\averias.js" />
+    <Content Include="Scripts\admin\clientes.js" />
+    <Content Include="Scripts\admin\dashboard.js" />
+    <Content Include="Scripts\admin\detalle-averia.js" />
+    <Content Include="Scripts\admin\detalle-cliente.js" />
+    <Content Include="Scripts\admin\reportes.js" />
+    <Content Include="Scripts\cliente\app.js" />
     <Content Include="Scripts\cliente\calculadora.js" />
     <Content Include="Scripts\cliente\carrito.js" />
     <Content Include="Scripts\cliente\chat.js" />
     <Content Include="Scripts\cliente\cuenta.js" />
+    <Content Include="Scripts\cliente\dashboard.js" />
+    <Content Include="Scripts\cliente\detalle-tramite.js" />
     <Content Include="Scripts\cliente\editar-datos.js" />
-    <Content Include="Scripts\cliente\historial-compras.js" />
-    <Content Include="Scripts\cliente\iban.js" />
-    <Content Include="Scripts\cliente\idiomas.js" />
-    <Content Include="Scripts\cliente\inicio.js" />
-    <Content Include="Scripts\cliente\layout-login.js" />
-    <Content Include="Scripts\cliente\layout.js" />
+    <Content Include="Scripts\cliente\estado-averia.js" />
+    <Content Include="Scripts\cliente\mis-facturas.js" />
     <Content Include="Scripts\cliente\notificaciones.js" />
+    <Content Include="Scripts\cliente\nuevo-tramite.js" />
     <Content Include="Scripts\cliente\pagos.js" />
     <Content Include="Scripts\cliente\perfil.js" />
     <Content Include="Scripts\cliente\recuperar-clave.js" />
-    <Content Include="Scripts\cliente\reportes-form.js" />
+    <Content Include="Scripts\cliente\reportar-averia.js" />
     <Content Include="Scripts\cliente\reportes.js" />
     <Content Include="Scripts\cliente\servicios-contratados.js" />
-    <Content Include="Scripts\cliente\sinpe.js" />
     <Content Include="Scripts\cliente\suscripciones.js" />
-    <Content Include="Scripts\cliente\tarjeta.js" />
     <Content Include="Scripts\cliente\tienda.js" />
     <Content Include="Scripts\cliente\tramites.js" />
-    <Content Include="Scripts\home-publico.js" />
+    <Content Include="Scripts\Site.js" />
     <Content Include="Views\Admin\Clientes.cshtml" />
     <Content Include="Views\Admin\Dashboard.cshtml" />
     <Content Include="Views\Admin\Reportes.cshtml" />
@@ -280,20 +282,13 @@
     <Content Include="Views\Clientes\Pagos.cshtml" />
     <Content Include="Views\Clientes\Tienda.cshtml" />
     <Content Include="Views\Clientes\Tramites.cshtml" />
-    <Content Include="Views\Clientes\Perfil.cshtml" />
+    <Content Include="Views\Clientes\MiPerfil.cshtml" />
     <Content Include="Views\Clientes\Reportes.cshtml" />
-    <Content Include="Views\Clientes\DetalleFactura.cshtml" />
-    <Content Include="Views\Clientes\Sinpe.cshtml" />
-    <Content Include="Views\Clientes\Iban.cshtml" />
-    <Content Include="Views\Clientes\Tarjeta.cshtml" />
     <Content Include="Views\Clientes\EditarDatos.cshtml" />
     <Content Include="Views\Clientes\Suscripciones.cshtml" />
     <Content Include="Views\Clientes\Calculadora.cshtml" />
-    <Content Include="Views\Clientes\Notificaciones.cshtml" />
+    <Content Include="Views\Clientes\MisNotificaciones.cshtml" />
     <Content Include="Views\Clientes\HistorialCompras.cshtml" />
-    <Content Include="Views\Clientes\ReportarAlumbrado.cshtml" />
-    <Content Include="Views\Clientes\ReportarPropia.cshtml" />
-    <Content Include="Views\Clientes\ReportarAjena.cshtml" />
     <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
     <Content Include="Views\Shared\_LayoutCliente.cshtml" />
     <Content Include="Views\Shared\_LayoutLogin.cshtml" />
@@ -317,12 +312,10 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
-    <Content Include="Content\prototipo.css" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Index.html" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -350,14 +343,22 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Clientes\Index.cshtml" />
     <Content Include="Views\Cuenta\Login.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Cuenta\Registro.cshtml" />
     <Content Include="Views\Clientes\Dashboard.cshtml" />
     <Content Include="Views\Clientes\ServiciosContratados.cshtml" />
     <Content Include="Views\Cuenta\RecuperarClave.cshtml" />
     <Content Include="Views\Clientes\Carrito.cshtml" />
+    <Content Include="Views\Admin\Averias.cshtml" />
+    <Content Include="Views\Admin\DetalleAveria.cshtml" />
+    <Content Include="Views\Admin\DetalleCliente.cshtml" />
+    <Content Include="Views\Clientes\NuevoTramite.cshtml" />
+    <Content Include="Views\Clientes\DetalleTramite.cshtml" />
+    <Content Include="Views\Clientes\ReportarAveria.cshtml" />
+    <Content Include="Views\Clientes\EstadoAveria.cshtml" />
+    <Content Include="Views\Shared\_LayoutApp.cshtml" />
+    <Content Include="Views\Clientes\MisFacturas.cshtml" />
+    <Content Include="Views\Clientes\ReportarAlumbrado.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -429,8 +430,8 @@
       <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.2\build\EntityFramework.props'))" />
-    <Error Condition="!Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.2\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
   </Target>
-  <Import Project="..\packages\EntityFramework.6.5.2\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.targets')" />
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
 </Project>

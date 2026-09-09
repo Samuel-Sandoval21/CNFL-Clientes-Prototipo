@@ -1,0 +1,65 @@
+/* ===== Cliente - Nuevo Trámite ===== */
+.nuevo-tramite-container {
+    padding: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+    .nuevo-tramite-container h2 {
+        color: #0033A0;
+        margin: 0 0 4px;
+    }
+
+    .nuevo-tramite-container > p {
+        color: #727A86;
+        margin: 0 0 20px;
+    }
+
+.tramite-opciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.tramite-opcion {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #EDEFF3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+    .tramite-opcion:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: inherit;
+    }
+
+.opcion-icon {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.tramite-opcion h3 {
+    font-size: 15px;
+    color: #0033A0;
+    margin: 0 0 4px;
+}
+
+.tramite-opcion p {
+    font-size: 13px;
+    color: #727A86;
+    margin: 0;
+    line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+    .tramite-opciones {
+        grid-template-columns: 1fr;
+    }
+}

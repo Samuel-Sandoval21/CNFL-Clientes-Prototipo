@@ -1,122 +1,51 @@
-﻿@model CNFL_Clientes_Prototipo.Models.ReportesViewModel
-
-@{
-    ViewBag.Title = "Reportes - CNFL";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+﻿@{
+    ViewBag.Title = "Reportes";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<link rel="stylesheet" href="@Url.Content("~/Content/admin-reportes.css")" />
+<link rel="stylesheet" href="~/Content/admin/reportes.css" />
 
-<div class="toast-notification" id="toastNotif"></div>
+<div class="admin-reportes">
+    <div class="page-header">
+        <h1>Reportes</h1>
+        <p>Genera reportes y estadísticas del sistema.</p>
+    </div>
 
-<div class="report-header">
-    <div>
-        <h2><i class="fas fa-chart-line" style="color:var(--blue);"></i> Reportes y Estadísticas</h2>
-        <p>Análisis detallado de averías, clientes y rendimiento del sistema</p>
+    <div class="reportes-grid">
+        <div class="reporte-card">
+            <div class="reporte-icon">📊</div>
+            <h3>Reporte de Averías</h3>
+            <p>Genera un reporte detallado de todas las averías registradas.</p>
+            <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "averias" })" class="btn-generar" target="_blank">Generar PDF</a>
+        </div>
+
+        <div class="reporte-card">
+            <div class="reporte-icon">👥</div>
+            <h3>Reporte de Clientes</h3>
+            <p>Genera un reporte de todos los clientes registrados.</p>
+            <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "clientes" })" class="btn-generar" target="_blank">Generar PDF</a>
+        </div>
+
+        <div class="reporte-card">
+            <div class="reporte-icon">📈</div>
+            <h3>Estadísticas Generales</h3>
+            <p>Genera un reporte con estadísticas de uso y rendimiento.</p>
+            <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "estadisticas" })" class="btn-generar" target="_blank">Generar PDF</a>
+        </div>
+
+        <div class="reporte-card">
+            <div class="reporte-icon">⚡</div>
+            <h3>Reporte de Consumo</h3>
+            <p>Genera un reporte de consumo eléctrico por cliente.</p>
+            <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "consumo" })" class="btn-generar" target="_blank">Generar PDF</a>
+        </div>
+    </div>
+
+    <div class="admin-note-box">
+        <p>💡 Los reportes se generan en formato PDF con los datos más recientes del sistema.</p>
     </div>
 </div>
 
-<div class="report-filters">
-    <select id="periodoFilter">
-        <option value="7d">Últimos 7 días</option>
-        <option value="30d" selected>Últimos 30 días</option>
-        <option value="90d">Últimos 90 días</option>
-        <option value="1a">Último año</option>
-        <option value="personalizado">Personalizado</option>
-    </select>
-    <input type="date" id="fechaInicio" placeholder="Fecha inicio" />
-    <input type="date" id="fechaFin" placeholder="Fecha fin" />
-    <button class="btn-generar" onclick="generarReporte()"><i class="fas fa-sync-alt"></i> Generar Reporte</button>
-</div>
-
-<div class="report-grid">
-    <div class="report-card">
-        <span class="icon"><i class="fas fa-clipboard-list" style="color:var(--blue);"></i></span>
-        <div class="number">@Model.TotalAverias</div>
-        <div class="label">Total Averías</div>
-        @{
-            string trendClassAverias = "trend-neutral";
-            string trendIconAverias = "—";
-            if (Model.TrendAverias > 0) { trendClassAverias = "trend-up"; trendIconAverias = "▲"; }
-            else if (Model.TrendAverias < 0) { trendClassAverias = "trend-down"; trendIconAverias = "▼"; }
-        }
-        <span class="trend @trendClassAverias">@trendIconAverias @Math.Abs(Model.TrendAverias)% vs mes anterior</span>
-    </div>
-    <div class="report-card">
-        <span class="icon"><i class="fas fa-clock" style="color:var(--orange);"></i></span>
-        <div class="number">@Model.TiempoPromedioResolucion</div>
-        <div class="label">Tiempo Prom. Resolución</div>
-        @{
-            string trendClassTiempo = "trend-neutral";
-            string trendIconTiempo = "—";
-            if (Model.TrendTiempo < 0) { trendClassTiempo = "trend-up"; trendIconTiempo = "▲"; }
-            else if (Model.TrendTiempo > 0) { trendClassTiempo = "trend-down"; trendIconTiempo = "▼"; }
-        }
-        <span class="trend @trendClassTiempo">@trendIconTiempo @Math.Abs(Model.TrendTiempo)% más rápido</span>
-    </div>
-    <div class="report-card">
-        <span class="icon"><i class="fas fa-check-circle" style="color:var(--green);"></i></span>
-        <div class="number">@Model.TasaResolucion%</div>
-        <div class="label">Tasa de Resolución</div>
-        @{
-            string trendClassTasa = "trend-neutral";
-            string trendIconTasa = "—";
-            if (Model.TrendTasa > 0) { trendClassTasa = "trend-up"; trendIconTasa = "▲"; }
-            else if (Model.TrendTasa < 0) { trendClassTasa = "trend-down"; trendIconTasa = "▼"; }
-        }
-        <span class="trend @trendClassTasa">@trendIconTasa @Math.Abs(Model.TrendTasa)% vs mes anterior</span>
-    </div>
-</div>
-
-<div class="report-chart-container">
-    <h4><i class="fas fa-chart-bar" style="color:var(--blue);"></i> Averías por mes</h4>
-    <div class="chart-bars" id="chartBars">
-        @foreach (var item in Model.AveriasPorMes)
-        {
-            <div class="chart-bar-item">
-                <div class="chart-bar-value">@item.Cantidad</div>
-                @{
-                    int barHeight = (item.Cantidad > 0) ? (item.Cantidad * 8 + 10) : 10;
-                    string barColor = (item.Cantidad > 0) ? "var(--blue)" : "#e0e0e0";
-                }
-                <div class="chart-bar" style="height:@(barHeight)px;background:@(barColor);"></div>
-                <div class="chart-bar-label">@item.Mes</div>
-            </div>
-        }
-    </div>
-</div>
-
-<div class="report-table-container">
-    <h4><i class="fas fa-table" style="color:var(--blue);"></i> Detalle de averías recientes</h4>
-    <table class="report-table" id="reportTable">
-        <thead>
-            <tr><th>ID</th><th>Tipo</th><th>Ubicación</th><th>Fecha</th><th>Estado</th><th>Tiempo</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var averia in Model.AveriasRecientes)
-            {
-                string estadoClass = "estado-reportado";
-                if (averia.Estado == "En Proceso") { estadoClass = "estado-revision"; }
-                else if (averia.Estado == "En camino") { estadoClass = "estado-camino"; }
-                else if (averia.Estado == "Resuelto") { estadoClass = "estado-resuelto"; }
-
-                <tr>
-                    <td><strong>#@averia.Id</strong></td>
-                    <td>@averia.TipoAveria</td>
-                    <td>@averia.Direccion</td>
-                    <td>@averia.FechaReporte.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td><span class="badge-estado @estadoClass">@averia.Estado</span></td>
-                    <td>@averia.TiempoTranscurrido</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <div class="report-export-buttons">
-        <button class="btn-export pdf" onclick="exportarReporte('pdf')"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
-        <button class="btn-export excel" onclick="exportarReporte('excel')"><i class="fas fa-file-excel"></i> Exportar Excel</button>
-        <button class="btn-export csv" onclick="exportarReporte('csv')"><i class="fas fa-file-csv"></i> Exportar CSV</button>
-    </div>
-</div>
-
-<script src="@Url.Content("~/Scripts/admin-reportes.js")"></script>
+@section Scripts {
+    <script src="~/Scripts/admin/reportes.js"></script>
+}

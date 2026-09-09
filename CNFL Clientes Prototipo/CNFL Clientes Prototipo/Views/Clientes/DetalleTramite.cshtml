@@ -1,0 +1,48 @@
+﻿@model CNFL_Clientes_Prototipo.Models.Tramite
+
+@{
+    ViewBag.Title = "Detalle de Trámite";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<div class="detalle-tramite">
+    <div class="page-header">
+        <h2>Detalle de Trámite</h2>
+        <a href="@Url.Action("Tramites", "Clientes")" class="btn-volver">← Volver</a>
+    </div>
+
+    <div class="detalle-card">
+        <div class="detalle-header">
+            <span class="tramite-id">#@Model.TramiteId</span>
+            <span class="estado-badge @Model.Estado.Replace(" ", "-").ToLower()">@Model.Estado</span>
+        </div>
+
+        <div class="detalle-body">
+            <p><strong>Tipo:</strong> @Model.Tipo</p>
+            <p><strong>Fecha Solicitud:</strong> @Model.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</p>
+            <p><strong>Descripción:</strong> @Model.Descripcion</p>
+        </div>
+
+        <div class="detalle-progreso">
+            <h4>Progreso del trámite</h4>
+            <div class="track">
+                <div class="step @(Model.Estado == "Solicitado" || Model.Estado == "En proceso" || Model.Estado == "Completado" ? "done" : "")">
+                    <div class="cir">1</div>
+                    <div class="lb">Solicitado</div>
+                </div>
+                <div class="step @(Model.Estado == "En proceso" || Model.Estado == "Completado" ? "done" : "") @(Model.Estado == "En proceso" ? "now" : "")">
+                    <div class="cir">2</div>
+                    <div class="lb">En proceso</div>
+                </div>
+                <div class="step @(Model.Estado == "Completado" ? "done" : "")">
+                    <div class="cir">3</div>
+                    <div class="lb">Completado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/Content/cliente/detalle-tramite.css" />
+}

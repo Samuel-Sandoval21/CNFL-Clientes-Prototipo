@@ -1,98 +1,86 @@
-﻿/* ==========================================
-   EDITAR DATOS - ESTILOS PREMIUM
-   ========================================== */
-
-.editar-form {
-    background: #fff;
-    border-radius: 20px;
-    padding: 24px;
-    border: 1px solid var(--line);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+/* ===== Cliente - Editar Datos ===== */
+.editar-container {
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
-    .editar-form .form-group {
-        margin-bottom: 18px;
+    .editar-container h2 {
+        color: #0033A0;
+        margin: 0 0 4px;
     }
 
-        .editar-form .form-group label {
-            display: block;
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--muted);
-            margin-bottom: 6px;
-        }
+    .editar-container > p {
+        color: #727A86;
+        margin: 0 0 20px;
+    }
 
-        .editar-form .form-group .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid var(--line);
-            border-radius: 14px;
-            font-family: inherit;
-            font-size: 15px;
-            transition: 0.3s;
-            background: white;
-            color: var(--ink);
-        }
+.editar-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
+}
 
-            .editar-form .form-group .form-input:focus {
-                outline: none;
-                border-color: var(--blue);
-                box-shadow: 0 0 0 4px rgba(30, 35, 230, 0.08);
-            }
+.form-group {
+    margin-bottom: 16px;
+}
 
-            .editar-form .form-group .form-input::placeholder {
-                color: var(--muted);
-                opacity: 0.7;
-            }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 14px;
+        color: #0E1116;
+        margin-bottom: 4px;
+    }
 
-        .editar-form .form-group .input-hint {
-            display: block;
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #EDEFF3;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+    .form-control:focus {
+        outline: none;
+        border-color: #0033A0;
+        box-shadow: 0 0 0 3px rgba(0,51,160,0.1);
+    }
 
 .btn-guardar {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, var(--blue), #5a60f5);
+    background: #0033A0;
     color: white;
     border: none;
-    border-radius: 14px;
-    font-weight: 800;
-    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
-    transition: 0.3s;
-    font-family: inherit;
-    box-shadow: 0 6px 20px rgba(30, 35, 230, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    transition: background 0.2s;
 }
 
     .btn-guardar:hover {
-        transform: scale(0.98);
-        box-shadow: 0 8px 30px rgba(30, 35, 230, 0.4);
+        background: #002780;
     }
 
-    .btn-guardar:active {
-        transform: scale(0.95);
-    }
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 480px) {
-    .editar-form {
-        padding: 16px;
-    }
-
-        .editar-form .form-group .form-input {
-            font-size: 14px;
-            padding: 10px 14px;
-        }
-
-    .btn-guardar {
-        font-size: 14px;
-        padding: 12px;
-    }
+.btn-cancelar {
+    background: #F5F6FA;
+    color: #0E1116;
+    border: 1px solid #EDEFF3;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 8px;
+    transition: background 0.2s;
 }
+
+    .btn-cancelar:hover {
+        background: #EDEFF3;
+    }

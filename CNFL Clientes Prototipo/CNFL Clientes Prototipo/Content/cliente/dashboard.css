@@ -1,0 +1,101 @@
+.dashboard-container {
+    padding: 0 4px;
+}
+
+.welcome-section h1 {
+    font-size: 24px;
+    color: #0033A0;
+    margin: 0;
+}
+
+.welcome-section p {
+    color: #727A86;
+    margin: 4px 0 20px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.card-dashboard {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
+    text-decoration: none;
+    color: inherit;
+}
+
+    .card-dashboard:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+.card-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.card-dashboard h3 {
+    font-size: 14px;
+    color: #0033A0;
+    margin: 0;
+}
+
+.card-dashboard p {
+    font-size: 12px;
+    color: #727A86;
+    margin: 4px 0 0;
+}
+
+.factura-resumen {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #EDEFF3;
+    margin-top: 20px;
+}
+
+    .factura-resumen h2 {
+        font-size: 18px;
+        color: #0033A0;
+        margin: 0 0 12px;
+    }
+
+.factura-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.monto {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0033A0;
+}
+
+.fecha {
+    color: #727A86;
+    font-size: 14px;
+}
+
+.btn-pagar {
+    background: #FF692D;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+    .btn-pagar:hover {
+        background: #E55A1E;
+    }

@@ -1,92 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using CNFL_Clientes_Prototipo.Models;
+using CNFL_Clientes_Prototipo.Data;
 
 namespace CNFL_Clientes_Prototipo.Repositories
 {
     public class AveriaRepository
     {
-        private static List<Averia> _averias = new List<Averia>()
-        {
-            new Averia {
-                Id = 1,
-                UsuarioId = 2,
-                NISEId = 1,
-                TipoAveria = "Eléctrica",
-                Descripcion = "Se escuchan explosiones y no hay luz",
-                Direccion = "Barrio Los Ángeles, Cartago",
-                Estado = "En Proceso",
-                FechaReporte = System.DateTime.Now.AddHours(-2),
-                Latitud = null,
-                Longitud = null
-            },
-            new Averia {
-                Id = 2,
-                UsuarioId = 2,
-                NISEId = 1,
-                TipoAveria = "Alumbrado Público",
-                Descripcion = "Poste de luz sin funcionar en toda la calle",
-                Direccion = "San José, La Uruca",
-                Estado = "Pendiente",
-                FechaReporte = System.DateTime.Now.AddHours(-5),
-                Latitud = null,
-                Longitud = null
-            },
-            new Averia {
-                Id = 3,
-                UsuarioId = 3,
-                NISEId = 2,
-                TipoAveria = "Ajena",
-                Descripcion = "Árbol caído sobre cables eléctricos",
-                Direccion = "Heredia, San Pablo",
-                Estado = "Resuelto",
-                FechaReporte = System.DateTime.Now.AddDays(-1),
-                Latitud = null,
-                Longitud = null
-            }
-        };
+        private CNFLDbContext _db = new CNFLDbContext();
 
         public List<Averia> ObtenerTodas()
         {
-            return _averias.OrderByDescending(a => a.FechaReporte).ToList();
-        }
-
-        public void Agregar(Averia averia)
-        {
-            averia.Id = _averias.Count > 0 ? _averias.Max(a => a.Id) + 1 : 1;
-            averia.FechaReporte = System.DateTime.Now;
-            averia.Estado = "Pendiente";
-            _averias.Add(averia);
-        }
-
-        public void ActualizarEstado(int id, string nuevoEstado)
-        {
-            var averia = _averias.FirstOrDefault(a => a.Id == id);
-            if (averia != null)
-            {
-                averia.Estado = nuevoEstado;
-            }
+            return _db.Averias.Include("Usuario").Include("NISE").OrderByDescending(a => a.FechaReporte).ToList();
         }
 
         public Averia ObtenerPorId(int id)
         {
-            return _averias.FirstOrDefault(a => a.Id == id);
+            return _db.Averias.Include("Usuario").Include("NISE").FirstOrDefault(a => a.AveriaId == id);
         }
 
-        public void Eliminar(int id)
+        public List<Averia> ObtenerPorUsuario(int usuarioId)
         {
-            var averia = _averias.FirstOrDefault(a => a.Id == id);
-            if (averia != null)
-            {
-                _averias.Remove(averia);
-            }
+            return _db.Averias.Where(a => a.UsuarioId == usuarioId).OrderByDescending(a => a.FechaReporte).ToList();
+        }
+
+        public List<Averia> ObtenerPorNise(int niseId)
+        {
+            return _db.Averias.Where(a => a.NiseId == niseId).OrderByDescending(a => a.FechaReporte).ToList();
         }
 
         public List<Averia> ObtenerPorEstado(string estado)
         {
-            return _averias.Where(a => a.Estado == estado).ToList();
+            return _db.Averias.Where(a => a.Estado == estado).OrderByDescending(a => a.FechaReporte).ToList();
+        }
+
+        public void Agregar(Averia averia)
+        {
+            averia.FechaReporte = DateTime.Now;
+            _db.Averias.Add(averia);
+            _db.SaveChanges();
+        }
+
+        public void ActualizarEstado(int averiaId, string nuevoEstado)
+        {
+            var averia = _db.Averias.Find(averiaId);
+            if (averia != null)
+            {
+                averia.Estado = nuevoEstado;
+                averia.FechaActualizacion = DateTime.Now;
+                _db.SaveChanges();
+            }
+        }
+
+        public int ContarPorEstado(string estado)
+        {
+            return _db.Averias.Count(a => a.Estado == estado);
+        }
+
+        public int ContarTotales()
+        {
+            return _db.Averias.Count();
+        }
+
+        public List<Averia> ObtenerRecientes(int cantidad)
+        {
+            return _db.Averias.OrderByDescending(a => a.FechaReporte).Take(cantidad).ToList();
         }
     }
 }

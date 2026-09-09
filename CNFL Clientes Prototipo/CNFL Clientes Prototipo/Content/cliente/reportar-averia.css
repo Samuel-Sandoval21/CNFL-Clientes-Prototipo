@@ -1,0 +1,76 @@
+/* ===== Cliente - Reportar Avería ===== */
+.reportar-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+    .reportar-container h2 {
+        color: #0033A0;
+        margin: 0 0 4px;
+    }
+
+    .reportar-container > p {
+        color: #727A86;
+        margin: 0 0 16px;
+    }
+
+.reportar-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid #EDEFF3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.alert-success {
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #A5D6A7;
+    margin-bottom: 16px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 14px;
+        color: #0E1116;
+        margin-bottom: 4px;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #EDEFF3;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+    .form-control:focus {
+        outline: none;
+        border-color: #0033A0;
+    }
+
+.btn-enviar {
+    background: #FF692D;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+    .btn-enviar:hover {
+        background: #E55A1E;
+    }

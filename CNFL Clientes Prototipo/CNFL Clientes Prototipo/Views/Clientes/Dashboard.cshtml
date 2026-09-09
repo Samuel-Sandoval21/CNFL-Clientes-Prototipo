@@ -1,28 +1,51 @@
 ﻿@{
-    ViewBag.Title = "Bienvenido";
-    var nombre = Session["Usuario"]?.ToString() ?? "Usuario";
-    var rol = Session["Rol"]?.ToString() ?? "";
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<div class="text-center mt-4">
-    <h1 class="display-4">¡Bienvenido, @nombre! 👋</h1>
-    <p class="lead">Rol activo: <strong>@rol</strong></p>
-    <hr />
-    <p>Desde aquí puedes gestionar tu servicio eléctrico.</p>
+<link rel="stylesheet" href="~/Content/cliente/dashboard.css" />
 
-    <div class="row mt-5">
-        <!-- En pantallas pequeñas, estos botones se ponen uno debajo del otro (col-12) -->
-        <div class="col-md-3 col-12 mb-3">
-            <a href="/Averias" class="btn btn-cnfl w-100 py-4">📷 Reportar Avería</a>
-        </div>
-        <div class="col-md-3 col-12 mb-3">
-            <a href="/Facturas" class="btn btn-cnfl w-100 py-4">📄 Mis Facturas</a>
-        </div>
-        <div class="col-md-3 col-12 mb-3">
-            <a href="/Cuenta/MisDatos" class="btn btn-cnfl w-100 py-4">📋 Mis Datos</a>
-        </div>
-        <div class="col-md-3 col-12 mb-3">
-            <a href="/Cuenta/Logout" class="btn btn-outline-danger w-100 py-4">🚪 Cerrar Sesión</a>
+<div class="dashboard-container">
+    <div class="welcome-section">
+        <h1>Bienvenido, @Session["Nombre"]</h1>
+        <p>Gestiona tu servicio eléctrico desde tu celular.</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <a href="@Url.Action("MisFacturas", "Clientes")" class="card-dashboard">
+            <div class="card-icon">📄</div>
+            <h3>Facturas</h3>
+            <p>Consulta y paga tus facturas</p>
+        </a>
+        <a href="@Url.Action("Reportes", "Clientes")" class="card-dashboard">
+            <div class="card-icon">📋</div>
+            <h3>Reportes</h3>
+            <p>Reporta averías y más</p>
+        </a>
+        <a href="@Url.Action("Tienda", "Clientes")" class="card-dashboard">
+            <div class="card-icon">🛒</div>
+            <h3>Tienda</h3>
+            <p>Productos y servicios</p>
+        </a>
+        <a href="@Url.Action("MiPerfil", "Clientes")" class="card-dashboard">
+            <div class="card-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+            </div>
+            <h3>Mi Perfil</h3>
+            <p>Actualiza tus datos</p>
+        </a>
+    </div>
+
+    <div class="factura-resumen">
+        <h2>Factura Actual</h2>
+        <div class="factura-card">
+            <span class="monto">₡18,450</span>
+            <span class="fecha">Vence: 28 de agosto, 2026</span>
+            <a href="@Url.Action("Pagos", "Clientes")" class="btn-pagar">Pagar ahora</a>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/Scripts/cliente/dashboard.js"></script>
+}

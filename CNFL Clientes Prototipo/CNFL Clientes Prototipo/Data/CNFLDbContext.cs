@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using CNFL_Clientes_Prototipo.Models;
 
 namespace CNFL_Clientes_Prototipo.Data
@@ -15,120 +11,90 @@ namespace CNFL_Clientes_Prototipo.Data
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Rol> Roles { get; set; }
-        public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<UsuarioRol> UsuarioRoles { get; set; }
         public DbSet<NISE> NISEs { get; set; }
+        public DbSet<ActividadEconomica> ActividadesEconomicas { get; set; }
         public DbSet<Factura> Facturas { get; set; }
-        public DbSet<Pago> Pagos { get; set; }
         public DbSet<Averia> Averias { get; set; }
+        public DbSet<Suspension> Suspensiones { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
         public DbSet<Suscripcion> Suscripciones { get; set; }
-        public DbSet<ActividadEconomica> ActividadesEconomicas { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // ==========================================================
-            // CONFIGURAR NOMBRE DE TABLA ActividadesEconomicas
-            // ==========================================================
-            modelBuilder.Entity<ActividadEconomica>()
-                .ToTable("ActividadesEconomicas");
+            // ✅ CORRECCIÓN: Nombres exactos de tablas
+            modelBuilder.Entity<Usuario>().ToTable("Usuarios");
+            modelBuilder.Entity<Rol>().ToTable("Roles");
+            modelBuilder.Entity<UsuarioRol>().ToTable("UsuarioRoles");
+            modelBuilder.Entity<NISE>().ToTable("NISEs");
+            modelBuilder.Entity<Factura>().ToTable("Facturas");
+            modelBuilder.Entity<Averia>().ToTable("Averias");
+            modelBuilder.Entity<Suspension>().ToTable("Suspensiones");
+            modelBuilder.Entity<Notificacion>().ToTable("Notificaciones"); // ← CORREGIDO
+            modelBuilder.Entity<Tramite>().ToTable("Tramites");
+            modelBuilder.Entity<Suscripcion>().ToTable("Suscripciones");
 
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Usuario -> Rol
-            // ==========================================================
+            // Usuario -> UsuarioRoles
             modelBuilder.Entity<Usuario>()
-                .HasRequired(u => u.RolNavigation)
-                .WithMany(r => r.Usuarios)
-                .HasForeignKey(u => u.RolId);
+                .HasMany(u => u.UsuarioRoles)
+                .WithRequired(ur => ur.Usuario)
+                .HasForeignKey(ur => ur.UsuarioId);
 
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Cliente -> Usuario
-            // ==========================================================
-            modelBuilder.Entity<Cliente>()
-                .HasRequired(c => c.Usuario)
-                .WithOptional(u => u.Cliente)
-                .WillCascadeOnDelete(true);
+            // Rol -> UsuarioRoles
+            modelBuilder.Entity<Rol>()
+                .HasMany(r => r.UsuarioRoles)
+                .WithRequired(ur => ur.Rol)
+                .HasForeignKey(ur => ur.RolId);
 
-            // ==========================================================
-            // CONFIGURAR RELACIÓN NISE -> Cliente
-            // ==========================================================
-            modelBuilder.Entity<NISE>()
-                .HasRequired(n => n.Cliente)
-                .WithMany(c => c.NISEs)
-                .HasForeignKey(n => n.ClienteId);
-
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Factura -> NISE
-            // ==========================================================
-            modelBuilder.Entity<Factura>()
-                .HasRequired(f => f.NISE)
-                .WithMany(n => n.Facturas)
-                .HasForeignKey(f => f.NISEId);
-
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Pago -> Factura
-            // ==========================================================
-            modelBuilder.Entity<Pago>()
-                .HasRequired(p => p.Factura)
-                .WithMany(f => f.Pagos)
-                .HasForeignKey(p => p.FacturaId);
-
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Pago -> Usuario
-            // ==========================================================
-            modelBuilder.Entity<Pago>()
-                .HasRequired(p => p.Usuario)
-                .WithMany(u => u.Pagos)
-                .HasForeignKey(p => p.UsuarioId);
-
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Averia -> Usuario
-            // ==========================================================
-            modelBuilder.Entity<Averia>()
-                .HasRequired(a => a.Usuario)
-                .WithMany(u => u.Averias)
-                .HasForeignKey(a => a.UsuarioId);
-
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Averia -> NISE
-            // ==========================================================
-            modelBuilder.Entity<Averia>()
-                .HasRequired(a => a.NISE)
-                .WithMany(n => n.Averias)
-                .HasForeignKey(a => a.NISEId);
-
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Notificacion -> Usuario
-            // ==========================================================
-            modelBuilder.Entity<Notificacion>()
-                .HasRequired(n => n.Usuario)
-                .WithMany(u => u.Notificaciones)
+            // Usuario -> NISEs
+            modelBuilder.Entity<Usuario>()
+                .HasMany(u => u.NISEs)
+                .WithRequired(n => n.Usuario)
                 .HasForeignKey(n => n.UsuarioId);
 
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Tramite -> Usuario
-            // ==========================================================
-            modelBuilder.Entity<Tramite>()
-                .HasRequired(t => t.Usuario)
-                .WithMany(u => u.Tramites)
+            // NISE -> Facturas
+            modelBuilder.Entity<NISE>()
+                .HasMany(n => n.Facturas)
+                .WithRequired(f => f.NISE)
+                .HasForeignKey(f => f.NiseId);
+
+            // NISE -> Averias
+            modelBuilder.Entity<NISE>()
+                .HasMany(n => n.Averias)
+                .WithRequired(a => a.NISE)
+                .HasForeignKey(a => a.NiseId);
+
+            // NISE -> Suspensiones
+            modelBuilder.Entity<NISE>()
+                .HasMany(n => n.Suspensiones)
+                .WithRequired(s => s.NISE)
+                .HasForeignKey(s => s.NiseId);
+
+            // Usuario -> Averias
+            modelBuilder.Entity<Usuario>()
+                .HasMany(u => u.Averias)
+                .WithRequired(a => a.Usuario)
+                .HasForeignKey(a => a.UsuarioId);
+
+            // Usuario -> Notificaciones
+            modelBuilder.Entity<Usuario>()
+                .HasMany(u => u.Notificaciones)
+                .WithRequired(n => n.Usuario)
+                .HasForeignKey(n => n.UsuarioId);
+
+            // Usuario -> Tramites
+            modelBuilder.Entity<Usuario>()
+                .HasMany(u => u.Tramites)
+                .WithRequired(t => t.Usuario)
                 .HasForeignKey(t => t.UsuarioId);
 
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Tramite -> NISE
-            // ==========================================================
-            modelBuilder.Entity<Tramite>()
-                .HasRequired(t => t.NISE)
-                .WithMany(n => n.Tramites)
-                .HasForeignKey(t => t.NISEId);
-
-            // ==========================================================
-            // CONFIGURAR RELACIÓN Suscripcion -> Usuario
-            // ==========================================================
-            modelBuilder.Entity<Suscripcion>()
-                .HasRequired(s => s.Usuario)
-                .WithMany(u => u.Suscripciones)
+            // Usuario -> Suscripciones
+            modelBuilder.Entity<Usuario>()
+                .HasMany(u => u.Suscripciones)
+                .WithRequired(s => s.Usuario)
                 .HasForeignKey(s => s.UsuarioId);
         }
     }

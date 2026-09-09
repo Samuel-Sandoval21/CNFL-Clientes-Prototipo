@@ -1,0 +1,112 @@
+.admin-dashboard {
+    padding: 0 4px;
+}
+
+    .admin-dashboard h2 {
+        font-size: 22px;
+        color: #0033A0;
+    }
+
+    .admin-dashboard p {
+        color: #727A86;
+        margin-bottom: 16px;
+    }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid #EDEFF3;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 900;
+    color: #0033A0;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.admin-section {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #EDEFF3;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+    .section-header h3 {
+        font-size: 16px;
+        color: #0033A0;
+        margin: 0;
+    }
+
+.btn-ver-todas {
+    color: #FF692D;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.averias-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.averia-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #F5F6FA;
+    border-radius: 10px;
+}
+
+    .averia-item strong {
+        font-size: 14px;
+    }
+
+.estado-badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+    .estado-badge.ingresado {
+        background: #FFF3E0;
+        color: #E65100;
+    }
+
+    .estado-badge.en-revisión {
+        background: #FFF8E1;
+        color: #F57F17;
+    }
+
+    .estado-badge.operador-en-camino {
+        background: #E3F2FD;
+        color: #0D47A1;
+    }
+
+    .estado-badge.problema-resuelto {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }

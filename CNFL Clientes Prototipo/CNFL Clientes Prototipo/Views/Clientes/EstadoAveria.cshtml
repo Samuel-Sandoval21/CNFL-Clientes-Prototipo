@@ -1,0 +1,53 @@
+﻿@model CNFL_Clientes_Prototipo.Models.Averia
+
+@{
+    ViewBag.Title = "Estado de Avería";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<div class="estado-averia">
+    <div class="page-header">
+        <h2>Estado de Avería #@Model.AveriaId</h2>
+        <a href="@Url.Action("Reportes", "Clientes")" class="btn-volver">← Volver</a>
+    </div>
+
+    <div class="estado-card">
+        <div class="estado-header">
+            <span class="estado-badge @Model.Estado.Replace(" ", "-").ToLower()">@Model.Estado</span>
+            <span class="estado-fecha">@Model.FechaReporte.ToString("dd/MM/yyyy HH:mm")</span>
+        </div>
+
+        <div class="estado-body">
+            <p><strong>Tipo:</strong> @Model.Tipo</p>
+            <p><strong>Descripción:</strong> @Model.Descripcion</p>
+            <p><strong>NISE:</strong> @Model.NiseId</p>
+            <p><strong>Última actualización:</strong> @(Model.FechaActualizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Sin actualizar")</p>
+        </div>
+
+        <div class="estado-progreso">
+            <h4>Progreso del reporte</h4>
+            <div class="track">
+                <div class="step @(Model.Estado == "Ingresado" || Model.Estado == "En revisión" || Model.Estado == "Operador en camino" || Model.Estado == "Problema resuelto" ? "done" : "")">
+                    <div class="cir">1</div>
+                    <div class="lb">Ingresado</div>
+                </div>
+                <div class="step @(Model.Estado == "En revisión" || Model.Estado == "Operador en camino" || Model.Estado == "Problema resuelto" ? "done" : "") @(Model.Estado == "En revisión" ? "now" : "")">
+                    <div class="cir">2</div>
+                    <div class="lb">En revisión</div>
+                </div>
+                <div class="step @(Model.Estado == "Operador en camino" || Model.Estado == "Problema resuelto" ? "done" : "") @(Model.Estado == "Operador en camino" ? "now" : "")">
+                    <div class="cir">3</div>
+                    <div class="lb">Operador en camino</div>
+                </div>
+                <div class="step @(Model.Estado == "Problema resuelto" ? "done" : "") @(Model.Estado == "Problema resuelto" ? "now" : "")">
+                    <div class="cir">✓</div>
+                    <div class="lb">Resuelto</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/Content/cliente/estado-averia.css" />
+}

@@ -1,73 +1,74 @@
-﻿// ==========================================
-// CLIENTE - TRÁMITES
-// ==========================================
+// ============================================================
+// TRAMITES.JS - Cliente
+// ============================================================
 
-// ==========================================================
-// ===== SELECCIONAR TRÁMITE =====
-// ==========================================================
-function seleccionarTramite(tipo) {
-    var nombres = {
-        'cambio_nombre': 'Cambio de nombre de abonado',
-        'desconexion_reconexion': 'Desconexión y reconexión',
-        'solicitud_servicio': 'Solicitud de servicio nuevo',
-        'traslado_medidor': 'Traslado de medidor',
-        'traspaso_servicio': 'Traspaso de servicio eléctrico',
-        'reclamo_danos': 'Reclamo por daños'
-    };
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Trámites cargado');
 
-    var nombre = nombres[tipo] || tipo;
-
-    if (confirm('¿Desea iniciar el trámite "' + nombre + '"?')) {
-        // Redirigir al formulario correspondiente
-        window.location.href = '/Clientes/ReportarPropia?tramite=' + tipo;
+    // ===== Filtro de trámites por estado =====
+    var filtroEstado = document.getElementById('filtroEstado');
+    if (filtroEstado) {
+        filtroEstado.addEventListener('change', function () {
+            var estado = this.value.toLowerCase();
+            var tarjetas = document.querySelectorAll('.tramite-card');
+            tarjetas.forEach(function (card) {
+                var badge = card.querySelector('.estado-badge');
+                if (badge) {
+                    var badgeEstado = badge.textContent.toLowerCase();
+                    if (estado === '' || badgeEstado === estado) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        });
     }
-}
 
-// ==========================================================
-// ===== MOSTRAR TOAST =====
-// ==========================================================
+    // ===== Click en "Ver detalle" =====
+    document.querySelectorAll('.btn-ver-tramite').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            var id = this.dataset.id || '0';
+            mostrarToast('📋 Cargando detalle del trámite #' + id, 'info');
+        });
+    });
+
+    // ===== Animación de entrada =====
+    var cards = document.querySelectorAll('.tramite-card');
+    cards.forEach(function (card, index) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(function () {
+            card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100 + (index * 80));
+    });
+});
+
 function mostrarToast(mensaje, tipo) {
-    var toast = document.getElementById('toastNotif');
+    tipo = tipo || 'info';
+    var toast = document.getElementById('toastGlobal');
     if (!toast) {
         toast = document.createElement('div');
-        toast.id = 'toastNotif';
-        toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#2E7D32;color:white;padding:12px 24px;border-radius:16px;font-weight:600;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,0.2);z-index:2000;display:none;max-width:90%;';
+        toast.id = 'toastGlobal';
+        toast.style.cssText = 'position:fixed; bottom:90px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:700; z-index:9999; background:#0E1116; color:white; box-shadow:0 8px 24px rgba(0,0,0,0.2); opacity:0; transition:opacity 0.3s; max-width:90%; text-align:center;';
         document.body.appendChild(toast);
     }
 
     toast.textContent = mensaje;
-    toast.className = 'toast-notification' + (tipo === 'error' ? ' error' : '');
-    toast.style.background = tipo === 'error' ? '#C62828' : '#2E7D32';
-    toast.style.display = 'block';
+    toast.style.opacity = '1';
+
+    var colores = {
+        success: '#2E7D32',
+        error: '#D32F2F',
+        warning: '#F5A623',
+        info: '#0E1116'
+    };
+    toast.style.background = colores[tipo] || colores.info;
 
     clearTimeout(toast._timeout);
     toast._timeout = setTimeout(function () {
-        toast.style.display = 'none';
+        toast.style.opacity = '0';
     }, 3000);
 }
-
-// ==========================================================
-// ===== INICIALIZAR EVENTOS =====
-// ==========================================================
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('📋 Trámites cargados correctamente.');
-
-    // ==========================================================
-    // Efecto de entrada para las tarjetas
-    // ==========================================================
-    var cards = document.querySelectorAll('.tramite-card, .row-item');
-    cards.forEach(function (card, index) {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(10px)';
-        card.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-
-        setTimeout(function () {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, 100 + (index * 60));
-    });
-});
-
-// Exponer funciones globalmente
-window.seleccionarTramite = seleccionarTramite;
-window.mostrarToast = mostrarToast;

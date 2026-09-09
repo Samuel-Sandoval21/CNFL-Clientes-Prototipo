@@ -1,110 +1,75 @@
-﻿@model dynamic
-@{
+﻿@{
     ViewBag.Title = "Iniciar Sesión";
-    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<!-- CSS separado -->
-<link rel="stylesheet" href="@Url.Content("~/Content/cliente/cuenta.css")" />
-
-<!-- Session Rol oculto para JavaScript -->
-<input type="hidden" id="sessionRol" value="@(Session["Rol"] ?? "")" />
-
 <div class="login-wrap">
-    <!-- LOGO CORRECTO CNFL - CON CÍRCULO INCOMPLETO -->
-    <div class="brand-logo">
-        <div style="display:flex; align-items:center; gap:6px;">
-            <img src="@Url.Content("~/images/logo-cnfl.png")" alt="CNFL" style="height:44px; width:auto;" />
-            <span style="font-family:'Inter',sans-serif; font-weight:900; font-size:36px; color:#FF692D; letter-spacing:-2px; text-transform:lowercase;">cnfl</span>
-        </div>
+    <div style="text-align:center;">
+        <div style="font-size:48px; margin-bottom:8px;">⚡</div>
+        <div class="login-h" style="margin-top:0;">Tu energía,<br>en una sola app.</div>
+        <div class="login-p">Ingresa con las credenciales de tu Agencia Virtual.</div>
     </div>
-
-    <div class="login-title">Tu energía,<br />en una sola app.</div>
-    <div class="login-subtitle">Ingresa con las credenciales de tu Agencia Virtual.</div>
 
     @if (TempData["Mensaje"] != null)
     {
-        <div class="alert alert-success mt-3" style="font-size: 14px; font-weight: 700; padding:12px 16px; border-radius:12px;">
-            ✅ @TempData["Mensaje"]
+        <div style="background:#E8F5E9; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #A5D6A7;">
+            <span style="color:#2E7D32; font-weight:700;">✅ @TempData["Mensaje"]</span>
         </div>
     }
 
     @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
     {
-        <div class="alert alert-danger mt-3" style="font-size: 14px; font-weight: 700; padding:12px 16px; border-radius:12px;">
-            ❌ @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage
+        <div style="background:#FFEBEE; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #FFCDD2;">
+            <span style="color:#D32F2F; font-weight:700;">❌ @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage</span>
         </div>
     }
 
-    @using (Html.BeginForm("Login", "Cuenta", FormMethod.Post, new { id = "loginForm" }))
+    @using (Html.BeginForm("Login", "Cuenta", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
 
-        <div class="field" id="usuarioGroup">
+        <div class="field">
             <label>USUARIO O CÉDULA</label>
             <div class="inp">
-                <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="5" width="18" height="14" rx="2" />
                     <circle cx="9" cy="12" r="2.5" />
                     <path d="M14 10h4M14 14h4" />
                 </svg>
-                <input type="text" name="UserName" id="UserName" placeholder="admin, cliente o cédula" value="@(TempData["UserName"] ?? "cliente")" />
-                <span class="validation-icon" id="usuarioIcon"></span>
+                <input type="text" name="UserName" placeholder="admin, cliente o cédula" value="2-0874-0716" />
             </div>
-            <div class="field-error" id="usuarioError"></div>
         </div>
 
-        <div class="field" id="contrasenaGroup">
+        <div class="field">
             <label>CONTRASEÑA</label>
             <div class="inp">
-                <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="4" y="10" width="16" height="10" rx="2" />
                     <path d="M8 10V7a4 4 0 0 1 8 0v3" />
                 </svg>
-                <input type="password" name="Contraseña" id="Contraseña" placeholder="••••••••" value="@(TempData["Contraseña"] ?? "123456")" />
-                <span class="validation-icon" id="contrasenaIcon"></span>
-                <button type="button" class="toggle-password" id="togglePasswordBtn" onclick="togglePasswordLogin()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
+                <input type="password" name="Contraseña" placeholder="••••••••" value="cliente123" />
             </div>
-            <div class="field-error" id="contrasenaError"></div>
         </div>
 
-        <button type="submit" class="btn-login" id="btnLogin">
-            Ingresar
-        </button>
+        <button type="submit" class="btn btn-cta btn-block" style="margin-top:20px;">Ingresar</button>
     }
 
-    <div style="margin-top: 14px; text-align: center;">
-        <a href="@Url.Action("RecuperarClave", "Cuenta")" style="color: var(--blue); font-weight: 700; font-size: 13px; text-decoration: none;">
-            ¿Olvidó su clave?
-        </a>
+    <div style="margin-top:14px; text-align:center;">
+        <a href="@Url.Action("RecuperarClave", "Cuenta")" style="color:var(--blue); font-weight:700; font-size:13px;">¿Olvidó su clave?</a>
     </div>
 
-    <!-- FACE ID -->
-    <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 6px;">
-        <button class="face-id-btn" id="faceIdBtn" onclick="iniciarFaceId()" title="Iniciar sesión con Face ID">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" width="34" height="34">
+    <div class="bio">
+        <div class="face" onclick="alert('🔐 Face ID simulado')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                 <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
                 <path d="M9 10v1M15 10v1M12 10v3l-1 1M9 15c1.5 1 4.5 1 6 0" />
             </svg>
-            <div class="face-id-pulse"></div>
-        </button>
+        </div>
+        <small>Ingresar con Face ID / Huella</small>
     </div>
 
-    <div style="margin-top: 16px; text-align: center;">
-        <span style="font-size: 13px; color: var(--muted);">¿Aún no tienes cuenta? </span>
-        <a href="@Url.Action("Registro", "Cuenta")" style="color: var(--blue); font-weight: 700; font-size: 13px; text-decoration: none;">Regístrate con tu cédula</a>
-    </div>
-
-    <div class="footer-text">
-        <span style="opacity: .8;">Consentimiento informado · Política de privacidad</span>
+    <div class="login-foot">
+        <span>¿Aún no tienes cuenta?</span> <a href="@Url.Action("Registro", "Cuenta")">Regístrate con tu cédula</a><br>
+        <span style="opacity:.7;">Consentimiento informado · Política de privacidad</span>
     </div>
 </div>
-
-@section scripts {
-    <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
-}

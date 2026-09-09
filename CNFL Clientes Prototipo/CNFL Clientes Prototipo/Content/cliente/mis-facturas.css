@@ -1,0 +1,66 @@
+.facturas-container {
+    padding: 0 4px;
+}
+
+    .facturas-container h2 {
+        font-size: 22px;
+        color: #0033A0;
+    }
+
+.factura-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #EDEFF3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+    .factura-card.pagada {
+        opacity: 0.7;
+    }
+
+.factura-info {
+    display: flex;
+    flex-direction: column;
+}
+
+    .factura-info .nise {
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+    .factura-info .monto {
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .factura-info .fecha {
+        font-size: 12px;
+        color: #E65100;
+    }
+
+.factura-card.pagada .fecha {
+    color: #2E7D32;
+}
+
+.estado-pagada {
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.btn-pagar {
+    background: #FF692D;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}

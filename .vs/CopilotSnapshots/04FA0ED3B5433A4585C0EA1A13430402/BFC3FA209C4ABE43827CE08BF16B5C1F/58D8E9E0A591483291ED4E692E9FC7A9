@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/cliente/dashboard.css" />
+
+<div class="dashboard-container">
+    <div class="welcome-section">
+        <h1>Bienvenido, @Session["Nombre"]</h1>
+        <p>Gestiona tu servicio eléctrico desde tu celular.</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <a href="@Url.Action("MisFacturas", "Clientes")" class="card-dashboard">
+            <div class="card-icon">📄</div>
+            <h3>Facturas</h3>
+            <p>Consulta y paga tus facturas</p>
+        </a>
+        <a href="@Url.Action("Reportes", "Clientes")" class="card-dashboard">
+            <div class="card-icon">📋</div>
+            <h3>Reportes</h3>
+            <p>Reporta averías y más</p>
+        </a>
+        <a href="@Url.Action("Tienda", "Clientes")" class="card-dashboard">
+            <div class="card-icon">🛒</div>
+            <h3>Tienda</h3>
+            <p>Productos y servicios</p>
+        </a>
+        <a href="@Url.Action("MiPerfil", "Clientes")" class="card-dashboard">
+            <div class="card-icon">👤</div>
+            <h3>Mi Perfil</h3>
+            <p>Actualiza tus datos</p>
+        </a>
+    </div>
+
+    <div class="factura-resumen">
+        <h2>Factura Actual</h2>
+        <div class="factura-card">
+            <span class="monto">₡18,450</span>
+            <span class="fecha">Vence: 28 de agosto, 2026</span>
+            <a href="@Url.Action("Pagos", "Clientes")" class="btn-pagar">Pagar ahora</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/cliente/dashboard.js"></script>
+}

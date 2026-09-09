@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Notificaciones";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/cliente/notificaciones.css" />
+
+<div class="notificaciones-container">
+    <h2>Notificaciones</h2>
+
+    <div class="notificaciones-lista">
+        <div class="notificacion-item no-leida">
+            <span class="notificacion-icon">⚡</span>
+            <div class="notificacion-contenido">
+                <h4>Avería · NISE 9950</h4>
+                <p>En atención · estimado 4:30pm</p>
+                <span class="notificacion-fecha">Hace 12 min</span>
+            </div>
+            <span class="badge-nueva">Nueva</span>
+        </div>
+
+        <div class="notificacion-item no-leida">
+            <span class="notificacion-icon">⛔</span>
+            <div class="notificacion-contenido">
+                <h4>Suspensión programada</h4>
+                <p>NISE 7788 · mañana 8:00–10:00am</p>
+                <span class="notificacion-fecha">Hace 1h</span>
+            </div>
+            <span class="badge-nueva">Nueva</span>
+        </div>
+
+        <div class="notificacion-item">
+            <span class="notificacion-icon">📄</span>
+            <div class="notificacion-contenido">
+                <h4>Factura por vencer</h4>
+                <p>₡18,450 · vence en 5 días</p>
+                <span class="notificacion-fecha">Hace 3h</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/cliente/notificaciones.js"></script>
+}

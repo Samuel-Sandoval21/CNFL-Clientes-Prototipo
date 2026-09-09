@@ -2,83 +2,65 @@
 using System.Collections.Generic;
 using System.Linq;
 using CNFL_Clientes_Prototipo.Models;
+using CNFL_Clientes_Prototipo.Data;
 
 namespace CNFL_Clientes_Prototipo.Repositories
 {
     public class NotificacionRepository
     {
-        private static List<Notificacion> _notificaciones = new List<Notificacion>
-        {
-            new Notificacion
-            {
-                Id = 1,
-                UsuarioId = 2,
-                Titulo = "Factura por vencer",
-                Mensaje = "Su factura vence en 3 días.",
-                Tipo = "Factura",
-                Leida = false,
-                FechaEnvio = DateTime.Now.AddDays(-2)
-            },
-            new Notificacion
-            {
-                Id = 2,
-                UsuarioId = 2,
-                Titulo = "Avería reportada",
-                Mensaje = "Transformador dañado en Barrio Los Ángeles.",
-                Tipo = "Avería",
-                Leida = false,
-                FechaEnvio = DateTime.Now.AddDays(-1)
-            },
-            new Notificacion
-            {
-                Id = 3,
-                UsuarioId = 2,
-                Titulo = "Corte programado",
-                Mensaje = "Corte programado el 28 de agosto de 8am a 12pm.",
-                Tipo = "Corte",
-                Leida = true,
-                FechaEnvio = DateTime.Now.AddDays(-3)
-            }
-        };
-
-        public List<Notificacion> ObtenerTodas()
-        {
-            return _notificaciones;
-        }
+        private CNFLDbContext _db = new CNFLDbContext();
 
         public List<Notificacion> ObtenerPorUsuario(int usuarioId)
         {
-            return _notificaciones.Where(n => n.UsuarioId == usuarioId).ToList();
+            return _db.Notificaciones
+                .Where(n => n.UsuarioId == usuarioId)
+                .OrderByDescending(n => n.Fecha)
+                .ToList();
+        }
+
+        public List<Notificacion> ObtenerNoLeidasPorUsuario(int usuarioId)
+        {
+            return _db.Notificaciones
+                .Where(n => n.UsuarioId == usuarioId && !n.Leida)
+                .OrderByDescending(n => n.Fecha)
+                .ToList();
         }
 
         public Notificacion ObtenerPorId(int id)
         {
-            return _notificaciones.FirstOrDefault(n => n.Id == id);
+            return _db.Notificaciones.Find(id);
         }
 
         public void Agregar(Notificacion notificacion)
         {
-            notificacion.Id = _notificaciones.Count > 0 ? _notificaciones.Max(n => n.Id) + 1 : 1;
-            notificacion.FechaEnvio = DateTime.Now;
-            _notificaciones.Add(notificacion);
+            notificacion.Fecha = DateTime.Now;
+            _db.Notificaciones.Add(notificacion);
+            _db.SaveChanges();
         }
 
         public void MarcarComoLeida(int id)
         {
-            var notificacion = _notificaciones.FirstOrDefault(n => n.Id == id);
+            var notificacion = _db.Notificaciones.Find(id);
             if (notificacion != null)
             {
                 notificacion.Leida = true;
+                _db.SaveChanges();
             }
         }
 
         public void MarcarTodasComoLeidas(int usuarioId)
         {
-            var notificaciones = _notificaciones.Where(n => n.UsuarioId == usuarioId && !n.Leida);
+            var notificaciones = _db.Notificaciones.Where(n => n.UsuarioId == usuarioId && !n.Leida).ToList();
             foreach (var n in notificaciones)
             {
                 n.Leida = true;
             }
+            _db.SaveChanges();
+        }
+
+        public int ContarNoLeidas(int usuarioId)
+        {
+            return _db.Notificaciones.Count(n => n.UsuarioId == usuarioId && !n.Leida);
         }
     }
 }

@@ -1,0 +1,36 @@
+using System.Web;
+using System.Web.Mvc;
+
+namespace CNFL_Clientes_Prototipo.Filters
+{
+    public class SessionAuthorizeAttribute : AuthorizeAttribute
+    {
+        public string RequiredRole { get; set; }
+
+        protected override bool AuthorizeCore(HttpContextBase httpContext)
+        {
+            var session = httpContext.Session;
+            if (session == null)
+                return false;
+
+            var rol = session["Rol"] as string;
+            if (string.IsNullOrEmpty(RequiredRole))
+                return !string.IsNullOrEmpty(rol); // cualquier rol autenticado
+
+            return rol == RequiredRole;
+        }
+
+        protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
+        {
+            var session = filterContext.HttpContext.Session;
+            if (session == null || session["UsuarioId"] == null)
+            {
+                filterContext.Result = new RedirectResult("~/Cuenta/Login");
+            }
+            else
+            {
+                filterContext.Result = new RedirectResult("~/");
+            }
+        }
+    }
+}

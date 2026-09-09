@@ -1,0 +1,81 @@
+/* ===== Admin - Clientes ===== */
+.admin-clientes {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #0033A0;
+    margin: 0;
+}
+
+.page-header p {
+    color: #666;
+    margin: 4px 0 20px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    background: white;
+    border-radius: 16px;
+    padding: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+    .admin-table thead th {
+        background: #F5F6FA;
+        color: #0E1116;
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 700;
+        border-bottom: 2px solid #EDEFF3;
+        white-space: nowrap;
+    }
+
+    .admin-table tbody td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #EDEFF3;
+        vertical-align: middle;
+    }
+
+    .admin-table tbody tr:hover {
+        background: #F5F6FA;
+    }
+
+.btn-ver {
+    background: #0033A0;
+    color: white;
+    border: none;
+    padding: 4px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+    .btn-ver:hover {
+        background: #002780;
+        color: white;
+    }
+
+@media (max-width: 768px) {
+    .admin-table {
+        font-size: 12px;
+    }
+
+        .admin-table thead th,
+        .admin-table tbody td {
+            padding: 8px 10px;
+        }
+}

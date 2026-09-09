@@ -1,0 +1,30 @@
+﻿@model CNFL_Clientes_Prototipo.Models.Usuario
+
+@{
+    ViewBag.Title = "Mi Perfil";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/cliente/perfil.css" />
+
+<div class="perfil-container">
+    <h2>Mi Perfil</h2>
+
+    <div class="perfil-card">
+        <div class="perfil-avatar">
+            <span class="avatar-inicial">@(Session["Nombre"]?.ToString()?[0] ?? 'U')</span>
+        </div>
+        <div class="perfil-info">
+            <p><strong>Nombre:</strong> @Session["Nombre"]</p>
+            <p><strong>Cédula:</strong> @Session["Cedula"]</p>
+            <p><strong>Correo:</strong> @Model.Correo</p>
+            <p><strong>Teléfono:</strong> @Model.Telefono</p>
+            <p><strong>Fecha Registro:</strong> @Model.FechaRegistro.ToString("dd/MM/yyyy")</p>
+            <a href="@Url.Action("EditarDatos", "Clientes")" class="btn-editar">Editar Perfil</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/cliente/perfil.js"></script>
+}

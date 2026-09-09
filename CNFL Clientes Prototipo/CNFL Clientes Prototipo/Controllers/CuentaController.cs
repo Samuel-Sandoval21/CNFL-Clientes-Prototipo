@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using CNFL_Clientes_Prototipo.Models;
 using CNFL_Clientes_Prototipo.Data;
@@ -10,694 +8,169 @@ namespace CNFL_Clientes_Prototipo.Controllers
 {
     public class CuentaController : Controller
     {
-        private readonly CNFLDbContext _db = new CNFLDbContext();
+        private CNFLDbContext _db = new CNFLDbContext();
 
-        // ==========================================================
-        // MÉTODOS DE VALIDACIÓN (AJAX) - CON BD REAL
-        // ==========================================================
-
-        [HttpPost]
-        public JsonResult ValidarCedula(string cedula)
+        // GET: Cuenta/Login
+        public ActionResult Login()
         {
-            if (string.IsNullOrEmpty(cedula))
-            {
-                return Json(new { success = false, message = "Ingrese una cédula" });
-            }
-
-            // Validar formato
-            bool formatoValido = System.Text.RegularExpressions.Regex.IsMatch(cedula, @"^\d{1}-\d{4}-\d{4}$") ||
-                                 System.Text.RegularExpressions.Regex.IsMatch(cedula, @"^\d{9,10}$");
-
-            if (!formatoValido)
-            {
-                return Json(new { success = false, message = "❌ Formato inválido. Use 1-2345-6789" });
-            }
-
-            // Verificar si ya está registrada en BD
-            var existeEnBD = _db.Usuarios.Any(u => u.Cedula == cedula);
-            if (existeEnBD)
-            {
-                return Json(new { success = false, message = "❌ Cédula ya registrada" });
-            }
-
-            // Buscar en la BD real - Datos del cliente desde la tabla Usuarios y NISES
-            var usuario = _db.Usuarios.FirstOrDefault(u => u.Cedula == cedula);
-            if (usuario != null)
-            {
-                // Obtener NISEs del cliente desde la tabla NISES
-                var nises = _db.NISEs
-                    .Where(n => n.Cliente.UsuarioId == usuario.Id)
-                    .Select(n => n.Numero)
-                    .ToList();
-
-                return Json(new
-                {
-                    success = true,
-                    nombre = usuario.Nombre,
-                    apellidos = usuario.Apellidos,
-                    nises = nises,
-                    fechaNacimiento = usuario.FechaNacimiento.ToString("yyyy-MM-dd")
-                });
-            }
-
-            // Si no existe en BD, permitir registro manual
-            return Json(new
-            {
-                success = true,
-                nombre = "",
-                apellidos = "",
-                nises = new List<string>(),
-                fechaNacimiento = ""
-            });
-        }
-
-        [HttpPost]
-        public JsonResult ValidarUsuario(string userName)
-        {
-            if (string.IsNullOrEmpty(userName))
-            {
-                return Json(new { success = false, message = "Ingrese un usuario" });
-            }
-
-            var existe = _db.Usuarios.Any(u => u.UserName == userName);
-            return Json(new { success = !existe, message = existe ? "❌ Usuario no disponible" : "✅ Usuario disponible" });
-        }
-
-        [HttpPost]
-        public JsonResult ValidarFormatoCedula(string cedula)
-        {
-            if (string.IsNullOrEmpty(cedula))
-            {
-                return Json(new { success = false, message = "Ingrese una cédula" });
-            }
-
-            bool esValida = System.Text.RegularExpressions.Regex.IsMatch(cedula, @"^\d{1}-\d{4}-\d{4}$") ||
-                            System.Text.RegularExpressions.Regex.IsMatch(cedula, @"^\d{9,10}$");
-            return Json(new { success = esValida, message = esValida ? "✅ Formato válido" : "❌ Formato inválido (use 1-2345-6789)" });
-        }
-
-        [HttpPost]
-        public JsonResult ValidarFormatoTelefono(string telefono)
-        {
-            if (string.IsNullOrEmpty(telefono))
-            {
-                return Json(new { success = false, message = "Ingrese un teléfono" });
-            }
-
-            bool esValida = System.Text.RegularExpressions.Regex.IsMatch(telefono, @"^\d{4}-\d{4}$") ||
-                            System.Text.RegularExpressions.Regex.IsMatch(telefono, @"^\d{8}$");
-            return Json(new { success = esValida, message = esValida ? "✅ Formato válido" : "❌ Formato inválido (use 8888-8888)" });
-        }
-
-        [HttpPost]
-        public JsonResult ValidarFormatoNISE(string nise)
-        {
-            if (string.IsNullOrEmpty(nise))
-            {
-                return Json(new { success = false, message = "Ingrese un NISE" });
-            }
-
-            bool esValida = System.Text.RegularExpressions.Regex.IsMatch(nise, @"^\d{9}$");
-
-            // Verificar si el NISE existe en la BD real
-            var existeNise = _db.NISEs.Any(n => n.Numero == nise);
-
-            return Json(new
-            {
-                success = esValida,
-                message = esValida ? (existeNise ? "✅ NISE válido" : "⚠️ NISE no encontrado en el sistema") : "❌ El NISE debe tener 9 dígitos"
-            });
-        }
-
-        [HttpPost]
-        public JsonResult RecuperarContraseña(string correo)
-        {
-            if (string.IsNullOrEmpty(correo))
-            {
-                return Json(new { success = false, message = "Ingrese un correo electrónico" });
-            }
-
-            var usuario = _db.Usuarios.FirstOrDefault(u => u.Correo == correo);
-            if (usuario != null)
-            {
-                return Json(new { success = true, message = "✅ Se ha enviado un enlace de recuperación a su correo" });
-            }
-
-            return Json(new { success = false, message = "❌ Correo no encontrado en el sistema" });
-        }
-
-        // ==========================================================
-        // RECUPERAR CONTRASEÑA - VISTA
-        // ==========================================================
-
-        public ActionResult RecuperarClave()
-        {
-            if (Session["Rol"] != null)
-            {
-                if (Session["Rol"].ToString() == "Admin")
-                    return RedirectToAction("Dashboard", "Admin");
-                else
-                    return RedirectToAction("Inicio", "Clientes");
-            }
             return View();
         }
 
+        // POST: Cuenta/Login
+        [HttpPost]
+        public ActionResult Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var usuario = _db.Usuarios.FirstOrDefault(u =>
+                    (u.Cedula == model.UserName || u.Correo == model.UserName) &&
+                    u.Contraseña == model.Contraseña);
+
+                if (usuario != null && usuario.Activo)
+                {
+                    Session["UsuarioId"] = usuario.UsuarioId;
+                    Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
+                    Session["Cedula"] = usuario.Cedula;
+
+                    var usuarioRol = _db.UsuarioRoles
+                        .Where(ur => ur.UsuarioId == usuario.UsuarioId)
+                        .Select(ur => ur.Rol)
+                        .FirstOrDefault();
+
+                    var rol = usuarioRol != null ? usuarioRol.NombreRol : "Cliente";
+                    Session["Rol"] = rol;
+
+                    if (rol == "Admin")
+                    {
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Dashboard", "Clientes");
+                    }
+                }
+
+                ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
+            }
+            return View(model);
+        }
+
+        // GET: Cuenta/Registro
+        public ActionResult Registro()
+        {
+            return View();
+        }
+
+        // GET: Cuenta/SearchActividades?q=term
+        [HttpGet]
+        public JsonResult SearchActividades(string q)
+        {
+            if (string.IsNullOrWhiteSpace(q))
+                return Json(new object[0], JsonRequestBehavior.AllowGet);
+
+            var results = _db.ActividadesEconomicas
+                .Where(a => a.Codigo.Contains(q) || a.Nombre.Contains(q))
+                .Select(a => new { id = a.Id, text = a.Codigo + " - " + a.Nombre })
+                .Take(20)
+                .ToList();
+
+            return Json(results, JsonRequestBehavior.AllowGet);
+        }
+
+        // POST: Cuenta/Registro
+        [HttpPost]
+        public ActionResult Registro(Usuario usuario, string confirmarContraseña)
+        {
+            if (ModelState.IsValid)
+            {
+                if (usuario.Contraseña != confirmarContraseña)
+                {
+                    ModelState.AddModelError("", "Las contraseñas no coinciden.");
+                    return View(usuario);
+                }
+
+                if (_db.Usuarios.Any(u => u.Cedula == usuario.Cedula))
+                {
+                    ModelState.AddModelError("Cedula", "Ya existe un usuario con esta cédula.");
+                    return View(usuario);
+                }
+
+                if (_db.Usuarios.Any(u => u.Correo == usuario.Correo))
+                {
+                    ModelState.AddModelError("Correo", "Ya existe un usuario con este correo.");
+                    return View(usuario);
+                }
+
+                usuario.FechaRegistro = DateTime.Now;
+                usuario.Activo = true;
+                _db.Usuarios.Add(usuario);
+                _db.SaveChanges();
+
+                var rolCliente = _db.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
+                if (rolCliente != null)
+                {
+                    var usuarioRol = new UsuarioRol
+                    {
+                        UsuarioId = usuario.UsuarioId,
+                        RolId = rolCliente.RolId
+                    };
+                    _db.UsuarioRoles.Add(usuarioRol);
+                    _db.SaveChanges();
+                }
+
+                TempData["Mensaje"] = "Cuenta creada exitosamente. Ahora puedes iniciar sesión.";
+                return RedirectToAction("Login");
+            }
+            return View(usuario);
+        }
+
+        // GET: Cuenta/RecuperarClave
+        public ActionResult RecuperarClave()
+        {
+            return View();
+        }
+
+        // POST: Cuenta/RecuperarClave
         [HttpPost]
         public ActionResult RecuperarClave(string correo, string nuevaClave, string confirmarClave)
         {
-            if (string.IsNullOrEmpty(correo) || string.IsNullOrEmpty(nuevaClave) || string.IsNullOrEmpty(confirmarClave))
+            if (string.IsNullOrEmpty(correo))
             {
-                ViewBag.Error = "❌ Todos los campos son obligatorios.";
+                ViewBag.Error = "Debe ingresar un correo electrónico.";
                 return View();
             }
 
-            if (nuevaClave.Length < 6)
+            if (string.IsNullOrEmpty(nuevaClave) || nuevaClave.Length < 6)
             {
-                ViewBag.Error = "❌ La contraseña debe tener al menos 6 caracteres.";
+                ViewBag.Error = "La contraseña debe tener al menos 6 caracteres.";
                 return View();
             }
 
             if (nuevaClave != confirmarClave)
             {
-                ViewBag.Error = "❌ Las contraseñas no coinciden.";
+                ViewBag.Error = "Las contraseñas no coinciden.";
                 return View();
             }
 
             var usuario = _db.Usuarios.FirstOrDefault(u => u.Correo == correo);
             if (usuario == null)
             {
-                ViewBag.Error = "❌ Correo no encontrado en el sistema.";
+                ViewBag.Error = "No existe una cuenta con ese correo electrónico.";
                 return View();
             }
 
             usuario.Contraseña = nuevaClave;
             _db.SaveChanges();
 
-            TempData["Mensaje"] = "✅ ¡Contraseña actualizada exitosamente! Ahora puedes iniciar sesión.";
+            TempData["Mensaje"] = "Contraseña actualizada exitosamente.";
             return RedirectToAction("Login");
         }
 
-        // ==========================================================
-        // ACCIONES DE VISTA
-        // ==========================================================
-
-        public ActionResult Index()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            if (Session["Rol"].ToString() == "Admin")
-                return RedirectToAction("Dashboard", "Admin");
-            else
-                return RedirectToAction("Inicio", "Clientes");
-        }
-
-        public ActionResult Login(string returnUrl = "")
-        {
-            if (Session["Rol"] != null)
-            {
-                if (Session["Rol"].ToString() == "Admin")
-                    return RedirectToAction("Dashboard", "Admin");
-                else
-                    return RedirectToAction("Inicio", "Clientes");
-            }
-
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult Login(LoginViewModel model, string returnUrl = "")
-        {
-            if (ModelState.IsValid)
-            {
-                var usuario = _db.Usuarios.FirstOrDefault(u =>
-                    (u.UserName == model.UserName || u.Cedula == model.UserName) &&
-                    u.Contraseña == model.Contraseña &&
-                    u.Activo == true);
-
-                if (usuario != null)
-                {
-                    Session["Id"] = usuario.Id;
-                    Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
-                    Session["NombreCompleto"] = usuario.Nombre + " " + usuario.Apellidos;
-                    Session["Correo"] = usuario.Correo;
-                    Session["Rol"] = usuario.RolId == 2 ? "Admin" : "Cliente";
-                    Session["RolId"] = usuario.RolId;
-                    Session["NISE"] = usuario.NISE;
-                    Session["Cedula"] = usuario.Cedula;
-                    Session["Telefono"] = usuario.Telefono;
-                    Session["UserName"] = usuario.UserName;
-                    Session["FechaNacimiento"] = usuario.FechaNacimiento.ToString("dd/MM/yyyy");
-
-                    if (usuario.RolId == 2)
-                    {
-                        return RedirectToAction("Dashboard", "Admin");
-                    }
-                    else
-                    {
-                        return RedirectToAction("Inicio", "Clientes");
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "❌ Usuario o contraseña incorrectos");
-                }
-            }
-
-            return View(model);
-        }
-
-        // ==========================================================
-        // REGISTRO (GET)
-        // ==========================================================
-
-        public ActionResult Registro()
-        {
-            if (Session["Rol"] != null)
-            {
-                if (Session["Rol"].ToString() == "Admin")
-                    return RedirectToAction("Dashboard", "Admin");
-                else
-                    return RedirectToAction("Inicio", "Clientes");
-            }
-            return View();
-        }
-
-        // ==========================================================
-        // REGISTRO (POST) - COMPLETO CON BD REAL
-        // ==========================================================
-
-        [HttpPost]
-        public ActionResult Registro(RegistroViewModel model)
-        {
-            System.Diagnostics.Debug.WriteLine("=== REGISTRO POST ===");
-            System.Diagnostics.Debug.WriteLine($"Nombre: {model.Nombre}");
-            System.Diagnostics.Debug.WriteLine($"Apellidos: {model.Apellidos}");
-            System.Diagnostics.Debug.WriteLine($"Cedula: {model.Cedula}");
-            System.Diagnostics.Debug.WriteLine($"NISE: {model.NISE}");
-            System.Diagnostics.Debug.WriteLine($"UserName: {model.UserName}");
-            System.Diagnostics.Debug.WriteLine($"Correo: {model.Correo}");
-            System.Diagnostics.Debug.WriteLine($"CorreoSecundario: {model.CorreoSecundario}");
-            System.Diagnostics.Debug.WriteLine($"Telefono: {model.Telefono}");
-            System.Diagnostics.Debug.WriteLine($"TelefonoSecundario: {model.TelefonoSecundario}");
-            System.Diagnostics.Debug.WriteLine($"Sexo: {model.Sexo}");
-            System.Diagnostics.Debug.WriteLine($"SexoPersonalizado: {model.SexoPersonalizado}");
-            System.Diagnostics.Debug.WriteLine($"Direccion: {model.Direccion}");
-            System.Diagnostics.Debug.WriteLine($"Provincia: {model.Provincia}");
-            System.Diagnostics.Debug.WriteLine($"Canton: {model.Canton}");
-            System.Diagnostics.Debug.WriteLine($"Distrito: {model.Distrito}");
-            System.Diagnostics.Debug.WriteLine($"FacturaElectronica: {model.FacturaElectronica}");
-            System.Diagnostics.Debug.WriteLine($"ActividadEconomicaCodigo: {model.ActividadEconomicaCodigo}");
-            System.Diagnostics.Debug.WriteLine($"AceptaPolitica: {model.AceptaPolitica}");
-            System.Diagnostics.Debug.WriteLine($"AceptaConsentimiento: {model.AceptaConsentimiento}");
-
-            // ==========================================================
-            // VALIDACIONES EXISTENTES
-            // ==========================================================
-
-            if (string.IsNullOrEmpty(model.Nombre))
-            {
-                ModelState.AddModelError("", "❌ El nombre es obligatorio.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Apellidos))
-            {
-                ModelState.AddModelError("", "❌ Los apellidos son obligatorios.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Cedula))
-            {
-                ModelState.AddModelError("", "❌ La cédula es obligatoria.");
-                return View(model);
-            }
-
-            bool cedulaValida = System.Text.RegularExpressions.Regex.IsMatch(model.Cedula, @"^\d{1}-\d{4}-\d{4}$") ||
-                                System.Text.RegularExpressions.Regex.IsMatch(model.Cedula, @"^\d{9,10}$");
-            if (!cedulaValida)
-            {
-                ModelState.AddModelError("", "❌ Formato de cédula inválido. Use 1-2345-6789");
-                return View(model);
-            }
-
-            if (_db.Usuarios.Any(u => u.Cedula == model.Cedula))
-            {
-                ModelState.AddModelError("", "❌ La cédula ya está registrada.");
-                return View(model);
-            }
-
-            // El NISE ya no se solicita en el formulario; se gestiona desde la base de datos por el sistema.
-
-            if (model.FechaNacimiento == null || model.FechaNacimiento == DateTime.MinValue)
-            {
-                ModelState.AddModelError("", "❌ La fecha de nacimiento es obligatoria.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Correo))
-            {
-                ModelState.AddModelError("", "❌ El correo principal es obligatorio.");
-                return View(model);
-            }
-
-            if (!model.Correo.Contains("@") || !model.Correo.Contains("."))
-            {
-                ModelState.AddModelError("", "❌ Ingrese un correo electrónico válido.");
-                return View(model);
-            }
-
-            if (_db.Usuarios.Any(u => u.Correo == model.Correo))
-            {
-                ModelState.AddModelError("", "❌ El correo principal ya está registrado.");
-                return View(model);
-            }
-
-            if (!string.IsNullOrEmpty(model.CorreoSecundario))
-            {
-                if (!model.CorreoSecundario.Contains("@") || !model.CorreoSecundario.Contains("."))
-                {
-                    ModelState.AddModelError("", "❌ Ingrese un correo secundario válido.");
-                    return View(model);
-                }
-            }
-
-            if (string.IsNullOrEmpty(model.Telefono))
-            {
-                ModelState.AddModelError("", "❌ El teléfono principal es obligatorio.");
-                return View(model);
-            }
-
-            bool telefonoValido = System.Text.RegularExpressions.Regex.IsMatch(model.Telefono, @"^\d{4}-\d{4}$") ||
-                                  System.Text.RegularExpressions.Regex.IsMatch(model.Telefono, @"^\d{8}$");
-            if (!telefonoValido)
-            {
-                ModelState.AddModelError("", "❌ Formato de teléfono inválido. Use 8888-8888");
-                return View(model);
-            }
-
-            if (!string.IsNullOrEmpty(model.TelefonoSecundario))
-            {
-                bool telefonoSecValido = System.Text.RegularExpressions.Regex.IsMatch(model.TelefonoSecundario, @"^\d{4}-\d{4}$") ||
-                                         System.Text.RegularExpressions.Regex.IsMatch(model.TelefonoSecundario, @"^\d{8}$");
-                if (!telefonoSecValido)
-                {
-                    ModelState.AddModelError("", "❌ Formato de teléfono secundario inválido. Use 8888-8888");
-                    return View(model);
-                }
-            }
-
-            if (string.IsNullOrEmpty(model.Sexo))
-            {
-                ModelState.AddModelError("", "❌ Seleccione su sexo.");
-                return View(model);
-            }
-
-            if (model.Sexo == "Personalizado" && string.IsNullOrEmpty(model.SexoPersonalizado))
-            {
-                ModelState.AddModelError("", "❌ Especifique su sexo.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Direccion))
-            {
-                ModelState.AddModelError("", "❌ La dirección es obligatoria.");
-                return View(model);
-            }
-
-            if (model.Direccion.Length < 5)
-            {
-                ModelState.AddModelError("", "❌ Ingrese una dirección más detallada.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.UserName))
-            {
-                ModelState.AddModelError("", "❌ El usuario es obligatorio.");
-                return View(model);
-            }
-
-            if (model.UserName.Length < 3)
-            {
-                ModelState.AddModelError("", "❌ El usuario debe tener al menos 3 caracteres.");
-                return View(model);
-            }
-
-            if (_db.Usuarios.Any(u => u.UserName == model.UserName))
-            {
-                ModelState.AddModelError("", "❌ El usuario ya existe. Por favor, elige otro.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Contraseña))
-            {
-                ModelState.AddModelError("", "❌ La contraseña es obligatoria.");
-                return View(model);
-            }
-
-            if (model.Contraseña.Length < 6)
-            {
-                ModelState.AddModelError("", "❌ La contraseña debe tener al menos 6 caracteres.");
-                return View(model);
-            }
-
-            if (!model.AceptaPolitica)
-            {
-                ModelState.AddModelError("", "❌ Debe aceptar la Política de Privacidad.");
-                return View(model);
-            }
-
-            if (!model.AceptaConsentimiento)
-            {
-                ModelState.AddModelError("", "❌ Debe aceptar el Consentimiento Informado.");
-                return View(model);
-            }
-
-            // ==========================================================
-            // VALIDACIONES NUEVAS
-            // ==========================================================
-
-            if (model.FacturaElectronica == null)
-            {
-                ModelState.AddModelError("", "❌ Debe seleccionar una opción para la factura electrónica.");
-                return View(model);
-            }
-
-            if (model.FacturaElectronica == true && string.IsNullOrEmpty(model.ActividadEconomicaCodigo))
-            {
-                ModelState.AddModelError("", "❌ Debe seleccionar una actividad económica.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Provincia))
-            {
-                ModelState.AddModelError("", "❌ Debe seleccionar una provincia.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Canton))
-            {
-                ModelState.AddModelError("", "❌ Debe seleccionar un cantón.");
-                return View(model);
-            }
-
-            if (string.IsNullOrEmpty(model.Distrito))
-            {
-                ModelState.AddModelError("", "❌ Debe seleccionar un distrito.");
-                return View(model);
-            }
-
-            // ==========================================================
-            // CREAR USUARIO EN BASE DE DATOS
-            // ==========================================================
-
-            var nuevoUsuario = new Usuario
-            {
-                Nombre = model.Nombre,
-                Apellidos = model.Apellidos,
-                Cedula = model.Cedula,
-                Telefono = model.Telefono,
-                TelefonoSecundario = model.TelefonoSecundario,
-                Correo = model.Correo,
-                CorreoSecundario = model.CorreoSecundario,
-                Sexo = model.Sexo,
-                SexoPersonalizado = model.SexoPersonalizado,
-                Direccion = model.Direccion,
-                NISE = null,
-                UserName = model.UserName,
-                Contraseña = model.Contraseña,
-                RolId = 1,
-                FechaNacimiento = model.FechaNacimiento,
-                AceptaPolitica = model.AceptaPolitica,
-                AceptaConsentimiento = model.AceptaConsentimiento,
-                FechaRegistro = DateTime.Now,
-                Activo = true,
-                FacturaElectronica = model.FacturaElectronica,
-                ActividadEconomicaCodigo = model.FacturaElectronica == true ? model.ActividadEconomicaCodigo : null,
-                Provincia = model.Provincia,
-                Canton = model.Canton,
-                Distrito = model.Distrito
-            };
-
-            _db.Usuarios.Add(nuevoUsuario);
-            _db.SaveChanges();
-
-            // ==========================================================
-            // CREAR REGISTRO EN CLIENTES
-            // ==========================================================
-
-            var nuevoCliente = new Cliente
-            {
-                UsuarioId = nuevoUsuario.Id,
-                Direccion = model.Direccion,
-                Provincia = model.Provincia,
-                Canton = model.Canton,
-                Distrito = model.Distrito
-            };
-
-            _db.Clientes.Add(nuevoCliente);
-            _db.SaveChanges();
-
-            System.Diagnostics.Debug.WriteLine($"✅ USUARIO REGISTRADO EN BD: {model.UserName}");
-            System.Diagnostics.Debug.WriteLine($"ID: {nuevoUsuario.Id}");
-
-            // No iniciar sesión automáticamente. Redirigir a Login con credenciales precargadas.
-            TempData["UserName"] = nuevoUsuario.UserName;
-            TempData["Contraseña"] = nuevoUsuario.Contraseña;
-            TempData["Mensaje"] = "Registro exitoso. Usa las credenciales precargadas para iniciar sesión.";
-
-            return RedirectToAction("Login", "Cuenta");
-        }
-
-        // ==========================================================
-        // MÉTODO PARA OBTENER ACTIVIDADES ECONÓMICAS (AJAX - BD REAL)
-        // ==========================================================
-
-        [HttpGet]
-        public JsonResult ObtenerActividadesEconomicas()
-        {
-            var actividades = _db.ActividadesEconomicas
-                .Select(a => new { a.Codigo, a.Nombre, a.Descripcion })
-                .OrderBy(a => a.Nombre)
-                .ToList();
-            return Json(actividades, JsonRequestBehavior.AllowGet);
-        }
-
-        // ==========================================================
-        // MÉTODO PARA OBTENER NISES POR CÉDULA (AJAX - BD REAL)
-        // ==========================================================
-
-        [HttpGet]
-        public JsonResult ObtenerNisesPorCedula(string cedula)
-        {
-            if (string.IsNullOrEmpty(cedula))
-            {
-                return Json(new { success = false, message = "Cédula requerida" }, JsonRequestBehavior.AllowGet);
-            }
-
-            var usuario = _db.Usuarios.FirstOrDefault(u => u.Cedula == cedula);
-            if (usuario == null)
-            {
-                return Json(new { success = false, message = "Cédula no encontrada" }, JsonRequestBehavior.AllowGet);
-            }
-
-            var nises = _db.NISEs
-                .Where(n => n.Cliente.UsuarioId == usuario.Id)
-                .Select(n => new { n.Id, n.Numero, n.Direccion })
-                .ToList();
-
-            return Json(new { success = true, nises = nises }, JsonRequestBehavior.AllowGet);
-        }
-
-        // ==========================================================
-        // OTROS MÉTODOS
-        // ==========================================================
-
-        public ActionResult Logout()
-        {
-            Session.Clear();
-            Session.Abandon();
-            return RedirectToAction("Login");
-        }
-
+        // GET: Cuenta/CerrarSesion
         public ActionResult CerrarSesion()
         {
             Session.Clear();
-            Session.Abandon();
             return RedirectToAction("Index", "Home");
-        }
-
-        public ActionResult Cuenta()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            if (Session["Rol"].ToString() == "Admin")
-                return RedirectToAction("Dashboard", "Admin");
-            else
-                return RedirectToAction("Perfil", "Clientes");
-        }
-
-        public ActionResult MisDatos()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            return RedirectToAction("EditarDatos", "Clientes");
-        }
-
-        public ActionResult Suscripciones()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            return RedirectToAction("Suscripciones", "Clientes");
-        }
-
-        public ActionResult ServiciosContratados()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            return RedirectToAction("ServiciosContratados", "Clientes");
-        }
-
-        public ActionResult Calculadora()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            return RedirectToAction("Calculadora", "Clientes");
-        }
-
-        public ActionResult Chat()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            return RedirectToAction("Chat", "Clientes");
-        }
-
-        public ActionResult HistorialCompras()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            return RedirectToAction("HistorialCompras", "Clientes");
-        }
-
-        public ActionResult EditarDatos()
-        {
-            if (Session["Rol"] == null)
-                return RedirectToAction("Login");
-
-            return RedirectToAction("EditarDatos", "Clientes");
-        }
-
-        public JsonResult GetUsuarios()
-        {
-            return Json(_db.Usuarios.ToList(), JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
@@ -708,40 +181,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
     }
 
-    // ==========================================================
-    // MODELOS DE VISTA
-    // ==========================================================
-
+    // ViewModel para Login
     public class LoginViewModel
     {
         public string UserName { get; set; }
         public string Contraseña { get; set; }
-    }
-
-    public class RegistroViewModel
-    {
-        public string Nombre { get; set; }
-        public string Apellidos { get; set; }
-        public string Cedula { get; set; }
-        public string Telefono { get; set; }
-        public string TelefonoSecundario { get; set; }
-        public string Correo { get; set; }
-        public string CorreoSecundario { get; set; }
-        public string Sexo { get; set; }
-        public string SexoPersonalizado { get; set; }
-        public string Direccion { get; set; }
-        public string NISE { get; set; }
-        public string UserName { get; set; }
-        public string Contraseña { get; set; }
-        public DateTime FechaNacimiento { get; set; }
-        public bool AceptaPolitica { get; set; }
-        public bool AceptaConsentimiento { get; set; }
-
-        // Nuevas propiedades
-        public bool? FacturaElectronica { get; set; }
-        public string ActividadEconomicaCodigo { get; set; }
-        public string Provincia { get; set; }
-        public string Canton { get; set; }
-        public string Distrito { get; set; }
     }
 }

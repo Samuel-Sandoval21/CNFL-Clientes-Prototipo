@@ -1,0 +1,540 @@
+/* ============================================================
+   ADMIN.CSS - ESTILOS PARA EL PANEL ADMINISTRATIVO
+   ============================================================ */
+
+/* ----- Dashboard ----- */
+.admin-dashboard {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-header h1 {
+    font-size: 28px;
+    color: #0033A0;
+    margin: 0;
+}
+
+.dashboard-header p {
+    color: #727A86;
+    margin: 4px 0 20px;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+    border: 1px solid #EDEFF3;
+}
+
+.stat-number {
+    font-size: 36px;
+    font-weight: 900;
+    color: #0033A0;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #727A86;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* Admin Sections */
+.admin-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
+    margin-bottom: 24px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+    .section-header h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #0033A0;
+    }
+
+.btn-ver-todas {
+    color: #FF692D;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+    .btn-ver-todas:hover {
+        text-decoration: underline;
+    }
+
+/* Admin Tables */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+    .admin-table thead th {
+        background: #F5F6FA;
+        color: #0E1116;
+        padding: 12px;
+        text-align: left;
+        font-weight: 700;
+        border-bottom: 2px solid #EDEFF3;
+    }
+
+    .admin-table tbody td {
+        padding: 12px;
+        border-bottom: 1px solid #EDEFF3;
+        vertical-align: middle;
+    }
+
+    .admin-table tbody tr:hover {
+        background: #F5F6FA;
+    }
+
+/* Estado Badges */
+.estado-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+    .estado-badge.ingresado {
+        background: #FFF3E0;
+        color: #E65100;
+    }
+
+    .estado-badge.en-revisión {
+        background: #FFF8E1;
+        color: #F57F17;
+    }
+
+    .estado-badge.operador-en-camino {
+        background: #E3F2FD;
+        color: #0D47A1;
+    }
+
+    .estado-badge.problema-resuelto {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+/* Buttons */
+.btn-ver {
+    background: #0033A0;
+    color: white;
+    border: none;
+    padding: 4px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+    .btn-ver:hover {
+        background: #002780;
+        color: white;
+    }
+
+.btn-cambiar-estado {
+    background: #FF692D;
+    color: white;
+    border: none;
+    padding: 4px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 4px;
+}
+
+    .btn-cambiar-estado:hover {
+        background: #E55A1E;
+    }
+
+/* ----- Clientes ----- */
+.admin-clientes {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #0033A0;
+    margin: 0;
+}
+
+.page-header p {
+    color: #727A86;
+    margin: 4px 0 20px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    background: white;
+    border-radius: 16px;
+    padding: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
+}
+
+/* ----- Averías con filtros ----- */
+.filtros-container {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
+}
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.form-control-sm {
+    padding: 8px 14px;
+    border: 1px solid #EDEFF3;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    min-width: 160px;
+    background: white;
+}
+
+    .form-control-sm:focus {
+        outline: none;
+        border-color: #0033A0;
+        box-shadow: 0 0 0 3px rgba(0,51,160,0.1);
+    }
+
+.btn-filtrar {
+    background: #0033A0;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+    .btn-filtrar:hover {
+        background: #002780;
+    }
+
+.btn-limpiar {
+    background: #F5F6FA;
+    color: #0E1116;
+    border: 1px solid #EDEFF3;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+    .btn-limpiar:hover {
+        background: #EDEFF3;
+    }
+
+/* Modal Cambiar Estado */
+.modal-cambiar-estado {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+    .modal-content h3 {
+        margin: 0 0 4px;
+        color: #0033A0;
+    }
+
+    .modal-content p {
+        color: #727A86;
+        margin: 0 0 16px;
+    }
+
+    .modal-content .form-control {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #EDEFF3;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        margin-bottom: 16px;
+    }
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-guardar {
+    background: #0033A0;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .btn-guardar:hover {
+        background: #002780;
+    }
+
+.btn-cancelar {
+    background: #F5F6FA;
+    color: #0E1116;
+    border: 1px solid #EDEFF3;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .btn-cancelar:hover {
+        background: #EDEFF3;
+    }
+
+/* Reportes */
+.admin-reportes {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.reportes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.reporte-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+    .reporte-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+.reporte-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.reporte-card h3 {
+    font-size: 18px;
+    color: #0033A0;
+    margin: 0 0 8px;
+}
+
+.reporte-card p {
+    color: #727A86;
+    font-size: 14px;
+    margin: 0 0 16px;
+    line-height: 1.5;
+}
+
+.btn-generar {
+    display: inline-block;
+    background: #FF692D;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+    .btn-generar:hover {
+        background: #E55A1E;
+    }
+
+/* Detalles */
+.detalle-averia,
+.detalle-cliente {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.detalle-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #EDEFF3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+    .detalle-card h3 {
+        font-size: 16px;
+        color: #0033A0;
+        margin: 0 0 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #EDEFF3;
+    }
+
+    .detalle-card p {
+        margin: 6px 0;
+        font-size: 14px;
+        color: #0E1116;
+    }
+
+        .detalle-card p strong {
+            color: #727A86;
+            font-weight: 600;
+        }
+
+    .detalle-card ul {
+        padding-left: 20px;
+        margin: 8px 0;
+    }
+
+        .detalle-card ul li {
+            font-size: 14px;
+            color: #0E1116;
+            margin-bottom: 4px;
+        }
+
+.btn-volver {
+    background: #F5F6FA;
+    color: #0E1116;
+    border: 1px solid #EDEFF3;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+}
+
+    .btn-volver:hover {
+        background: #EDEFF3;
+    }
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+    .page-header h1 {
+        font-size: 24px;
+        color: #0033A0;
+        margin: 0;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .stat-number {
+        font-size: 28px;
+    }
+
+    .detalle-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reportes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-control-sm {
+        min-width: auto;
+    }
+
+    .admin-table {
+        font-size: 12px;
+    }
+
+        .admin-table thead th,
+        .admin-table tbody td {
+            padding: 8px;
+        }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,124 @@
+/* ===== Admin - Detalle Cliente ===== */
+.detalle-cliente {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+    .page-header h1 {
+        font-size: 24px;
+        color: #0033A0;
+        margin: 0;
+    }
+
+.btn-volver {
+    background: #F5F6FA;
+    color: #0E1116;
+    border: 1px solid #EDEFF3;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    .btn-volver:hover {
+        background: #EDEFF3;
+    }
+
+/* ===== Detalle Grid ===== */
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.detalle-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #EDEFF3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+    .detalle-card h3 {
+        font-size: 16px;
+        color: #0033A0;
+        margin: 0 0 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #EDEFF3;
+    }
+
+    .detalle-card p {
+        margin: 6px 0;
+        font-size: 14px;
+        color: #0E1116;
+    }
+
+        .detalle-card p strong {
+            color: #727A86;
+            font-weight: 600;
+        }
+
+    .detalle-card ul {
+        padding-left: 20px;
+        margin: 8px 0;
+    }
+
+        .detalle-card ul li {
+            font-size: 14px;
+            color: #0E1116;
+            margin-bottom: 4px;
+        }
+
+/* ===== Estado Badge ===== */
+.estado-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+    .estado-badge.ingresado {
+        background: #FFF3E0;
+        color: #E65100;
+    }
+
+    .estado-badge.en-revisión {
+        background: #FFF8E1;
+        color: #F57F17;
+    }
+
+    .estado-badge.operador-en-camino {
+        background: #E3F2FD;
+        color: #0D47A1;
+    }
+
+    .estado-badge.problema-resuelto {
+        background: #E8F5E9;
+        color: #2E7D32;
+    }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .detalle-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}

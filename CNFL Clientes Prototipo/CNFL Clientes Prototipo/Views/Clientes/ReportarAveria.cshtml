@@ -1,0 +1,66 @@
+﻿@model CNFL_Clientes_Prototipo.Models.Averia
+
+@{
+    ViewBag.Title = "Reportar Avería";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<div class="reportar-container">
+    <h2>Reportar Avería</h2>
+    <p>Complete el formulario para reportar una avería.</p>
+
+    @if (ViewBag.Mensaje != null)
+    {
+        <div class="alert-success">✅ @ViewBag.Mensaje</div>
+    }
+
+    @using (Html.BeginForm("ReportarAveria", "Clientes", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="reportar-card">
+            <div class="form-group">
+                <label>NISE afectado *</label>
+                @Html.DropDownListFor(m => m.NiseId, (SelectList)ViewBag.NISEs, "Seleccione un NISE", new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.NiseId, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de avería *</label>
+                @Html.DropDownListFor(m => m.Tipo, new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "Sin energía", Value = "Sin energía" },
+                    new SelectListItem { Text = "Baja tensión", Value = "Baja tensión" },
+                    new SelectListItem { Text = "Alta tensión", Value = "Alta tensión" },
+                    new SelectListItem { Text = "Cortes intermitentes", Value = "Cortes intermitentes" },
+                    new SelectListItem { Text = "Poste caído", Value = "Poste caído" },
+                    new SelectListItem { Text = "Otro", Value = "Otro" }
+                }, "Seleccione un tipo", new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Tipo, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <label>Descripción *</label>
+                @Html.TextAreaFor(m => m.Descripcion, new { @class = "form-control", rows = 4, placeholder = "Describa el problema en detalle..." })
+                @Html.ValidationMessageFor(m => m.Descripcion, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <label>Dirección *</label>
+                @Html.TextBoxFor(m => m.Direccion, new { @class = "form-control", placeholder = "Calle, Avenida, Número..." })
+                @Html.ValidationMessageFor(m => m.Direccion, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <label>Adjuntar foto (opcional)</label>
+                <input type="file" name="foto" class="form-control" accept="image/*" />
+            </div>
+
+            <button type="submit" class="btn-enviar">Enviar Reporte</button>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/Content/cliente/reportar-averia.css" />
+}

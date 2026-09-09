@@ -1,100 +1,63 @@
-﻿/* ==========================================
-   HOME PÚBLICO - ESTILOS
-   ========================================== */
-
 .public-home {
-    background: var(--bg);
-    min-height: 100%;
-    padding: 20px 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 }
 
-    /* ===== LOGO ===== */
-    .public-home .logo {
-        font-size: 48px;
-        font-weight: 900;
-        color: var(--orange);
-        letter-spacing: -2px;
-    }
-
-    .public-home .titulo {
-        font-size: 28px;
+    .public-home h1 {
+        font-size: 32px;
         font-weight: 800;
-        margin-top: 10px;
+        margin: 16px 0 8px;
     }
 
-    .public-home .subtitulo {
-        color: var(--muted);
-        font-size: 16px;
-        margin-top: 8px;
+    .public-home p {
+        color: #727A86;
+        font-size: 14px;
+        margin-bottom: 32px;
     }
 
-/* ===== BOTONES ===== */
 .btn-container {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 30px;
-    max-width: 300px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .btn-cta-home {
-    background: var(--orange);
+    background: #FF692D;
     color: white;
-    padding: 13px 20px;
-    border-radius: 14px;
-    border: none;
+    padding: 14px;
+    border-radius: 12px;
     font-weight: 700;
-    box-shadow: 0 8px 18px -6px rgba(255, 105, 45, .7);
-    transition: 0.2s;
-    cursor: pointer;
-    text-align: center;
     text-decoration: none;
-    display: block;
-    font-family: inherit;
-    font-size: 16px;
+    box-shadow: 0 8px 18px -6px rgba(255,105,45,0.5);
+    text-align: center;
 }
-
-    .btn-cta-home:hover {
-        transform: scale(0.97);
-        background: #e85a21;
-    }
 
 .btn-ghost-home {
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    border: 2px solid var(--line);
-    background: white;
-    color: var(--ink);
-    padding: 13px 20px;
-    border-radius: 14px;
+    background: transparent;
+    color: #0033A0;
+    padding: 14px;
+    border-radius: 12px;
     font-weight: 700;
-    transition: 0.2s;
-    font-family: inherit;
-    font-size: 16px;
-    cursor: pointer;
+    text-decoration: none;
+    border: 2px solid #0033A0;
+    text-align: center;
 }
 
-    .btn-ghost-home:hover {
-        border-color: var(--blue);
-        background: #f0f2ff;
-    }
-
-/* ===== CARACTERÍSTICAS ===== */
 .feature-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    margin-top: 40px;
+    gap: 12px;
+    margin: 32px 0;
 }
 
 .feature-item {
     background: white;
-    padding: 16px;
-    border-radius: 16px;
-    box-shadow: var(--shadow);
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid #EDEFF3;
     text-align: center;
 }
 
@@ -104,47 +67,12 @@
 
     .feature-item .label {
         font-weight: 700;
-        font-size: 14px;
-        margin-top: 6px;
+        font-size: 11px;
+        color: var(--muted);
     }
 
-/* ===== PIE DE PÁGINA ===== */
 .footer-publico {
-    margin-top: 30px;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--muted);
-}
-
-    .footer-publico p {
-        margin-top: 4px;
-    }
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 480px) {
-    .public-home .titulo {
-        font-size: 22px;
-    }
-
-    .feature-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .feature-item {
-        padding: 12px;
-    }
-
-        .feature-item .icon {
-            font-size: 24px;
-        }
-
-        .feature-item .label {
-            font-size: 12px;
-        }
-
-    .btn-cta-home,
-    .btn-ghost-home {
-        font-size: 14px;
-        padding: 11px 16px;
-    }
+    text-align: center;
 }

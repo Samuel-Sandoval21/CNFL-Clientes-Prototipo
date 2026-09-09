@@ -1,0 +1,81 @@
+/* ===== Admin - Reportes ===== */
+.admin-reportes {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #0033A0;
+    margin: 0;
+}
+
+.page-header p {
+    color: #666;
+    margin: 4px 0 20px;
+}
+
+/* ===== Reportes Grid ===== */
+.reportes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.reporte-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+    .reporte-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+.reporte-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+.reporte-card h3 {
+    font-size: 18px;
+    color: #0033A0;
+    margin: 0 0 8px;
+}
+
+.reporte-card p {
+    color: #666;
+    font-size: 14px;
+    margin: 0 0 16px;
+    line-height: 1.5;
+}
+
+.btn-generar {
+    display: inline-block;
+    background: #FF692D;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+    .btn-generar:hover {
+        background: #E55A1E;
+    }
+
+@media (max-width: 768px) {
+    .reportes-grid {
+        grid-template-columns: 1fr;
+    }
+}

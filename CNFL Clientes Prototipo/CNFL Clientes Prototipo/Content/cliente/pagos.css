@@ -1,256 +1,66 @@
-﻿/* ==========================================
-   PAGOS - ESTILOS BASE COMPARTIDOS
-   ========================================== */
-
-:root {
-    --green: #64B95A;
-    --blue: #1E23E6;
-    --orange: #FF692D;
-    --ink: #1a1a2e;
-    --muted: #6b7280;
-    --line: #e5e7eb;
-    --shadow: 0 2px 8px rgba(0,0,0,0.06);
-    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+/* ===== Cliente - Pagos ===== */
+.pagos-container {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-/* ===== TARJETAS DE PAGO ===== */
-.pago-card {
-    background: #fff;
-    border-radius: 20px;
-    padding: 18px 20px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--line);
-    margin-bottom: 14px;
-    transition: 0.2s;
-}
-
-    .pago-card:hover {
-        box-shadow: var(--shadow-lg);
+    .pagos-container h2 {
+        color: #0033A0;
+        margin: 0 0 4px;
     }
 
-    .pago-card .pago-titulo {
-        font-weight: 700;
-        font-size: 15px;
-        color: var(--ink);
+    .pagos-container > p {
+        color: #727A86;
+        margin: 0 0 20px;
     }
 
-    .pago-card .pago-monto {
-        font-size: 28px;
-        font-weight: 800;
-        margin: 4px 0;
-        color: var(--blue);
-    }
-
-    .pago-card .pago-estado {
-        font-size: 12px;
-        font-weight: 700;
-        padding: 4px 14px;
-        border-radius: 999px;
-        display: inline-block;
-    }
-
-        .pago-card .pago-estado.pendiente {
-            background: #fef3e0;
-            color: #b9791a;
-        }
-
-        .pago-card .pago-estado.pagada {
-            background: #e9f7ec;
-            color: #2f8f3e;
-        }
-
-/* ===== MÉTODOS DE PAGO ===== */
-.pago-metodos {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-    border-top: 1px solid var(--line);
-    padding-top: 14px;
-}
-
-    .pago-metodos button {
-        flex: 1;
-        padding: 12px;
-        border-radius: 14px;
-        border: 1.5px solid var(--line);
-        background: white;
-        font-weight: 700;
-        font-size: 13px;
-        cursor: pointer;
-        transition: 0.2s;
-        font-family: inherit;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-        .pago-metodos button:hover {
-            border-color: var(--blue);
-            background: #f0f2ff;
-            transform: scale(0.97);
-        }
-
-        .pago-metodos button.sinpe {
-            border-color: #64B95A;
-            color: #2E7D32;
-        }
-
-            .pago-metodos button.sinpe:hover {
-                background: #E8F5E9;
-            }
-
-        .pago-metodos button.iban {
-            border-color: #1E23E6;
-            color: #1E23E6;
-        }
-
-            .pago-metodos button.iban:hover {
-                background: #E8EAFF;
-            }
-
-        .pago-metodos button.tarjeta {
-            border-color: #FF692D;
-            color: #FF692D;
-        }
-
-            .pago-metodos button.tarjeta:hover {
-                background: #FFF0E8;
-            }
-
-/* ===== ESTADOS DE PAGO ===== */
-.pago-exitoso {
-    background: #E8F5E9;
-    border: 1px solid #A5D6A7;
-    border-radius: 14px;
-    padding: 14px;
-    text-align: center;
-    color: #2E7D32;
-    font-weight: 600;
-    margin-top: 12px;
-}
-
-    .pago-exitoso i {
-        margin-right: 8px;
-    }
-
-/* ===== BOTÓN DE PAGO ===== */
-.btn-pagar {
+.pagos-table {
     width: 100%;
-    padding: 14px;
-    border-radius: 14px;
-    border: none;
-    font-weight: 800;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-family: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-    .btn-pagar:hover {
-        transform: scale(0.98);
-    }
-
-    .btn-pagar:active {
-        transform: scale(0.95);
-    }
-
-.btn-volver {
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: inherit;
-    transition: 0.2s;
-}
-
-    .btn-volver:hover {
-        color: var(--ink);
-        transform: translateX(-4px);
-    }
-
-/* ===== EMPTY STATE ===== */
-.empty-pagos {
-    text-align: center;
-    padding: 60px 20px;
+    border-collapse: collapse;
     background: white;
-    border-radius: 20px;
-    border: 1px dashed var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #EDEFF3;
 }
 
-    .empty-pagos .empty-icon {
-        font-size: 64px;
-        display: block;
-        margin-bottom: 16px;
-    }
-
-    .empty-pagos h3 {
-        font-size: 18px;
+    .pagos-table thead th {
+        background: #F5F6FA;
+        color: #0E1116;
+        padding: 12px 16px;
+        text-align: left;
         font-weight: 700;
-        color: var(--muted);
-        margin: 0;
-    }
-
-    .empty-pagos p {
         font-size: 14px;
-        color: var(--muted);
-        margin-top: 6px;
+        border-bottom: 2px solid #EDEFF3;
     }
 
-/* ===== SECTION PAD ===== */
-.section-pad {
-    padding: 0 20px 20px 20px;
-}
-
-.h-name-2 {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 480px) {
-    .pago-card {
-        padding: 14px 16px;
-    }
-
-        .pago-card .pago-monto {
-            font-size: 24px;
-        }
-
-    .pago-metodos {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-        .pago-metodos button {
-            padding: 10px;
-            font-size: 12px;
-        }
-
-    .btn-pagar {
-        padding: 12px;
+    .pagos-table tbody td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #EDEFF3;
         font-size: 14px;
     }
 
-    .h-name-2 {
-        font-size: 18px;
+    .pagos-table tbody tr:hover {
+        background: #F5F6FA;
     }
 
-    .section-pad {
-        padding: 0 12px 12px 12px;
-    }
+.estado-pagado {
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.estado-pendiente {
+    background: #FFF3E0;
+    color: #E65100;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
 }

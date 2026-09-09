@@ -1,36 +1,56 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CNFL_Clientes_Prototipo.Models;
-
-
+using CNFL_Clientes_Prototipo.Data;
 
 namespace CNFL_Clientes_Prototipo.Repositories
 {
     public class FacturaRepository
     {
-        private static List<Factura> _facturas = new List<Factura>()
-        {
-            new Factura { Id = 1, Periodo = "Agosto 2026", Monto = 28450, Estado = "Pendiente" },
-            new Factura { Id = 2, Periodo = "Julio 2026", Monto = 26980, Estado = "Pagada" }
-        };
+        private CNFLDbContext _db = new CNFLDbContext();
 
         public List<Factura> ObtenerTodas()
         {
-            return _facturas;
+            return _db.Facturas.Include("NISE").OrderByDescending(f => f.FechaEmision).ToList();
         }
 
         public Factura ObtenerPorId(int id)
         {
-            return _facturas.FirstOrDefault(f => f.Id == id);
+            return _db.Facturas.Include("NISE").FirstOrDefault(f => f.FacturaId == id);
         }
 
-        public void Pagar(int id)
+        public List<Factura> ObtenerPorNise(int niseId)
         {
-            var factura = _facturas.Find(f => f.Id == id);
-            if (factura != null)
+            return _db.Facturas.Where(f => f.NiseId == niseId).OrderByDescending(f => f.FechaEmision).ToList();
+        }
+
+        public List<Factura> ObtenerPorUsuario(int usuarioId)
+        {
+            var nisesIds = _db.NISEs.Where(n => n.UsuarioId == usuarioId).Select(n => n.NiseId).ToList();
+            return _db.Facturas.Where(f => nisesIds.Contains(f.NiseId)).OrderByDescending(f => f.FechaEmision).ToList();
+        }
+
+        public List<Factura> ObtenerPendientesPorUsuario(int usuarioId)
+        {
+            var nisesIds = _db.NISEs.Where(n => n.UsuarioId == usuarioId).Select(n => n.NiseId).ToList();
+            return _db.Facturas.Where(f => nisesIds.Contains(f.NiseId) && !f.Pagada).OrderBy(f => f.FechaVencimiento).ToList();
+        }
+
+        public void PagarFactura(int facturaId)
+        {
+            var factura = _db.Facturas.Find(facturaId);
+            if (factura != null && !factura.Pagada)
             {
-                factura.Estado = "Pagada";
+                factura.Pagada = true;
+                _db.SaveChanges();
             }
+        }
+
+        public decimal TotalPendientePorUsuario(int usuarioId)
+        {
+            var nisesIds = _db.NISEs.Where(n => n.UsuarioId == usuarioId).Select(n => n.NiseId).ToList();
+            return _db.Facturas.Where(f => nisesIds.Contains(f.NiseId) && !f.Pagada).Sum(f => f.Monto);
         }
     }
 }

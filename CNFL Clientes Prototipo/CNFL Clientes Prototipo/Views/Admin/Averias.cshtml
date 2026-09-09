@@ -1,0 +1,94 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Averia>
+
+@{
+    ViewBag.Title = "Averías";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/admin/averias.css" />
+
+<div class="admin-averias">
+    <div class="page-header">
+        <h1>Gestión de Averías</h1>
+        <p>Visualiza y gestiona todas las averías reportadas.</p>
+    </div>
+
+    <div class="filtros-container">
+        <div class="filtros">
+            <select id="filtroEstado" class="form-control-sm">
+                <option value="">Todos los estados</option>
+                <option value="Ingresado">Ingresado</option>
+                <option value="En revisión">En revisión</option>
+                <option value="Operador en camino">Operador en camino</option>
+                <option value="Problema resuelto">Problema resuelto</option>
+            </select>
+            <input type="text" id="filtroBusqueda" class="form-control-sm" placeholder="🔍 Buscar por ID o NISE..." />
+            <button id="btnFiltrar" class="btn-filtrar">Filtrar</button>
+            <button id="btnLimpiar" class="btn-limpiar">Limpiar</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table" id="tablaAverias">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>NISE</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Fecha Reporte</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var averia in Model)
+                    {
+                        <tr data-estado="@averia.Estado">
+                            <td>#@averia.AveriaId</td>
+                            <td>@averia.UsuarioId</td>
+                            <td>@averia.NiseId</td>
+                            <td>@averia.Tipo</td>
+                            <td><span class="estado-badge @averia.Estado.Replace(" ", "-").ToLower()">@averia.Estado</span></td>
+                            <td>@averia.FechaReporte.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <a href="@Url.Action("DetalleAveria", "Admin", new { id = averia.AveriaId })" class="btn-ver">Ver</a>
+                                <button class="btn-cambiar-estado" data-id="@averia.AveriaId" data-estado="@averia.Estado">Cambiar</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="empty-message">No hay averías registradas.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Cambiar Estado -->
+<div class="modal-cambiar-estado" id="modalCambiarEstado" style="display:none;">
+    <div class="modal-content">
+        <h3>Cambiar Estado</h3>
+        <p>Avería #<span id="modalAveriaId"></span></p>
+        <select id="modalNuevoEstado" class="form-control">
+            <option value="Ingresado">Ingresado</option>
+            <option value="En revisión">En revisión</option>
+            <option value="Operador en camino">Operador en camino</option>
+            <option value="Problema resuelto">Problema resuelto</option>
+        </select>
+        <div class="modal-buttons">
+            <button id="modalGuardar" class="btn-guardar">Guardar</button>
+            <button id="modalCancelar" class="btn-cancelar">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/admin/averias.js"></script>
+}

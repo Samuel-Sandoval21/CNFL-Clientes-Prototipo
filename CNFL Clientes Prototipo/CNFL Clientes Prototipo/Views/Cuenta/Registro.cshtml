@@ -1,663 +1,176 @@
-﻿@model dynamic
+﻿@model CNFL_Clientes_Prototipo.Models.Usuario
+
 @{
-    ViewBag.Title = "Registro";
-    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+    ViewBag.Title = "Crear Cuenta";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<!-- CSS separado -->
-<link rel="stylesheet" href="@Url.Content("~/Content/cliente/cuenta.css")" />
+<div class="login-wrap" style="padding:24px 20px;">
+    <div style="text-align:center; margin-bottom:16px;">
+        <div style="font-size:48px;">📋</div>
+        <div class="login-h" style="font-size:24px; margin-top:8px;">Crear cuenta</div>
+        <div class="login-p" style="font-size:13px;">Regístrate para conectar con la Agencia Virtual.</div>
+    </div>
 
-<div class="section-pad" style="margin-top: 20px;">
-    <div class="registro-title">Crear cuenta</div>
-    <div class="registro-subtitle">Regístrate para conectar con la Agencia Virtual.</div>
-</div>
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background:#E8F5E9; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #A5D6A7;">
+            <span style="color:#2E7D32; font-weight:700;">✅ @TempData["Mensaje"]</span>
+        </div>
+    }
 
-<div class="section-pad mt-3">
-    <div class="card-cliente">
-        @using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post, new { id = "registroForm" }))
-        {
-            @Html.AntiForgeryToken()
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+    {
+        <div style="background:#FFEBEE; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #FFCDD2;">
+            <span style="color:#D32F2F; font-weight:700;">❌ @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage</span>
+        </div>
+    }
 
-            if (TempData["Mensaje"] != null)
-            {
-                <div class="alert alert-success mt-3" style="font-size: 14px; font-weight: 700; padding:12px 16px; border-radius:12px;">
-                    ✅ @TempData["Mensaje"]
-                </div>
-            }
+    @using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
 
-            if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
-            {
-                <div class="alert alert-danger mt-3" style="font-size: 14px; font-weight: 700; padding:12px 16px; border-radius:12px;">
-                    ❌ @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage
-                </div>
-            }
+        <div class="field">
+            <label>CÉDULA *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="12" r="2.5" /><path d="M14 10h4M14 14h4" /></svg>
+                <input type="text" name="Cedula" placeholder="2-0874-0716" required />
+            </div>
+        </div>
 
-            <!-- ===== CÉDULA ===== -->
-            <div class="field" id="cedulaGroup">
-                <label>CÉDULA <span style="color:var(--red);">*</span></label>
+        <div class="field">
+            <label>NOMBRE *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                <input type="text" name="Nombre" placeholder="Su nombre" required />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>APELLIDOS *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                <input type="text" name="Apellidos" placeholder="Sus apellidos" required />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>CORREO PRINCIPAL *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
+                <input type="email" name="Correo" placeholder="usuario@correo.com" required />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>CORREO SECUNDARIO (opcional)</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
+                <input type="email" name="CorreoSecundario" placeholder="otro@correo.com" />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>TELÉFONO *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                <input type="text" name="Telefono" placeholder="8888-8888" required />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>TELÉFONO 2 (opcional)</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                <input type="text" name="TelefonoSecundario" placeholder="8888-0000" />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>SEXO</label>
+            <div style="display:flex; gap:12px; align-items:center; padding-left:8px;">
+                <label style="font-weight:600;"><input type="radio" name="Sexo" value="Masculino" /> Masculino</label>
+                <label style="font-weight:600;"><input type="radio" name="Sexo" value="Femenino" /> Femenino</label>
+                <label style="font-weight:600;"><input type="radio" name="Sexo" value="Otro" /> Otro</label>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>CONTRASEÑA *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                <input type="password" name="Contraseña" placeholder="••••••••" required />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>CONFIRMAR CONTRASEÑA *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+                <input type="password" name="confirmarContraseña" placeholder="••••••••" required />
+            </div>
+        </div>
+        <!-- Actividad económica: debe mostrarse antes del botón de registro -->
+        <div class="field">
+            <label>ACTIVIDAD ECONÓMICA *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3z"/><path d="M3 11h18v10H3z"/></svg>
+                <input id="actividadInput" name="ActividadEconomica" list="actividadesList" placeholder="Buscar por código o nombre..." autocomplete="off" required />
+                <datalist id="actividadesList"></datalist>
+            </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; background:#f8f9fe; padding:12px; border-radius:12px; border:1px solid var(--line); margin-top:12px;">
+            <label style="display:flex; align-items:flex-start; gap:8px; font-size:12px; font-weight:600; cursor:pointer;">
+                <input type="checkbox" name="AceptaPolitica" value="true" required /> Acepto la Política de Privacidad
+            </label>
+            <label style="display:flex; align-items:flex-start; gap:8px; font-size:12px; font-weight:600; cursor:pointer;">
+                <input type="checkbox" name="AceptaConsentimiento" value="true" required /> Acepto el Consentimiento Informado
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-cta btn-block" style="margin-top:16px;">Registrar cuenta</button>
+    }
+
+    <!-- Ubicación: Provincia / Cantón / Distrito -->
+    <div style="margin-top:18px;">
+        <div class="field" style="display:flex; gap:8px;">
+            <div style="flex:1;">
+                <label>PROVINCIA *</label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="5" width="18" height="14" rx="2" />
-                        <circle cx="9" cy="12" r="2.5" />
-                        <path d="M14 10h4M14 14h4" />
-                    </svg>
-                    <input type="text" name="Cedula" id="cedula" required placeholder="1-2345-6789" />
-                    <span class="validation-icon" id="cedulaIcon"></span>
-                </div>
-                <div class="field-error" id="cedulaError"></div>
-            </div>
-
-            <!-- ===== NOMBRE ===== -->
-            <div class="field" id="nombreGroup">
-                <label>NOMBRE <span style="color:var(--red);">*</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
-                    </svg>
-                    <input type="text" name="Nombre" id="nombre" required placeholder="Su nombre" />
-                    <span class="validation-icon" id="nombreIcon"></span>
-                </div>
-                <div class="field-error" id="nombreError"></div>
-            </div>
-
-            <!-- ===== APELLIDOS ===== -->
-            <div class="field" id="apellidosGroup">
-                <label>APELLIDOS <span style="color:var(--red);">*</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
-                    </svg>
-                    <input type="text" name="Apellidos" id="apellidos" required placeholder="Sus apellidos" />
-                    <span class="validation-icon" id="apellidosIcon"></span>
-                </div>
-                <div class="field-error" id="apellidosError"></div>
-            </div>
-
-            <!-- ===== FECHA DE NACIMIENTO ===== -->
-            <div class="field" id="fechaGroup">
-                <label>FECHA DE NACIMIENTO <span style="color:var(--red);">*</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" />
-                        <path d="M16 2v4M8 2v4M3 10h18" />
-                    </svg>
-                    <input type="date" name="FechaNacimiento" id="fechaNacimiento" required />
-                    <span class="validation-icon" id="fechaIcon"></span>
-                </div>
-                <div class="registro-hint" id="fechaHint">Ingresa tu fecha de nacimiento.</div>
-                <div class="field-error" id="fechaError"></div>
-            </div>
-
-            <!-- ===== SEXO ===== -->
-            <div class="field" id="sexoGroup">
-                <label>SEXO <span style="color:var(--red);">*</span></label>
-                <div class="inp" style="flex-wrap:wrap; gap:8px; padding:10px 15px;">
-                    <label style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px; cursor:pointer;">
-                        <input type="radio" name="Sexo" value="Masculino" required /> Masculino
-                    </label>
-                    <label style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px; cursor:pointer;">
-                        <input type="radio" name="Sexo" value="Femenino" required /> Femenino
-                    </label>
-                    <!-- Opción 'Personalizado' eliminada por requerimiento: solo Masculino y Femenino -->
-                </div>
-                <div class="field-error" id="sexoError"></div>
-            </div>
-
-            <!-- NISE asociado eliminado del formulario: se gestiona desde la base de datos. -->
-
-            <!-- ===== FACTURA ELECTRÓNICA ===== -->
-            <div class="field" id="facturaElectronicaGroup">
-                <label>¿Desea que le envíen una factura electrónica? <span style="color:var(--red);">*</span></label>
-                <div class="inp" style="flex-wrap:wrap; gap:16px; padding:10px 15px;">
-                    <label style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px; cursor:pointer;">
-                        <input type="radio" name="FacturaElectronica" value="true" required onchange="toggleActividadEconomica()" /> Sí
-                    </label>
-                    <label style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:14px; cursor:pointer;">
-                        <input type="radio" name="FacturaElectronica" value="false" required onchange="toggleActividadEconomica()" /> No
-                    </label>
-                </div>
-                <div class="field-error" id="facturaElectronicaError"></div>
-            </div>
-
-            <!-- ===== ACTIVIDAD ECONÓMICA (CONDICIONAL) ===== -->
-            <div class="field" id="actividadEconomicaGroup" style="display: none;">
-                <label>ACTIVIDAD ECONÓMICA <span style="color:var(--red);">*</span></label>
-                <div class="inp" style="flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 15px;">
-                    <input type="text" id="actividadBusqueda" placeholder="Buscar por código o nombre..." onkeyup="filtrarActividadesEconomicas()" style="border:1.5px solid var(--line); border-radius:8px; padding:8px 12px; font-family:inherit; font-size:14px;" />
-                    <select name="ActividadEconomicaCodigo" id="actividadSelect" required style="width:100%; border:1.5px solid var(--line); border-radius:8px; padding:8px 12px; font-family:inherit; font-size:14px; color:var(--ink); background:white;">
-                        <option value="">-- Seleccione una actividad --</option>
+                    <select name="Provincia" id="provincia" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);">
+                        <option value="">Seleccione provincia</option>
                     </select>
                 </div>
-                <div class="field-error" id="actividadEconomicaError"></div>
             </div>
-
-            <!-- ===== CORREO PRINCIPAL ===== -->
-            <div class="field" id="correoGroup">
-                <label>CORREO PRINCIPAL <span style="color:var(--red);">*</span></label>
+            <div style="flex:1;">
+                <label>CANTÓN *</label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="4" width="20" height="16" rx="2" />
-                        <path d="m22 7-10 5L2 7" />
-                    </svg>
-                    <input type="email" name="Correo" id="correo" required placeholder="usuario@correo.com" />
-                    <span class="validation-icon" id="correoIcon"></span>
+                    <select name="Canton" id="canton" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);">
+                        <option value="">Seleccione cantón</option>
+                    </select>
                 </div>
-                <div class="field-error" id="correoError"></div>
             </div>
-
-            <!-- ===== CORREO SECUNDARIO (OPCIONAL) ===== -->
-            <div class="field" id="correo2Group">
-                <label>CORREO SECUNDARIO <span style="color:var(--muted);">(Opcional)</span></label>
+            <div style="flex:1;">
+                <label>DISTRITO *</label>
                 <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="4" width="20" height="16" rx="2" />
-                        <path d="m22 7-10 5L2 7" />
-                    </svg>
-                    <input type="email" name="CorreoSecundario" id="correoSecundario" placeholder="secundario@correo.com" />
-                    <span class="validation-icon" id="correo2Icon"></span>
-                </div>
-                <div class="field-error" id="correo2Error"></div>
-            </div>
-
-            <!-- ===== TELÉFONO PRINCIPAL ===== -->
-            <div class="field" id="telefonoGroup">
-                <label>TELÉFONO PRINCIPAL <span style="color:var(--red);">*</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-                    </svg>
-                    <input type="text" name="Telefono" id="telefono" required placeholder="8888-8888" />
-                    <span class="validation-icon" id="telefonoIcon"></span>
-                </div>
-                <div class="field-error" id="telefonoError"></div>
-            </div>
-
-            <!-- ===== TELÉFONO SECUNDARIO (OPCIONAL) ===== -->
-            <div class="field" id="telefono2Group">
-                <label>TELÉFONO SECUNDARIO <span style="color:var(--muted);">(Opcional)</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-                    </svg>
-                    <input type="text" name="TelefonoSecundario" id="telefonoSecundario" placeholder="8888-8888" />
-                    <span class="validation-icon" id="telefono2Icon"></span>
-                </div>
-                <div class="field-error" id="telefono2Error"></div>
-            </div>
-
-            <!-- ===== DIRECCIÓN FÍSICA ===== -->
-            <div class="field" id="direccionGroup">
-                <label>DIRECCIÓN FÍSICA DONDE RESIDE <span style="color:var(--red);">*</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-                        <circle cx="12" cy="9" r="3" />
-                    </svg>
-                    <input type="text" name="Direccion" id="direccion" required placeholder="Calle, Avenida, Número, Detalles..." />
-                    <span class="validation-icon" id="direccionIcon"></span>
-                </div>
-                <div class="field-error" id="direccionError"></div>
-            </div>
-
-            <!-- ===== PROVINCIA, CANTÓN, DISTRITO ===== -->
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <div class="field" style="flex: 1;" id="provinciaGroup">
-                    <label>PROVINCIA <span style="color:var(--red);">*</span></label>
-                    <div class="inp">
-                        <select name="Provincia" id="provincia" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);" onchange="cargarCantones()">
-                            <option value="">-- Seleccione --</option>
-                            <option value="San José">San José</option>
-                            <option value="Alajuela">Alajuela</option>
-                            <option value="Cartago">Cartago</option>
-                            <option value="Heredia">Heredia</option>
-                            <option value="Guanacaste">Guanacaste</option>
-                            <option value="Puntarenas">Puntarenas</option>
-                            <option value="Limón">Limón</option>
-                        </select>
-                        <span class="validation-icon" id="provinciaIcon"></span>
-                    </div>
-                    <div class="field-error" id="provinciaError"></div>
-                </div>
-
-                <div class="field" style="flex: 1;" id="cantonGroup">
-                    <label>CANTÓN <span style="color:var(--red);">*</span></label>
-                    <div class="inp">
-                        <select name="Canton" id="canton" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);" onchange="cargarDistritos()">
-                            <option value="">-- Seleccione --</option>
-                        </select>
-                        <span class="validation-icon" id="cantonIcon"></span>
-                    </div>
-                    <div class="field-error" id="cantonError"></div>
-                </div>
-
-                <div class="field" style="flex: 1;" id="distritoGroup">
-                    <label>DISTRITO <span style="color:var(--red);">*</span></label>
-                    <div class="inp">
-                        <select name="Distrito" id="distrito" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);">
-                            <option value="">-- Seleccione --</option>
-                        </select>
-                        <span class="validation-icon" id="distritoIcon"></span>
-                    </div>
-                    <div class="field-error" id="distritoError"></div>
+                    <select name="Distrito" id="distrito" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);">
+                        <option value="">Seleccione distrito</option>
+                    </select>
                 </div>
             </div>
+        </div>
 
-            <!-- ===== USUARIO ===== -->
-            <div class="field" id="usuarioGroup">
-                <label>USUARIO (Para iniciar sesión) <span style="color:var(--red);">*</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
-                    </svg>
-                    <input type="text" name="UserName" id="userName" required placeholder="Escribe tu usuario" />
-                    <span class="validation-icon" id="usuarioIcon"></span>
-                </div>
-                <div class="field-error" id="usuarioError"></div>
+        <div class="field" style="margin-top:12px;">
+            <label>ACTIVIDAD ECONÓMICA *</label>
+            <div class="inp">
+                <input list="actividadesList" id="actividadInput" placeholder="Buscar por código o nombre..." autocomplete="off" required />
+                <datalist id="actividadesList"></datalist>
             </div>
+        </div>
+    </div>
 
-            <!-- ===== CONTRASEÑA ===== -->
-            <div class="field" id="contrasenaGroup">
-                <label>CONTRASEÑA <span style="color:var(--red);">*</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="4" y="10" width="16" height="10" rx="2" />
-                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-                    </svg>
-                    <input type="password" name="Contraseña" id="contrasena" required placeholder="••••••••" />
-                    <span class="validation-icon" id="contrasenaIcon"></span>
-                    <button type="button" class="toggle-password" onclick="togglePasswordById('contrasena')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="field-error" id="contrasenaError"></div>
-            </div>
-
-            <!-- ===== CONFIRMAR CONTRASEÑA ===== -->
-            <div class="field" id="confirmGroup">
-                <label>CONFIRMAR CONTRASEÑA <span style="color:var(--red);">*</span></label>
-                <div class="inp">
-                    <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="4" y="10" width="16" height="10" rx="2" />
-                        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-                    </svg>
-                    <input type="password" name="Confirm" id="confirm" required placeholder="••••••••" />
-                    <span class="validation-icon" id="confirmIcon"></span>
-                    <button type="button" class="toggle-password" onclick="togglePasswordById('confirm')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="field-error" id="confirmError"></div>
-            </div>
-
-            <!-- ===== ACEPTACIÓN ===== -->
-            <div class="field" style="margin-top:20px;">
-                <div style="display:flex; flex-direction:column; gap:12px; background:#f8f9fe; padding:16px; border-radius:14px; border:1px solid var(--line);">
-                    <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);">
-                        @* Hidden field ensures a false value posts when unchecked *@
-                        <input type="hidden" name="AceptaPolitica" value="false" />
-                        <input type="checkbox" name="AceptaPolitica" id="aceptaPolitica" value="true" required style="margin-top:2px; width:18px; height:18px; cursor:pointer;" />
-                        <span>Acepto la <a href="#" onclick="abrirDocumento('politica')" style="color:var(--blue); text-decoration:underline;">Política de Privacidad</a> de la CNFL</span>
-                    </label>
-                    <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink);">
-                        <input type="hidden" name="AceptaConsentimiento" value="false" />
-                        <input type="checkbox" name="AceptaConsentimiento" id="aceptaConsentimiento" value="true" required style="margin-top:2px; width:18px; height:18px; cursor:pointer;" />
-                        <span>Acepto el <a href="#" onclick="abrirDocumento('consentimiento')" style="color:var(--blue); text-decoration:underline;">Consentimiento Informado</a> (F-085)</span>
-                    </label>
-                </div>
-                <div class="field-error" id="aceptacionError" style="margin-top:8px;"></div>
-            </div>
-
-            <button type="submit" class="btn-register" id="btnRegistrar">
-                Registrarme
-            </button>
-        }
+    <div class="login-foot" style="margin-top:16px;">
+        ¿Ya tienes cuenta? <a href="@Url.Action("Login", "Cuenta")">Inicia sesión aquí</a>
     </div>
 </div>
-
-@section scripts {
-    <script src="@Url.Content("~/Scripts/cliente/cuenta.js")"></script>
-    <script>
-        // ==========================================================
-        // FUNCIONES PARA LAS NUEVAS CARACTERÍSTICAS
-        // ==========================================================
-
-        // --- Abrir documentos con diseño mejorado ---
-        function abrirDocumento(tipo) {
-            var nombre = document.getElementById('nombre').value || 'Cliente';
-            var cedula = document.getElementById('cedula').value || '0-0000-0000';
-            var correo = document.getElementById('correo').value || 'cliente@correo.cr';
-            var telefono = document.getElementById('telefono').value || '0000-0000';
-
-            var fecha = new Date();
-            var dia = fecha.getDate();
-            var mes = fecha.toLocaleString('es-CR', { month: 'long' });
-            var anio = fecha.getFullYear();
-
-            var contenido = '';
-
-            if (tipo === 'politica') {
-                contenido = `
-                        <div style="font-family:'Inter',sans-serif; max-width:900px; margin:0 auto; padding:24px; background:white; border-radius:20px; box-shadow:0 8px 40px rgba(0,0,0,0.15); position:relative; overflow:hidden;">
-                            <div style="position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(90deg, #1E23E6, #FF692D);"></div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                                <h2 style="color:#1E23E6; margin:0;">Política de Privacidad</h2>
-                                <span style="font-size:12px; color:#727A86;">CNFL</span>
-                            </div>
-                            <hr style="border:1px solid #EDEFF3; margin:12px 0;" />
-                            <div style="background:#f8f9fe; padding:16px; border-radius:12px; margin:12px 0; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                                <p style="margin:0;"><strong>Cliente:</strong> ${nombre}</p>
-                                <p style="margin:0;"><strong>Cédula:</strong> ${cedula}</p>
-                                <p style="margin:0;"><strong>Correo:</strong> ${correo}</p>
-                                <p style="margin:0;"><strong>Teléfono:</strong> ${telefono}</p>
-                                <p style="margin:0; grid-column:span 2;"><strong>Fecha:</strong> ${dia} de ${mes} de ${anio}</p>
-                            </div>
-                            <div style="line-height:1.8; font-size:14px; color:#0E1116;">
-                                <p><strong>1. Datos Personales</strong></p>
-                                <p style="color:#727A86; margin:0 0 8px 0;">Los datos personales recopilados son: nombre completo, cédula, dirección, teléfonos, correo electrónico, NISE(s) asociados, datos de facturación y consumo eléctrico.</p>
-                                <p><strong>2. Finalidad del Tratamiento</strong></p>
-                                <p style="color:#727A86; margin:0 0 8px 0;">Los datos serán utilizados para la prestación del servicio eléctrico, facturación, atención de averías, trámites, comunicaciones y ofrecimiento de productos y servicios.</p>
-                                <p><strong>3. Derechos del Titular</strong></p>
-                                <p style="color:#727A86; margin:0 0 8px 0;">El titular tiene derecho a acceder, rectificar, actualizar y cancelar sus datos personales mediante los canales habilitados por la CNFL.</p>
-                                <p><strong>4. Transferencia de Datos</strong></p>
-                                <p style="color:#727A86; margin:0;">La CNFL puede transferir datos a entidades autorizadas para la prestación de servicios relacionados con el giro del negocio.</p>
-                            </div>
-                            <button onclick="this.closest('div[style]').remove()" style="width:100%; padding:14px; background:#1E23E6; color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer; font-size:16px; margin-top:16px; transition:0.2s; box-shadow:0 4px 16px rgba(30,35,230,0.3);" onmouseover="this.style.transform='scale(0.98)'" onmouseout="this.style.transform='scale(1)'">Aceptar y Cerrar</button>
-                        </div>
-                    `;
-            } else if (tipo === 'consentimiento') {
-                contenido = `
-                        <div style="font-family:'Inter',sans-serif; max-width:900px; margin:0 auto; padding:24px; background:white; border-radius:20px; box-shadow:0 8px 40px rgba(0,0,0,0.15); position:relative; overflow:hidden;">
-                            <div style="position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(90deg, #1E23E6, #FF692D);"></div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                                <h2 style="color:#1E23E6; margin:0;">Consentimiento Informado F-085</h2>
-                                <span style="font-size:12px; color:#727A86;">CNFL</span>
-                            </div>
-                            <hr style="border:1px solid #EDEFF3; margin:12px 0;" />
-                            <p style="color:#0E1116; margin:0;"><strong>COMPAÑÍA NACIONAL DE FUERZA Y LUZ S.A.</strong></p>
-                            <p style="color:#727A86; margin:4px 0 12px 0;">Yo, <strong>${nombre}</strong>, cédula <strong>${cedula}</strong>, declaro haber sido informado sobre el uso de mis datos personales como cliente de la CNFL.</p>
-                            <div style="background:#f8f9fe; padding:16px; border-radius:12px; margin:12px 0; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                                <p style="margin:0;"><strong>Cliente:</strong> ${nombre}</p>
-                                <p style="margin:0;"><strong>Cédula:</strong> ${cedula}</p>
-                                <p style="margin:0;"><strong>Correo:</strong> ${correo}</p>
-                                <p style="margin:0;"><strong>Teléfono:</strong> ${telefono}</p>
-                                <p style="margin:0; grid-column:span 2;"><strong>Fecha:</strong> ${dia} de ${mes} de ${anio}</p>
-                            </div>
-                            <div style="line-height:1.8; font-size:14px; color:#0E1116;">
-                                <p><strong>a) Custodia de Datos</strong></p>
-                                <p style="color:#727A86; margin:0 0 8px 0;">La CNFL custodia y administra bases de datos electrónicas con información personal de los clientes.</p>
-                                <p><strong>b) Uso de Datos Personales</strong></p>
-                                <p style="color:#727A86; margin:0 0 8px 0;">Los datos se utilizan para la prestación del servicio eléctrico y comercialización de productos y servicios.</p>
-                                <p><strong>c) Transferencia de Datos</strong></p>
-                                <p style="color:#727A86; margin:0 0 8px 0;">La CNFL puede transferir datos a socios comerciales y personas autorizadas para la comercialización de servicios.</p>
-                                <p><strong>d) Derechos del Titular</strong></p>
-                                <p style="color:#727A86; margin:0;">El titular puede solicitar acceso, rectificación, actualización, cancelación o eliminación de sus datos personales.</p>
-                            </div>
-                            <div style="border-top:2px solid #EDEFF3; padding-top:16px; margin-top:12px;">
-                                <p style="text-align:center; font-weight:700; margin:0;">Dado en Costa Rica el ${dia} de ${mes} de ${anio}</p>
-                                <div style="display:flex; justify-content:space-between; margin-top:16px;">
-                                    <div style="text-align:center; flex:1;">
-                                        <div style="border-bottom:2px solid #0E1116; width:70%; margin:0 auto 4px; height:30px;"></div>
-                                        <p style="font-size:12px; color:#727A86; margin:0;">${nombre}</p>
-                                        <p style="font-size:11px; color:#727A86; margin:0;">Cliente</p>
-                                    </div>
-                                    <div style="text-align:center; flex:1;">
-                                        <div style="border-bottom:2px solid #0E1116; width:70%; margin:0 auto 4px; height:30px;"></div>
-                                        <p style="font-size:12px; color:#727A86; margin:0;">Persona Trabajadora CNFL</p>
-                                        <p style="font-size:11px; color:#727A86; margin:0;">CNFL</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <button onclick="this.closest('div[style]').remove()" style="width:100%; padding:14px; background:#1E23E6; color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer; font-size:16px; margin-top:16px; transition:0.2s; box-shadow:0 4px 16px rgba(30,35,230,0.3);" onmouseover="this.style.transform='scale(0.98)'" onmouseout="this.style.transform='scale(1)'">Aceptar y Cerrar</button>
-                        </div>
-                    `;
-            }
-
-            var modal = document.createElement('div');
-            modal.style.cssText = `
-                    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-                    z-index: 9999; display: flex; justify-content: center;
-                    align-items: center; padding: 20px; overflow-y: auto;
-                `;
-            modal.innerHTML = contenido;
-
-            modal.addEventListener('click', function (e) {
-                if (e.target === this) { this.remove(); }
-            });
-
-            document.body.appendChild(modal);
-
-            setTimeout(function () {
-                var checkbox = document.getElementById(tipo === 'politica' ? 'aceptaPolitica' : 'aceptaConsentimiento');
-                if (checkbox) { checkbox.checked = true; }
-            }, 500);
-        }
-
-        // --- Factura Electrónica ---
-        function toggleActividadEconomica() {
-            var radios = document.querySelectorAll('input[name="FacturaElectronica"]');
-            var actividadGroup = document.getElementById('actividadEconomicaGroup');
-            var select = document.getElementById('actividadSelect');
-
-            if (radios[0].checked) {
-                actividadGroup.style.display = 'block';
-                select.required = true;
-                cargarActividadesEconomicas();
-            } else {
-                actividadGroup.style.display = 'none';
-                select.required = false;
-                select.value = '';
-            }
-        }
-
-        // --- Actividades Económicas ---
-        var actividadesData = [];
-
-        function cargarActividadesEconomicas() {
-            var select = document.getElementById('actividadSelect');
-            if (select.options.length <= 1) {
-                $.ajax({
-                    url: '/Cuenta/ObtenerActividadesEconomicas',
-                    type: 'GET',
-                    success: function (data) {
-                        actividadesData = data;
-                        select.innerHTML = '<option value="">-- Seleccione una actividad --</option>';
-                        data.forEach(function (item) {
-                            var option = document.createElement('option');
-                            option.value = item.Codigo;
-                            option.textContent = item.Codigo + ' - ' + item.Nombre;
-                            select.appendChild(option);
-                        });
-                    },
-                    error: function () {
-                        console.error('Error al cargar actividades económicas');
-                    }
-                });
-            }
-        }
-
-        function filtrarActividadesEconomicas() {
-            var busqueda = document.getElementById('actividadBusqueda').value.toLowerCase();
-            var select = document.getElementById('actividadSelect');
-            select.innerHTML = '<option value="">-- Seleccione una actividad --</option>';
-
-            actividadesData.forEach(function (item) {
-                var texto = (item.Codigo + ' - ' + item.Nombre).toLowerCase();
-                if (texto.includes(busqueda)) {
-                    var option = document.createElement('option');
-                    option.value = item.Codigo;
-                    option.textContent = item.Codigo + ' - ' + item.Nombre;
-                    select.appendChild(option);
-                }
-            });
-        }
-
-        // --- Provincia, Cantón, Distrito ---
-        var ubicaciones = {
-            'San José': {
-                cantones: {
-                    'San José': ['Catedral', 'Carmen', 'Merced', 'Hospital', 'Mata Redonda', 'Pavas', 'Hatillo', 'San Sebastián', 'Uruca', 'San Francisco de Dos Ríos'],
-                    'Escazú': ['Escazú', 'San Antonio', 'San Rafael'],
-                    'Desamparados': ['Desamparados', 'San Miguel', 'San Juan de Dios', 'San Rafael Arriba', 'San Antonio', 'Frailes', 'Patarrá', 'San Cristóbal', 'Rosario', 'Damas', 'San Rafael Abajo', 'Gravilias', 'Los Guido'],
-                    'Puriscal': ['Santiago', 'Mercedes Sur', 'Barbacoas', 'San Antonio', 'Chires', 'Desamparados', 'Candelarita', 'San Rafael', 'Santa Rita', 'La Cuesta', 'Piedras Negras', 'El Llano'],
-                    'Tarrazú': ['San Marcos', 'San Lorenzo', 'San Carlos', 'San Juan', 'Santa María', 'Santiago', 'El Carmen'],
-                    'Aserrí': ['Aserrí', 'Tarbaca', 'Vuelta de Jorco', 'San Gabriel', 'Legua', 'Monterrey', 'Salitrillos'],
-                    'Mora': ['Colón', 'Guayabo', 'Tabarcia', 'Picagres', 'Jaris', 'Quitirrisí'],
-                    'Goicoechea': ['Guadalupe', 'San Francisco', 'Calle Blancos', 'Mata de Plátano', 'Ipís', 'Rancho Redondo', 'Purral'],
-                    'Santa Ana': ['Santa Ana', 'Salitral', 'Pozos', 'Uruca', 'Piedades', 'Brasil'],
-                    'Alajuelita': ['Alajuelita', 'San Josecito', 'San Antonio', 'Concepción', 'San Felipe'],
-                    'Vásquez de Coronado': ['San Isidro', 'San Rafael', 'Dulce Nombre', 'Patalillo', 'Cascajal'],
-                    'Acosta': ['San Ignacio', 'Guaitil', 'Palmichal', 'Cangrejal', 'Sabanillas'],
-                    'Tibás': ['San Juan', 'Cinco Esquinas', 'Anselmo Llorente', 'León XIII', 'Colima'],
-                    'Moravia': ['San Vicente', 'San Jerónimo', 'La Trinidad'],
-                    'Montes de Oca': ['San Pedro', 'Sabanilla', 'Mercedes', 'San Rafael'],
-                    'Turrubares': ['San Pablo', 'Carara', 'San Pedro', 'San Juan', 'San Luis', 'San Rafael'],
-                    'Dota': ['Santa María', 'Jardín', 'Copey'],
-                    'Curridabat': ['Curridabat', 'Granadilla', 'Sánchez', 'Tirrases'],
-                    'Pérez Zeledón': ['San Isidro de El General', 'General', 'Daniel Flores', 'Rivas', 'San Pedro', 'Platanillo', 'Pejibaye', 'Cajón', 'Barú', 'Río Nuevo', 'Páramo', 'La Amistad'],
-                    'León Cortés Castro': ['San Pablo', 'San Andrés', 'Llano Bonito', 'San Isidro', 'Santa Cruz']
-                }
-            },
-            'Alajuela': {
-                cantones: {
-                    'Alajuela': ['Alajuela', 'San José', 'Carrizal', 'San Antonio', 'Guácima', 'San Isidro', 'Sabanilla', 'San Rafael', 'Río Segundo', 'Desamparados', 'Turrúcares', 'Tambor', 'Garita', 'Sarapiquí'],
-                    'San Ramón': ['San Ramón', 'Santiago', 'San Juan', 'San Rafael', 'San Isidro', 'Los Ángeles', 'Alfaro', 'Volio', 'Concepción', 'Zapotal', 'Peñas Blancas', 'San Lorenzo'],
-                    'Grecia': ['Grecia', 'San Isidro', 'San José', 'San Roque', 'Tacares', 'Puente de Piedra', 'Bolívar', 'Santa Gertrudis', 'San Luis', 'El Cajón', 'La Ceiba'],
-                    'San Mateo': ['San Mateo', 'Desmonte', 'Jesús María', 'San Juan'],
-                    'Atenas': ['Atenas', 'Jesús', 'Mercedes', 'San Isidro', 'Concepción', 'San José', 'Santa Eulalia'],
-                    'Naranjo': ['Naranjo', 'San Miguel', 'San José', 'Cirrí Sur', 'San Jerónimo', 'San Juan', 'El Rosario'],
-                    'Palmares': ['Palmares', 'Zaragoza', 'Buenos Aires', 'Santiago', 'Candelaria'],
-                    'Poás': ['San Pedro', 'San Juan', 'San Rafael', 'Carrillos', 'Sabana Redonda'],
-                    'Orotina': ['Orotina', 'El Mastatal', 'Hacienda Vieja'],
-                    'San Carlos': ['Quesada', 'Florencia', 'Buenavista', 'Aguas Zarcas', 'Venecia', 'Pital', 'La Fortuna', 'La Tigra', 'Palmera', 'Venado', 'Cutris', 'Monterrey', 'Pocosol'],
-                    'Zarcero': ['Zarcero', 'Laguna', 'Tapezco', 'Guadalupe', 'Palmira', 'Zapote'],
-                    'Sarchí': ['Sarchí Norte', 'Sarchí Sur', 'San Antonio'],
-                    'Upala': ['Upala', 'Aguas Claras', 'San José', 'Bijagua', 'Delicias', 'Dos Ríos', 'Yolillal'],
-                    'Los Chiles': ['Los Chiles', 'Caño Negro', 'El Amparo', 'San Jorge'],
-                    'Guatuso': ['San Rafael', 'Buenavista', 'Cote'],
-                    'Río Cuarto': ['Río Cuarto', 'Santa Rita']
-                }
-            },
-            'Cartago': {
-                cantones: {
-                    'Cartago': ['Cartago', 'Oriental', 'Occidental', 'Carmen', 'San Nicolás', 'Aguacaliente', 'Guadalupe', 'Corralillo', 'Tierra Blanca', 'Dulce Nombre', 'Llano Grande', 'Quebradilla'],
-                    'Paraíso': ['Paraíso', 'Santiago', 'Orosi', 'Cachí', 'Llanos de Santa Lucía'],
-                    'La Unión': ['Tres Ríos', 'San Diego', 'San Juan', 'San Rafael', 'Concepción', 'Dulce Nombre', 'San Ramón', 'Río Azul'],
-                    'Jiménez': ['Juan Viñas', 'La Esperanza', 'San Antonio'],
-                    'Turrialba': ['Turrialba', 'La Suiza', 'Peralta', 'Santa Cruz', 'Santa Teresita', 'Pavones', 'Tuis', 'Tayutic', 'Santa Rosa'],
-                    'Alvarado': ['Pacayas', 'Cervantes', 'Capellades'],
-                    'Oreamuno': ['San Rafael', 'Cipreses', 'Santa Rosa', 'Potrero Cerrado'],
-                    'El Guarco': ['El Tejar', 'San Isidro', 'San Rafael', 'San Antonio']
-                }
-            },
-            'Heredia': {
-                cantones: {
-                    'Heredia': ['Heredia', 'Mercedes', 'San Francisco', 'Ulloa', 'Vara Blanca', 'San José', 'San Joaquín'],
-                    'Barva': ['Barva', 'San Pedro', 'San Pablo', 'San Roque', 'Santa Lucía', 'San José de la Montaña'],
-                    'Santo Domingo': ['Santo Domingo', 'San Vicente', 'San Miguel', 'Paracito', 'Santa Rosa', 'Tures'],
-                    'Santa Bárbara': ['Santa Bárbara', 'San Pedro', 'San Juan', 'Jesús', 'Santo Domingo'],
-                    'San Rafael': ['San Rafael', 'San Josecito', 'Santiago', 'Los Ángeles'],
-                    'San Isidro': ['San Isidro', 'San José', 'Concepción', 'San Francisco'],
-                    'Belén': ['San Antonio', 'La Ribera', 'La Asunción'],
-                    'Flores': ['San Joaquín', 'Barrantes', 'Llorente'],
-                    'San Pablo': ['San Pablo', 'San Pedro'],
-                    'Sarapiquí': ['Puerto Viejo', 'La Virgen', 'Las Horquetas', 'Llanuras del Gaspar']
-                }
-            },
-            'Guanacaste': {
-                cantones: {
-                    'Liberia': ['Liberia', 'Cañas Dulces', 'Mayorga', 'Nacascolo', 'Curubandé'],
-                    'Nicoya': ['Nicoya', 'Mansión', 'San Antonio', 'Quebrada Honda', 'Sámara', 'Nosara', 'Belén de Nosarita'],
-                    'Santa Cruz': ['Santa Cruz', 'Bolsón', 'Veintisiete de Abril', 'Tempate', 'Cartagena', 'Cuajiniquil', 'Diriá', 'Cabo Velas'],
-                    'Bagaces': ['Bagaces', 'La Fortuna', 'Mogote', 'Río Naranjo'],
-                    'Carrillo': ['Filadelfia', 'Palmira', 'Sardinal', 'Belén'],
-                    'Cañas': ['Cañas', 'Palmira', 'San Miguel', 'Bebedero', 'Porozal'],
-                    'Abangares': ['Las Juntas', 'Sierra', 'San Juan', 'Colorado'],
-                    'Tilarán': ['Tilarán', 'Quebrada Grande', 'Tronadora', 'Santa Rosa', 'Líbano', 'Tierras Morenas', 'Arenal'],
-                    'Nandayure': ['Carmona', 'Santa Rita', 'Zapotal', 'San Pablo', 'Porvenir', 'Bejuco'],
-                    'La Cruz': ['La Cruz', 'Santa Cecilia', 'Garita', 'Santa Elena'],
-                    'Hojancha': ['Hojancha', 'Monte Romo', 'Puerto Carrillo', 'Huacas']
-                }
-            },
-            'Puntarenas': {
-                cantones: {
-                    'Puntarenas': ['Puntarenas', 'Chacarita', 'El Roble', 'Barranca', 'Monteverde', 'Isla de Chira', 'Manzanillo'],
-                    'Esparza': ['Esparza', 'San Juan', 'San Rafael', 'San Jerónimo'],
-                    'Buenos Aires': ['Buenos Aires', 'Volcán', 'Potrero Grande', 'Boruca', 'Pilas', 'Colinas', 'Chánguena', 'Biolley', 'Brunka'],
-                    'Montes de Oro': ['Miramar', 'La Unión', 'San Isidro'],
-                    'Osa': ['Ciudad Cortés', 'Palmar', 'Sierpe', 'Bahía Ballena', 'Piedras Blancas'],
-                    'Quepos': ['Quepos', 'Savegre', 'Naranjito'],
-                    'Golfito': ['Golfito', 'Puerto Jiménez', 'Guaycará', 'Pavones'],
-                    'Coto Brus': ['San Vito', 'Sabalito', 'Aguabuena', 'Limoncito', 'Pittier'],
-                    'Parrita': ['Parrita'],
-                    'Corredores': ['Corredor'],
-                    'Garabito': ['Jacó', 'Tárcoles']
-                }
-            },
-            'Limón': {
-                cantones: {
-                    'Limón': ['Limón', 'Valle La Estrella', 'Río Blanco', 'Matama'],
-                    'Pococí': ['Guápiles', 'Jiménez', 'Cariari', 'Colorado', 'La Colonia'],
-                    'Siquirres': ['Siquirres', 'Pacuarito', 'Florida', 'Germania', 'El Cairo', 'Alegría'],
-                    'Talamanca': ['Bribrí', 'Cahuita', 'Sixaola', 'Telire'],
-                    'Matina': ['Matina', 'Batán', 'Carrandi'],
-                    'Guácimo': ['Guácimo', 'Mercedes', 'Pocora', 'Río Jiménez', 'Duacarí']
-                }
-            }
-        };
-
-        function cargarCantones() {
-            var provincia = document.getElementById('provincia').value;
-            var cantonSelect = document.getElementById('canton');
-            var distritoSelect = document.getElementById('distrito');
-
-            cantonSelect.innerHTML = '<option value="">-- Seleccione --</option>';
-            distritoSelect.innerHTML = '<option value="">-- Seleccione --</option>';
-
-            if (provincia && ubicaciones[provincia]) {
-                var cantones = Object.keys(ubicaciones[provincia].cantones);
-                cantones.forEach(function (canton) {
-                    var option = document.createElement('option');
-                    option.value = canton;
-                    option.textContent = canton;
-                    cantonSelect.appendChild(option);
-                });
-            }
-        }
-
-        function cargarDistritos() {
-            var provincia = document.getElementById('provincia').value;
-            var canton = document.getElementById('canton').value;
-            var distritoSelect = document.getElementById('distrito');
-
-            distritoSelect.innerHTML = '<option value="">-- Seleccione --</option>';
-
-            if (provincia && canton && ubicaciones[provincia] && ubicaciones[provincia].cantones[canton]) {
-                var distritos = ubicaciones[provincia].cantones[canton];
-                distritos.forEach(function (distrito) {
-                    var option = document.createElement('option');
-                    option.value = distrito;
-                    option.textContent = distrito;
-                    distritoSelect.appendChild(option);
-                });
-            }
-        }
-
-        // Inicializar eventos al cargar la página
-        document.addEventListener('DOMContentLoaded', function () {
-            var provincia = document.getElementById('provincia');
-            if (provincia && provincia.value) {
-                cargarCantones();
-            }
-        });
-    </script>
-}

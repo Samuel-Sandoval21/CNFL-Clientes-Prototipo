@@ -1,0 +1,171 @@
+/* ===== Cliente - Detalle Trámite ===== */
+.detalle-tramite {
+    padding: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+    .detalle-tramite .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+        .detalle-tramite .page-header h2 {
+            font-size: 24px;
+            color: #0033A0;
+            margin: 0;
+        }
+
+    .detalle-tramite .btn-volver {
+        background: #F5F6FA;
+        color: #0E1116;
+        border: 1px solid #EDEFF3;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .detalle-tramite .btn-volver:hover {
+            background: #EDEFF3;
+        }
+
+    .detalle-tramite .detalle-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid #EDEFF3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .detalle-tramite .detalle-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #EDEFF3;
+    }
+
+    .detalle-tramite .detalle-body p {
+        margin: 6px 0;
+        font-size: 14px;
+        color: #0E1116;
+    }
+
+        .detalle-tramite .detalle-body p strong {
+            color: #727A86;
+            font-weight: 600;
+        }
+
+    .detalle-tramite .detalle-progreso {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #EDEFF3;
+    }
+
+        .detalle-tramite .detalle-progreso h4 {
+            font-size: 16px;
+            color: #0033A0;
+            margin: 0 0 12px;
+        }
+
+    .detalle-tramite .estado-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
+        .detalle-tramite .estado-badge.solicitado {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .detalle-tramite .estado-badge.en-proceso {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+
+        .detalle-tramite .estado-badge.completado {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+    .detalle-tramite .track {
+        display: flex;
+        align-items: center;
+        margin: 10px 0 2px;
+    }
+
+        .detalle-tramite .track .step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+            .detalle-tramite .track .step .cir {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                background: #E6E9F2;
+                display: grid;
+                place-items: center;
+                font-size: 12px;
+                font-weight: 800;
+                color: #AAB0BE;
+                z-index: 2;
+            }
+
+            .detalle-tramite .track .step.done .cir {
+                background: #2E7D32;
+                color: white;
+            }
+
+            .detalle-tramite .track .step.now .cir {
+                background: #0033A0;
+                color: white;
+                box-shadow: 0 0 0 4px rgba(0,51,160,0.15);
+            }
+
+            .detalle-tramite .track .step .lb {
+                font-size: 10px;
+                font-weight: 700;
+                color: #727A86;
+                text-align: center;
+            }
+
+            .detalle-tramite .track .step.done .lb,
+            .detalle-tramite .track .step.now .lb {
+                color: #0E1116;
+            }
+
+            .detalle-tramite .track .step::before {
+                content: "";
+                position: absolute;
+                top: 14px;
+                left: -50%;
+                width: 100%;
+                height: 3px;
+                background: #E6E9F2;
+                z-index: 1;
+            }
+
+            .detalle-tramite .track .step:first-child::before {
+                display: none;
+            }
+
+            .detalle-tramite .track .step.done::before,
+            .detalle-tramite .track .step.now::before {
+                background: #2E7D32;
+            }

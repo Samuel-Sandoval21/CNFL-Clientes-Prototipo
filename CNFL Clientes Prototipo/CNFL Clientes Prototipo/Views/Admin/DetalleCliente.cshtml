@@ -1,0 +1,74 @@
+﻿@model CNFL_Clientes_Prototipo.Models.Usuario
+
+@{
+    ViewBag.Title = "Detalle de Cliente";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/admin/detalle-cliente.css" />
+
+<div class="detalle-cliente">
+    <div class="page-header">
+        <h1>Detalle de Cliente</h1>
+        <a href="@Url.Action("Clientes", "Admin")" class="btn-volver">← Volver</a>
+    </div>
+
+    <div class="detalle-grid">
+        <div class="detalle-card">
+            <h3>Información Personal</h3>
+            <p><strong>Nombre:</strong> @Model.Nombre @Model.Apellidos</p>
+            <p><strong>Cédula:</strong> @Model.Cedula</p>
+            <p><strong>Correo:</strong> @Model.Correo</p>
+            <p><strong>Teléfono:</strong> @Model.Telefono</p>
+            <p><strong>Fecha Registro:</strong> @Model.FechaRegistro.ToString("dd/MM/yyyy")</p>
+        </div>
+
+        <div class="detalle-card">
+            <h3>NISEs Asociados</h3>
+            @if (Model.NISEs != null && Model.NISEs.Any())
+            {
+                <ul class="detalle-lista">
+                    @foreach (var nise in Model.NISEs)
+                    {
+                        <li><strong>@nise.NumeroNise</strong> - @nise.Direccion</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="empty-message">No tiene NISEs asociados.</p>
+            }
+        </div>
+
+        <div class="detalle-card">
+            <h3>Averías Reportadas</h3>
+            @if (Model.Averias != null && Model.Averias.Any())
+            {
+                <ul class="detalle-lista">
+                    @foreach (var averia in Model.Averias.Take(5))
+                    {
+                        <li>#@averia.AveriaId - @averia.Tipo - <span class="estado-badge @averia.Estado.Replace(" ", "-").ToLower()">@averia.Estado</span></li>
+                    }
+                </ul>
+                if (Model.Averias.Count() > 5)
+                {
+                    <p><a href="@Url.Action("Averias", "Admin")" class="btn-ver-todas">Ver todas las averías →</a></p>
+                }
+            }
+            else
+            {
+                <p class="empty-message">No ha reportado averías.</p>
+            }
+        </div>
+    </div>
+
+    <div class="detalle-actions">
+        <button class="btn-editar" id="btnEditarCliente" data-id="@Model.UsuarioId">Editar Cliente</button>
+        <button class="btn-ver-facturas" id="btnVerFacturas" data-id="@Model.UsuarioId">Ver Facturas</button>
+        <button class="btn-imprimir" id="btnImprimir">Imprimir</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Scripts/admin/detalle-cliente.js"></script>
+}

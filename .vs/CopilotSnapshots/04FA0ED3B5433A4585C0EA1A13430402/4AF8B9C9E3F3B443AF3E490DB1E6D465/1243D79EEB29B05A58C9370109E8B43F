@@ -1,0 +1,117 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using CNFL_Clientes_Prototipo.Models;
+using CNFL_Clientes_Prototipo.Data;
+
+namespace CNFL_Clientes_Prototipo.Controllers
+{
+    [Authorize(Roles = "Admin")]
+    public class AdminController : Controller
+    {
+        private CNFLDbContext _db = new CNFLDbContext();
+
+        // GET: Admin/Dashboard
+        public ActionResult Dashboard()
+        {
+            var viewModel = new ReportesViewModel
+            {
+                TotalAverias = _db.Averias.Count(),
+                TiempoPromedioResolucion = "2.5 hrs",
+                TasaResolucion = 85,
+                AveriasPorMes = _db.Averias
+                    .GroupBy(a => a.FechaReporte.Month)
+                    .Select(g => new AveriaPorMes
+                    {
+                        Mes = g.Key.ToString(),
+                        Cantidad = g.Count()
+                    }).ToList(),
+                AveriasRecientes = _db.Averias
+                    .OrderByDescending(a => a.FechaReporte)
+                    .Take(5)
+                    .Select(a => new AveriaConTiempo
+                    {
+                        AveriaId = a.AveriaId,
+                        UsuarioId = a.UsuarioId,
+                        NiseId = a.NiseId,
+                        Tipo = a.Tipo,
+                        Descripcion = a.Descripcion,
+                        Estado = a.Estado,
+                        TiempoTranscurrido = (DateTime.Now - a.FechaReporte).ToString(@"hh\:mm")
+                    }).ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        // GET: Admin/Averias
+        public ActionResult Averias()
+        {
+            var averias = _db.Averias
+                .Include("Usuario")
+                .Include("NISE")
+                .OrderByDescending(a => a.FechaReporte)
+                .ToList();
+            return View(averias);
+        }
+
+        // POST: Admin/ActualizarEstadoAveria
+        [HttpPost]
+        public JsonResult ActualizarEstadoAveria(int averiaId, string nuevoEstado)
+        {
+            var averia = _db.Averias.Find(averiaId);
+            if (averia != null)
+            {
+                averia.Estado = nuevoEstado;
+                averia.FechaActualizacion = DateTime.Now;
+                _db.SaveChanges();
+                return Json(new { success = true, message = "Estado actualizado correctamente." });
+            }
+            return Json(new { success = false, message = "Avería no encontrada." });
+        }
+
+        // GET: Admin/Clientes
+        public ActionResult Clientes()
+        {
+            var clientes = _db.Usuarios
+                .Where(u => u.UsuarioRoles.Any(ur => ur.Rol.NombreRol == "Cliente"))
+                .ToList();
+            return View(clientes);
+        }
+
+        // GET: Admin/DetalleCliente/{id}
+        public ActionResult DetalleCliente(int id)
+        {
+            var usuario = _db.Usuarios
+                .Include("NISEs")
+                .Include("Averias")
+                .FirstOrDefault(u => u.UsuarioId == id);
+
+            if (usuario == null)
+                return HttpNotFound();
+
+            return View(usuario);
+        }
+
+        // GET: Admin/ReportesPDF
+        public ActionResult ReportesPDF()
+        {
+            var averias = _db.Averias
+                .Include("Usuario")
+                .Include("NISE")
+                .OrderByDescending(a => a.FechaReporte)
+                .ToList();
+
+            // Aquí puedes generar un PDF con iTextSharp o la librería que uses
+            return View(averias);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                _db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

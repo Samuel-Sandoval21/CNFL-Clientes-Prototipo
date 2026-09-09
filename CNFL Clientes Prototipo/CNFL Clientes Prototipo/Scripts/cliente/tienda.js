@@ -1,362 +1,70 @@
-﻿// ==========================================
-// TIENDA - JAVASCRIPT CON CARRITO
-// ==========================================
-
-// ===== CARRITO =====
-var carrito = [];
-
-// ==========================================================
-// CARGAR PRODUCTO A FACTURA (DESDE TIENDA)
-// ==========================================================
-
-function cargarAFactura(producto, precio, elemento) {
-    // Verificar si ya está en el carrito
-    var existe = carrito.find(function (item) {
-        return item.producto === producto;
-    });
-
-    if (existe) {
-        if (!confirm('⚠️ "' + producto + '" ya está en tu carrito.\n\n¿Deseas agregar otra unidad?')) {
-            return;
-        }
-        // Incrementar cantidad si ya existe
-        existe.cantidad = (existe.cantidad || 1) + 1;
-    } else {
-        // Agregar al carrito
-        carrito.push({
-            producto: producto,
-            precio: precio,
-            fecha: new Date().toLocaleDateString('es-CR'),
-            cantidad: 1
-        });
-    }
-
-    // Feedback visual en el botón
-    var btn = elemento || event.target;
-    var textoOriginal = btn.textContent;
-    btn.textContent = '✅ Agregado';
-    btn.classList.add('agregado');
-
-    setTimeout(function () {
-        btn.textContent = textoOriginal;
-        btn.classList.remove('agregado');
-    }, 2000);
-
-    // Actualizar todo
-    actualizarCarrito();
-    guardarCarritoLocalStorage();
-
-    // Mostrar notificación
-    mostrarNotificacion('🛒 "' + producto + '" agregado a tu carrito');
-}
-
-// ==========================================================
-// GUARDAR Y CARGAR DESDE LOCALSTORAGE
-// ==========================================================
-
-function guardarCarritoLocalStorage() {
-    try {
-        localStorage.setItem('carritoCNFL', JSON.stringify(carrito));
-    } catch (e) {
-        console.log('No se pudo guardar en localStorage');
-    }
-}
-
-function cargarCarritoLocalStorage() {
-    try {
-        var saved = localStorage.getItem('carritoCNFL');
-        if (saved) {
-            carrito = JSON.parse(saved);
-        }
-    } catch (e) {
-        console.log('No se pudo cargar carrito');
-    }
-}
-
-// ==========================================================
-// ACTUALIZAR CARRITO (CONTADOR Y RESUMEN)
-// ==========================================================
-
-function actualizarCarrito() {
-    // Actualizar contador en el ícono flotante
-    var badge = document.querySelector('.carrito-flotante .contador');
-    if (badge) {
-        var totalItems = carrito.reduce(function (sum, item) { return sum + (item.cantidad || 1); }, 0);
-        badge.textContent = totalItems;
-        if (totalItems === 0) {
-            badge.style.display = 'none';
-        } else {
-            badge.style.display = 'grid';
-        }
-    }
-
-    // Actualizar resumen en el perfil (si existe)
-    var resumen = document.getElementById('carritoResumen');
-    if (resumen) {
-        var totalProductos = carrito.length;
-        var totalPrecio = carrito.reduce(function (sum, item) { return sum + (item.precio * (item.cantidad || 1)); }, 0);
-        resumen.textContent = totalProductos + ' productos · ₡' + totalPrecio.toLocaleString();
-    }
-
-    // Actualizar vista del carrito si está abierta
-    if (document.getElementById('carritoLleno')) {
-        renderizarCarrito();
-    }
-}
-
-// ==========================================================
-// RENDERIZAR CARRITO (EN LA VISTA DEL CARRITO)
-// ==========================================================
-
-function renderizarCarrito() {
-    var vacio = document.getElementById('carritoVacio');
-    var lleno = document.getElementById('carritoLleno');
-    var lista = document.getElementById('listaProductosCarrito');
-
-    if (!lista) return;
-
-    if (carrito.length === 0) {
-        if (vacio) vacio.style.display = 'block';
-        if (lleno) lleno.style.display = 'none';
-        return;
-    }
-
-    if (vacio) vacio.style.display = 'none';
-    if (lleno) lleno.style.display = 'block';
-
-    lista.innerHTML = '';
-
-    var subtotal = 0;
-
-    carrito.forEach(function (item, index) {
-        var totalItem = item.precio * (item.cantidad || 1);
-        subtotal += totalItem;
-
-        var div = document.createElement('div');
-        div.className = 'item-carrito';
-        div.innerHTML = `
-            <div class="item-info">
-                <span class="item-nombre">${item.producto}</span>
-                <span class="item-precio">₡${item.precio.toLocaleString()}</span>
-            </div>
-            <div class="item-cantidad">
-                <button onclick="cambiarCantidad(${index}, -1)">−</button>
-                <span>${item.cantidad || 1}</span>
-                <button onclick="cambiarCantidad(${index}, 1)">+</button>
-                <button class="btn-eliminar" onclick="eliminarProducto(${index})"><i class="fas fa-trash"></i></button>
-            </div>
-        `;
-        lista.appendChild(div);
-    });
-
-    // Actualizar subtotal
-    var subtotalEl = document.getElementById('subtotalCarrito');
-    if (subtotalEl) subtotalEl.textContent = '₡' + subtotal.toLocaleString();
-
-    // Aplicar descuento si existe
-    aplicarDescuento(subtotal);
-}
-
-// ==========================================================
-// FUNCIONES DEL CARRITO
-// ==========================================================
-
-function cambiarCantidad(index, cambio) {
-    if (carrito[index]) {
-        carrito[index].cantidad = Math.max(1, (carrito[index].cantidad || 1) + cambio);
-        actualizarCarrito();
-        guardarCarritoLocalStorage();
-    }
-}
-
-function eliminarProducto(index) {
-    if (confirm('¿Eliminar "' + carrito[index].producto + '" del carrito?')) {
-        carrito.splice(index, 1);
-        actualizarCarrito();
-        guardarCarritoLocalStorage();
-        mostrarNotificacion('🗑️ Producto eliminado del carrito');
-    }
-}
-
-function vaciarCarrito() {
-    if (carrito.length === 0) return;
-    if (confirm('¿Vaciar todo el carrito?')) {
-        carrito = [];
-        actualizarCarrito();
-        guardarCarritoLocalStorage();
-        mostrarNotificacion('🗑️ Carrito vaciado');
-    }
-}
-
-// ==========================================================
-// CUPÓN DE DESCUENTO
-// ==========================================================
-
-var cuponesValidos = {
-    'CNFL2026': 10,
-    'AHORRO20': 20,
-    'BIENVENIDA': 15
-};
-
-var cuponAplicado = null;
-var descuento = 0;
-
-function aplicarCupon() {
-    var input = document.getElementById('codigoCupon');
-    var mensaje = document.getElementById('mensajeCupon');
-    if (!input || !mensaje) return;
-
-    var codigo = input.value.trim().toUpperCase();
-
-    if (!codigo) {
-        mensaje.textContent = '⚠️ Ingresa un código de cupón';
-        mensaje.style.color = '#E5484D';
-        return;
-    }
-
-    if (cuponAplicado) {
-        mensaje.textContent = '⚠️ Ya tienes un cupón aplicado';
-        mensaje.style.color = '#E5484D';
-        return;
-    }
-
-    if (cuponesValidos[codigo]) {
-        cuponAplicado = codigo;
-        descuento = cuponesValidos[codigo];
-        mensaje.textContent = '✅ Cupón "' + codigo + '" aplicado! ' + descuento + '% de descuento';
-        mensaje.style.color = '#2E7D32';
-        input.disabled = true;
-        aplicarDescuento(calcularSubtotal());
-        mostrarNotificacion('🎉 Cupón "' + codigo + '" aplicado correctamente');
-    } else {
-        mensaje.textContent = '❌ Código de cupón inválido';
-        mensaje.style.color = '#E5484D';
-    }
-}
-
-function calcularSubtotal() {
-    return carrito.reduce(function (sum, item) { return sum + (item.precio * (item.cantidad || 1)); }, 0);
-}
-
-function aplicarDescuento(subtotal) {
-    var totalEl = document.getElementById('totalCarrito');
-    if (!totalEl) return;
-
-    var total = subtotal;
-    if (descuento > 0) {
-        total = subtotal * (1 - descuento / 100);
-    }
-    totalEl.textContent = '₡' + Math.round(total).toLocaleString();
-    return total;
-}
-
-// ==========================================================
-// MOSTRAR NOTIFICACIÓN
-// ==========================================================
-
-function mostrarNotificacion(mensaje) {
-    var toast = document.createElement('div');
-    toast.className = 'toast-notificacion';
-    toast.textContent = mensaje;
-    document.body.appendChild(toast);
-
-    setTimeout(function () {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s ease';
-        setTimeout(function () {
-            if (toast.parentNode) {
-                document.body.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// ==========================================================
-// VER CARRITO (REDIRIGIR A LA PÁGINA DEL CARRITO)
-// ==========================================================
-
-function verCarrito() {
-    window.location.href = '/Clientes/Carrito';
-}
-
-// ==========================================================
-// CREAR CARRITO FLOTANTE
-// ==========================================================
-
-function crearCarritoFlotante() {
-    var carritoBtn = document.createElement('div');
-    carritoBtn.className = 'carrito-flotante';
-    carritoBtn.id = 'carritoFlotante';
-    carritoBtn.innerHTML = `
-        <i class="fas fa-shopping-cart"></i>
-        <span class="contador" style="display:none;">0</span>
-    `;
-    carritoBtn.onclick = verCarrito;
-    document.body.appendChild(carritoBtn);
-}
-
-// ==========================================================
-// INICIALIZAR
-// ==========================================================
+// ============================================================
+// TIENDA.JS - Cliente
+// ============================================================
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Cargar carrito desde localStorage
-    cargarCarritoLocalStorage();
+    console.log('Tienda cargado');
 
-    // Crear carrito flotante
-    crearCarritoFlotante();
+    // ===== Botones de agregar =====
+    document.querySelectorAll('.btn-agregar').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var producto = this.closest('.producto-card')?.querySelector('h3')?.textContent || 'Producto';
+            var precio = this.closest('.producto-card')?.querySelector('.precio')?.textContent || '';
+            mostrarToast('🛒 ' + producto + ' agregado al carrito por ' + precio, 'success');
+            this.textContent = '✅ Agregado';
+            this.style.background = '#2E7D32';
+            setTimeout(function () {
+                btn.textContent = 'Agregar';
+                btn.style.background = '#FF692D';
+            }, 2000);
+        });
+    });
 
-    // Actualizar contador
-    actualizarCarrito();
+    // ===== Click en tarjeta de producto =====
+    document.querySelectorAll('.producto-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+            var producto = this.querySelector('h3')?.textContent || 'Producto';
+            mostrarToast('📦 Ver detalles de ' + producto, 'info');
+        });
+    });
 
-    // Animar productos al cargar
-    var productos = document.querySelectorAll('.prod');
-    productos.forEach(function (prod, index) {
-        prod.style.opacity = '0';
-        prod.style.transform = 'translateY(20px)';
+    // ===== Animación de entrada =====
+    var cards = document.querySelectorAll('.producto-card');
+    cards.forEach(function (card, index) {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
         setTimeout(function () {
-            prod.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            prod.style.opacity = '1';
-            prod.style.transform = 'translateY(0)';
+            card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
         }, 100 + (index * 80));
     });
-
-    // Escuchar cambios en localStorage desde otras pestañas
-    window.addEventListener('storage', function (e) {
-        if (e.key === 'carritoCNFL') {
-            cargarCarritoLocalStorage();
-            actualizarCarrito();
-        }
-    });
-
-    // Renderizar carrito si estamos en la página del carrito
-    if (document.getElementById('carritoLleno')) {
-        renderizarCarrito();
-    }
-
-    // Enter para aplicar cupón
-    var cuponInput = document.getElementById('codigoCupon');
-    if (cuponInput) {
-        cuponInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                aplicarCupon();
-            }
-        });
-    }
-
-    console.log('🛒 Tienda CNFL - Carrito integrado');
 });
 
-// ==========================================================
-// EXPONER FUNCIONES GLOBALMENTE
-// ==========================================================
+function mostrarToast(mensaje, tipo) {
+    tipo = tipo || 'info';
+    var toast = document.getElementById('toastGlobal');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastGlobal';
+        toast.style.cssText = 'position:fixed; bottom:90px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:700; z-index:9999; background:#0E1116; color:white; box-shadow:0 8px 24px rgba(0,0,0,0.2); opacity:0; transition:opacity 0.3s; max-width:90%; text-align:center;';
+        document.body.appendChild(toast);
+    }
 
-window.cargarAFactura = cargarAFactura;
-window.verCarrito = verCarrito;
-window.cambiarCantidad = cambiarCantidad;
-window.eliminarProducto = eliminarProducto;
-window.vaciarCarrito = vaciarCarrito;
-window.aplicarCupon = aplicarCupon;
-window.mostrarNotificacion = mostrarNotificacion;
-window.actualizarCarrito = actualizarCarrito;
+    toast.textContent = mensaje;
+    toast.style.opacity = '1';
+
+    var colores = {
+        success: '#2E7D32',
+        error: '#D32F2F',
+        warning: '#F5A623',
+        info: '#0E1116'
+    };
+    toast.style.background = colores[tipo] || colores.info;
+
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(function () {
+        toast.style.opacity = '0';
+    }, 3000);
+}

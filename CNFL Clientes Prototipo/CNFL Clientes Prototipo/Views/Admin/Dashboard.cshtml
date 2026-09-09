@@ -1,78 +1,90 @@
-﻿@model List<CNFL_Clientes_Prototipo.Models.Averia>
+﻿@model CNFL_Clientes_Prototipo.Models.ReportesViewModel
 
 @{
-    ViewBag.Title = "Dashboard - CNFL";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Dashboard Admin";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<link rel="stylesheet" href="@Url.Content("~/Content/admin-dashboard.css")" />
+<link rel="stylesheet" href="~/Content/admin/dashboard.css" />
 
-<h2 style="font-weight: 800; font-size: 22px; margin: 0;">📊 Resumen General</h2>
-<p style="color: var(--muted); font-size: 13px; margin: 2px 0 18px;">Vista rápida de las operaciones del sistema</p>
+<div class="admin-dashboard">
+    <div class="page-header">
+        <h1>Panel de Administración</h1>
+        <p>Bienvenido, @Session["Nombre"]</p>
+    </div>
 
-<div class="dash-stats">
-    <div class="dash-stat blue">
-        <span class="emoji">📋</span>
-        <div class="num">@ViewBag.TotalAverias</div>
-        <div class="lbl">Total Averías</div>
-    </div>
-    <div class="dash-stat orange">
-        <span class="emoji">⏳</span>
-        <div class="num">@ViewBag.AveriasPendientes</div>
-        <div class="lbl">Pendientes</div>
-    </div>
-    <div class="dash-stat red">
-        <span class="emoji">🔍</span>
-        <div class="num">@ViewBag.AveriasEnRevision</div>
-        <div class="lbl">En Revisión</div>
-    </div>
-    <div class="dash-stat green">
-        <span class="emoji">✅</span>
-        <div class="num">@ViewBag.AveriasResueltas</div>
-        <div class="lbl">Resueltas</div>
-    </div>
-</div>
-
-<div class="dash-section-title">
-    <span>🕐</span> Últimas averías reportadas
-</div>
-
-@if (Model != null && Model.Any())
-{
-    var ultimas = Model.OrderByDescending(a => a.FechaReporte).Take(3);
-    foreach (var averia in ultimas)
-    {
-        string colorBorder = averia.Estado == "Resuelto" ? "var(--green)" : "var(--orange)";
-        string estadoClase = averia.Estado == "Resuelto" ? "estado-resuelto" : "estado-revision";
-        <div class="recent-item" style="border-left-color: @colorBorder;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div>
-                    <div class="titulo">⚡ @averia.TipoAveria</div>
-                    <div class="detalle">📍 @averia.Direccion</div>
-                    <div class="detalle">🕐 @averia.FechaReporte.ToString("dd/MM/yyyy HH:mm")</div>
-                </div>
-                <span class="estado @estadoClase">
-                    @averia.Estado
-                </span>
-            </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">@Model.TotalAverias</div>
+            <div class="stat-label">Total Averías</div>
         </div>
-    }
-}
-else
-{
-    <div style="text-align: center; padding: 30px; color: var(--muted);">
-        No hay averías reportadas
+        <div class="stat-card">
+            <div class="stat-number">@Model.TasaResolucion%</div>
+            <div class="stat-label">Tasa de Resolución</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">@Model.TiempoPromedioResolucion</div>
+            <div class="stat-label">Tiempo Promedio</div>
+        </div>
     </div>
-}
 
-<div class="tip-card">
-    <span class="tip-icon">💡</span>
-    <div>
-        <div class="tip-title">Consejo del día</div>
-        <div class="tip-text">Mantén actualizados los estados de las averías para un mejor seguimiento y atención al cliente.</div>
+    <div class="admin-section">
+        <div class="section-header">
+            <h3>Averías Recientes</h3>
+            <a href="@Url.Action("Averias", "Admin")" class="btn-ver-todas">Ver todas →</a>
+        </div>
+
+        @if (Model.AveriasRecientes != null && Model.AveriasRecientes.Any())
+        {
+            <div class="averias-lista">
+                @foreach (var averia in Model.AveriasRecientes.Take(5))
+                {
+                    <div class="averia-item">
+                        <div class="averia-info">
+                            <strong>#@averia.AveriaId</strong>
+                            <span>@averia.Tipo</span>
+                            <span class="averia-fecha">@averia.FechaReporte.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <span class="estado-badge @averia.Estado.Replace(" ", "-").ToLower()">@averia.Estado</span>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="empty-message">No hay averías recientes.</p>
+        }
+    </div>
+
+    <div class="admin-section">
+        <div class="section-header">
+            <h3>Clientes Registrados</h3>
+            <a href="@Url.Action("Clientes", "Admin")" class="btn-ver-todas">Ver todos →</a>
+        </div>
+
+        @if (ViewBag.ClientesRecientes != null && ((List<CNFL_Clientes_Prototipo.Models.Usuario>)ViewBag.ClientesRecientes).Any())
+        {
+            <div class="clientes-lista">
+                @foreach (var cliente in (List<CNFL_Clientes_Prototipo.Models.Usuario>)ViewBag.ClientesRecientes)
+                {
+                    <div class="cliente-item">
+                        <div class="cliente-info">
+                            <strong>@cliente.Nombre @cliente.Apellidos</strong>
+                            <span>@cliente.Cedula</span>
+                            <span class="cliente-correo">@cliente.Correo</span>
+                        </div>
+                        <a href="@Url.Action("DetalleCliente", "Admin", new { id = cliente.UsuarioId })" class="btn-ver">Ver</a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="empty-message">No hay clientes registrados.</p>
+        }
     </div>
 </div>
 
-@section scriptsVista {
-    <script src="@Url.Content("~/Scripts/admin-dashboard.js")"></script>
+@section Scripts {
+    <script src="~/Scripts/admin/dashboard.js"></script>
 }

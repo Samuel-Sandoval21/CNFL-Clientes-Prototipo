@@ -1,80 +1,41 @@
-﻿@model dynamic
-
-@{
-    ViewBag.Title = "Calculadora - CNFL";
+﻿@{
+    ViewBag.Title = "Calculadora Energética";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
-<!-- CSS externo para Calculadora -->
-<link rel="stylesheet" href="@Url.Content("~/Content/cliente/calculadora.css")" />
+<div class="calculadora-container">
+    <h2>Calculadora Energética</h2>
+    <p>Estima el costo de tus equipos eléctricos.</p>
 
-<!-- ===== BOTÓN VOLVER ===== -->
-<button class="btn-volver" onclick="history.back();">
-    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
-</button>
-
-<div class="section-pad">
-    <div class="h-name-2" data-i18n="calculadora_titulo">
-        <i class="fas fa-calculator" style="color:var(--amber);"></i> Calculadora energética
-    </div>
-    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="calculadora_subtitulo">
-        Estima el costo de tus equipos según las horas de uso.
-    </div>
-</div>
-
-<div class="section-pad">
     <div class="calculadora-card">
-        <!-- ===== INPUT ===== -->
         <div class="form-group">
-            <label for="kwhInput" data-i18n="cuantos_kwh">¿Cuántos kWh consumiste?</label>
-            <div class="input-wrapper">
-                <input type="number" id="kwhInput" placeholder="Ej: 200" class="form-input" />
-                <span class="input-suffix">kWh</span>
-            </div>
+            <label>Equipo:</label>
+            <select id="equipoSelect">
+                <option value="100">Refrigeradora (100W)</option>
+                <option value="60">Televisor (60W)</option>
+                <option value="120">Lavadora (120W)</option>
+                <option value="1500">Microondas (1500W)</option>
+                <option value="2000">Aire acondicionado (2000W)</option>
+            </select>
         </div>
-
-        <!-- ===== RESULTADO ===== -->
-        <div id="resultadoConsumo" style="display:none;">
-            <div class="resultado-card">
-                <div class="resultado-icon">💰</div>
-                <div>
-                    <div class="resultado-label" data-i18n="costo_aproximado">El costo aproximado es:</div>
-                    <div class="resultado-monto" id="costoCalculado">₡ 19.000</div>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>Horas al día:</label>
+            <input type="number" id="horasDia" value="4" min="1" max="24" />
         </div>
+        <button id="calcularBtn" class="btn-calcular">Calcular</button>
+    </div>
 
-        <!-- ===== BOTÓN CALCULAR ===== -->
-        <button class="btn-calcular" onclick="calcularConsumo()">
-            <i class="fas fa-calculator"></i> <span data-i18n="calcular_costo">Calcular costo estimado</span>
-        </button>
-
-        <!-- ===== EQUIPOS COMUNES ===== -->
-        <div class="equipos-comunes">
-            <div class="equipos-label">⚡ Equipos comunes</div>
-            <div class="equipos-grid">
-                <div class="equipo-item" onclick="setKwh(50)">
-                    <span class="equipo-icon">💡</span>
-                    <span>Foco LED<br><small>50 kWh</small></span>
-                </div>
-                <div class="equipo-item" onclick="setKwh(200)">
-                    <span class="equipo-icon">📺</span>
-                    <span>TV<br><small>200 kWh</small></span>
-                </div>
-                <div class="equipo-item" onclick="setKwh(350)">
-                    <span class="equipo-icon">🧊</span>
-                    <span>Refrigerador<br><small>350 kWh</small></span>
-                </div>
-                <div class="equipo-item" onclick="setKwh(500)">
-                    <span class="equipo-icon">❄️</span>
-                    <span>Aire acond.<br><small>500 kWh</small></span>
-                </div>
-            </div>
-        </div>
+    <div class="resultado-card" id="resultadoCard" style="display:none;">
+        <h3>Resultado estimado</h3>
+        <p><strong>Consumo mensual:</strong> <span id="consumoMensual">0</span> kWh</p>
+        <p><strong>Costo estimado:</strong> ₡<span id="costoEstimado">0</span></p>
     </div>
 </div>
 
-<!-- JavaScript externo para Calculadora -->
-@section scriptsVista {
-    <script src="@Url.Content("~/Scripts/cliente/calculadora.js")"></script>
+@section Styles {
+    <link rel="stylesheet" href="~/Content/cliente/calculadora.css" />
+}
+
+@section Scripts {
+    <script src="~/Scripts/cliente/calculadora.js"></script>
 }

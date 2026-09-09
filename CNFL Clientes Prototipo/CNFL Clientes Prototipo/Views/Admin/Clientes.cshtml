@@ -1,91 +1,69 @@
-﻿@model List<CNFL_Clientes_Prototipo.Controllers.ClienteViewModel>
+﻿@model List<CNFL_Clientes_Prototipo.Models.Usuario>
 
 @{
-    ViewBag.Title = "Gestión de Clientes - CNFL";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewBag.Title = "Clientes";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<link rel="stylesheet" href="@Url.Content("~/Content/admin-clientes.css")" />
+<link rel="stylesheet" href="~/Content/admin/clientes.css" />
 
-<div class="toast-notification" id="toastNotif"></div>
+<div class="admin-clientes">
+    <div class="page-header">
+        <h1>Gestión de Clientes</h1>
+        <p>Lista completa de clientes registrados en la plataforma.</p>
+    </div>
 
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap;">
-    <div>
-        <h2 style="font-weight:800; font-size:22px; margin:0;"><i class="fas fa-users" style="color:var(--blue);"></i> Gestión de Clientes</h2>
-        <p style="color:var(--muted); font-size:13px; margin:2px 0 0 0;">Listado de clientes registrados en el sistema</p>
+    <div class="filtros-container">
+        <div class="filtros">
+            <input type="text" id="buscadorClientes" class="form-control-sm" placeholder="🔍 Buscar por nombre, cédula o correo..." />
+            <button class="btn-limpiar" id="btnLimpiarBusqueda">Limpiar</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-table" id="tablaClientes">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Cédula</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Fecha Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var usuario in Model)
+                    {
+                        <tr>
+                            <td>@usuario.UsuarioId</td>
+                            <td>@usuario.Nombre</td>
+                            <td>@usuario.Apellidos</td>
+                            <td>@usuario.Cedula</td>
+                            <td>@usuario.Correo</td>
+                            <td>@usuario.Telefono</td>
+                            <td>@usuario.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <a href="@Url.Action("DetalleCliente", "Admin", new { id = usuario.UsuarioId })" class="btn-ver btn-ver-cliente" data-id="@usuario.UsuarioId">Ver</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="empty-message">No hay clientes registrados.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 
-<div class="client-search">
-    <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, cédula o NISE..." onkeyup="filtrarClientes()" />
-</div>
-
-<div class="client-total">
-    Total: <strong>@Model.Count</strong> clientes registrados
-</div>
-
-<div style="overflow-x:auto;">
-    <table class="client-table" id="clientTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Nombre Completo</th>
-                <th>Cédula</th>
-                <th>NISE</th>
-                <th>Teléfono</th>
-                <th>Correo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (!Model.Any())
-            {
-                <tr>
-                    <td colspan="7" style="text-align:center; padding:30px; color:var(--muted);">No hay clientes registrados.</td>
-                </tr>
-            }
-            else
-            {
-                int index = 1;
-                foreach (var cliente in Model)
-                {
-                    string nombreCompleto = cliente.Nombre + " " + cliente.Apellidos;
-                    string iniciales = cliente.Nombre.Length > 0 ? cliente.Nombre.Substring(0, 1).ToUpper() : "?";
-
-                    <tr class="client-row" data-search="@(cliente.Nombre + " " + cliente.Apellidos + " " + cliente.Cedula + " " + cliente.NISE + " " + cliente.Correo).ToLower()" data-id="@cliente.Id">
-                        <td>@index</td>
-                        <td>
-                            <div class="client-name-cell">
-                                <div class="client-avatar">@iniciales</div>
-                                <strong>@nombreCompleto</strong>
-                            </div>
-                        </td>
-                        <td>@cliente.Cedula</td>
-                        <td>@cliente.NISE</td>
-                        <td>@cliente.Telefono</td>
-                        <td>
-                            <div id="emailDisplay_@cliente.Id">
-                                <span style="color:var(--blue); font-size:13px;" id="emailText_@cliente.Id">@cliente.Correo</span>
-                            </div>
-                            <div id="emailEdit_@cliente.Id" style="display:none;">
-                                <input type="email" class="client-email-input editing" id="emailInput_@cliente.Id" value="@cliente.Correo" />
-                            </div>
-                        </td>
-                        <td>
-                            <div class="client-actions-cell">
-                                <button class="btn-edit-client" id="editBtn_@cliente.Id" onclick="editarCliente(@cliente.Id)"><i class="fas fa-edit"></i> Editar</button>
-                                <button class="btn-save-client" id="saveBtn_@cliente.Id" style="display:none;" onclick="guardarCorreo(@cliente.Id)"><i class="fas fa-save"></i> Guardar</button>
-                                <button class="btn-cancel-client" id="cancelBtn_@cliente.Id" style="display:none;" onclick="cancelarEdicion(@cliente.Id)"><i class="fas fa-times"></i> Cancelar</button>
-                            </div>
-                        </td>
-                    </tr>
-                    index++;
-                }
-            }
-        </tbody>
-    </table>
-</div>
-
-@section scriptsVista {
-    <script src="@Url.Content("~/Scripts/admin-clientes.js")"></script>
+@section Scripts {
+    <script src="~/Scripts/admin/clientes.js"></script>
 }

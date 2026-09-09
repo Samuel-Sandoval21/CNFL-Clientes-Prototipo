@@ -1,833 +1,159 @@
-﻿// ==========================================
-// CUENTA / LOGIN - JAVASCRIPT COMPLETO
-// ==========================================
+// ============================================================
+// CUENTA.JS - FUNCIONES PARA LOGIN Y REGISTRO
+// ============================================================
 
-// ==========================================================
-// ===== TOGGLE PASSWORD - LOGIN =====
-// ==========================================================
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Cuenta JS cargado');
 
-function togglePasswordLogin() {
-    var passwordInput = document.getElementById('Contraseña');
-    if (!passwordInput) return;
+    // ===== Mostrar/Ocultar contraseña =====
+    var toggleBtns = document.querySelectorAll('.toggle-password');
+    toggleBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var input = this.closest('.inp').querySelector('input[type="password"]');
+            if (input) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>';
+                } else {
+                    input.type = 'password';
+                    this.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+                }
+            }
+        });
+    });
 
-    var button = document.getElementById('togglePasswordBtn');
-    if (!button) return;
+    // ===== Face ID =====
+    window.iniciarFaceId = function () {
+        alert('🔐 Simulación de Face ID. Iniciando sesión...');
+        // Aquí iría la lógica real de Face ID
+        // Por ahora redirige al dashboard
+        window.location.href = '/Clientes/Dashboard';
+    };
 
-    var isPassword = passwordInput.type === 'password';
-    passwordInput.type = isPassword ? 'text' : 'password';
+    // ===== Abrir documentos (Política y Consentimiento) =====
+    window.abrirDocumento = function (tipo) {
+        var nombre = document.getElementById('nombre')?.value || 'Cliente';
+        var cedula = document.getElementById('cedula')?.value || '0-0000-0000';
+        var correo = document.getElementById('correo')?.value || 'cliente@correo.cr';
+        var telefono = document.getElementById('telefono')?.value || '0000-0000';
 
-    button.innerHTML = isPassword
-        ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-}
+        var fecha = new Date();
+        var dia = fecha.getDate();
+        var mes = fecha.toLocaleString('es-CR', { month: 'long' });
+        var anio = fecha.getFullYear();
 
-// ==========================================================
-// ===== TOGGLE PASSWORD POR ID - PARA REGISTRO (CORREGIDO) =====
-// ==========================================================
+        var contenido = '';
 
-function togglePasswordById(inputId) {
-    var passwordInput = document.getElementById(inputId);
-    if (!passwordInput) {
-        console.warn('⚠️ No se encontró el input con ID:', inputId);
-        return;
-    }
-
-    var isPassword = passwordInput.type === 'password';
-    passwordInput.type = isPassword ? 'text' : 'password';
-
-    var container = passwordInput.closest('.inp');
-    if (container) {
-        var button = container.querySelector('.toggle-password');
-        if (button) {
-            button.innerHTML = isPassword
-                ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-                : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+        if (tipo === 'politica') {
+            contenido = `
+                <div style="font-family:'Inter',sans-serif; max-width:500px; margin:0 auto; padding:24px; background:white; border-radius:16px; box-shadow:0 8px 40px rgba(0,0,0,0.15);">
+                    <h2 style="color:#0033A0; margin:0 0 12px;">Política de Privacidad</h2>
+                    <hr style="border:1px solid #EDEFF3; margin:12px 0;" />
+                    <div style="background:#f8f9fe; padding:12px; border-radius:8px; margin-bottom:12px;">
+                        <p style="margin:4px 0;"><strong>Cliente:</strong> ${nombre}</p>
+                        <p style="margin:4px 0;"><strong>Cédula:</strong> ${cedula}</p>
+                        <p style="margin:4px 0;"><strong>Correo:</strong> ${correo}</p>
+                        <p style="margin:4px 0;"><strong>Fecha:</strong> ${dia} de ${mes} de ${anio}</p>
+                    </div>
+                    <div style="font-size:14px; color:#0E1116; line-height:1.8;">
+                        <p><strong>1. Datos Personales</strong></p>
+                        <p style="color:#727A86;">Los datos recopilados son: nombre, cédula, dirección, teléfonos, correo electrónico, NISE(s) asociados.</p>
+                        <p><strong>2. Finalidad</strong></p>
+                        <p style="color:#727A86;">Serán utilizados para la prestación del servicio eléctrico, facturación, atención de averías, trámites y comunicaciones.</p>
+                        <p><strong>3. Derechos del Titular</strong></p>
+                        <p style="color:#727A86;">El titular tiene derecho a acceder, rectificar, actualizar y cancelar sus datos personales.</p>
+                    </div>
+                    <button onclick="this.closest('div[style]').remove()" style="width:100%; padding:12px; background:#0033A0; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-top:12px;">Aceptar y Cerrar</button>
+                </div>
+            `;
+        } else if (tipo === 'consentimiento') {
+            contenido = `
+                <div style="font-family:'Inter',sans-serif; max-width:500px; margin:0 auto; padding:24px; background:white; border-radius:16px; box-shadow:0 8px 40px rgba(0,0,0,0.15);">
+                    <h2 style="color:#0033A0; margin:0 0 12px;">Consentimiento Informado F-085</h2>
+                    <hr style="border:1px solid #EDEFF3; margin:12px 0;" />
+                    <p><strong>COMPAÑÍA NACIONAL DE FUERZA Y LUZ S.A.</strong></p>
+                    <p style="color:#727A86;">Yo, <strong>${nombre}</strong>, cédula <strong>${cedula}</strong>, declaro haber sido informado sobre el uso de mis datos personales como cliente de la CNFL.</p>
+                    <div style="background:#f8f9fe; padding:12px; border-radius:8px; margin:12px 0;">
+                        <p style="margin:4px 0;"><strong>Cliente:</strong> ${nombre}</p>
+                        <p style="margin:4px 0;"><strong>Cédula:</strong> ${cedula}</p>
+                        <p style="margin:4px 0;"><strong>Fecha:</strong> ${dia} de ${mes} de ${anio}</p>
+                    </div>
+                    <div style="font-size:14px; color:#0E1116; line-height:1.8;">
+                        <p><strong>a) Custodia de Datos</strong></p>
+                        <p style="color:#727A86;">La CNFL custodia bases de datos electrónicas con información personal de los clientes.</p>
+                        <p><strong>b) Uso de Datos Personales</strong></p>
+                        <p style="color:#727A86;">Se utilizan para la prestación del servicio eléctrico y comercialización de productos y servicios.</p>
+                        <p><strong>c) Transferencia de Datos</strong></p>
+                        <p style="color:#727A86;">La CNFL puede transferir datos a socios comerciales autorizados.</p>
+                    </div>
+                    <button onclick="this.closest('div[style]').remove()" style="width:100%; padding:12px; background:#0033A0; color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-top:12px;">Aceptar y Cerrar</button>
+                </div>
+            `;
         }
-    }
 
-    passwordInput.focus();
-    console.log('🔍 Toggle en:', passwordInput.id, '→ tipo:', passwordInput.type);
-}
+        var modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; display:flex; justify-content:center; align-items:center; padding:20px;';
+        modal.innerHTML = contenido;
 
-// ==========================================================
-// ===== FACE ID =====
-// ==========================================================
+        modal.addEventListener('click', function (e) {
+            if (e.target === this) { this.remove(); }
+        });
 
-function iniciarFaceId() {
-    var rolElement = document.getElementById('sessionRol');
-    var rol = rolElement ? rolElement.value : '';
+        document.body.appendChild(modal);
 
-    if (rol && rol !== '') {
-        if (rol === 'Admin') {
-            window.location.href = '/Admin/Dashboard';
-        } else {
-            window.location.href = '/Clientes/Inicio';
-        }
-        return;
-    }
-
-    var userName = document.getElementById('UserName');
-    var password = document.getElementById('Contraseña');
-
-    if (userName && password) {
-        userName.value = 'cliente';
-        password.value = '123456';
-
-        var btnFaceId = document.getElementById('faceIdBtn');
-        if (btnFaceId) {
-            btnFaceId.classList.add('scanning');
-            btnFaceId.style.background = 'linear-gradient(135deg, #2E7D32, #64B95A)';
-        }
-
+        // Marcar checkbox automáticamente
         setTimeout(function () {
-            var form = document.getElementById('loginForm');
-            if (form) {
-                form.submit();
-            }
-        }, 600);
-    } else {
-        alert('❌ Error al iniciar sesión con Face ID. Usa tus credenciales.');
-    }
-}
-
-// ==========================================================
-// ===== RECUPERAR CONTRASEÑA =====
-// ==========================================================
-
-function recuperarContraseña() {
-    window.location.href = '/Cuenta/RecuperarClave';
-}
-
-// ==========================================================
-// ===== VALIDACIONES DE REGISTRO =====
-// ==========================================================
-
-function mostrarError(id, mensaje) {
-    var el = document.getElementById(id);
-    if (el) {
-        el.textContent = mensaje;
-        el.classList.add('show');
-    }
-}
-
-function limpiarError(id) {
-    var el = document.getElementById(id);
-    if (el) {
-        el.classList.remove('show');
-    }
-}
-
-function marcarValido(groupId) {
-    var group = document.getElementById(groupId);
-    if (group) {
-        group.classList.remove('invalid');
-        group.classList.add('valid');
-    }
-}
-
-function marcarInvalido(groupId) {
-    var group = document.getElementById(groupId);
-    if (group) {
-        group.classList.remove('valid');
-        group.classList.add('invalid');
-    }
-}
-
-function limpiarEstado(groupId) {
-    var group = document.getElementById(groupId);
-    if (group) {
-        group.classList.remove('valid', 'invalid');
-    }
-}
-
-// ==========================================================
-// ===== VALIDAR CÉDULA (CON BD REAL) =====
-// ==========================================================
-
-function validarCedula(cedula) {
-    var errorId = 'cedulaError';
-    var groupId = 'cedulaGroup';
-    var hint = document.querySelector('#cedulaGroup .registro-hint');
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!cedula || cedula.trim() === '') {
-        mostrarError(errorId, '⚠️ Ingrese su número de cédula');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    var formatoValido = /^\d{1}-\d{4}-\d{4}$/.test(cedula) || /^\d{9,10}$/.test(cedula);
-
-    if (!formatoValido) {
-        mostrarError(errorId, '❌ Formato inválido. Use 1-2345-6789');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    var result = false;
-
-    $.ajax({
-        url: '/Cuenta/ValidarCedula',
-        type: 'POST',
-        data: { cedula: cedula },
-        async: false,
-        success: function (response) {
-            if (response.success) {
-                if (response.nombre && response.nombre !== '') {
-                    document.getElementById('nombre').value = response.nombre;
-                    document.getElementById('apellidos').value = response.apellidos;
-                    document.getElementById('fechaNacimiento').value = response.fechaNacimiento;
-
-                    // NISEs gestionados por el sistema; no se muestran en el formulario.
-                    var tagsCleanup = document.getElementById('nisesTags'); if (tagsCleanup) tagsCleanup.innerHTML = '';
-
-                    marcarValido(groupId);
-                    if (hint) {
-                        hint.textContent = '✅ Cédula verificada, datos cargados automáticamente';
-                        hint.className = 'registro-hint success';
-                    }
-                    result = true;
-                } else {
-                    marcarValido(groupId);
-                    if (hint) {
-                        hint.textContent = '✅ Cédula válida. Complete los datos manualmente.';
-                        hint.className = 'registro-hint success';
-                    }
-                    result = true;
-                }
-            } else {
-                mostrarError(errorId, '❌ ' + response.message);
-                marcarInvalido(groupId);
-                if (hint) {
-                    hint.textContent = '⚠️ ' + response.message;
-                    hint.className = 'registro-hint error';
-                }
-                result = false;
-            }
-        },
-        error: function () {
-            mostrarError(errorId, '❌ Error al validar la cédula');
-            marcarInvalido(groupId);
-            result = false;
-        }
-    });
-
-    return result;
-}
-
-// ==========================================================
-// ===== VALIDAR USUARIO =====
-// ==========================================================
-
-function validarUsuario(usuario) {
-    var errorId = 'usuarioError';
-    var groupId = 'usuarioGroup';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!usuario || usuario.trim() === '') {
-        mostrarError(errorId, '⚠️ El usuario es obligatorio');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    if (usuario.trim().length < 3) {
-        mostrarError(errorId, '⚠️ El usuario debe tener al menos 3 caracteres');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    var disponible = false;
-
-    $.ajax({
-        url: '/Cuenta/ValidarUsuario',
-        type: 'POST',
-        data: { userName: usuario.trim() },
-        async: false,
-        success: function (response) {
-            if (response.success) {
-                marcarValido(groupId);
-                disponible = true;
-            } else {
-                mostrarError(errorId, '❌ ' + response.message);
-                marcarInvalido(groupId);
-                disponible = false;
-            }
-        },
-        error: function () {
-            mostrarError(errorId, '❌ Error al validar el usuario');
-            marcarInvalido(groupId);
-            disponible = false;
-        }
-    });
-
-    return disponible;
-}
-
-// ==========================================================
-// ===== OTRAS VALIDACIONES =====
-// ==========================================================
-
-function validarNombre(nombre) {
-    var errorId = 'nombreError';
-    var groupId = 'nombreGroup';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!nombre || nombre.trim() === '') {
-        mostrarError(errorId, '⚠️ El nombre es obligatorio');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    if (nombre.trim().length < 2) {
-        mostrarError(errorId, '⚠️ El nombre debe tener al menos 2 caracteres');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarApellidos(apellidos) {
-    var errorId = 'apellidosError';
-    var groupId = 'apellidosGroup';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!apellidos || apellidos.trim() === '') {
-        mostrarError(errorId, '⚠️ Los apellidos son obligatorios');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    if (apellidos.trim().length < 2) {
-        mostrarError(errorId, '⚠️ Los apellidos deben tener al menos 2 caracteres');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarFechaNacimiento(fecha) {
-    var errorId = 'fechaError';
-    var groupId = 'fechaGroup';
-    var hint = document.getElementById('fechaHint');
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!fecha) {
-        mostrarError(errorId, '⚠️ La fecha de nacimiento es obligatoria');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    var fechaNac = new Date(fecha);
-    if (isNaN(fechaNac.getTime())) {
-        mostrarError(errorId, '❌ Fecha inválida');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    if (hint) {
-        hint.textContent = '✅ Fecha de nacimiento registrada';
-        hint.className = 'registro-hint success';
-    }
-
-    return true;
-}
-
-function validarSexo(sexo) {
-    var errorId = 'sexoError';
-    var groupId = 'sexoGroup';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!sexo) {
-        mostrarError(errorId, '⚠️ Seleccione su sexo');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    if (sexo === 'Personalizado') {
-        var personalizado = document.getElementById('sexoPersonalizado');
-        if (!personalizado || personalizado.value.trim() === '') {
-            mostrarError(errorId, '⚠️ Especifique su sexo');
-            marcarInvalido(groupId);
-            return false;
-        }
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarCorreo(correo) {
-    var errorId = 'correoError';
-    var groupId = 'correoGroup';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!correo || correo.trim() === '') {
-        mostrarError(errorId, '⚠️ El correo es obligatorio');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(correo.trim())) {
-        mostrarError(errorId, '❌ Ingrese un correo electrónico válido');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarCorreoSecundario(correo) {
-    var errorId = 'correo2Error';
-    var groupId = 'correo2Group';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!correo || correo.trim() === '') {
-        return true;
-    }
-
-    var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!regex.test(correo.trim())) {
-        mostrarError(errorId, '❌ Ingrese un correo secundario válido');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarTelefono(telefono) {
-    var errorId = 'telefonoError';
-    var groupId = 'telefonoGroup';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!telefono || telefono.trim() === '') {
-        mostrarError(errorId, '⚠️ El teléfono es obligatorio');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    var formatoValido = /^\d{4}-\d{4}$/.test(telefono.trim()) || /^\d{8}$/.test(telefono.trim());
-
-    if (!formatoValido) {
-        mostrarError(errorId, '❌ Formato inválido. Use 8888-8888');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarTelefonoSecundario(telefono) {
-    var errorId = 'telefono2Error';
-    var groupId = 'telefono2Group';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!telefono || telefono.trim() === '') {
-        return true;
-    }
-
-    var formatoValido = /^\d{4}-\d{4}$/.test(telefono.trim()) || /^\d{8}$/.test(telefono.trim());
-
-    if (!formatoValido) {
-        mostrarError(errorId, '❌ Formato inválido. Use 8888-8888');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarDireccion(direccion) {
-    var errorId = 'direccionError';
-    var groupId = 'direccionGroup';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!direccion || direccion.trim() === '') {
-        mostrarError(errorId, '⚠️ La dirección es obligatoria');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    if (direccion.trim().length < 5) {
-        mostrarError(errorId, '⚠️ Ingrese una dirección más detallada');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarContrasena(contrasena) {
-    var errorId = 'contrasenaError';
-    var groupId = 'contrasenaGroup';
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!contrasena || contrasena.trim() === '') {
-        mostrarError(errorId, '⚠️ La contraseña es obligatoria');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    if (contrasena.trim().length < 6) {
-        mostrarError(errorId, '⚠️ La contraseña debe tener al menos 6 caracteres');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarConfirmacion(confirm) {
-    var errorId = 'confirmError';
-    var groupId = 'confirmGroup';
-    var contrasena = document.getElementById('contrasena');
-
-    limpiarError(errorId);
-    limpiarEstado(groupId);
-
-    if (!confirm || confirm.trim() === '') {
-        mostrarError(errorId, '⚠️ Confirma tu contraseña');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    if (!contrasena || confirm.trim() !== contrasena.value.trim()) {
-        mostrarError(errorId, '❌ Las contraseñas no coinciden');
-        marcarInvalido(groupId);
-        return false;
-    }
-
-    marcarValido(groupId);
-    return true;
-}
-
-function validarAceptacion() {
-    var errorId = 'aceptacionError';
-    var politica = document.getElementById('aceptaPolitica');
-    var consentimiento = document.getElementById('aceptaConsentimiento');
-
-    limpiarError(errorId);
-
-    if (!politica || !politica.checked) {
-        mostrarError(errorId, '⚠️ Debe aceptar la Política de Privacidad');
-        return false;
-    }
-
-    if (!consentimiento || !consentimiento.checked) {
-        mostrarError(errorId, '⚠️ Debe aceptar el Consentimiento Informado');
-        return false;
-    }
-
-    return true;
-}
-
-// La validación de NISE se eliminó: NISE no forma parte del formulario de registro.
-
-// Mostrar NISEs eliminado del formulario; las llamadas se ignoran si el elemento no existe.
-
-function autocompletarPorCedula() {
-    var cedula = document.getElementById('cedula');
-    if (!cedula) return;
-
-    var valor = cedula.value.trim();
-    var hint = document.querySelector('#cedulaGroup .registro-hint');
-
-    if (valor.length < 9) {
-        document.getElementById('nombre').value = '';
-        document.getElementById('apellidos').value = '';
-        document.getElementById('fechaNacimiento').value = '';
-
-        if (hint) {
-            hint.textContent = 'Al escribir tu cédula, se cargan tus datos automáticamente.';
-            hint.className = 'registro-hint';
-            hint.style.color = '';
-        }
-
-        limpiarEstado('cedulaGroup');
-        limpiarError('cedulaError');
-        return;
-    }
-
-    if (hint) {
-        hint.textContent = '⏳ Validando cédula...';
-        hint.className = 'registro-hint';
-        hint.style.color = '#1E23E6';
-    }
-
-    $.ajax({
-        url: '/Cuenta/ValidarCedula',
-        type: 'POST',
-        data: { cedula: valor },
-        success: function (response) {
-            var nombre = document.getElementById('nombre');
-            var apellidos = document.getElementById('apellidos');
-            var fechaInput = document.getElementById('fechaNacimiento');
-            if (response.success) {
-                if (response.nombre && response.nombre !== '') {
-                    if (nombre) nombre.value = response.nombre;
-                    if (apellidos) apellidos.value = response.apellidos;
-                    if (fechaInput && response.fechaNacimiento) {
-                        fechaInput.value = response.fechaNacimiento;
-                        validarFechaNacimiento(response.fechaNacimiento);
-                    }
-
-                    // NISEs ya no se muestran en el formulario. Si existe el contenedor de tags, limpiarlo.
-                    var tagsContainer = document.getElementById('nisesTags');
-                    if (tagsContainer) {
-                        tagsContainer.innerHTML = '';
-                    }
-
-                    if (hint) {
-                        hint.textContent = '✅ Datos cargados automáticamente desde el sistema';
-                        hint.className = 'registro-hint success';
-                    }
-
-                    validarNombre(response.nombre);
-                    validarApellidos(response.apellidos);
-                    marcarValido('cedulaGroup');
-                } else {
-                    if (hint) {
-                        hint.textContent = '✅ Cédula válida. Complete los datos manualmente.';
-                        hint.className = 'registro-hint success';
-                    }
-                    marcarValido('cedulaGroup');
-                    limpiarError('cedulaError');
-                }
-            } else {
-                if (nombre) nombre.value = '';
-                if (apellidos) apellidos.value = '';
-                if (fechaInput) fechaInput.value = '';
-                var niseSelect = document.getElementById('niseSelect');
-                if (niseSelect) {
-                    niseSelect.innerHTML = '<option value="">-- Selecciona un NISE --</option>';
-                    niseSelect.disabled = true;
-                }
-                var container = document.getElementById('niseSelectContainer');
-                if (container) container.style.display = 'none';
-                var nisesTagsEl = document.getElementById('nisesTags');
-                if (nisesTagsEl) nisesTagsEl.innerHTML = '';
-
-                if (hint) {
-                    hint.textContent = '⚠️ ' + response.message;
-                    hint.className = 'registro-hint error';
-                }
-                marcarInvalido('cedulaGroup');
-            }
-        },
-        error: function () {
-            if (hint) {
-                hint.textContent = '❌ Error al validar la cédula. Intente nuevamente.';
-                hint.className = 'registro-hint error';
-            }
-        }
-    });
-}
-
-// ==========================================================
-// ===== VALIDAR FORMULARIO DE REGISTRO COMPLETO =====
-// ==========================================================
-
-function validarFormularioRegistro() {
-    var errores = [];
-
-    var cedula = document.getElementById('cedula');
-    var nombre = document.getElementById('nombre');
-    var apellidos = document.getElementById('apellidos');
-    var correo = document.getElementById('correo');
-    var correoSecundario = document.getElementById('correoSecundario');
-    var telefono = document.getElementById('telefono');
-    var telefonoSecundario = document.getElementById('telefonoSecundario');
-    var direccion = document.getElementById('direccion');
-    var usuario = document.getElementById('userName');
-    var contrasena = document.getElementById('contrasena');
-    var confirm = document.getElementById('confirm');
-    var fecha = document.getElementById('fechaNacimiento');
-    var sexo = document.querySelector('input[name="Sexo"]:checked');
-    var facturaElectronica = document.querySelector('input[name="FacturaElectronica"]:checked');
-    var actividadSelect = document.getElementById('actividadSelect');
-
-    if (cedula && cedula.value) {
-        var cedulaValue = cedula.value.trim();
-        if (cedulaValue.length > 0) {
-            var formatoValido = /^\d{1}-\d{4}-\d{4}$/.test(cedulaValue) || /^\d{9,10}$/.test(cedulaValue);
-            if (!formatoValido) {
-                errores.push('Formato de cédula inválido. Use 1-2345-6789');
-            }
-        }
-    }
-
-    if (!validarNombre(nombre ? nombre.value : '')) errores.push('Nombre obligatorio');
-    if (!validarApellidos(apellidos ? apellidos.value : '')) errores.push('Apellidos obligatorios');
-    if (!validarCorreo(correo ? correo.value : '')) errores.push('Correo principal inválido');
-    if (!validarCorreoSecundario(correoSecundario ? correoSecundario.value : '')) errores.push('Correo secundario inválido');
-    if (!validarTelefono(telefono ? telefono.value : '')) errores.push('Teléfono principal inválido');
-    if (!validarTelefonoSecundario(telefonoSecundario ? telefonoSecundario.value : '')) errores.push('Teléfono secundario inválido');
-    if (!validarDireccion(direccion ? direccion.value : '')) errores.push('Dirección obligatoria');
-    if (!validarUsuario(usuario ? usuario.value : '')) errores.push('Usuario inválido');
-    if (!validarContrasena(contrasena ? contrasena.value : '')) errores.push('Contraseña inválida');
-    if (!validarConfirmacion(confirm ? confirm.value : '')) errores.push('Las contraseñas no coinciden');
-    if (!validarFechaNacimiento(fecha ? fecha.value : '')) errores.push('Fecha de nacimiento inválida');
-    if (!validarSexo(sexo ? sexo.value : '')) errores.push('Sexo no seleccionado');
-
-    // Validar Factura Electrónica
-    if (!facturaElectronica) {
-        errores.push('Debe seleccionar una opción para la factura electrónica');
-    } else if (facturaElectronica.value === 'true') {
-        var actividadValue = actividadSelect ? actividadSelect.value : '';
-        if (!actividadValue || actividadValue === '') {
-            errores.push('Debe seleccionar una actividad económica');
-        }
-    }
-
-    // Validar provincia, cantón, distrito
-    var provincia = document.getElementById('provincia');
-    var canton = document.getElementById('canton');
-    var distrito = document.getElementById('distrito');
-
-    if (!provincia || !provincia.value) {
-        errores.push('Debe seleccionar una provincia');
-    }
-    if (!canton || !canton.value) {
-        errores.push('Debe seleccionar un cantón');
-    }
-    if (!distrito || !distrito.value) {
-        errores.push('Debe seleccionar un distrito');
-    }
-
-    // NISE asociado ya no es parte del formulario: no validar aquí.
-
-    if (!validarAceptacion()) errores.push('Aceptación requerida');
-
-    if (errores.length > 0) {
-        alert('❌ Por favor, corrige los siguientes errores:\n\n- ' + errores.join('\n- '));
-        return false;
-    }
-
-    return true;
-}
-
-// ==========================================================
-// ===== EVENTOS PARA SEXO PERSONALIZADO =====
-// ==========================================================
-
-document.addEventListener('DOMContentLoaded', function () {
-    var radios = document.querySelectorAll('input[name="Sexo"]');
-    var personalizadoInput = document.getElementById('sexoPersonalizado');
-
-    radios.forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            if (this.value === 'Personalizado') {
-                personalizadoInput.style.display = 'inline-block';
-                personalizadoInput.focus();
-            } else {
-                personalizadoInput.style.display = 'none';
-                personalizadoInput.value = '';
-            }
-        });
-    });
-});
-
-// ==========================================================
-// ===== EVENTOS DE REGISTRO =====
-// ==========================================================
-
-document.addEventListener('DOMContentLoaded', function () {
-    var cedula = document.getElementById('cedula');
-    if (cedula) {
-        cedula.addEventListener('blur', function () {
-            if (this.value.length >= 9) {
-                autocompletarPorCedula();
-            }
-        });
-
-        cedula.addEventListener('input', function () {
-            limpiarError('cedulaError');
-            limpiarEstado('cedulaGroup');
-
-            if (this.value.length < 9) {
-                document.getElementById('nombre').value = '';
-                document.getElementById('apellidos').value = '';
-                document.getElementById('fechaNacimiento').value = '';
-
-                var niseSelect = document.getElementById('niseSelect');
-                if (niseSelect) {
-                    niseSelect.innerHTML = '<option value="">-- Selecciona un NISE --</option>';
-                    niseSelect.disabled = true;
-                }
-
-                var tags = document.getElementById('nisesTags'); if (tags) tags.innerHTML = '';
-                var container = document.getElementById('niseSelectContainer'); if (container) container.style.display = 'none';
-
-                var hint = document.querySelector('#cedulaGroup .registro-hint');
-                if (hint) {
-                    hint.textContent = 'Al escribir tu cédula, se cargan tus datos y tus NISEs automáticamente.';
-                    hint.className = 'registro-hint';
-                    hint.style.color = '';
-                }
-
-                limpiarEstado('cedulaGroup');
+            var checkbox = document.getElementById(tipo === 'politica' ? 'aceptaPolitica' : 'aceptaConsentimiento');
+            if (checkbox) { checkbox.checked = true; }
+        }, 500);
+    };
+
+    // ===== Validación de formulario de login =====
+    var loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function (e) {
+            var usuario = document.getElementById('UserName');
+            var contrasena = document.getElementById('Contraseña');
+
+            if (!usuario.value.trim() || !contrasena.value.trim()) {
+                e.preventDefault();
+                alert('Por favor complete todos los campos.');
             }
         });
     }
 
-    // ... (resto de eventos: nombre, apellidos, fecha, correo, etc.)
-    // Estos eventos ya están en tu archivo original, no los modifico.
-
+    // ===== Validación de formulario de registro =====
     var registroForm = document.getElementById('registroForm');
     if (registroForm) {
         registroForm.addEventListener('submit', function (e) {
-            if (!validarFormularioRegistro()) {
+            var contrasena = document.getElementById('contrasena');
+            var confirmar = document.getElementById('confirm');
+
+            if (contrasena.value !== confirmar.value) {
                 e.preventDefault();
+                alert('Las contraseñas no coinciden.');
+                confirmar.style.borderColor = '#D32F2F';
+            }
+
+            var aceptaPolitica = document.getElementById('aceptaPolitica');
+            var aceptaConsentimiento = document.getElementById('aceptaConsentimiento');
+
+            if (!aceptaPolitica.checked || !aceptaConsentimiento.checked) {
+                e.preventDefault();
+                alert('Debe aceptar la Política de Privacidad y el Consentimiento Informado.');
             }
         });
     }
+
+    // ===== Alternar visibilidad de contraseña por ID =====
+    window.togglePasswordById = function (id) {
+        var input = document.getElementById(id);
+        if (input) {
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+    };
 });
-
-// ==========================================================
-// ===== EXPONER FUNCIONES GLOBALMENTE =====
-// ==========================================================
-
-window.togglePasswordLogin = togglePasswordLogin;
-window.togglePasswordById = togglePasswordById;
-window.iniciarFaceId = iniciarFaceId;
-window.recuperarContraseña = recuperarContraseña;
-window.validarCedula = validarCedula;
-window.validarUsuario = validarUsuario;
-window.validarFormularioRegistro = validarFormularioRegistro;
-window.autocompletarPorCedula = autocompletarPorCedula;

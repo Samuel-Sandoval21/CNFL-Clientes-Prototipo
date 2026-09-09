@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
 
 namespace CNFL_Clientes_Prototipo.Models
 {
     public class Averia
     {
-        public int Id { get; set; }
+        public int AveriaId { get; set; }
         public int UsuarioId { get; set; }
-        public int NISEId { get; set; }
-        public string TipoAveria { get; set; }
+        public int NiseId { get; set; }
+        public string Tipo { get; set; }
         public string Descripcion { get; set; }
-        public string Direccion { get; set; }
-        public decimal? Latitud { get; set; }
-        public decimal? Longitud { get; set; }
+        public string Direccion { get; set; } // ✅ Ya coincide
         public string Estado { get; set; }
         public DateTime FechaReporte { get; set; }
+        public DateTime? FechaActualizacion { get; set; }
+        public string FotoUrl { get; set; }
 
         public virtual Usuario Usuario { get; set; }
         public virtual NISE NISE { get; set; }

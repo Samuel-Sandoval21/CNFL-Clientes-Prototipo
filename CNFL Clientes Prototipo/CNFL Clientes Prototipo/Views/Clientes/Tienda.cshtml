@@ -1,155 +1,44 @@
-﻿@model dynamic
-@{
-    ViewBag.Title = "Productos y Servicios - CNFL";
-    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+﻿@{
+    ViewBag.Title = "Tienda";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<!-- CSS externo para Tienda -->
-<link rel="stylesheet" href="@Url.Content("~/Content/cliente/tienda.css")" />
+<link rel="stylesheet" href="~/Content/cliente/tienda.css" />
 
-<!-- ===== BOTÓN VOLVER ===== -->
-<button class="btn-volver" onclick="history.back();">
-    <i class="fas fa-arrow-left"></i> <span data-i18n="volver">Volver</span>
-</button>
+<div class="tienda-container">
+    <h2>Tienda CNFL</h2>
 
-<div class="section-pad">
-    <div class="h-name-2" data-i18n="tienda_titulo">
-        <i class="fas fa-store" style="color:var(--orange);"></i> Productos y Servicios
-    </div>
-    <div style="font-size:13px; color:var(--muted); margin-top:2px;" data-i18n="compra_facil">
-        Amplía tu experiencia más allá de la electricidad
-    </div>
-</div>
-
-<!-- ===== PROMO BANNER ===== -->
-<div class="section-pad" style="margin-top:8px;">
-    <div class="promo-banner">
-        <div class="promo-kicker">⚡ HOGAR 360°</div>
-        <div class="promo-title">Cargador para tu auto eléctrico</div>
-        <div class="promo-desc">Instalación certificada. Págalo cómodo en tu factura eléctrica.</div>
-        <button class="btn-cotizar" onclick="alert('📋 Solicitud de cotización enviada.\n\n📩 Recibirás un correo con los detalles en 24 horas.')">
-            Solicitar cotización →
-        </button>
-    </div>
-</div>
-
-<!-- ===== SUSCRIPCIONES (Reemplaza "CNFL Te Asiste") ===== -->
-<div class="section-pad">
-    <div class="eyebrow">SUSCRIPCIONES</div>
-    <div class="cat-scroll">
-        <div class="cat-card" onclick="alert('🛡️ Seguro de Hogar contra incendio\n\nCuota desde €1.895 I.V.A. incluido\nCobertura hasta 20 millones\n\n📞 8319-5273 | ✉ 800energia@cnfl.go.cr')">
-            <span class="cat-icon">🛡️</span>
-            <span>Seguro de Hogar</span>
+    <div class="productos-grid">
+        <div class="producto-card">
+            <div class="producto-img">🔌</div>
+            <h3>Cargador EV 7kW</h3>
+            <p class="precio">₡615,000</p>
+            <button class="btn-agregar" onclick="alert('Agregado al carrito')">Agregar</button>
         </div>
-        <div class="cat-card" onclick="alert('📶 Internet Fijo 5G\n\nPlanes desde 50 Mbps hasta 200 Mbps\nHasta 128 dispositivos conectados\n\n📞 8319-5273 | ✉ 800energia@cnfl.go.cr')">
-            <span class="cat-icon">📶</span>
-            <span>Internet 5G</span>
+
+        <div class="producto-card">
+            <div class="producto-img">💡</div>
+            <h3>Kit LED</h3>
+            <p class="precio">₡42,900</p>
+            <button class="btn-agregar" onclick="alert('Agregado al carrito')">Agregar</button>
         </div>
-        <div class="cat-card" onclick="alert('🔌 Cargadores semirrápidos\n\nFinanciamiento disponible por medio de la factura eléctrica\n\n📞 8899-8129 | ✉ movelec@cnfl.go.cr')">
-            <span class="cat-icon">🔌</span>
-            <span>Cargadores EV</span>
+
+        <div class="producto-card">
+            <div class="producto-img">❄️</div>
+            <h3>Aire Inverter</h3>
+            <p class="precio">₡289,000</p>
+            <button class="btn-agregar" onclick="alert('Agregado al carrito')">Agregar</button>
         </div>
-        <div class="cat-card" onclick="alert('🌱 Consumo Verde\n\nAhorra energía y cuida el medio ambiente con nuestros consejos.\n\n📞 800-ENERGÍA')">
-            <span class="cat-icon">🌱</span>
-            <span>Consumo Verde</span>
+
+        <div class="producto-card">
+            <div class="producto-img">🔋</div>
+            <h3>Batería</h3>
+            <p class="precio">₡145,000</p>
+            <button class="btn-agregar" onclick="alert('Agregado al carrito')">Agregar</button>
         </div>
     </div>
 </div>
 
-<!-- ===== MARKETPLACE ===== -->
-<div class="section-pad">
-    <div class="eyebrow">🛒 MARKETPLACE</div>
-    <div class="pgrid">
-        <!-- Producto 1 -->
-        <div class="prod">
-            <div class="img">
-                ❄️
-                <span class="badge-oferta">Oferta</span>
-            </div>
-            <div class="b">
-                <div class="n">Aire acondicionado Inverter 12.000 BTU</div>
-                <div class="pr">
-                    ₡ 289.000
-                    <span class="old-price">₡ 329.000</span>
-                </div>
-                <button class="add" onclick="cargarAFactura('Aire acondicionado Inverter', 289000, this)">
-                    <i class="fas fa-cart-plus"></i> Cargar a factura
-                </button>
-            </div>
-        </div>
-
-        <!-- Producto 2 -->
-        <div class="prod">
-            <div class="img">💡</div>
-            <div class="b">
-                <div class="n">Kit iluminación LED inteligente</div>
-                <div class="pr">₡ 42.900</div>
-                <button class="add" onclick="cargarAFactura('Kit iluminación LED', 42900, this)">
-                    <i class="fas fa-cart-plus"></i> Cargar a factura
-                </button>
-            </div>
-        </div>
-
-        <!-- Producto 3 -->
-        <div class="prod">
-            <div class="img">🔌</div>
-            <div class="b">
-                <div class="n">Cargador EV residencial 7kW</div>
-                <div class="pr">
-                    ₡ 615.000
-                    <span class="old-price">₡ 690.000</span>
-                </div>
-                <button class="add" onclick="cargarAFactura('Cargador EV residencial', 615000, this)">
-                    <i class="fas fa-cart-plus"></i> Cargar a factura
-                </button>
-            </div>
-        </div>
-
-        <!-- Producto 4 -->
-        <div class="prod">
-            <div class="img">⚡</div>
-            <div class="b">
-                <div class="n">Supresor de picos + base</div>
-                <div class="pr">₡ 74.500</div>
-                <button class="add" onclick="cargarAFactura('Supresor de picos', 74500, this)">
-                    <i class="fas fa-cart-plus"></i> Cargar a factura
-                </button>
-            </div>
-        </div>
-
-        <!-- Producto 5 -->
-        <div class="prod">
-            <div class="img">☀️</div>
-            <div class="b">
-                <div class="n">Panel Solar 400W</div>
-                <div class="pr">₡ 185.000</div>
-                <button class="add" onclick="cargarAFactura('Panel Solar 400W', 185000, this)">
-                    <i class="fas fa-cart-plus"></i> Cargar a factura
-                </button>
-            </div>
-        </div>
-
-        <!-- Producto 6 -->
-        <div class="prod">
-            <div class="img">🌡️</div>
-            <div class="b">
-                <div class="n">Termostato Smart</div>
-                <div class="pr">₡ 89.000</div>
-                <button class="add" onclick="cargarAFactura('Termostato Smart', 89000, this)">
-                    <i class="fas fa-cart-plus"></i> Cargar a factura
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== BOTÓN IR AL CARRITO (Flotante) ===== -->
-<div class="carrito-flotante" onclick="verCarrito()" style="display: none;" id="carritoFlotante">
-    <i class="fas fa-shopping-cart"></i>
-    <span class="contador" id="carritoContador">0</span>
-</div>
-
-<!-- JavaScript externo para Tienda -->
-@section scriptsVista {
-    <script src="@Url.Content("~/Scripts/cliente/tienda.js")"></script>
+@section Scripts {
+    <script src="~/Scripts/cliente/tienda.js"></script>
 }

@@ -1,113 +1,84 @@
-﻿// ==========================================
-// CLIENTE - NOTIFICACIONES
-// ==========================================
+// ============================================================
+// NOTIFICACIONES.JS - Cliente
+// ============================================================
 
-function marcarLeida(element, id) {
-    // Si el elemento es un botón, obtener el contenedor padre
-    var item = element.closest ? element.closest('.notificacion-item') : null;
-    if (!item) {
-        // Si no se pasó elemento o es el botón, buscar por data-id
-        item = document.querySelector('.notificacion-item[data-id="' + id + '"]');
-    }
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Notificaciones cargado');
 
-    // Realizar petición AJAX
-    $.ajax({
-        url: '/Clientes/MarcarNotificacionLeida',
-        type: 'POST',
-        data: { id: id },
-        success: function (response) {
-            if (response.success) {
-                // Marcar visualmente
-                if (item) {
-                    item.classList.add('leida');
-                    var btnLeer = item.querySelector('.btn-leer');
-                    if (btnLeer) {
-                        btnLeer.textContent = '✓ Leída';
-                        btnLeer.disabled = true;
-                        btnLeer.style.opacity = '0.5';
-                    }
+    // ===== Click en notificación =====
+    document.querySelectorAll('.notificacion-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+            var titulo = this.querySelector('h4')?.textContent || 'Notificación';
+            var mensaje = this.querySelector('p')?.textContent || '';
+            mostrarToast('📬 ' + titulo + ': ' + mensaje, 'info');
+
+            // Marcar como leída
+            this.classList.remove('no-leida');
+            var badge = this.querySelector('.badge-nueva');
+            if (badge) {
+                badge.style.display = 'none';
+            }
+            // Actualizar contador
+            actualizarBadge();
+        });
+    });
+
+    // ===== Marcar todas como leídas =====
+    var btnMarcarTodas = document.getElementById('marcarTodas');
+    if (btnMarcarTodas) {
+        btnMarcarTodas.addEventListener('click', function () {
+            document.querySelectorAll('.notificacion-item.no-leida').forEach(function (item) {
+                item.classList.remove('no-leida');
+                var badge = item.querySelector('.badge-nueva');
+                if (badge) {
+                    badge.style.display = 'none';
                 }
-
-                // Actualizar badge
-                actualizarBadge();
-
-                mostrarToast('✅ Notificación marcada como leída');
-            } else {
-                mostrarToast('❌ ' + response.message, 'error');
-            }
-        },
-        error: function () {
-            mostrarToast('❌ Error al marcar notificación', 'error');
-        }
-    });
-}
-
-function marcarTodasLeidas() {
-    $.ajax({
-        url: '/Clientes/MarcarTodasLeidas',
-        type: 'POST',
-        success: function (response) {
-            if (response.success) {
-                // Marcar todas visualmente
-                document.querySelectorAll('.notificacion-item:not(.leida)').forEach(function (item) {
-                    item.classList.add('leida');
-                    var btnLeer = item.querySelector('.btn-leer');
-                    if (btnLeer) {
-                        btnLeer.textContent = '✓ Leída';
-                        btnLeer.disabled = true;
-                        btnLeer.style.opacity = '0.5';
-                    }
-                });
-
-                actualizarBadge();
-                mostrarToast('✅ Todas las notificaciones marcadas como leídas');
-            } else {
-                mostrarToast('❌ ' + response.message, 'error');
-            }
-        },
-        error: function () {
-            mostrarToast('❌ Error al marcar notificaciones', 'error');
-        }
-    });
-}
-
-function actualizarBadge() {
-    var badge = document.getElementById('notificacionBadge');
-    if (!badge) return;
-
-    var noLeidas = document.querySelectorAll('.notificacion-item:not(.leida)');
-    var count = noLeidas.length;
-
-    if (count > 0) {
-        badge.textContent = count;
-        badge.style.display = 'inline-block';
-    } else {
-        badge.style.display = 'none';
+            });
+            actualizarBadge();
+            mostrarToast('✅ Todas las notificaciones marcadas como leídas', 'success');
+        });
     }
-}
+
+    // ===== Contar y actualizar badge =====
+    actualizarBadge();
+
+    function actualizarBadge() {
+        var noLeidas = document.querySelectorAll('.notificacion-item.no-leida').length;
+        var badges = document.querySelectorAll('.badge');
+        badges.forEach(function (badge) {
+            if (noLeidas > 0) {
+                badge.textContent = noLeidas;
+                badge.style.display = 'grid';
+            } else {
+                badge.style.display = 'none';
+            }
+        });
+    }
+});
 
 function mostrarToast(mensaje, tipo) {
-    // Crear toast si no existe
-    var toast = document.getElementById('toastNotif');
+    tipo = tipo || 'info';
+    var toast = document.getElementById('toastGlobal');
     if (!toast) {
         toast = document.createElement('div');
-        toast.id = 'toastNotif';
-        toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#2E7D32;color:white;padding:12px 24px;border-radius:16px;font-weight:600;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,0.2);z-index:2000;display:none;max-width:90%;';
+        toast.id = 'toastGlobal';
+        toast.style.cssText = 'position:fixed; bottom:90px; left:50%; transform:translateX(-50%); padding:12px 24px; border-radius:12px; font-weight:700; z-index:9999; background:#0E1116; color:white; box-shadow:0 8px 24px rgba(0,0,0,0.2); opacity:0; transition:opacity 0.3s; max-width:90%; text-align:center;';
         document.body.appendChild(toast);
     }
 
     toast.textContent = mensaje;
-    toast.className = 'toast-notification' + (tipo === 'error' ? ' error' : '');
-    toast.style.background = tipo === 'error' ? '#C62828' : '#2E7D32';
-    toast.style.display = 'block';
+    toast.style.opacity = '1';
+
+    var colores = {
+        success: '#2E7D32',
+        error: '#D32F2F',
+        warning: '#F5A623',
+        info: '#0E1116'
+    };
+    toast.style.background = colores[tipo] || colores.info;
 
     clearTimeout(toast._timeout);
     toast._timeout = setTimeout(function () {
-        toast.style.display = 'none';
+        toast.style.opacity = '0';
     }, 3000);
 }
-
-// Exponer funciones globalmente
-window.marcarLeida = marcarLeida;
-window.marcarTodasLeidas = marcarTodasLeidas;
-window.mostrarToast = mostrarToast;
