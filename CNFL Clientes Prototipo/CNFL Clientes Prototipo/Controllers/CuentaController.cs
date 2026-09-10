@@ -62,16 +62,22 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // GET: Cuenta/SearchActividades?q=term
+        // - Si q viene vacío: devuelve las primeras 100 actividades (para que el dropdown no esté vacío)
+        // - Si q tiene texto: filtra por código o nombre
         [HttpGet]
         public JsonResult SearchActividades(string q)
         {
-            if (string.IsNullOrWhiteSpace(q))
-                return Json(new object[0], JsonRequestBehavior.AllowGet);
+            var query = _db.ActividadesEconomicas.AsQueryable();
 
-            var results = _db.ActividadesEconomicas
-                .Where(a => a.Codigo.Contains(q) || a.Nombre.Contains(q))
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(a => a.Codigo.Contains(q) || a.Nombre.Contains(q));
+            }
+
+            var results = query
+                .OrderBy(a => a.Codigo)
+                .Take(100)
                 .Select(a => new { id = a.Id, text = a.Codigo + " - " + a.Nombre })
-                .Take(20)
                 .ToList();
 
             return Json(results, JsonRequestBehavior.AllowGet);
@@ -79,7 +85,8 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
         // POST: Cuenta/Registro
         [HttpPost]
-        public ActionResult Registro(Usuario usuario, string confirmarContraseña)
+        public ActionResult Registro(Usuario usuario, string confirmarContraseña,
+                                     string Provincia, string Canton, string Distrito)
         {
             if (ModelState.IsValid)
             {
@@ -100,6 +107,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     ModelState.AddModelError("Correo", "Ya existe un usuario con este correo.");
                     return View(usuario);
                 }
+
+                // 👇 Guardar ubicación
+                usuario.Provincia = Provincia;
+                usuario.Canton = Canton;
+                usuario.Distrito = Distrito;
 
                 usuario.FechaRegistro = DateTime.Now;
                 usuario.Activo = true;

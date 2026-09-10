@@ -15,8 +15,14 @@ namespace CNFL_Clientes_Prototipo.Models
         public string TelefonoSecundario { get; set; }
         public string Sexo { get; set; }
         public string Contraseña { get; set; }
-        public DateTime FechaRegistro { get; set; }
+        public DateTime FechaRegistro { get; set; }   // ← ya no dará error
         public bool Activo { get; set; }
+
+        public string Provincia { get; set; }
+        public string Canton { get; set; }
+        public string Distrito { get; set; }
+        public int? ActividadEconomicaId { get; set; }
+        public virtual ActividadEconomica ActividadEconomica { get; set; }
 
         // Propiedades de navegación
         public virtual ICollection<UsuarioRol> UsuarioRoles { get; set; }
@@ -25,5 +31,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public virtual ICollection<Notificacion> Notificaciones { get; set; }
         public virtual ICollection<Tramite> Tramites { get; set; }
         public virtual ICollection<Suscripcion> Suscripciones { get; set; }
+        public virtual ICollection<Pago> Pagos { get; set; }
     }
 }

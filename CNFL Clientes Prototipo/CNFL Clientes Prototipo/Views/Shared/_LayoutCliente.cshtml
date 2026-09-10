@@ -1,12 +1,3 @@
 ﻿@{
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
-
-@* Passthrough de secciones para el layout padre *@
-@section Styles {
-    @RenderSection("Styles", required: false)
-}
-
-@section Scripts {
-    @RenderSection("Scripts", required: false)
-}

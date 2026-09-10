@@ -198,6 +198,7 @@
     <Compile Include="Models\Factura.cs" />
     <Compile Include="Models\NISE.cs" />
     <Compile Include="Models\Notificacion.cs" />
+    <Compile Include="Models\Pago.cs" />
     <Compile Include="Models\ReportesViewModel.cs" />
     <Compile Include="Models\Rol.cs" />
     <Compile Include="Models\Suscripcion.cs" />
@@ -211,6 +212,8 @@
     <Compile Include="Repositories\NotificacionRepository.cs" />
     <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\NISEService.cs" />
+    <Compile Include="Services\NotificationService.cs" />
+    <Compile Include="Services\PaymentService.cs" />
     <Compile Include="Services\SuscripcionService.cs" />
     <Compile Include="Services\SuspensionService.cs" />
     <Compile Include="Services\TramiteService.cs" />

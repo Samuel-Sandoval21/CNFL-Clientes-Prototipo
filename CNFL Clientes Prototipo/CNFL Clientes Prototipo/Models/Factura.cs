@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CNFL_Clientes_Prototipo.Models
 {
@@ -13,6 +14,8 @@ namespace CNFL_Clientes_Prototipo.Models
         public bool Pagada { get; set; }
         public string Descripcion { get; set; }
 
+        // Propiedades de navegación
         public virtual NISE NISE { get; set; }
+        public virtual ICollection<Pago> Pagos { get; set; }   // 👈 ESTA LÍNEA FALTA
     }
 }

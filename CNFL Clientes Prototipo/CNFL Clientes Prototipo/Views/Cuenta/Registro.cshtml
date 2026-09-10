@@ -5,6 +5,59 @@
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .login-wrap .field .inp input:-webkit-autofill,
+        .login-wrap .field .inp input:-webkit-autofill:hover,
+        .login-wrap .field .inp input:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--ink) !important;
+            -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+            transition: background-color 9999s ease-in-out 0s;
+        }
+
+        .select2-container .select2-selection--single {
+            height: auto !important;
+            border: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding: 0 !important;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--ink);
+            line-height: normal;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 100% !important;
+            right: 0 !important;
+        }
+
+        .select2-container--open .select2-dropdown {
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(16,20,40,.15);
+            border: 1px solid var(--line);
+            z-index: 9999;
+        }
+
+        .select2-results__option {
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 13px;
+        }
+    </style>
+}
+
 <div class="login-wrap" style="padding:24px 20px;">
     <div style="text-align:center; margin-bottom:16px;">
         <div style="font-size:48px;">📋</div>
@@ -34,64 +87,83 @@
             <label>CÉDULA *</label>
             <div class="inp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="12" r="2.5" /><path d="M14 10h4M14 14h4" /></svg>
-                <input type="text" name="Cedula" placeholder="2-0874-0716" required />
+                <input type="text" name="Cedula" placeholder="2-0874-0716" autocomplete="off" required />
             </div>
         </div>
 
         <div class="field">
-            <label>NOMBRE *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                <input type="text" name="Nombre" placeholder="Su nombre" required />
-            </div>
-        </div>
-
-        <div class="field">
-            <label>APELLIDOS *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                <input type="text" name="Apellidos" placeholder="Sus apellidos" required />
-            </div>
-        </div>
-
-        <div class="field">
-            <label>CORREO PRINCIPAL *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
-                <input type="email" name="Correo" placeholder="usuario@correo.com" required />
-            </div>
-        </div>
-
-        <div class="field">
-            <label>CORREO SECUNDARIO (opcional)</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
-                <input type="email" name="CorreoSecundario" placeholder="otro@correo.com" />
-            </div>
-        </div>
-
-        <div class="field">
-            <label>TELÉFONO *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-                <input type="text" name="Telefono" placeholder="8888-8888" required />
-            </div>
-        </div>
-
-        <div class="field">
-            <label>TELÉFONO 2 (opcional)</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-                <input type="text" name="TelefonoSecundario" placeholder="8888-0000" />
-            </div>
-        </div>
-
-        <div class="field">
-            <label>SEXO</label>
-            <div style="display:flex; gap:12px; align-items:center; padding-left:8px;">
-                <label style="font-weight:600;"><input type="radio" name="Sexo" value="Masculino" /> Masculino</label>
+            <label>SEXO *</label>
+            <div style="display:flex; gap:18px; align-items:center; padding-left:8px;">
+                <label style="font-weight:600;"><input type="radio" name="Sexo" value="Masculino" required /> Masculino</label>
                 <label style="font-weight:600;"><input type="radio" name="Sexo" value="Femenino" /> Femenino</label>
                 <label style="font-weight:600;"><input type="radio" name="Sexo" value="Otro" /> Otro</label>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>CORREO 1 *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
+                <input type="email" name="Correo" placeholder="usuario@correo.com" autocomplete="off" required />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>CORREO 2 (OPCIONAL)</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
+                <input type="email" name="CorreoSecundario" placeholder="otro@correo.com" autocomplete="off" />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>TELÉFONO 1 *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                <input type="text" name="Telefono" placeholder="8888-8888" autocomplete="off" required />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>TELÉFONO 2 (OPCIONAL)</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                <input type="text" name="TelefonoSecundario" placeholder="8888-0000" autocomplete="off" />
+            </div>
+        </div>
+
+        <div class="field">
+            <label>ACTIVIDAD ECONÓMICA *</label>
+            <div class="inp" style="padding:6px 14px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3z" /><path d="M3 11h18v10H3z" /></svg>
+                <select id="actividadEconomica" name="ActividadEconomicaId" style="width:100%;" required></select>
+            </div>
+        </div>
+
+        <div class="field" style="display:flex; gap:8px;">
+            <div style="flex:1;">
+                <label>PROVINCIA *</label>
+                <div class="inp">
+                    <select name="Provincia" id="provincia" required style="width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);">
+                        <option value="">Seleccione</option>
+                    </select>
+                </div>
+            </div>
+            <div style="flex:1;">
+                <label>CANTÓN *</label>
+                <div class="inp">
+                    <select name="Canton" id="canton" required style="width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);">
+                        <option value="">Seleccione</option>
+                    </select>
+                </div>
+            </div>
+            <div style="flex:1;">
+                <label>DISTRITO *</label>
+                <div class="inp">
+                    <select name="Distrito" id="distrito" required style="width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);">
+                        <option value="">Seleccione</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -99,7 +171,7 @@
             <label>CONTRASEÑA *</label>
             <div class="inp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="Contraseña" placeholder="••••••••" required />
+                <input type="password" name="Contraseña" placeholder="••••••••" autocomplete="new-password" required />
             </div>
         </div>
 
@@ -107,16 +179,7 @@
             <label>CONFIRMAR CONTRASEÑA *</label>
             <div class="inp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="confirmarContraseña" placeholder="••••••••" required />
-            </div>
-        </div>
-        <!-- Actividad económica: debe mostrarse antes del botón de registro -->
-        <div class="field">
-            <label>ACTIVIDAD ECONÓMICA *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3z"/><path d="M3 11h18v10H3z"/></svg>
-                <input id="actividadInput" name="ActividadEconomica" list="actividadesList" placeholder="Buscar por código o nombre..." autocomplete="off" required />
-                <datalist id="actividadesList"></datalist>
+                <input type="password" name="confirmarContraseña" placeholder="••••••••" autocomplete="new-password" required />
             </div>
         </div>
 
@@ -132,45 +195,153 @@
         <button type="submit" class="btn btn-cta btn-block" style="margin-top:16px;">Registrar cuenta</button>
     }
 
-    <!-- Ubicación: Provincia / Cantón / Distrito -->
-    <div style="margin-top:18px;">
-        <div class="field" style="display:flex; gap:8px;">
-            <div style="flex:1;">
-                <label>PROVINCIA *</label>
-                <div class="inp">
-                    <select name="Provincia" id="provincia" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);">
-                        <option value="">Seleccione provincia</option>
-                    </select>
-                </div>
-            </div>
-            <div style="flex:1;">
-                <label>CANTÓN *</label>
-                <div class="inp">
-                    <select name="Canton" id="canton" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);">
-                        <option value="">Seleccione cantón</option>
-                    </select>
-                </div>
-            </div>
-            <div style="flex:1;">
-                <label>DISTRITO *</label>
-                <div class="inp">
-                    <select name="Distrito" id="distrito" required style="width:100%; border:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink);">
-                        <option value="">Seleccione distrito</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="field" style="margin-top:12px;">
-            <label>ACTIVIDAD ECONÓMICA *</label>
-            <div class="inp">
-                <input list="actividadesList" id="actividadInput" placeholder="Buscar por código o nombre..." autocomplete="off" required />
-                <datalist id="actividadesList"></datalist>
-            </div>
-        </div>
-    </div>
-
     <div class="login-foot" style="margin-top:16px;">
         ¿Ya tienes cuenta? <a href="@Url.Action("Login", "Cuenta")">Inicia sesión aquí</a>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(function () {
+            // === Select2 Actividad Económica (carga TODO al abrir) ===
+            $('#actividadEconomica').select2({
+                placeholder: 'Seleccione o busque una actividad...',
+                allowClear: true,
+                width: '100%',
+                minimumInputLength: 0,
+                ajax: {
+                    url: '@Url.Action("SearchActividades", "Cuenta")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) { return { q: params.term || 'a' }; },
+                    processResults: function (data) { return { results: data }; },
+                    cache: true
+                },
+                language: {
+                    inputTooShort: function () { return 'Escriba para filtrar...'; },
+                    noResults: function () { return 'Sin resultados'; },
+                    searching: function () { return 'Buscando...'; }
+                }
+            });
+
+            // === Provincia / Cantón / Distrito ===
+            const dataCR = {
+                "San José": {
+                    "San José": ["Carmen","Merced","Hospital","Catedral","Zapote","San Francisco de Dos Ríos","Uruca","Mata Redonda","Pavas","Hatillo","San Sebastián"],
+                    "Escazú": ["Escazú","San Antonio","San Rafael"],
+                    "Desamparados": ["Desamparados","San Miguel","San Juan de Dios","San Rafael Arriba","San Antonio","Frailes","Patarrá","San Cristóbal","Rosario","Damas","San Rafael Abajo","Gravilias","Los Guido"],
+                    "Puriscal": ["Santiago","Mercedes Sur","Barbacoas","Grifo Alto","San Rafael","Candelarita","Desamparaditos","San Antonio","Chires"],
+                    "Tarrazú": ["San Marcos","San Lorenzo","San Carlos"],
+                    "Aserrí": ["Aserrí","Tarbaca","Vuelta de Jorco","San Gabriel","Legua","Monterrey","Salitrillos"],
+                    "Mora": ["Colón","Guayabo","Tabarcia","Piedras Negras","Picagres","Jaris","Quitirrisí"],
+                    "Goicoechea": ["Guadalupe","San Francisco","Calle Blancos","Mata de Plátano","Ipís","Rancho Redondo","Purral"],
+                    "Santa Ana": ["Santa Ana","Salitral","Pozos","Uruca","Piedades","Brasil"],
+                    "Alajuelita": ["Alajuelita","San Josecito","San Antonio","Concepción","San Felipe"],
+                    "Vázquez de Coronado": ["San Isidro","San Rafael","Dulce Nombre de Jesús","Patalillo","Cascajal"],
+                    "Acosta": ["San Ignacio","Guaitil","Palmichal","Cangrejal","Sabanillas"],
+                    "Tibás": ["San Juan","Cinco Esquinas","Anselmo Llorente","León XIII","Colima"],
+                    "Moravia": ["San Vicente","San Jerónimo","La Trinidad"],
+                    "Montes de Oca": ["San Pedro","Sabanilla","Mercedes","San Rafael"],
+                    "Turrubares": ["San Pablo","San Pedro","San Juan de Mata","San Luis","Carara"],
+                    "Dota": ["Santa María","Jardín","Copey"],
+                    "Curridabat": ["Curridabat","Granadilla","Sánchez","Tirrases"],
+                    "Pérez Zeledón": ["San Isidro de El General","El General","Daniel Flores","Rivas","San Pedro","Platanares","Pejibaye","Cajón","Barú","Río Nuevo","Páramo","La Amistad"],
+                    "León Cortés Castro": ["San Pablo","San Andrés","Llano Bonito","San Isidro","Santa Cruz","San Antonio"]
+                },
+                "Alajuela": {
+                    "Alajuela": ["Alajuela","San José","Carrizal","San Antonio","Guácima","San Isidro","Sabanilla","San Rafael","Río Segundo","Desamparados","Turrúcares","Tambor","Garita","Sarapiquí"],
+                    "San Ramón": ["San Ramón","Santiago","San Juan","Piedades Norte","Piedades Sur","San Rafael","San Isidro","Ángeles","Alfaro","Volio","Concepción","Zapotal","Peñas Blancas","San Lorenzo"],
+                    "Grecia": ["Grecia","San Isidro","San José","San Roque","Tacares","Puente de Piedra","Bolívar"],
+                    "San Mateo": ["San Mateo","Desmonte","Jesús María","Labrador"],
+                    "Atenas": ["Atenas","Jesús","Mercedes","San Isidro","Concepción","San José","Santa Eulalia","Escobal"],
+                    "Naranjo": ["Naranjo","San Miguel","San José","Cirrí Sur","San Jerónimo","San Juan","El Rosario","Palmitos"],
+                    "Palmares": ["Palmares","Zaragoza","Buenos Aires","Santiago","Candelaria","Esquipulas","La Granja"],
+                    "Poás": ["San Pedro","San Juan","San Rafael","Carrillos","Sabana Redonda"],
+                    "Orotina": ["Orotina","El Mastate","Hacienda Vieja","Coyolar","La Ceiba"],
+                    "San Carlos": ["Quesada","Florencia","Buenavista","Aguas Zarcas","Venecia","Pital","La Fortuna","La Tigra","La Palmera","Venado","Cutris","Monterrey","Pocosol"],
+                    "Zarcero": ["Zarcero","Laguna","Tapesco","Guadalupe","Palmira","Zapote","Brisas"],
+                    "Sarchí": ["Sarchí Norte","Sarchí Sur","Toro Amarillo","San Pedro","Rodríguez"],
+                    "Upala": ["Upala","Aguas Claras","San José o Pizote","Bijagua","Delicias","Dos Ríos","Yolillal","Canalete"],
+                    "Los Chiles": ["Los Chiles","Caño Negro","El Amparo","San Jorge"],
+                    "Guatuso": ["San Rafael","Buenavista","Cote","Katira"],
+                    "Río Cuarto": ["Río Cuarto","Santa Rita","Santa Isabel"]
+                },
+                "Cartago": {
+                    "Cartago": ["Oriental","Occidental","Carmen","San Nicolás","Aguacaliente","San Francisco","Tres Ríos","Santa Rosa","Llanos de Santa Lucía"],
+                    "Paraíso": ["Paraíso","San Francisco","San José","Urba","Santiago","Orosi","Cachí","Llanos de Santa Lucía","Birrisito"],
+                    "La Unión": ["Tres Ríos","San Diego","San Juan","San Rafael","Concepción","Dulce Nombre","San Ramón","Río Azul"],
+                    "Jiménez": ["Juan Viñas","Tucurrique","Pejibaye"],
+                    "Turrialba": ["Turrialba","Jesús María","Santa Teresita","Pavones","Tuis","Tayutic","Santa Rosa","Tres Equis","La Isabel","Chirripó"],
+                    "Alvarado": ["Pacayas","Cervantes","Capellades"],
+                    "Oreamuno": ["San Rafael","Cot","Potrero Cerrado","Cipreses","Santa Rosa"],
+                    "El Guarco": ["El Tejar","San Isidro","Tobosi","Patio de Agua"]
+                },
+                "Heredia": {
+                    "Heredia": ["Heredia","Mercedes","San Francisco","Ulloa","Varablanca"],
+                    "Barva": ["Barva","San Pedro","San Pablo","San Roque","Santa Lucía","San José de la Montaña"],
+                    "Santo Domingo": ["Santo Domingo","San Vicente","San Miguel","Paracito","Santo Tomás","Santa Rosa","Tures","Pará"],
+                    "Santa Bárbara": ["Santa Bárbara","San Pedro","San Juan","Jesús","Santo Domingo","Purabá"],
+                    "San Rafael": ["San Rafael","San Josecito","Santiago","Los Ángeles","Concepción"],
+                    "San Isidro": ["San Isidro","San José","Concepción","San Francisco"],
+                    "Belén": ["San Antonio","La Ribera","La Asunción"],
+                    "Flores": ["San Joaquín","Barrantes","Llorente"],
+                    "San Pablo": ["San Pablo","Rincón de Sabanilla"],
+                    "Sarapiquí": ["Puerto Viejo","La Virgen","Horquetas","Llanuras del Gaspar","Cureña"]
+                },
+                "Guanacaste": {
+                    "Liberia": ["Liberia","Cañas Dulces","Mayorga","Nacascolo","Curubandé"],
+                    "Nicoya": ["Nicoya","Mansión","San Antonio","Quebrada Honda","Sámara","Nosara","Belén de Nosarita"],
+                    "Santa Cruz": ["Santa Cruz","Bolsón","Veintisiete de Abril","Tempate","Cartagena","Cuajiniquil","Diriá","Cabo Velas","Tamarindo"],
+                    "Bagaces": ["Bagaces","Fortuna","Mogote","Río Naranjo"],
+                    "Carrillo": ["Filadelfia","Palmira","Sardinal","Belén"],
+                    "Cañas": ["Cañas","Palmira","San Miguel","Bebedero","Porozal"],
+                    "Abangares": ["Las Juntas","Sierra","San Juan","Colorado"],
+                    "Tilarán": ["Tilarán","Quebrada Grande","Tronadora","Santa Rosa","Líbano","Tierras Morenas","Arenal","Cabeceras"],
+                    "Nandayure": ["Carmona","Santa Rita","Zapotal","San Pablo","Porvenir","Bejuco"],
+                    "La Cruz": ["La Cruz","Santa Cecilia","La Garita","Santa Elena"],
+                    "Hojancha": ["Hojancha","Monte Romo","Puerto Carrillo","Huacas","Matambú"]
+                },
+                "Puntarenas": {
+                    "Puntarenas": ["Puntarenas","Chacarita","El Roble","Aranjuez","Barranca","Monteverde","Pitahaya"],
+                    "Esparza": ["Esparza","San Juan Grande","Macacona","San Rafael","San Jerónimo","Caldera"],
+                    "Buenos Aires": ["Buenos Aires","Volcán","Potrero Grande","Boruca","Pilas","Colinas","Chánguena","Biolley","Brunka"],
+                    "Montes de Oro": ["Miramar","La Unión","San Isidro"],
+                    "Osa": ["Puerto Cortés","Palmar","Sierpe","Bahía Ballena","Piedras Blancas","Bahía Drake"],
+                    "Quepos": ["Quepos","Savegre","Naranjito"],
+                    "Golfito": ["Golfito","Puerto Jiménez","Guaycará","Pavón"],
+                    "Coto Brus": ["San Vito","Sabalito","Aguabuena","Limoncito","Pittier","Gutiérrez Braun"],
+                    "Parrita": ["Parrita"],
+                    "Corredores": ["Corredor","La Cuesta","Canoas","Laurel"],
+                    "Garabito": ["Jacó","Tárcoles","Lagunillas"]
+                },
+                "Limón": {
+                    "Limón": ["Limón","Valle La Estrella","Río Blanco","Matama"],
+                    "Pococí": ["Guápiles","Jiménez","Rita","Roxana","Cariari","Colorado","La Colonia"],
+                    "Siquirres": ["Siquirres","Pacuarito","Florida","Germania","Cairo","Alegría","El Bosque","Reventazón"],
+                    "Talamanca": ["Bratsi","Sixaola","Cahuita","Telire"],
+                    "Matina": ["Matina","Batán","Carrandi"],
+                    "Guácimo": ["Guácimo","Mercedes","Pocora","Río Jiménez","Duacarí"]
+                }
+            };
+
+            const $prov = $('#provincia'), $cant = $('#canton'), $dist = $('#distrito');
+
+            Object.keys(dataCR).sort().forEach(p => $prov.append(`<option value="${p}">${p}</option>`));
+
+            $prov.on('change', function () {
+                $cant.empty().append('<option value="">Seleccione</option>');
+                $dist.empty().append('<option value="">Seleccione</option>');
+                const prov = dataCR[this.value];
+                if (prov) Object.keys(prov).sort().forEach(c => $cant.append(`<option value="${c}">${c}</option>`));
+            });
+
+            $cant.on('change', function () {
+                $dist.empty().append('<option value="">Seleccione</option>');
+                const prov = dataCR[$prov.val()];
+                if (prov && prov[this.value]) prov[this.value].forEach(d => $dist.append(`<option value="${d}">${d}</option>`));
+            });
+        });
+    </script>
+}

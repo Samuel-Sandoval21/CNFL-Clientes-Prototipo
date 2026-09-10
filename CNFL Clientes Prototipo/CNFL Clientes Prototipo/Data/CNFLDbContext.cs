@@ -20,12 +20,13 @@ namespace CNFL_Clientes_Prototipo.Data
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
         public DbSet<Suscripcion> Suscripciones { get; set; }
+        public DbSet<Pago> Pagos { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // ✅ CORRECCIÓN: Nombres exactos de tablas
+            // ===== Nombres exactos de tablas =====
             modelBuilder.Entity<Usuario>().ToTable("Usuarios");
             modelBuilder.Entity<Rol>().ToTable("Roles");
             modelBuilder.Entity<UsuarioRol>().ToTable("UsuarioRoles");
@@ -33,9 +34,12 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Factura>().ToTable("Facturas");
             modelBuilder.Entity<Averia>().ToTable("Averias");
             modelBuilder.Entity<Suspension>().ToTable("Suspensiones");
-            modelBuilder.Entity<Notificacion>().ToTable("Notificaciones"); // ← CORREGIDO
+            modelBuilder.Entity<Notificacion>().ToTable("Notificaciones");
             modelBuilder.Entity<Tramite>().ToTable("Tramites");
             modelBuilder.Entity<Suscripcion>().ToTable("Suscripciones");
+            modelBuilder.Entity<Pago>().ToTable("Pagos");
+
+            // ===== Relaciones =====
 
             // Usuario -> UsuarioRoles
             modelBuilder.Entity<Usuario>()
@@ -96,6 +100,20 @@ namespace CNFL_Clientes_Prototipo.Data
                 .HasMany(u => u.Suscripciones)
                 .WithRequired(s => s.Usuario)
                 .HasForeignKey(s => s.UsuarioId);
+
+            // ===== NUEVAS: PAGOS =====
+
+            // Factura -> Pagos
+            modelBuilder.Entity<Factura>()
+                .HasMany(f => f.Pagos)
+                .WithRequired(p => p.Factura)
+                .HasForeignKey(p => p.FacturaId);
+
+            // Usuario -> Pagos
+            modelBuilder.Entity<Usuario>()
+                .HasMany(u => u.Pagos)
+                .WithRequired(p => p.Usuario)
+                .HasForeignKey(p => p.UsuarioId);
         }
     }
 }
