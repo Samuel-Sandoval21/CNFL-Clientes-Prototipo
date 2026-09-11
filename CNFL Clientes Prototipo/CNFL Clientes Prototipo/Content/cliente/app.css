@@ -395,6 +395,8 @@ body {
     border: 0;
     font-family: inherit;
     text-decoration: none;
+    padding: 0 2px;
+    max-width: 80px;
 }
 
     .tab-item .tab-icon {
@@ -420,7 +422,12 @@ body {
     }
 
     .tab-item .tab-label {
-        font-size: 10px;
+        font-size: 9px;
+        line-height: 1.1;
+        text-align: center;
+        max-width: 100%;
+        white-space: normal;
+        word-break: break-word;
     }
 
     .tab-item.active {
@@ -432,7 +439,7 @@ body {
         text-decoration: none;
     }
 
-/* ===== LOGIN / REGISTRO ===== */
+/* ===== LOGIN ===== */
 .login-wrap {
     padding: 20px;
     height: 100%;
@@ -494,15 +501,6 @@ body {
                 color: #aab0be;
             }
 
-            /* Fix autofill Chrome */
-            .login-wrap .field .inp input:-webkit-autofill,
-            .login-wrap .field .inp input:-webkit-autofill:hover,
-            .login-wrap .field .inp input:-webkit-autofill:focus {
-                -webkit-text-fill-color: var(--ink) !important;
-                -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
-                transition: background-color 9999s ease-in-out 0s;
-            }
-
 .login-foot {
     margin-top: auto;
     text-align: center;
@@ -558,17 +556,17 @@ body {
     display: grid;
     place-items: center;
     color: #aab0be;
-    transition: color .15s;
     flex-shrink: 0;
+    transition: color .2s ease;
 }
 
     .toggle-password:hover {
-        color: var(--blue);
+        color: var(--blue) !important;
     }
 
     .toggle-password svg {
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
     }
 
 /* ===== MENÚ DE AJUSTES + i18n ===== */
@@ -759,10 +757,7 @@ body {
 /* ===== MODAL POLÍTICA / CONSENTIMIENTO ===== */
 .cnfl-modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: rgba(0, 0, 0, .55);
     display: none;
     align-items: center;
@@ -859,51 +854,6 @@ body {
         text-decoration: underline;
         font-weight: 700;
     }
-
-/* ===== SELECT2 ===== */
-.select2-container {
-    width: 100% !important;
-}
-
-    .select2-container .select2-selection--single {
-        height: auto !important;
-        border: none !important;
-        background: transparent !important;
-        padding: 0 !important;
-    }
-
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    padding: 0 !important;
-    font-family: inherit;
-    font-size: 14px;
-    color: var(--ink);
-    line-height: normal;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 100% !important;
-    right: 0 !important;
-}
-
-.select2-container--open .select2-dropdown {
-    border-radius: 12px !important;
-    box-shadow: 0 10px 30px rgba(16, 20, 40, .15) !important;
-    border: 1px solid var(--line) !important;
-    z-index: 99999 !important;
-}
-
-.select2-results__option {
-    font-size: 13px !important;
-    padding: 8px 12px !important;
-}
-
-.select2-search--dropdown .select2-search__field {
-    border-radius: 8px !important;
-    border: 1px solid var(--line) !important;
-    padding: 6px 10px !important;
-    font-family: inherit !important;
-    font-size: 13px !important;
-}
 
 @media (max-width: 440px) {
     .app-container {

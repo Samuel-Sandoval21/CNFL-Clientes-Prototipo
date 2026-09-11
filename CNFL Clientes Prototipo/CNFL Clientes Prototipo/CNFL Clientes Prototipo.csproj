@@ -362,6 +362,7 @@
     <Content Include="Views\Shared\_LayoutApp.cshtml" />
     <Content Include="Views\Clientes\MisFacturas.cshtml" />
     <Content Include="Views\Clientes\ReportarAlumbrado.cshtml" />
+    <Content Include="Views\Clientes\DetalleProducto.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -58,7 +58,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 factura.Pagada = true;
                 _db.SaveChanges();
 
-                // Crear notificación
                 var notificacion = new Notificacion
                 {
                     UsuarioId = _db.NISEs.Find(factura.NiseId).UsuarioId,
@@ -104,7 +103,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 _db.Averias.Add(averia);
                 _db.SaveChanges();
 
-                // Crear notificación
                 var notificacion = new Notificacion
                 {
                     UsuarioId = usuarioId.Value,
@@ -150,7 +148,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .OrderByDescending(n => n.Fecha)
                 .ToList();
 
-            // Marcar como leídas
             foreach (var not in notificaciones.Where(n => !n.Leida))
             {
                 not.Leida = true;
@@ -234,7 +231,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            // Guardado sencillo: en esta versión de prototipo sólo confirmamos recepción
             ViewBag.Mensaje = "Reporte de alumbrado enviado correctamente. Gracias por su colaboración.";
             return View();
         }
@@ -246,7 +242,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            // La vista Dashboard puede consumir servicios desde cliente/Script; por ahora devolvemos la vista
             return View();
         }
 
@@ -260,12 +255,66 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
-        // GET: Clientes/Tienda
+        // GET: Clientes/Tienda (Productos y Servicios)
         public ActionResult Tienda()
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
+
+            return View();
+        }
+
+        // ============================================================
+        // GET: Clientes/DetalleProducto?id=tienda
+        // Vista genérica para cada categoría de Productos y Servicios
+        // ============================================================
+        public ActionResult DetalleProducto(string id)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            if (string.IsNullOrWhiteSpace(id))
+                return RedirectToAction("Tienda");
+
+            ViewBag.CategoriaId = id;
+
+            // Título y subtítulo según la categoría
+            var titulos = new Dictionary<string, string>
+            {
+                { "tienda", "Tienda CNFL" },
+                { "supresores", "Supresores y Bases" },
+                { "cargadores", "Cargadores Semirápidos" },
+                { "bienes", "Bienes Inmuebles CNFL" },
+                { "asiste", "CNFL Te Asiste" },
+                { "internet", "Internet Fijo 5G" },
+                { "seguro-hogar", "Seguro de Hogar" },
+                { "sri", "Ingeniería Eléctrica (SIE)" },
+                { "ambientales", "Servicios Ambientales" },
+                { "calibracion", "Calibración" },
+                { "anonos", "Taller Anonos" },
+                { "reparacion", "Reparación y Mantenimiento" }
+            };
+
+            var subtitulos = new Dictionary<string, string>
+            {
+                { "tienda", "Comprá productos del hogar" },
+                { "supresores", "Protección en cada partido" },
+                { "cargadores", "Energía lista para cada jugada" },
+                { "bienes", "Locales y propiedades" },
+                { "asiste", "Asistencias y seguros" },
+                { "internet", "Viví la velocidad" },
+                { "seguro-hogar", "Contra incendio y rayo" },
+                { "sri", "Soluciones profesionales" },
+                { "ambientales", "Sostenibilidad y control" },
+                { "calibracion", "Equipos certificados" },
+                { "anonos", "Reparación especializada" },
+                { "reparacion", "Servicio técnico" }
+            };
+
+            ViewBag.Titulo = titulos.ContainsKey(id) ? titulos[id] : "Producto";
+            ViewBag.Subtitulo = subtitulos.ContainsKey(id) ? subtitulos[id] : "";
 
             return View();
         }

@@ -1,0 +1,584 @@
+﻿@{
+    ViewBag.Title = ViewBag.Titulo;
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    var id = ViewBag.CategoriaId as string;
+    var titulo = ViewBag.Titulo as string;
+    var subtitulo = ViewBag.Subtitulo as string;
+}
+
+@section Styles {
+    <style>
+        .dp-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--blue);
+            text-decoration: none;
+            margin-bottom: 14px;
+        }
+
+            .dp-back:hover {
+                text-decoration: underline;
+            }
+
+        .dp-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .dp-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--blue);
+            margin: 6px 0 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .dp-sub {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.5;
+            max-width: 340px;
+            margin: 0 auto;
+        }
+
+        .dp-section {
+            margin-top: 22px;
+        }
+
+        .dp-section-title {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .dp-desc {
+            font-size: 13px;
+            color: var(--ink);
+            line-height: 1.6;
+            background: #f8f9fe;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--line);
+        }
+
+        .dp-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .prod-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            transition: transform .15s, box-shadow .2s;
+            position: relative;
+        }
+
+            .prod-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 24px -10px rgba(16,20,60,.25);
+            }
+
+            .prod-card .prod-img {
+                height: 110px;
+                background: linear-gradient(135deg, #eef0ff, #f8f9fe);
+                display: grid;
+                place-items: center;
+                font-size: 44px;
+                position: relative;
+            }
+
+            .prod-card .prod-badge {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: var(--orange);
+                color: #fff;
+                font-size: 9.5px;
+                font-weight: 800;
+                padding: 4px 8px;
+                border-radius: 8px;
+                letter-spacing: .04em;
+            }
+
+            .prod-card .prod-body {
+                padding: 10px 12px 12px;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                flex: 1;
+            }
+
+            .prod-card .prod-name {
+                font-size: 12px;
+                font-weight: 700;
+                color: var(--ink);
+                line-height: 1.3;
+                min-height: 32px;
+            }
+
+            .prod-card .prod-price {
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--orange);
+            }
+
+            .prod-card .prod-price-old {
+                font-size: 11px;
+                color: var(--muted);
+                text-decoration: line-through;
+                font-weight: 600;
+                margin-right: 4px;
+            }
+
+            .prod-card .prod-btn {
+                margin-top: auto;
+                background: var(--orange);
+                color: #fff;
+                border: 0;
+                font-family: inherit;
+                font-weight: 800;
+                font-size: 11px;
+                padding: 9px;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: transform .12s, box-shadow .2s;
+            }
+
+                .prod-card .prod-btn:hover {
+                    box-shadow: 0 6px 14px -4px rgba(255,105,45,.6);
+                }
+
+                .prod-card .prod-btn:active {
+                    transform: scale(.97);
+                }
+
+        .big-card {
+            background: linear-gradient(135deg, #1565C0, #1E23E6);
+            color: #fff;
+            border-radius: 20px;
+            padding: 22px 18px;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 12px 24px -8px rgba(30,35,230,.5);
+            transition: transform .15s;
+        }
+
+            .big-card:hover {
+                transform: translateY(-3px);
+                text-decoration: none;
+                color: #fff;
+            }
+
+            .big-card .bc-icon {
+                width: 64px;
+                height: 64px;
+                background: rgba(255,255,255,.15);
+                border-radius: 18px;
+                display: grid;
+                place-items: center;
+                font-size: 30px;
+                margin-bottom: 4px;
+            }
+
+            .big-card .bc-title {
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+            }
+
+            .big-card .bc-sub {
+                font-size: 13px;
+                font-style: italic;
+                opacity: .9;
+                margin-top: -4px;
+            }
+
+        .prop-info {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-top: 12px;
+        }
+
+            .prop-info h4 {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--blue);
+                margin: 0 0 8px;
+            }
+
+            .prop-info p {
+                font-size: 12.5px;
+                color: var(--ink);
+                line-height: 1.6;
+                margin: 4px 0;
+            }
+
+            .prop-info ul {
+                margin: 6px 0 0 18px;
+                padding: 0;
+                font-size: 12.5px;
+                color: var(--ink);
+                line-height: 1.7;
+            }
+
+        .dp-empty {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+            .dp-empty .emoji {
+                font-size: 48px;
+                margin-bottom: 12px;
+            }
+
+            .dp-empty .t {
+                font-weight: 800;
+                font-size: 15px;
+                color: var(--ink);
+                margin-bottom: 6px;
+            }
+
+            .dp-empty .s {
+                font-size: 13px;
+                color: var(--muted);
+                line-height: 1.5;
+            }
+    </style>
+}
+
+<div style="text-align:left;">
+    <a href="@Url.Action("Tienda", "Clientes")" class="dp-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg>
+        Volver a Productos y Servicios
+    </a>
+</div>
+
+<div class="dp-header">
+    <div class="dp-title">@titulo</div>
+    <div class="dp-sub">@subtitulo</div>
+</div>
+
+@if (id == "tienda")
+{
+    <div class="dp-desc">
+        Compra productos inteligentes para tu hogar con envío a domicilio en 48 horas.
+        Financiamiento disponible por medio de tu factura eléctrica a 3, 6, 9 y 12 meses.
+    </div>
+
+    <div class="dp-section">
+        <div class="dp-section-title">Productos destacados</div>
+        <div class="dp-grid">
+
+            <div class="prod-card">
+                <div class="prod-img">
+                    💡
+                    <span class="prod-badge">¡OFERTA!</span>
+                </div>
+                <div class="prod-body">
+                    <div class="prod-name">Bombillo Vintage Omnia CW Inteligente WiFi – 2Pack</div>
+                    <div class="prod-price"><span class="prod-price-old">₡18.450</span> ₡14.160</div>
+                    <button class="prod-btn" onclick="agregarAlCarrito('Bombillo Vintage Omnia', 14160)">Añadir al carrito</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🔌</div>
+                <div class="prod-body">
+                    <div class="prod-name">Apagador Inteligente WiFi/RF 3 Vías Omnia</div>
+                    <div class="prod-price">₡21.450</div>
+                    <button class="prod-btn" onclick="agregarAlCarrito('Apagador Inteligente WiFi/RF 3 Vías', 21450)">Añadir al carrito</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">❄️</div>
+                <div class="prod-body">
+                    <div class="prod-name">Aire Acondicionado Inverter 12.000 BTU</div>
+                    <div class="prod-price">₡289.000</div>
+                    <button class="prod-btn" onclick="agregarAlCarrito('Aire Acondicionado Inverter', 289000)">Añadir al carrito</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🔋</div>
+                <div class="prod-body">
+                    <div class="prod-name">Batería Residencial 5kWh</div>
+                    <div class="prod-price">₡145.000</div>
+                    <button class="prod-btn" onclick="agregarAlCarrito('Batería Residencial 5kWh', 145000)">Añadir al carrito</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+else if (id == "supresores")
+{
+    <div class="dp-desc">
+        Permiten el cumplimiento del Código Eléctrico Nacional, requisito para la instalación
+        de servicios nuevos monofásicos. Es la primera línea de defensa para tu vivienda,
+        brinda protección ante sobretensiones externas, como descargas atmosféricas.
+    </div>
+
+    <div class="dp-section">
+        <div class="dp-section-title">Supresores disponibles</div>
+        <div class="dp-grid">
+
+            <div class="prod-card">
+                <div class="prod-img">
+                    ⚡
+                    <span class="prod-badge">¡OFERTA!</span>
+                </div>
+                <div class="prod-body">
+                    <div class="prod-name">Supresor CITEL DS72</div>
+                    <div class="prod-price">₡61.200 <span style="font-size:10px; color:var(--muted); font-weight:600;">IVA incluido</span></div>
+                    <div style="font-size:10px; color:var(--green); font-weight:700;">🪙 Financiamiento disponible</div>
+                    <button class="prod-btn" onclick="verDetalles('Supresor CITEL DS72')">+ Información</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">
+                    ⚡
+                    <span class="prod-badge">¡OFERTA!</span>
+                </div>
+                <div class="prod-body">
+                    <div class="prod-name">Supresor CITEL M25</div>
+                    <div class="prod-price"><span class="prod-price-old">₡62.400</span> ₡57.000</div>
+                    <div style="font-size:10px; color:var(--green); font-weight:700;">🪙 Financiamiento disponible</div>
+                    <button class="prod-btn" onclick="verDetalles('Supresor CITEL M25')">+ Información</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">
+                    ⚡
+                    <span class="prod-badge">¡OFERTA!</span>
+                </div>
+                <div class="prod-body">
+                    <div class="prod-name">Supresor CITEL M50</div>
+                    <div class="prod-price"><span class="prod-price-old">₡96.120</span> ₡80.000</div>
+                    <div style="font-size:10px; color:var(--green); font-weight:700;">🪙 Financiamiento disponible</div>
+                    <button class="prod-btn" onclick="verDetalles('Supresor CITEL M50')">+ Información</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🛡️</div>
+                <div class="prod-body">
+                    <div class="prod-name">Supresor CITEL MJ8-C6A</div>
+                    <div class="prod-price">₡45.140 <span style="font-size:10px; color:var(--muted); font-weight:600;">IVA incluido</span></div>
+                    <div style="font-size:10px; color:var(--green); font-weight:700;">🪙 Financiamiento disponible</div>
+                    <button class="prod-btn" onclick="verDetalles('Supresor CITEL MJ8-C6A')">+ Información</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="prop-info">
+        <h4>💡 ¿Por qué elegir un Supresor Tipo 2?</h4>
+        <p>
+            Complementa la protección del Supresor Tipo 1, reforzando la seguridad total de su hogar.
+            Ideal para proteger electrodomésticos, equipos electrónicos y sistemas de automatización.
+            La combinación de ambos tipos brinda la máxima protección ante cualquier evento eléctrico.
+        </p>
+    </div>
+}
+else if (id == "cargadores")
+{
+    <div class="dp-desc">
+        Energía lista para cada jugada. Amplia gama de modelos, asesoría personalizada,
+        equipos certificados e instalación integral con obra electromecánica, pasarela
+        de pagos, mantenimiento y soporte de averías.
+    </div>
+
+    <div class="dp-section">
+        <div class="dp-section-title">Modelos disponibles</div>
+        <div class="dp-grid">
+
+            <div class="prod-card">
+                <div class="prod-img">🔌</div>
+                <div class="prod-body">
+                    <div class="prod-name">Teison Smart Mini</div>
+                    <button class="prod-btn" style="background:var(--blue);" onclick="verDetalles('Teison Smart Mini')">Ver detalles</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🔌</div>
+                <div class="prod-body">
+                    <div class="prod-name">Wallbox Pulsar Plus</div>
+                    <button class="prod-btn" style="background:var(--blue);" onclick="verDetalles('Wallbox Pulsar Plus')">Ver detalles</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🔌</div>
+                <div class="prod-body">
+                    <div class="prod-name">Schneider EVlink Smart Wallbox</div>
+                    <button class="prod-btn" style="background:var(--blue);" onclick="verDetalles('Schneider EVlink Smart Wallbox')">Ver detalles</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🔌</div>
+                <div class="prod-body">
+                    <div class="prod-name">Siemens VersiCharge</div>
+                    <button class="prod-btn" style="background:var(--blue);" onclick="verDetalles('Siemens VersiCharge')">Ver detalles</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="prop-info">
+        <h4>📋 Servicios incluidos</h4>
+        <ul>
+            <li>Amplia gama de modelos</li>
+            <li>Asesoría personalizada</li>
+            <li>Equipos certificados</li>
+            <li>Instalación integral con obra electromecánica</li>
+            <li>Pasarela de pagos</li>
+            <li>Mantenimiento y soporte de averías</li>
+        </ul>
+    </div>
+}
+else if (id == "bienes")
+{
+    <div class="dp-desc">
+        Conozca las oportunidades de venta y alquiler de bienes inmuebles que la CNFL
+        pone a su disposición. Seleccione la opción de su interés y consulte la información disponible.
+    </div>
+
+    <div class="dp-section">
+        <div class="dp-grid">
+
+            <a href="javascript:void(0)" class="big-card" onclick="mostrarVenta()">
+                <div class="bc-icon">📍</div>
+                <div class="bc-title">Venta</div>
+                <div class="bc-sub">de propiedades</div>
+            </a>
+
+            <a href="javascript:void(0)" class="big-card" onclick="mostrarAlquiler()">
+                <div class="bc-icon">🏢</div>
+                <div class="bc-title">Alquiler</div>
+                <div class="bc-sub">de edificios</div>
+            </a>
+
+        </div>
+    </div>
+
+    <div id="seccionVenta" style="display:none; margin-top:20px;">
+        <div class="dp-section-title">Seleccione el inmueble de su interés</div>
+        <div class="dp-grid">
+
+            <div class="prod-card">
+                <div class="prod-img">🌳</div>
+                <div class="prod-body">
+                    <div class="prod-name">Propiedad 1: Terreno en Arenal, Tilarán, Guanacaste</div>
+                    <button class="prod-btn" style="background:var(--blue);" onclick="verPropiedad(1)">Ver más detalles</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🌳</div>
+                <div class="prod-body">
+                    <div class="prod-name">Propiedad 2: Terreno en Arenal, Tilarán, Guanacaste</div>
+                    <button class="prod-btn" style="background:var(--blue);" onclick="verPropiedad(2)">Ver más detalles</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🌾</div>
+                <div class="prod-body">
+                    <div class="prod-name">Propiedad 3: Terreno en Balsa, Los Ángeles, San Ramón, Alajuela</div>
+                    <button class="prod-btn" style="background:var(--blue);" onclick="verPropiedad(3)">Ver más detalles</button>
+                </div>
+            </div>
+
+            <div class="prod-card">
+                <div class="prod-img">🌱</div>
+                <div class="prod-body">
+                    <div class="prod-name">Propiedad 4: Dulce Nombre, San Rafael de La Unión, Cartago</div>
+                    <button class="prod-btn" style="background:var(--blue);" onclick="verPropiedad(4)">Ver más detalles</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="seccionAlquiler" style="display:none; margin-top:20px;">
+        <div class="dp-section-title">Oferta Comercial</div>
+
+        <div class="prop-info">
+            <h4>🏢 Edificio de 3 niveles</h4>
+            <p><strong>📍 Ubicación:</strong> San José Centro. 25 metros sur de Edificio RACSA, calle 1, avenidas 3 y 5.</p>
+            <p><strong>📐 Área construida:</strong> 1.423,56 m²</p>
+
+            <h4 style="margin-top:14px;">Oferta económica</h4>
+            <ul>
+                <li>Costo por metro cuadrado: <strong>$8,50</strong></li>
+                <li>Monto mensual sin IVA: <strong>$12.100,25</strong></li>
+                <li>Monto mensual con IVA incluido: <strong>$13.673,00</strong></li>
+            </ul>
+        </div>
+    </div>
+}
+else
+{
+    <div class="dp-empty">
+        <div class="emoji">🚧</div>
+        <div class="t">Próximamente</div>
+        <div class="s">
+            Estamos trabajando en el contenido de esta categoría.<br />
+            Muy pronto vas a poder ver todos los productos y servicios disponibles.
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function agregarAlCarrito(nombre, precio) {
+            alert('Producto agregado: ' + nombre + ' - Precio: ' + precio);
+        }
+        function verDetalles(nombre) {
+            alert('Abriendo detalles de: ' + nombre);
+        }
+        function verPropiedad(id) {
+            alert('Abriendo detalles de la Propiedad ' + id);
+        }
+        function mostrarVenta() {
+            document.getElementById('seccionVenta').style.display = 'block';
+            document.getElementById('seccionAlquiler').style.display = 'none';
+            document.getElementById('seccionVenta').scrollIntoView({ behavior: 'smooth' });
+        }
+        function mostrarAlquiler() {
+            document.getElementById('seccionAlquiler').style.display = 'block';
+            document.getElementById('seccionVenta').style.display = 'none';
+            document.getElementById('seccionAlquiler').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+}

@@ -7,18 +7,17 @@
 // ------------------------------------------------------------
 const CNFL_I18N = {
     es: {
-        // Header / Tabbar
         "nav.home": "Inicio",
         "nav.bills": "Facturas",
         "nav.reports": "Reportes",
         "nav.shop": "Tienda",
+        "nav.products": "Productos y Servicios",
         "nav.profile": "Perfil",
         "nav.dashboard": "Dashboard",
         "nav.clients": "Clientes",
         "nav.faults": "Averías",
         "nav.logout": "Salir",
 
-        // Menú de ajustes
         "settings.title": "Ajustes",
         "settings.language": "Idioma",
         "settings.account": "Cuenta",
@@ -28,7 +27,6 @@ const CNFL_I18N = {
         "settings.logout": "Cerrar sesión",
         "settings.logoutConfirm": "¿Seguro que quieres cerrar sesión?",
 
-        // Dashboard
         "dashboard.welcome": "Bienvenido,",
         "dashboard.subtitle": "Gestiona tu servicio eléctrico desde tu celular.",
         "dashboard.bills": "Facturas",
@@ -43,7 +41,6 @@ const CNFL_I18N = {
         "dashboard.due": "Vence:",
         "dashboard.payNow": "Pagar ahora",
 
-        // Mis Facturas
         "bills.title": "Mis Facturas",
         "bills.nise": "NISE",
         "bills.due": "Vence:",
@@ -52,7 +49,6 @@ const CNFL_I18N = {
         "bills.pay": "Pagar",
         "bills.pending": "Pendiente",
 
-        // Reportes
         "reports.title": "Reportes",
         "reports.faultTitle": "Reportar avería eléctrica",
         "reports.faultDesc": "Problemas con tu servicio",
@@ -61,7 +57,6 @@ const CNFL_I18N = {
         "reports.historyTitle": "Historial de reportes",
         "reports.historyDesc": "Seguimiento de tus reportes",
 
-        // Reportar Avería
         "fault.title": "Reportar Avería",
         "fault.subtitle": "Complete el formulario para reportar una avería.",
         "fault.nise": "NISE afectado",
@@ -73,7 +68,6 @@ const CNFL_I18N = {
         "fault.selectNise": "Seleccione un NISE",
         "fault.selectType": "Seleccione un tipo",
 
-        // Reportar Alumbrado
         "lighting.title": "Reportar Alumbrado Público",
         "lighting.subtitle": "Complete el formulario para reportar problemas de alumbrado en su comunidad.",
         "lighting.type": "Tipo de falla",
@@ -83,16 +77,13 @@ const CNFL_I18N = {
         "lighting.submit": "Enviar Reporte",
         "lighting.selectType": "Seleccione un tipo",
 
-        // Tienda
-        "shop.title": "Tienda CNFL",
+        "shop.title": "Productos y Servicios",
         "shop.add": "Agregar",
         "shop.products": "Productos",
 
-        // Notificaciones
         "notif.title": "Notificaciones",
         "notif.new": "Nueva",
 
-        // Perfil
         "profile.title": "Mi Perfil",
         "profile.name": "Nombre",
         "profile.id": "Cédula",
@@ -101,7 +92,6 @@ const CNFL_I18N = {
         "profile.registeredOn": "Fecha Registro",
         "profile.edit": "Editar Perfil",
 
-        // Editar
         "edit.title": "Editar Perfil",
         "edit.name": "Nombre",
         "edit.lastname": "Apellidos",
@@ -110,7 +100,6 @@ const CNFL_I18N = {
         "edit.save": "Guardar Cambios",
         "edit.cancel": "Cancelar",
 
-        // Pagos
         "pay.title": "Mis Pagos",
         "pay.subtitle": "Seleccione su método de pago",
         "pay.methodCard": "Tarjeta",
@@ -126,14 +115,13 @@ const CNFL_I18N = {
         "pay.paid": "Pagada",
         "pay.pending": "Pendiente",
 
-        // Historial
         "history.title": "Historial de Compras",
         "history.subtitle": "Productos y servicios adquiridos.",
         "history.receipt": "Ver recibo",
         "history.completed": "Completado"
     },
     en: {
-        "nav.home": "Home", "nav.bills": "Bills", "nav.reports": "Reports", "nav.shop": "Shop", "nav.profile": "Profile",
+        "nav.home": "Home", "nav.bills": "Bills", "nav.reports": "Reports", "nav.shop": "Shop", "nav.products": "Products & Services", "nav.profile": "Profile",
         "nav.dashboard": "Dashboard", "nav.clients": "Clients", "nav.faults": "Faults", "nav.logout": "Log out",
         "settings.title": "Settings", "settings.language": "Language", "settings.account": "Account",
         "settings.myProfile": "My Profile", "settings.myNotifications": "My Notifications", "settings.help": "Help",
@@ -156,7 +144,7 @@ const CNFL_I18N = {
         "lighting.title": "Report Street Lighting", "lighting.subtitle": "Fill the form to report lighting issues in your community.",
         "lighting.type": "Issue type", "lighting.description": "Description", "lighting.address": "Address",
         "lighting.photo": "Attach photo (optional)", "lighting.submit": "Submit Report", "lighting.selectType": "Select a type",
-        "shop.title": "CNFL Store", "shop.add": "Add", "shop.products": "Products",
+        "shop.title": "Products & Services", "shop.add": "Add", "shop.products": "Products",
         "notif.title": "Notifications", "notif.new": "New",
         "profile.title": "My Profile", "profile.name": "Name", "profile.id": "ID", "profile.email": "Email",
         "profile.phone": "Phone", "profile.registeredOn": "Registered", "profile.edit": "Edit Profile",
@@ -170,7 +158,7 @@ const CNFL_I18N = {
         "history.receipt": "View receipt", "history.completed": "Completed"
     },
     pt: {
-        "nav.home": "Início", "nav.bills": "Faturas", "nav.reports": "Relatos", "nav.shop": "Loja", "nav.profile": "Perfil",
+        "nav.home": "Início", "nav.bills": "Faturas", "nav.reports": "Relatos", "nav.shop": "Loja", "nav.products": "Produtos e Serviços", "nav.profile": "Perfil",
         "nav.dashboard": "Painel", "nav.clients": "Clientes", "nav.faults": "Falhas", "nav.logout": "Sair",
         "settings.title": "Configurações", "settings.language": "Idioma", "settings.account": "Conta",
         "settings.myProfile": "Meu Perfil", "settings.myNotifications": "Minhas Notificações", "settings.help": "Ajuda",
@@ -193,7 +181,7 @@ const CNFL_I18N = {
         "lighting.title": "Reportar Iluminação Pública", "lighting.subtitle": "Preencha o formulário para reportar problemas de iluminação.",
         "lighting.type": "Tipo de problema", "lighting.description": "Descrição", "lighting.address": "Endereço",
         "lighting.photo": "Anexar foto (opcional)", "lighting.submit": "Enviar Relato", "lighting.selectType": "Selecione um tipo",
-        "shop.title": "Loja CNFL", "shop.add": "Adicionar", "shop.products": "Produtos",
+        "shop.title": "Produtos e Serviços", "shop.add": "Adicionar", "shop.products": "Produtos",
         "notif.title": "Notificações", "notif.new": "Nova",
         "profile.title": "Meu Perfil", "profile.name": "Nome", "profile.id": "Documento", "profile.email": "E-mail",
         "profile.phone": "Telefone", "profile.registeredOn": "Registro", "profile.edit": "Editar Perfil",
@@ -207,7 +195,7 @@ const CNFL_I18N = {
         "history.receipt": "Ver recibo", "history.completed": "Concluído"
     },
     fr: {
-        "nav.home": "Accueil", "nav.bills": "Factures", "nav.reports": "Signalements", "nav.shop": "Boutique", "nav.profile": "Profil",
+        "nav.home": "Accueil", "nav.bills": "Factures", "nav.reports": "Signalements", "nav.shop": "Boutique", "nav.products": "Produits et Services", "nav.profile": "Profil",
         "nav.dashboard": "Tableau", "nav.clients": "Clients", "nav.faults": "Pannes", "nav.logout": "Quitter",
         "settings.title": "Paramètres", "settings.language": "Langue", "settings.account": "Compte",
         "settings.myProfile": "Mon Profil", "settings.myNotifications": "Mes Notifications", "settings.help": "Aide",
@@ -230,7 +218,7 @@ const CNFL_I18N = {
         "lighting.title": "Signaler l'Éclairage Public", "lighting.subtitle": "Remplissez le formulaire pour signaler des problèmes d'éclairage.",
         "lighting.type": "Type de problème", "lighting.description": "Description", "lighting.address": "Adresse",
         "lighting.photo": "Joindre une photo (facultatif)", "lighting.submit": "Envoyer", "lighting.selectType": "Sélectionnez un type",
-        "shop.title": "Boutique CNFL", "shop.add": "Ajouter", "shop.products": "Produits",
+        "shop.title": "Produits et Services", "shop.add": "Ajouter", "shop.products": "Produits",
         "notif.title": "Notifications", "notif.new": "Nouveau",
         "profile.title": "Mon Profil", "profile.name": "Nom", "profile.id": "Pièce d'identité", "profile.email": "E-mail",
         "profile.phone": "Téléphone", "profile.registeredOn": "Inscription", "profile.edit": "Modifier le Profil",
@@ -244,7 +232,7 @@ const CNFL_I18N = {
         "history.receipt": "Voir le reçu", "history.completed": "Terminé"
     },
     zh: {
-        "nav.home": "首页", "nav.bills": "账单", "nav.reports": "报告", "nav.shop": "商店", "nav.profile": "我的",
+        "nav.home": "首页", "nav.bills": "账单", "nav.reports": "报告", "nav.shop": "商店", "nav.products": "产品和服务", "nav.profile": "我的",
         "nav.dashboard": "仪表板", "nav.clients": "客户", "nav.faults": "故障", "nav.logout": "退出",
         "settings.title": "设置", "settings.language": "语言", "settings.account": "账户",
         "settings.myProfile": "我的资料", "settings.myNotifications": "我的通知", "settings.help": "帮助",
@@ -267,7 +255,7 @@ const CNFL_I18N = {
         "lighting.title": "报告路灯故障", "lighting.subtitle": "填写表格报告您社区的路灯问题。",
         "lighting.type": "问题类型", "lighting.description": "描述", "lighting.address": "地址",
         "lighting.photo": "附加照片（可选）", "lighting.submit": "提交", "lighting.selectType": "选择类型",
-        "shop.title": "CNFL商店", "shop.add": "添加", "shop.products": "产品",
+        "shop.title": "产品和服务", "shop.add": "添加", "shop.products": "产品",
         "notif.title": "通知", "notif.new": "新",
         "profile.title": "我的资料", "profile.name": "姓名", "profile.id": "身份证", "profile.email": "邮箱",
         "profile.phone": "电话", "profile.registeredOn": "注册日期", "profile.edit": "编辑资料",
@@ -313,32 +301,28 @@ function cnflT(key) {
 function cnflApplyLang(lang) {
     const dict = CNFL_I18N[lang] || CNFL_I18N.es;
 
-    // Texto: <span data-i18n="nav.home">Inicio</span>
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.textContent = dict[key];
     });
 
-    // Placeholder: <input data-i18n-placeholder="...">
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
         const key = el.getAttribute('data-i18n-placeholder');
         if (dict[key]) el.setAttribute('placeholder', dict[key]);
     });
 
-    // Value para botones submit: <input type="submit" data-i18n-value="...">
     document.querySelectorAll('[data-i18n-value]').forEach(function (el) {
         const key = el.getAttribute('data-i18n-value');
         if (dict[key]) el.value = dict[key];
     });
 
-    // Marcar el idioma activo en el menú
     document.querySelectorAll('.cnfl-lang-chip').forEach(function (chip) {
         chip.classList.toggle('active', chip.dataset.lang === lang);
     });
 }
 
 // ------------------------------------------------------------
-// 3. MENÚ DE AJUSTES (dropdown desde el engranaje)
+// 3. MENÚ DE AJUSTES
 // ------------------------------------------------------------
 function cnflOpenSettings() {
     const menu = document.getElementById('cnflSettingsMenu');
@@ -366,13 +350,11 @@ function cnflToggleSettings(e) {
 
 function cnflLogout() {
     if (confirm(cnflT('settings.logoutConfirm'))) {
-        // El href real lo pone el layout con @Url.Action("CerrarSesion","Cuenta")
         window.location.href = window.CNFL_LOGOUT_URL || '/Cuenta/CerrarSesion';
     }
 }
 
 function cnflInitSettings() {
-    // Construir los chips de idioma
     const langContainer = document.getElementById('cnflLangGrid');
     if (langContainer && !langContainer.dataset.built) {
         const currentLang = cnflGetLang();
@@ -390,11 +372,9 @@ function cnflInitSettings() {
         langContainer.dataset.built = '1';
     }
 
-    // Click en overlay cierra el menú
     const overlay = document.getElementById('cnflSettingsOverlay');
     if (overlay) overlay.addEventListener('click', cnflCloseSettings);
 
-    // Escape cierra el menú
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') cnflCloseSettings();
     });
@@ -406,7 +386,6 @@ function cnflInitSettings() {
 document.addEventListener('DOMContentLoaded', function () {
     console.log('CNFL App cargada');
 
-    // Reloj
     function actualizarReloj() {
         var ahora = new Date();
         var horas = String(ahora.getHours()).padStart(2, '0');
@@ -417,13 +396,9 @@ document.addEventListener('DOMContentLoaded', function () {
     actualizarReloj();
     setInterval(actualizarReloj, 10000);
 
-    // Aplicar idioma guardado (o español por defecto)
     cnflSetLang(cnflGetLang());
-
-    // Construir menú de ajustes
     cnflInitSettings();
 
-    // Cerrar alertas
     document.querySelectorAll('.cerrar-alerta').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var alerta = this.closest('.alerta');
@@ -431,7 +406,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Toast global
     window.mostrarToast = function (mensaje, tipo) {
         tipo = tipo || 'info';
         var toast = document.getElementById('toastGlobal');
@@ -449,7 +423,6 @@ document.addEventListener('DOMContentLoaded', function () {
         toast._timeout = setTimeout(function () { toast.style.opacity = '0'; }, 3000);
     };
 
-    // Badge de notificaciones
     window.actualizarBadge = function (cantidad) {
         document.querySelectorAll('.badge').forEach(function (badge) {
             if (cantidad > 0) {
@@ -462,7 +435,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 });
 
-// Exponer helpers globales
 window.cnflT = cnflT;
 window.cnflSetLang = cnflSetLang;
 window.cnflGetLang = cnflGetLang;

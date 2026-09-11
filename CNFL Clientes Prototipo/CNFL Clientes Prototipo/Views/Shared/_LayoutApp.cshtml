@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -13,10 +13,8 @@
 <body>
 
     <div class="app-container">
-        <!-- NOTCH -->
         <div class="app-notch"></div>
 
-        <!-- STATUSBAR -->
         <div class="app-statusbar">
             <span id="clock">9:41</span>
             <span class="r">
@@ -26,7 +24,6 @@
             </span>
         </div>
 
-        <!-- HEADER -->
         @{
             var estaLogueado = Session["UsuarioId"] != null;
             var nombreUsuario = Session["Nombre"] as string ?? "";
@@ -63,7 +60,6 @@
             </div>
         </header>
 
-        <!-- OVERLAY + MENÚ DE AJUSTES -->
         @if (estaLogueado)
         {
             <div class="cnfl-settings-overlay" id="cnflSettingsOverlay"></div>
@@ -77,9 +73,7 @@
                 </div>
 
                 <div class="cnfl-settings-section-label" data-i18n="settings.language">Idioma</div>
-                <div class="cnfl-lang-grid" id="cnflLangGrid">
-                    <!-- Los chips se generan por JS -->
-                </div>
+                <div class="cnfl-lang-grid" id="cnflLangGrid"></div>
 
                 <div class="cnfl-settings-sep"></div>
 
@@ -101,12 +95,10 @@
             </div>
         }
 
-        <!-- CONTENIDO -->
         <main class="app-content" role="main">
             @RenderBody()
         </main>
 
-        <!-- TAB BAR -->
         @{
             var rol = Session["Rol"] as string ?? "";
             var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
@@ -165,11 +157,11 @@
                         </span>
                         <span class="tab-label" data-i18n="nav.reports">Reportes</span>
                     </a>
-                    <a href="@Url.Action("Tienda", "Clientes")" class="tab-item @(controller == "Clientes" && action == "Tienda" ? "active" : "")">
+                    <a href="@Url.Action("Tienda", "Clientes")" class="tab-item @(controller == "Clientes" && (action == "Tienda" || action == "DetalleProducto") ? "active" : "")">
                         <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
                         </span>
-                        <span class="tab-label" data-i18n="nav.shop">Tienda</span>
+                        <span class="tab-label" data-i18n="nav.products">Productos y Servicios</span>
                     </a>
                     <a href="@Url.Action("MiPerfil", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MiPerfil" ? "active" : "")">
                         <span class="tab-icon">
@@ -200,10 +192,8 @@
     </div>
 
     <script>
-        // URL de logout que se inyecta desde Razor
         window.CNFL_LOGOUT_URL = '@Url.Action("CerrarSesion", "Cuenta")';
 
-        // Reloj (por si app.js no carga aún)
         setInterval(function () {
             var d = new Date();
             var h = String(d.getHours()).padStart(2, '0');
