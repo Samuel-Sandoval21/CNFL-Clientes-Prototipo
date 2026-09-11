@@ -32,24 +32,20 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuario == null)
                 return HttpNotFound();
 
-            // NISEs del usuario
             var nises = _db.NISEs
                 .Where(n => n.UsuarioId == usuarioId)
                 .ToList();
 
-            // Facturas del usuario (a través de sus NISEs)
             var niseIds = nises.Select(n => n.NiseId).ToList();
             var facturas = _db.Facturas
                 .Where(f => niseIds.Contains(f.NiseId))
                 .OrderByDescending(f => f.FechaEmision)
                 .ToList();
 
-            // Suscripciones activas
             var suscripciones = _db.Suscripciones
                 .Where(s => s.UsuarioId == usuarioId && s.Activa)
                 .ToList();
 
-            // Últimos 5 pagos
             var pagos = _db.Pagos
                 .Include("Factura")
                 .Where(p => p.UsuarioId == usuarioId)
@@ -57,7 +53,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .Take(5)
                 .ToList();
 
-            // Averías activas
             var averiasActivas = _db.Averias
                 .Include("NISE")
                 .Where(a => a.UsuarioId == usuarioId
@@ -66,7 +61,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .OrderByDescending(a => a.FechaReporte)
                 .ToList();
 
-            // KPIs
             ViewBag.TotalNISEs = nises.Count;
             ViewBag.TotalFacturasPendientes = facturas.Count(f => !f.Pagada);
             ViewBag.MontoPendiente = facturas.Where(f => !f.Pagada).Sum(f => (decimal?)f.Monto) ?? 0m;
@@ -75,7 +69,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             ViewBag.NotificacionesNoLeidas = _db.Notificaciones
                 .Count(n => n.UsuarioId == usuarioId && !n.Leida);
 
-            // Listas
             ViewBag.NISEs = nises;
             ViewBag.UltimasFacturas = facturas.Take(3).ToList();
             ViewBag.Suscripciones = suscripciones;
@@ -154,8 +147,16 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuario == null)
                 return HttpNotFound();
 
-            var nisesIds = _db.NISEs.Where(n => n.UsuarioId == usuarioId).Select(n => n.NiseId).ToList();
-            var facturas = _db.Facturas.Where(f => nisesIds.Contains(f.NiseId)).OrderByDescending(f => f.FechaEmision).ToList();
+            var nisesIds = _db.NISEs
+                .Where(n => n.UsuarioId == usuarioId)
+                .Select(n => n.NiseId)
+                .ToList();
+
+            var facturas = _db.Facturas
+                .Include("NISE")
+                .Where(f => nisesIds.Contains(f.NiseId))
+                .OrderByDescending(f => f.FechaEmision)
+                .ToList();
 
             return View(facturas);
         }
@@ -167,8 +168,16 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            var nisesIds = _db.NISEs.Where(n => n.UsuarioId == usuarioId).Select(n => n.NiseId).ToList();
-            var facturas = _db.Facturas.Where(f => nisesIds.Contains(f.NiseId)).OrderByDescending(f => f.FechaEmision).ToList();
+            var nisesIds = _db.NISEs
+                .Where(n => n.UsuarioId == usuarioId)
+                .Select(n => n.NiseId)
+                .ToList();
+
+            var facturas = _db.Facturas
+                .Include("NISE")
+                .Where(f => nisesIds.Contains(f.NiseId))
+                .OrderByDescending(f => f.FechaEmision)
+                .ToList();
 
             return View(facturas);
         }
@@ -351,7 +360,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         // ============================================================
 
         // GET: Clientes/TiposReportes
-        // Vista intermedia que muestra los tipos de avería disponibles
         public ActionResult TiposReportes()
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -362,7 +370,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // GET: Clientes/TiposReportesDetalle?tipo=Poste caído
-        // Vista de confirmación con formulario prellenado
         public ActionResult TiposReportesDetalle(string tipo)
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -374,7 +381,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // GET: Clientes/ReportarAveria
-        // Acepta ?tipo=X para prellenar el tipo de avería
         public ActionResult ReportarAveria(string tipo)
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -467,6 +473,38 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
+        // GET: Clientes/MapaAveriasData
+        // Endpoint JSON que devuelve las averías con coordenadas válidas
+        [HttpGet]
+        public JsonResult MapaAveriasData()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return Json(new { success = false, message = "No autenticado." }, JsonRequestBehavior.AllowGet);
+
+            var averias = _db.Averias
+                .Include("NISE")
+                .Where(a => a.Latitud != null && a.Longitud != null)
+                .OrderByDescending(a => a.FechaReporte)
+                .Take(50)
+                .ToList();
+
+            var data = averias.Select(a => new ReporteMapa
+            {
+                AveriaId = a.AveriaId,
+                Titulo = "Avería #" + a.AveriaId,
+                Tipo = a.Tipo ?? "Sin tipo",
+                Estado = a.Estado ?? "Ingresado",
+                Direccion = a.Direccion ?? "Sin dirección",
+                NiseNumero = a.NISE != null ? a.NISE.NumeroNise : "N/A",
+                Latitud = a.Latitud ?? 0,
+                Longitud = a.Longitud ?? 0,
+                FechaReporte = a.FechaReporte
+            }).ToList();
+
+            return Json(new { success = true, data = data }, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Clientes/HistorialReportes
         public ActionResult HistorialReportes()
         {
@@ -506,14 +544,12 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            // Validación mínima
             if (string.IsNullOrWhiteSpace(Direccion) || string.IsNullOrWhiteSpace(TipoProblema))
             {
                 ViewBag.Error = "Debe completar la dirección y el tipo de problema.";
                 return View();
             }
 
-            // Registrar como avería tipo "Iluminación pública"
             var averia = new Averia
             {
                 UsuarioId = usuarioId.Value,

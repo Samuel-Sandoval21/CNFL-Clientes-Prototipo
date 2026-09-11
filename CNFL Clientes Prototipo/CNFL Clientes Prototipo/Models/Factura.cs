@@ -16,6 +16,6 @@ namespace CNFL_Clientes_Prototipo.Models
 
         // Propiedades de navegación
         public virtual NISE NISE { get; set; }
-        public virtual ICollection<Pago> Pagos { get; set; }   // 👈 ESTA LÍNEA FALTA
+        public virtual ICollection<Pago> Pagos { get; set; }
     }
 }

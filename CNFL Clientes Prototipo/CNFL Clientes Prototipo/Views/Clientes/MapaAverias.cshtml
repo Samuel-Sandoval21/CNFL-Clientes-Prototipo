@@ -4,6 +4,13 @@
 }
 
 @section Styles {
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet Locate Control CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" />
+    <!-- Leaflet Geocoder (búsqueda) CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" />
+
     <style>
         .ma-back {
             display: inline-flex;
@@ -35,70 +42,85 @@
             line-height: 1.5;
         }
 
-        .ma-map {
-            height: 320px;
+        #mapa-real {
+            height: 420px;
             border-radius: 20px;
             overflow: hidden;
-            position: relative;
-            background: linear-gradient(135deg, #e7f0e9, #dfeaf0);
             border: 1px solid var(--line);
             margin-top: 16px;
+            box-shadow: var(--shadow-sm);
+            z-index: 1;
         }
 
-            .ma-map .road {
-                position: absolute;
-                background: #fff;
-            }
-
-                .ma-map .road.h {
-                    height: 6px;
-                    left: 0;
-                    right: 0;
-                }
-
-                .ma-map .road.v {
-                    width: 6px;
-                    top: 0;
-                    bottom: 0;
-                }
-
-        .pin {
-            position: absolute;
-            transform: translate(-50%, -100%);
-            cursor: pointer;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,.25));
-            transition: transform .15s;
+        /* Pines personalizados */
+        .pin-custom {
+            width: 32px;
+            height: 32px;
+            border-radius: 50% 50% 50% 2px;
+            transform: rotate(45deg);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,.25);
         }
 
-            .pin:hover {
-                transform: translate(-50%, -100%) scale(1.15);
+            .pin-custom span {
+                transform: rotate(-45deg);
+                font-size: 15px;
             }
 
-            .pin .p {
-                width: 32px;
-                height: 32px;
-                border-radius: 50% 50% 50% 2px;
-                transform: rotate(45deg);
-                display: grid;
-                place-items: center;
+        .pin-rojo .pin-custom {
+            background: #e74c3c;
+        }
+
+        .pin-ambar .pin-custom {
+            background: #f0a020;
+        }
+
+        .pin-verde .pin-custom {
+            background: #2f8f3e;
+        }
+
+        /* Popup de Leaflet */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,.2);
+        }
+
+        .leaflet-popup-content {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: var(--ink);
+            margin: 10px 14px;
+            line-height: 1.5;
+        }
+
+            .leaflet-popup-content b {
+                color: var(--blue);
             }
 
-                .pin .p span {
-                    transform: rotate(-45deg);
-                    font-size: 15px;
-                }
-
-            .pin.rojo .p {
-                background: #e74c3c;
+            .leaflet-popup-content .estado-badge {
+                display: inline-block;
+                font-size: 10.5px;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 999px;
+                margin-top: 4px;
             }
 
-            .pin.ambar .p {
-                background: #f0a020;
-            }
+        .estado-en-revision {
+            background: #fdecea;
+            color: #d33;
+        }
 
-            .pin.verde .p {
-                background: #2f8f3e;
-            }
+        .estado-en-camino {
+            background: #fef3e0;
+            color: #b9791a;
+        }
+
+        .estado-resuelto {
+            background: #e9f7ec;
+            color: #2f8f3e;
+        }
 
         .ma-legend {
             display: flex;
@@ -139,27 +161,17 @@
                     background: #2f8f3e;
                 }
 
-        .ma-info {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 14px 16px;
-            margin-top: 14px;
-            box-shadow: var(--shadow-sm);
-            display: none;
+        /* Contador de pines */
+        .ma-count {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 10px;
+            text-align: center;
         }
 
-            .ma-info .t {
-                font-size: 13px;
+            .ma-count b {
+                color: var(--blue);
                 font-weight: 800;
-                color: var(--ink);
-                margin-bottom: 4px;
-            }
-
-            .ma-info .s {
-                font-size: 12.5px;
-                color: var(--muted);
-                line-height: 1.5;
             }
     </style>
 }
@@ -170,30 +182,10 @@
         Volver a Reportes
     </a>
     <h1>Mapa de averías</h1>
-    <div class="ma-sub">Tocá un pin para ver el detalle de la avería reportada.</div>
+    <div class="ma-sub">Reportes en tiempo real sobre la red eléctrica.</div>
 </div>
 
-<div class="ma-map" id="mapa">
-    <!-- Calles simuladas -->
-    <div class="road h" style="top:30%"></div>
-    <div class="road h" style="top:65%"></div>
-    <div class="road v" style="left:25%"></div>
-    <div class="road v" style="left:70%"></div>
-
-    <!-- Pines -->
-    <div class="pin rojo" style="top:32%; left:26%;" onclick="verPin('Avería #10234','Poste caído — En revisión','San José Centro')">
-        <div class="p"><span>⚡</span></div>
-    </div>
-    <div class="pin ambar" style="top:67%; left:71%;" onclick="verPin('Avería #10235','Transformador dañado — Operador en camino','Alajuela')">
-        <div class="p"><span>🔌</span></div>
-    </div>
-    <div class="pin verde" style="top:50%; left:50%;" onclick="verPin('Avería #10236','Problema resuelto','Cartago')">
-        <div class="p"><span>✅</span></div>
-    </div>
-    <div class="pin rojo" style="top:80%; left:30%;" onclick="verPin('Avería #10237','Cable cortado — En revisión','Heredia')">
-        <div class="p"><span>⚡</span></div>
-    </div>
-</div>
+<div id="mapa-real"></div>
 
 <div class="ma-legend">
     <div class="lg"><span class="dot rojo"></span> En revisión</div>
@@ -201,18 +193,152 @@
     <div class="lg"><span class="dot verde"></span> Resuelto</div>
 </div>
 
-<div class="ma-info" id="infoPin">
-    <div class="t" id="infoTitulo"></div>
-    <div class="s" id="infoSub"></div>
+<div class="ma-count" id="contador">
+    Cargando averías...
 </div>
 
 @section Scripts {
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet Locate (geolocalización) -->
+    <script src="https://unpkg.com/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
+    <!-- Leaflet Geocoder (búsqueda de direcciones) -->
+    <script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
+
     <script>
-        function verPin(titulo, estado, zona) {
-            var box = document.getElementById('infoPin');
-            document.getElementById('infoTitulo').innerText = titulo + ' — ' + zona;
-            document.getElementById('infoSub').innerText = estado;
-            box.style.display = 'block';
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // ============================================================
+            // 1. INICIALIZAR EL MAPA (centrado en San José, Costa Rica)
+            // ============================================================
+            var map = L.map('mapa-real', {
+                zoomControl: true,
+                scrollWheelZoom: true
+            }).setView([9.9333, -84.0833], 11);
+
+            // ============================================================
+            // 2. CAPA DE TILES — OpenStreetMap (callejero)
+            // ============================================================
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Capa satelital alternativa (descomentá si preferís)
+            /*
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri'
+            }).addTo(map);
+            */
+
+            // ============================================================
+            // 3. BOTÓN DE GEOLOCALIZACIÓN
+            // ============================================================
+            L.control.locate({
+                position: 'topright',
+                strings: { title: 'Mi ubicación' },
+                locateOptions: {
+                    enableHighAccuracy: true,
+                    maxZoom: 16
+                },
+                flyTo: true,
+                showPopup: false,
+                markerStyle: {
+                    radius: 8,
+                    color: '#2a4fd6',
+                    fillColor: '#4a7cff',
+                    fillOpacity: 0.5
+                }
+            }).addTo(map);
+
+            // ============================================================
+            // 4. BUSCADOR DE DIRECCIONES
+            // ============================================================
+            L.Control.geocoder({
+                defaultMarkGeocode: false,
+                position: 'topright',
+                placeholder: 'Buscar dirección...',
+                errorMessage: 'No se encontró la dirección.'
+            })
+            .on('markgeocode', function (e) {
+                var center = e.geocode.center;
+                map.setView(center, 15);
+                L.marker(center).addTo(map)
+                    .bindPopup('<b>' + e.geocode.name + '</b>')
+                    .openPopup();
+            })
+            .addTo(map);
+
+            // ============================================================
+            // 5. CARGAR AVERÍAS DESDE EL BACKEND
+            // ============================================================
+            var markerLayer = L.layerGroup().addTo(map);
+
+            fetch('@Url.Action("MapaAveriasData", "Clientes")')
+                .then(function (r) { return r.json(); })
+                .then(function (res) {
+                    if (!res.success) {
+                        document.getElementById('contador').innerText = 'No se pudieron cargar las averías.';
+                        return;
+                    }
+
+                    var averias = res.data || [];
+                    var bounds = [];
+
+                    averias.forEach(function (a) {
+                        var clase = getClasePorEstado(a.estado);
+                        var iconoHtml = '<div class="pin-custom ' + clase + '"><span>⚡</span></div>';
+
+                        var customIcon = L.divIcon({
+                            html: iconoHtml,
+                            className: '',
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 32],
+                            popupAnchor: [0, -32]
+                        });
+
+                        var marker = L.marker([a.latitud, a.longitud], { icon: customIcon });
+
+                        marker.bindPopup(
+                            '<b>' + a.titulo + '</b><br>' +
+                            '🔧 ' + a.tipo + '<br>' +
+                            '📍 ' + a.direccion + '<br>' +
+                            '🔌 NISE ' + a.niseNumero + '<br>' +
+                            '<span class="estado-badge ' + getClaseBadge(a.estado) + '">' + a.estado + '</span>'
+                        );
+
+                        markerLayer.addLayer(marker);
+                        bounds.push([a.latitud, a.longitud]);
+                    });
+
+                    // Ajustar el mapa para mostrar todos los pines
+                    if (bounds.length > 0) {
+                        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 14 });
+                    }
+
+                    document.getElementById('contador').innerHTML =
+                        'Mostrando <b>' + averias.length + '</b> avería' + (averias.length === 1 ? '' : 's') + ' en el mapa';
+                })
+                .catch(function () {
+                    document.getElementById('contador').innerText = 'Error al cargar el mapa. Intentá de nuevo.';
+                });
+
+            // ============================================================
+            // HELPERS
+            // ============================================================
+            function getClasePorEstado(estado) {
+                var e = (estado || '').toLowerCase();
+                if (e.indexOf('resuelto') !== -1 || e.indexOf('problema resuelto') !== -1) return 'pin-verde';
+                if (e.indexOf('camino') !== -1 || e.indexOf('operador') !== -1) return 'pin-ambar';
+                return 'pin-rojo'; // En revisión, Ingresado, otros
+            }
+
+            function getClaseBadge(estado) {
+                var e = (estado || '').toLowerCase();
+                if (e.indexOf('resuelto') !== -1) return 'estado-resuelto';
+                if (e.indexOf('camino') !== -1) return 'estado-en-camino';
+                return 'estado-en-revision';
+            }
+        });
     </script>
 }

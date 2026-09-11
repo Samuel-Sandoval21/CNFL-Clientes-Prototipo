@@ -199,6 +199,7 @@
     <Compile Include="Models\NISE.cs" />
     <Compile Include="Models\Notificacion.cs" />
     <Compile Include="Models\Pago.cs" />
+    <Compile Include="Models\ReporteMapa.cs" />
     <Compile Include="Models\ReportesViewModel.cs" />
     <Compile Include="Models\Rol.cs" />
     <Compile Include="Models\Suscripcion.cs" />
