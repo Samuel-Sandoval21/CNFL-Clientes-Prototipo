@@ -8,57 +8,103 @@
 @section Styles {
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        .login-wrap .field .inp input:-webkit-autofill,
-        .login-wrap .field .inp input:-webkit-autofill:hover,
-        .login-wrap .field .inp input:-webkit-autofill:focus {
-            -webkit-text-fill-color: var(--ink) !important;
-            -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
-            transition: background-color 9999s ease-in-out 0s;
+        /* Fix Select2 */
+        .select2-container {
+            width: 100% !important;
         }
 
-        .select2-container .select2-selection--single {
+        .select2-container--default .select2-selection--single {
             height: auto !important;
             border: none !important;
             background: transparent !important;
             padding: 0 !important;
         }
 
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            padding: 0 !important;
-            font-family: inherit;
-            font-size: 14px;
-            color: var(--ink);
-            line-height: normal;
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: #0E1116 !important;
+                font-size: 14px !important;
+                line-height: normal !important;
+                padding-left: 0 !important;
+                padding-right: 20px !important;
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__placeholder {
+                color: #aab0be !important;
+                font-size: 14px !important;
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 100% !important;
+                right: 0 !important;
+            }
+
+        .select2-container--open {
+            z-index: 99999 !important;
         }
 
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 100% !important;
-            right: 0 !important;
-        }
-
-        .select2-container--open .select2-dropdown {
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(16,20,40,.15);
-            border: 1px solid var(--line);
-            z-index: 9999;
+        .select2-dropdown {
+            z-index: 99999 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 30px rgba(16,20,40,.15) !important;
+            border: 1px solid #EDEFF3 !important;
         }
 
         .select2-results__option {
-            font-size: 13px;
-            padding: 8px 12px;
+            font-size: 13px !important;
+            padding: 8px 12px !important;
         }
 
         .select2-search--dropdown .select2-search__field {
-            border-radius: 8px;
-            border: 1px solid var(--line);
-            padding: 6px 10px;
-            font-family: inherit;
-            font-size: 13px;
+            border-radius: 8px !important;
+            border: 1px solid #EDEFF3 !important;
+            padding: 6px 10px !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
         }
+
+        /* Selects de ubicación */
+        .field select.native-select {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 14px;
+            color: #0E1116;
+            padding: 12px 0;
+            outline: none;
+            cursor: pointer;
+        }
+
+            .field select.native-select option {
+                color: #0E1116;
+                background: #fff;
+            }
+
+        /* Botón mostrar/ocultar contraseña */
+        .toggle-password {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: grid;
+            place-items: center;
+            color: #aab0be;
+            flex-shrink: 0;
+            transition: color .2s ease;
+        }
+
+            .toggle-password:hover {
+                color: #1E23E6 !important;
+            }
+
+            .toggle-password svg {
+                width: 20px;
+                height: 20px;
+            }
     </style>
 }
 
-<div class="login-wrap" style="padding:24px 20px;">
+<div class="login-wrap">
     <div style="text-align:center; margin-bottom:16px;">
         <div style="font-size:48px;">📋</div>
         <div class="login-h" style="font-size:24px; margin-top:8px;">Crear cuenta</div>
@@ -83,6 +129,7 @@
     {
         @Html.AntiForgeryToken()
 
+        <!-- 1. CÉDULA -->
         <div class="field">
             <label>CÉDULA *</label>
             <div class="inp">
@@ -91,15 +138,34 @@
             </div>
         </div>
 
+        <!-- 2. NOMBRE -->
+        <div class="field">
+            <label>NOMBRE *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                <input type="text" name="Nombre" placeholder="Su nombre" autocomplete="off" required />
+            </div>
+        </div>
+
+        <!-- 3. APELLIDOS -->
+        <div class="field">
+            <label>APELLIDOS *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                <input type="text" name="Apellidos" placeholder="Sus apellidos" autocomplete="off" required />
+            </div>
+        </div>
+
+        <!-- 4. SEXO -->
         <div class="field">
             <label>SEXO *</label>
             <div style="display:flex; gap:18px; align-items:center; padding-left:8px;">
                 <label style="font-weight:600;"><input type="radio" name="Sexo" value="Masculino" required /> Masculino</label>
                 <label style="font-weight:600;"><input type="radio" name="Sexo" value="Femenino" /> Femenino</label>
-                <label style="font-weight:600;"><input type="radio" name="Sexo" value="Otro" /> Otro</label>
             </div>
         </div>
 
+        <!-- 5. CORREO 1 -->
         <div class="field">
             <label>CORREO 1 *</label>
             <div class="inp">
@@ -108,6 +174,7 @@
             </div>
         </div>
 
+        <!-- 6. CORREO 2 -->
         <div class="field">
             <label>CORREO 2 (OPCIONAL)</label>
             <div class="inp">
@@ -116,6 +183,7 @@
             </div>
         </div>
 
+        <!-- 7. TELÉFONO 1 -->
         <div class="field">
             <label>TELÉFONO 1 *</label>
             <div class="inp">
@@ -124,6 +192,7 @@
             </div>
         </div>
 
+        <!-- 8. TELÉFONO 2 -->
         <div class="field">
             <label>TELÉFONO 2 (OPCIONAL)</label>
             <div class="inp">
@@ -132,6 +201,16 @@
             </div>
         </div>
 
+        <!-- 9. NOMBRE DE USUARIO -->
+        <div class="field">
+            <label>NOMBRE DE USUARIO *</label>
+            <div class="inp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+                <input type="text" name="NombreUsuario" placeholder="Nombre de usuario (máx 30)" maxlength="30" autocomplete="off" required />
+            </div>
+        </div>
+
+        <!-- 10. ACTIVIDAD ECONÓMICA -->
         <div class="field">
             <label>ACTIVIDAD ECONÓMICA *</label>
             <div class="inp" style="padding:6px 14px;">
@@ -140,11 +219,12 @@
             </div>
         </div>
 
+        <!-- 11. UBICACIÓN -->
         <div class="field" style="display:flex; gap:8px;">
             <div style="flex:1;">
                 <label>PROVINCIA *</label>
                 <div class="inp">
-                    <select name="Provincia" id="provincia" required style="width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);">
+                    <select name="Provincia" id="provincia" class="native-select" required>
                         <option value="">Seleccione</option>
                     </select>
                 </div>
@@ -152,7 +232,7 @@
             <div style="flex:1;">
                 <label>CANTÓN *</label>
                 <div class="inp">
-                    <select name="Canton" id="canton" required style="width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);">
+                    <select name="Canton" id="canton" class="native-select" required>
                         <option value="">Seleccione</option>
                     </select>
                 </div>
@@ -160,43 +240,70 @@
             <div style="flex:1;">
                 <label>DISTRITO *</label>
                 <div class="inp">
-                    <select name="Distrito" id="distrito" required style="width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);">
+                    <select name="Distrito" id="distrito" class="native-select" required>
                         <option value="">Seleccione</option>
                     </select>
                 </div>
             </div>
         </div>
 
+        <!-- 12. CONTRASEÑA -->
         <div class="field">
             <label>CONTRASEÑA *</label>
             <div class="inp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="Contraseña" placeholder="••••••••" autocomplete="new-password" required />
+                <input type="password" name="Contraseña" id="pass1" placeholder="••••••••" autocomplete="new-password" required />
+                <button type="button" class="toggle-password" data-target="pass1" title="Mostrar/ocultar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
             </div>
         </div>
 
+        <!-- 13. CONFIRMAR CONTRASEÑA -->
         <div class="field">
             <label>CONFIRMAR CONTRASEÑA *</label>
             <div class="inp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="confirmarContraseña" placeholder="••••••••" autocomplete="new-password" required />
+                <input type="password" name="confirmarContraseña" id="pass2" placeholder="••••••••" autocomplete="new-password" required />
+                <button type="button" class="toggle-password" data-target="pass2" title="Mostrar/ocultar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
             </div>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:8px; background:#f8f9fe; padding:12px; border-radius:12px; border:1px solid var(--line); margin-top:12px;">
-            <label style="display:flex; align-items:flex-start; gap:8px; font-size:12px; font-weight:600; cursor:pointer;">
-                <input type="checkbox" name="AceptaPolitica" value="true" required /> Acepto la Política de Privacidad
+        <!-- 14. TÉRMINOS -->
+        <div style="background:#f8f9fe; border-radius:12px; border:1px solid #EDEFF3; padding:14px; margin-top:14px; display:flex; flex-direction:column; gap:12px;">
+            <label style="display:flex; align-items:flex-start; gap:10px; font-size:13px; font-weight:600; cursor:pointer; line-height:1.5; color:#0E1116;">
+                <input type="checkbox" name="AceptaPolitica" value="true" required style="width:18px; height:18px; margin-top:2px; flex-shrink:0; cursor:pointer; accent-color:#1E23E6;" />
+                <span>Acepto la <a href="javascript:void(0)" onclick="abrirDocumento('politica')" style="color:#1E23E6; font-weight:700; text-decoration:underline;">Política de Privacidad y Seguridad</a></span>
             </label>
-            <label style="display:flex; align-items:flex-start; gap:8px; font-size:12px; font-weight:600; cursor:pointer;">
-                <input type="checkbox" name="AceptaConsentimiento" value="true" required /> Acepto el Consentimiento Informado
+            <label style="display:flex; align-items:flex-start; gap:10px; font-size:13px; font-weight:600; cursor:pointer; line-height:1.5; color:#0E1116;">
+                <input type="checkbox" name="AceptaConsentimiento" value="true" required style="width:18px; height:18px; margin-top:2px; flex-shrink:0; cursor:pointer; accent-color:#1E23E6;" />
+                <span>Acepto el <a href="javascript:void(0)" onclick="abrirDocumento('consentimiento')" style="color:#1E23E6; font-weight:700; text-decoration:underline;">Consentimiento Informado (F-085)</a></span>
             </label>
         </div>
 
         <button type="submit" class="btn btn-cta btn-block" style="margin-top:16px;">Registrar cuenta</button>
     }
 
-    <div class="login-foot" style="margin-top:16px;">
+    <div class="login-foot">
         ¿Ya tienes cuenta? <a href="@Url.Action("Login", "Cuenta")">Inicia sesión aquí</a>
+    </div>
+</div>
+
+<div id="cnflModal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:99999; padding:20px;">
+    <div style="background:#fff; border-radius:16px; max-width:500px; width:100%; max-height:80vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.35);">
+        <div style="padding:16px 20px; border-bottom:1px solid #EDEFF3; display:flex; justify-content:space-between; align-items:center;">
+            <h3 id="cnflModalTitle" style="font-size:16px; margin:0; font-weight:800;">Documento</h3>
+            <button type="button" onclick="cerrarDocumento()" style="background:none; border:none; cursor:pointer; font-size:22px; line-height:1; color:#727A86;">×</button>
+        </div>
+        <div id="cnflModalBody" style="padding:18px 20px; overflow-y:auto; font-size:13px; line-height:1.6; color:#0E1116;"></div>
     </div>
 </div>
 
@@ -205,143 +312,180 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(function () {
-            // === Select2 Actividad Económica (carga TODO al abrir) ===
-            $('#actividadEconomica').select2({
-                placeholder: 'Seleccione o busque una actividad...',
-                allowClear: true,
-                width: '100%',
-                minimumInputLength: 0,
-                ajax: {
-                    url: '@Url.Action("SearchActividades", "Cuenta")',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) { return { q: params.term || 'a' }; },
-                    processResults: function (data) { return { results: data }; },
-                    cache: true
-                },
-                language: {
-                    inputTooShort: function () { return 'Escriba para filtrar...'; },
-                    noResults: function () { return 'Sin resultados'; },
-                    searching: function () { return 'Buscando...'; }
-                }
-            });
+       // ============================================
+// Select2 Actividad Económica — carga con AJAX
+// ============================================
+$('#actividadEconomica').select2({
+    placeholder: 'Seleccione o busque una actividad...',
+    allowClear: true,
+    width: '100%',
+    minimumInputLength: 0,
+    language: {
+        noResults: function () { return "Sin resultados"; },
+        searching: function () { return "Buscando..."; },
+        inputTooShort: function () { return "Escriba para buscar..."; }
+    },
+    ajax: {
+        url: '@Url.Action("SearchActividades", "Cuenta")',
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+            return { q: params.term || '' };
+        },
+        processResults: function (data) {
+            return { results: data };
+        },
+        cache: true
+    }
+});
 
-            // === Provincia / Cantón / Distrito ===
+            // Provincia / Cantón / Distrito — Costa Rica completo (7 provincias, 82 cantones, 481 distritos)
             const dataCR = {
                 "San José": {
-                    "San José": ["Carmen","Merced","Hospital","Catedral","Zapote","San Francisco de Dos Ríos","Uruca","Mata Redonda","Pavas","Hatillo","San Sebastián"],
-                    "Escazú": ["Escazú","San Antonio","San Rafael"],
-                    "Desamparados": ["Desamparados","San Miguel","San Juan de Dios","San Rafael Arriba","San Antonio","Frailes","Patarrá","San Cristóbal","Rosario","Damas","San Rafael Abajo","Gravilias","Los Guido"],
-                    "Puriscal": ["Santiago","Mercedes Sur","Barbacoas","Grifo Alto","San Rafael","Candelarita","Desamparaditos","San Antonio","Chires"],
-                    "Tarrazú": ["San Marcos","San Lorenzo","San Carlos"],
-                    "Aserrí": ["Aserrí","Tarbaca","Vuelta de Jorco","San Gabriel","Legua","Monterrey","Salitrillos"],
-                    "Mora": ["Colón","Guayabo","Tabarcia","Piedras Negras","Picagres","Jaris","Quitirrisí"],
-                    "Goicoechea": ["Guadalupe","San Francisco","Calle Blancos","Mata de Plátano","Ipís","Rancho Redondo","Purral"],
-                    "Santa Ana": ["Santa Ana","Salitral","Pozos","Uruca","Piedades","Brasil"],
-                    "Alajuelita": ["Alajuelita","San Josecito","San Antonio","Concepción","San Felipe"],
-                    "Vázquez de Coronado": ["San Isidro","San Rafael","Dulce Nombre de Jesús","Patalillo","Cascajal"],
-                    "Acosta": ["San Ignacio","Guaitil","Palmichal","Cangrejal","Sabanillas"],
-                    "Tibás": ["San Juan","Cinco Esquinas","Anselmo Llorente","León XIII","Colima"],
-                    "Moravia": ["San Vicente","San Jerónimo","La Trinidad"],
-                    "Montes de Oca": ["San Pedro","Sabanilla","Mercedes","San Rafael"],
-                    "Turrubares": ["San Pablo","San Pedro","San Juan de Mata","San Luis","Carara"],
-                    "Dota": ["Santa María","Jardín","Copey"],
-                    "Curridabat": ["Curridabat","Granadilla","Sánchez","Tirrases"],
-                    "Pérez Zeledón": ["San Isidro de El General","El General","Daniel Flores","Rivas","San Pedro","Platanares","Pejibaye","Cajón","Barú","Río Nuevo","Páramo","La Amistad"],
-                    "León Cortés Castro": ["San Pablo","San Andrés","Llano Bonito","San Isidro","Santa Cruz","San Antonio"]
+                    "San José": ["Carmen", "Merced", "Hospital", "Catedral", "Zapote", "San Francisco de Dos Ríos", "Uruca", "Mata Redonda", "Pavas", "Hatillo", "San Sebastián"],
+                    "Escazú": ["Escazú", "San Antonio", "San Rafael"],
+                    "Desamparados": ["Desamparados", "San Miguel", "San Juan de Dios", "San Rafael Arriba", "San Antonio", "Frailes", "Patarrá", "San Cristóbal", "Rosario", "Damas", "San Rafael Abajo", "Gravilias", "Los Guido"],
+                    "Puriscal": ["Santiago", "Mercedes Sur", "Barbacoas", "Grifo Alto", "San Rafael", "Candelarita", "Desamparaditos", "San Antonio", "Chires"],
+                    "Tarrazú": ["San Marcos", "San Lorenzo", "San Carlos"],
+                    "Aserrí": ["Aserrí", "Tarbaca", "Vuelta de Jorco", "San Gabriel", "Legua", "Monterrey", "Salitrillos"],
+                    "Mora": ["Colón", "Guayabo", "Tabarcia", "Piedras Negras", "Picagres", "Jaris", "Quitirrisí"],
+                    "Goicoechea": ["Guadalupe", "San Francisco", "Calle Blancos", "Mata de Plátano", "Ipís", "Rancho Redondo", "Purral"],
+                    "Santa Ana": ["Santa Ana", "Salitral", "Pozos", "Uruca", "Piedades", "Brasil"],
+                    "Alajuelita": ["Alajuelita", "San Josecito", "San Antonio", "Concepción", "San Felipe"],
+                    "Vázquez de Coronado": ["San Isidro", "San Rafael", "Dulce Nombre de Jesús", "Patalillo", "Cascajal"],
+                    "Acosta": ["San Ignacio", "Guaitil", "Palmichal", "Cangrejal", "Sabanillas"],
+                    "Tibás": ["San Juan", "Cinco Esquinas", "Anselmo Llorente", "León XIII", "Colima"],
+                    "Moravia": ["San Vicente", "San Jerónimo", "La Trinidad"],
+                    "Montes de Oca": ["San Pedro", "Sabanilla", "Mercedes", "San Rafael"],
+                    "Turrubares": ["San Pablo", "San Pedro", "San Juan de Mata", "San Luis", "Carara"],
+                    "Dota": ["Santa María", "Jardín", "Copey"],
+                    "Curridabat": ["Curridabat", "Granadilla", "Sánchez", "Tirrases"],
+                    "Pérez Zeledón": ["San Isidro de El General", "El General", "Daniel Flores", "Rivas", "San Pedro", "Platanares", "Pejibaye", "Cajón", "Barú", "Río Nuevo", "Páramo", "La Amistad"],
+                    "León Cortés Castro": ["San Pablo", "San Andrés", "Llano Bonito", "San Isidro", "Santa Cruz", "San Antonio"]
                 },
                 "Alajuela": {
-                    "Alajuela": ["Alajuela","San José","Carrizal","San Antonio","Guácima","San Isidro","Sabanilla","San Rafael","Río Segundo","Desamparados","Turrúcares","Tambor","Garita","Sarapiquí"],
-                    "San Ramón": ["San Ramón","Santiago","San Juan","Piedades Norte","Piedades Sur","San Rafael","San Isidro","Ángeles","Alfaro","Volio","Concepción","Zapotal","Peñas Blancas","San Lorenzo"],
-                    "Grecia": ["Grecia","San Isidro","San José","San Roque","Tacares","Puente de Piedra","Bolívar"],
-                    "San Mateo": ["San Mateo","Desmonte","Jesús María","Labrador"],
-                    "Atenas": ["Atenas","Jesús","Mercedes","San Isidro","Concepción","San José","Santa Eulalia","Escobal"],
-                    "Naranjo": ["Naranjo","San Miguel","San José","Cirrí Sur","San Jerónimo","San Juan","El Rosario","Palmitos"],
-                    "Palmares": ["Palmares","Zaragoza","Buenos Aires","Santiago","Candelaria","Esquipulas","La Granja"],
-                    "Poás": ["San Pedro","San Juan","San Rafael","Carrillos","Sabana Redonda"],
-                    "Orotina": ["Orotina","El Mastate","Hacienda Vieja","Coyolar","La Ceiba"],
-                    "San Carlos": ["Quesada","Florencia","Buenavista","Aguas Zarcas","Venecia","Pital","La Fortuna","La Tigra","La Palmera","Venado","Cutris","Monterrey","Pocosol"],
-                    "Zarcero": ["Zarcero","Laguna","Tapesco","Guadalupe","Palmira","Zapote","Brisas"],
-                    "Sarchí": ["Sarchí Norte","Sarchí Sur","Toro Amarillo","San Pedro","Rodríguez"],
-                    "Upala": ["Upala","Aguas Claras","San José o Pizote","Bijagua","Delicias","Dos Ríos","Yolillal","Canalete"],
-                    "Los Chiles": ["Los Chiles","Caño Negro","El Amparo","San Jorge"],
-                    "Guatuso": ["San Rafael","Buenavista","Cote","Katira"],
-                    "Río Cuarto": ["Río Cuarto","Santa Rita","Santa Isabel"]
+                    "Alajuela": ["Alajuela", "San José", "Carrizal", "San Antonio", "Guácima", "San Isidro", "Sabanilla", "San Rafael", "Río Segundo", "Desamparados", "Turrúcares", "Tambor", "Garita", "Sarapiquí"],
+                    "San Ramón": ["San Ramón", "Santiago", "San Juan", "Piedades Norte", "Piedades Sur", "San Rafael", "San Isidro", "Ángeles", "Alfaro", "Volio", "Concepción", "Zapotal", "Peñas Blancas", "San Lorenzo"],
+                    "Grecia": ["Grecia", "San Isidro", "San José", "San Roque", "Tacares", "Puente de Piedra", "Bolívar"],
+                    "San Mateo": ["San Mateo", "Desmonte", "Jesús María", "Labrador"],
+                    "Atenas": ["Atenas", "Jesús", "Mercedes", "San Isidro", "Concepción", "San José", "Santa Eulalia", "Escobal"],
+                    "Naranjo": ["Naranjo", "San Miguel", "San José", "Cirrí Sur", "San Jerónimo", "San Juan", "El Rosario", "Palmitos"],
+                    "Palmares": ["Palmares", "Zaragoza", "Buenos Aires", "Santiago", "Candelaria", "Esquipulas", "La Granja"],
+                    "Poás": ["San Pedro", "San Juan", "San Rafael", "Carrillos", "Sabana Redonda"],
+                    "Orotina": ["Orotina", "El Mastate", "Hacienda Vieja", "Coyolar", "La Ceiba"],
+                    "San Carlos": ["Quesada", "Florencia", "Buenavista", "Aguas Zarcas", "Venecia", "Pital", "La Fortuna", "La Tigra", "La Palmera", "Venado", "Cutris", "Monterrey", "Pocosol"],
+                    "Zarcero": ["Zarcero", "Laguna", "Tapesco", "Guadalupe", "Palmira", "Zapote", "Brisas"],
+                    "Sarchí": ["Sarchí Norte", "Sarchí Sur", "Toro Amarillo", "San Pedro", "Rodríguez"],
+                    "Upala": ["Upala", "Aguas Claras", "San José o Pizote", "Bijagua", "Delicias", "Dos Ríos", "Yolillal", "Canalete"],
+                    "Los Chiles": ["Los Chiles", "Caño Negro", "El Amparo", "San Jorge"],
+                    "Guatuso": ["San Rafael", "Buenavista", "Cote", "Katira"],
+                    "Río Cuarto": ["Río Cuarto", "Santa Rita", "Santa Isabel"]
                 },
                 "Cartago": {
-                    "Cartago": ["Oriental","Occidental","Carmen","San Nicolás","Aguacaliente","San Francisco","Tres Ríos","Santa Rosa","Llanos de Santa Lucía"],
-                    "Paraíso": ["Paraíso","San Francisco","San José","Urba","Santiago","Orosi","Cachí","Llanos de Santa Lucía","Birrisito"],
-                    "La Unión": ["Tres Ríos","San Diego","San Juan","San Rafael","Concepción","Dulce Nombre","San Ramón","Río Azul"],
-                    "Jiménez": ["Juan Viñas","Tucurrique","Pejibaye"],
-                    "Turrialba": ["Turrialba","Jesús María","Santa Teresita","Pavones","Tuis","Tayutic","Santa Rosa","Tres Equis","La Isabel","Chirripó"],
-                    "Alvarado": ["Pacayas","Cervantes","Capellades"],
-                    "Oreamuno": ["San Rafael","Cot","Potrero Cerrado","Cipreses","Santa Rosa"],
-                    "El Guarco": ["El Tejar","San Isidro","Tobosi","Patio de Agua"]
+                    "Cartago": ["Oriental", "Occidental", "Carmen", "San Nicolás", "Aguacaliente", "San Francisco", "Tres Ríos", "Santa Rosa", "Llanos de Santa Lucía"],
+                    "Paraíso": ["Paraíso", "San Francisco", "San José", "Urba", "Santiago", "Orosi", "Cachí", "Llanos de Santa Lucía", "Birrisito"],
+                    "La Unión": ["Tres Ríos", "San Diego", "San Juan", "San Rafael", "Concepción", "Dulce Nombre", "San Ramón", "Río Azul"],
+                    "Jiménez": ["Juan Viñas", "Tucurrique", "Pejibaye"],
+                    "Turrialba": ["Turrialba", "Jesús María", "Santa Teresita", "Pavones", "Tuis", "Tayutic", "Santa Rosa", "Tres Equis", "La Isabel", "Chirripó"],
+                    "Alvarado": ["Pacayas", "Cervantes", "Capellades"],
+                    "Oreamuno": ["San Rafael", "Cot", "Potrero Cerrado", "Cipreses", "Santa Rosa"],
+                    "El Guarco": ["El Tejar", "San Isidro", "Tobosi", "Patio de Agua"]
                 },
                 "Heredia": {
-                    "Heredia": ["Heredia","Mercedes","San Francisco","Ulloa","Varablanca"],
-                    "Barva": ["Barva","San Pedro","San Pablo","San Roque","Santa Lucía","San José de la Montaña"],
-                    "Santo Domingo": ["Santo Domingo","San Vicente","San Miguel","Paracito","Santo Tomás","Santa Rosa","Tures","Pará"],
-                    "Santa Bárbara": ["Santa Bárbara","San Pedro","San Juan","Jesús","Santo Domingo","Purabá"],
-                    "San Rafael": ["San Rafael","San Josecito","Santiago","Los Ángeles","Concepción"],
-                    "San Isidro": ["San Isidro","San José","Concepción","San Francisco"],
-                    "Belén": ["San Antonio","La Ribera","La Asunción"],
-                    "Flores": ["San Joaquín","Barrantes","Llorente"],
-                    "San Pablo": ["San Pablo","Rincón de Sabanilla"],
-                    "Sarapiquí": ["Puerto Viejo","La Virgen","Horquetas","Llanuras del Gaspar","Cureña"]
+                    "Heredia": ["Heredia", "Mercedes", "San Francisco", "Ulloa", "Varablanca"],
+                    "Barva": ["Barva", "San Pedro", "San Pablo", "San Roque", "Santa Lucía", "San José de la Montaña"],
+                    "Santo Domingo": ["Santo Domingo", "San Vicente", "San Miguel", "Paracito", "Santo Tomás", "Santa Rosa", "Tures", "Pará"],
+                    "Santa Bárbara": ["Santa Bárbara", "San Pedro", "San Juan", "Jesús", "Santo Domingo", "Purabá"],
+                    "San Rafael": ["San Rafael", "San Josecito", "Santiago", "Los Ángeles", "Concepción"],
+                    "San Isidro": ["San Isidro", "San José", "Concepción", "San Francisco"],
+                    "Belén": ["San Antonio", "La Ribera", "La Asunción"],
+                    "Flores": ["San Joaquín", "Barrantes", "Llorente"],
+                    "San Pablo": ["San Pablo", "Rincón de Sabanilla"],
+                    "Sarapiquí": ["Puerto Viejo", "La Virgen", "Horquetas", "Llanuras del Gaspar", "Cureña"]
                 },
                 "Guanacaste": {
-                    "Liberia": ["Liberia","Cañas Dulces","Mayorga","Nacascolo","Curubandé"],
-                    "Nicoya": ["Nicoya","Mansión","San Antonio","Quebrada Honda","Sámara","Nosara","Belén de Nosarita"],
-                    "Santa Cruz": ["Santa Cruz","Bolsón","Veintisiete de Abril","Tempate","Cartagena","Cuajiniquil","Diriá","Cabo Velas","Tamarindo"],
-                    "Bagaces": ["Bagaces","Fortuna","Mogote","Río Naranjo"],
-                    "Carrillo": ["Filadelfia","Palmira","Sardinal","Belén"],
-                    "Cañas": ["Cañas","Palmira","San Miguel","Bebedero","Porozal"],
-                    "Abangares": ["Las Juntas","Sierra","San Juan","Colorado"],
-                    "Tilarán": ["Tilarán","Quebrada Grande","Tronadora","Santa Rosa","Líbano","Tierras Morenas","Arenal","Cabeceras"],
-                    "Nandayure": ["Carmona","Santa Rita","Zapotal","San Pablo","Porvenir","Bejuco"],
-                    "La Cruz": ["La Cruz","Santa Cecilia","La Garita","Santa Elena"],
-                    "Hojancha": ["Hojancha","Monte Romo","Puerto Carrillo","Huacas","Matambú"]
+                    "Liberia": ["Liberia", "Cañas Dulces", "Mayorga", "Nacascolo", "Curubandé"],
+                    "Nicoya": ["Nicoya", "Mansión", "San Antonio", "Quebrada Honda", "Sámara", "Nosara", "Belén de Nosarita"],
+                    "Santa Cruz": ["Santa Cruz", "Bolsón", "Veintisiete de Abril", "Tempate", "Cartagena", "Cuajiniquil", "Diriá", "Cabo Velas", "Tamarindo"],
+                    "Bagaces": ["Bagaces", "Fortuna", "Mogote", "Río Naranjo"],
+                    "Carrillo": ["Filadelfia", "Palmira", "Sardinal", "Belén"],
+                    "Cañas": ["Cañas", "Palmira", "San Miguel", "Bebedero", "Porozal"],
+                    "Abangares": ["Las Juntas", "Sierra", "San Juan", "Colorado"],
+                    "Tilarán": ["Tilarán", "Quebrada Grande", "Tronadora", "Santa Rosa", "Líbano", "Tierras Morenas", "Arenal", "Cabeceras"],
+                    "Nandayure": ["Carmona", "Santa Rita", "Zapotal", "San Pablo", "Porvenir", "Bejuco"],
+                    "La Cruz": ["La Cruz", "Santa Cecilia", "La Garita", "Santa Elena"],
+                    "Hojancha": ["Hojancha", "Monte Romo", "Puerto Carrillo", "Huacas", "Matambú"]
                 },
                 "Puntarenas": {
-                    "Puntarenas": ["Puntarenas","Chacarita","El Roble","Aranjuez","Barranca","Monteverde","Pitahaya"],
-                    "Esparza": ["Esparza","San Juan Grande","Macacona","San Rafael","San Jerónimo","Caldera"],
-                    "Buenos Aires": ["Buenos Aires","Volcán","Potrero Grande","Boruca","Pilas","Colinas","Chánguena","Biolley","Brunka"],
-                    "Montes de Oro": ["Miramar","La Unión","San Isidro"],
-                    "Osa": ["Puerto Cortés","Palmar","Sierpe","Bahía Ballena","Piedras Blancas","Bahía Drake"],
-                    "Quepos": ["Quepos","Savegre","Naranjito"],
-                    "Golfito": ["Golfito","Puerto Jiménez","Guaycará","Pavón"],
-                    "Coto Brus": ["San Vito","Sabalito","Aguabuena","Limoncito","Pittier","Gutiérrez Braun"],
+                    "Puntarenas": ["Puntarenas", "Chacarita", "El Roble", "Aranjuez", "Barranca", "Monteverde", "Pitahaya"],
+                    "Esparza": ["Esparza", "San Juan Grande", "Macacona", "San Rafael", "San Jerónimo", "Caldera"],
+                    "Buenos Aires": ["Buenos Aires", "Volcán", "Potrero Grande", "Boruca", "Pilas", "Colinas", "Chánguena", "Biolley", "Brunka"],
+                    "Montes de Oro": ["Miramar", "La Unión", "San Isidro"],
+                    "Osa": ["Puerto Cortés", "Palmar", "Sierpe", "Bahía Ballena", "Piedras Blancas", "Bahía Drake"],
+                    "Quepos": ["Quepos", "Savegre", "Naranjito"],
+                    "Golfito": ["Golfito", "Puerto Jiménez", "Guaycará", "Pavón"],
+                    "Coto Brus": ["San Vito", "Sabalito", "Aguabuena", "Limoncito", "Pittier", "Gutiérrez Braun"],
                     "Parrita": ["Parrita"],
-                    "Corredores": ["Corredor","La Cuesta","Canoas","Laurel"],
-                    "Garabito": ["Jacó","Tárcoles","Lagunillas"]
+                    "Corredores": ["Corredor", "La Cuesta", "Canoas", "Laurel"],
+                    "Garabito": ["Jacó", "Tárcoles", "Lagunillas"]
                 },
                 "Limón": {
-                    "Limón": ["Limón","Valle La Estrella","Río Blanco","Matama"],
-                    "Pococí": ["Guápiles","Jiménez","Rita","Roxana","Cariari","Colorado","La Colonia"],
-                    "Siquirres": ["Siquirres","Pacuarito","Florida","Germania","Cairo","Alegría","El Bosque","Reventazón"],
-                    "Talamanca": ["Bratsi","Sixaola","Cahuita","Telire"],
-                    "Matina": ["Matina","Batán","Carrandi"],
-                    "Guácimo": ["Guácimo","Mercedes","Pocora","Río Jiménez","Duacarí"]
+                    "Limón": ["Limón", "Valle La Estrella", "Río Blanco", "Matama"],
+                    "Pococí": ["Guápiles", "Jiménez", "Rita", "Roxana", "Cariari", "Colorado", "La Colonia"],
+                    "Siquirres": ["Siquirres", "Pacuarito", "Florida", "Germania", "Cairo", "Alegría", "El Bosque", "Reventazón"],
+                    "Talamanca": ["Bratsi", "Sixaola", "Cahuita", "Telire"],
+                    "Matina": ["Matina", "Batán", "Carrandi"],
+                    "Guácimo": ["Guácimo", "Mercedes", "Pocora", "Río Jiménez", "Duacarí"]
                 }
             };
 
             const $prov = $('#provincia'), $cant = $('#canton'), $dist = $('#distrito');
-
-            Object.keys(dataCR).sort().forEach(p => $prov.append(`<option value="${p}">${p}</option>`));
+            Object.keys(dataCR).sort().forEach(function (p) { $prov.append('<option value="' + p + '">' + p + '</option>'); });
 
             $prov.on('change', function () {
                 $cant.empty().append('<option value="">Seleccione</option>');
                 $dist.empty().append('<option value="">Seleccione</option>');
-                const prov = dataCR[this.value];
-                if (prov) Object.keys(prov).sort().forEach(c => $cant.append(`<option value="${c}">${c}</option>`));
+                var prov = dataCR[this.value];
+                if (prov) Object.keys(prov).sort().forEach(function (c) { $cant.append('<option value="' + c + '">' + c + '</option>'); });
             });
 
             $cant.on('change', function () {
                 $dist.empty().append('<option value="">Seleccione</option>');
-                const prov = dataCR[$prov.val()];
-                if (prov && prov[this.value]) prov[this.value].forEach(d => $dist.append(`<option value="${d}">${d}</option>`));
+                var prov = dataCR[$prov.val()];
+                if (prov && prov[this.value]) prov[this.value].forEach(function (d) { $dist.append('<option value="' + d + '">' + d + '</option>'); });
             });
+
+            // Toggle mostrar/ocultar contraseña
+            $('.toggle-password').on('click', function () {
+                var targetId = $(this).data('target');
+                var $input = $('#' + targetId);
+                var esPassword = $input.attr('type') === 'password';
+
+                if (esPassword) {
+                    $input.attr('type', 'text');
+                    $(this).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>');
+                } else {
+                    $input.attr('type', 'password');
+                    $(this).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>');
+                }
+            });
+
+            // Modal
+            window.abrirDocumento = function (tipo) {
+                var titulo = '', contenido = '';
+                if (tipo === 'politica') {
+                    titulo = 'Política de Privacidad y Seguridad';
+                    contenido = '<p>La CNFL se compromete a proteger la privacidad y los datos personales de sus clientes, en cumplimiento con la Ley N.° 8968.</p><h4>1. Datos recopilados</h4><p>Cédula, nombre, apellidos, correo, teléfono, dirección y NISE.</p><h4>2. Uso</h4><p>Gestión del servicio eléctrico, facturación, comunicación y obligaciones legales.</p><h4>3. Derechos</h4><p>Acceso, rectificación, cancelación y oposición escribiendo a info@cnfl.go.cr.</p>';
+                } else {
+                    titulo = 'Consentimiento Informado (F-085)';
+                    contenido = '<p>El usuario manifiesta su consentimiento libre, previo, expreso e informado para que la CNFL trate sus datos personales conforme al formulario F-085.</p><h4>1. Finalidad</h4><p>Gestión del servicio eléctrico, facturación y obligaciones legales.</p><h4>2. Alcance</h4><p>Recopilación, almacenamiento, uso, circulación y supresión de datos, según la Ley N.° 8968.</p><h4>3. Revocatoria</h4><p>Puede revocar su consentimiento escribiendo a info@cnfl.go.cr.</p>';
+                }
+                document.getElementById('cnflModalTitle').innerText = titulo;
+                document.getElementById('cnflModalBody').innerHTML = contenido;
+                document.getElementById('cnflModal').style.display = 'flex';
+            };
+            window.cerrarDocumento = function () { document.getElementById('cnflModal').style.display = 'none'; };
+            document.getElementById('cnflModal').addEventListener('click', function (e) { if (e.target === this) cerrarDocumento(); });
         });
     </script>
 }

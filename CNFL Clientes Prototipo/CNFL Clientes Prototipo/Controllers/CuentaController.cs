@@ -23,14 +23,17 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (ModelState.IsValid)
             {
                 var usuario = _db.Usuarios.FirstOrDefault(u =>
-                    (u.Cedula == model.UserName || u.Correo == model.UserName) &&
-                    u.Contraseña == model.Contraseña);
+                    (u.Cedula == model.UserName
+                     || u.Correo == model.UserName
+                     || u.NombreUsuario == model.UserName)
+                    && u.Contraseña == model.Contraseña);
 
                 if (usuario != null && usuario.Activo)
                 {
                     Session["UsuarioId"] = usuario.UsuarioId;
                     Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
                     Session["Cedula"] = usuario.Cedula;
+                    Session["NombreUsuario"] = usuario.NombreUsuario;
 
                     var usuarioRol = _db.UsuarioRoles
                         .Where(ur => ur.UsuarioId == usuario.UsuarioId)
@@ -41,13 +44,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     Session["Rol"] = rol;
 
                     if (rol == "Admin")
-                    {
                         return RedirectToAction("Dashboard", "Admin");
-                    }
                     else
-                    {
                         return RedirectToAction("Dashboard", "Clientes");
-                    }
                 }
 
                 ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
@@ -61,9 +60,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
+        // ============================================================
         // GET: Cuenta/SearchActividades?q=term
-        // - Si q viene vacío: devuelve las primeras 100 actividades (para que el dropdown no esté vacío)
-        // - Si q tiene texto: filtra por código o nombre
+        // - Si q vacío → devuelve las primeras 200 actividades
+        // - Si q tiene texto → filtra por código o nombre
+        // ============================================================
         [HttpGet]
         public JsonResult SearchActividades(string q)
         {
@@ -76,7 +77,23 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             var results = query
                 .OrderBy(a => a.Codigo)
-                .Take(100)
+                .Take(200)
+                .Select(a => new { id = a.Id, text = a.Codigo + " - " + a.Nombre })
+                .ToList();
+
+            return Json(results, JsonRequestBehavior.AllowGet);
+        }
+
+        // ============================================================
+        // GET: Cuenta/GetAllActividades
+        // Devuelve TODAS las actividades (sin paginar) para cargar
+        // el Select2 de una sola vez al abrir el Registro.
+        // ============================================================
+        [HttpGet]
+        public JsonResult GetAllActividades()
+        {
+            var results = _db.ActividadesEconomicas
+                .OrderBy(a => a.Codigo)
                 .Select(a => new { id = a.Id, text = a.Codigo + " - " + a.Nombre })
                 .ToList();
 
@@ -108,13 +125,19 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     return View(usuario);
                 }
 
-                // 👇 Guardar ubicación
+                if (!string.IsNullOrWhiteSpace(usuario.NombreUsuario) &&
+                    _db.Usuarios.Any(u => u.NombreUsuario == usuario.NombreUsuario))
+                {
+                    ModelState.AddModelError("NombreUsuario", "Ya existe un usuario con este nombre de usuario.");
+                    return View(usuario);
+                }
+
                 usuario.Provincia = Provincia;
                 usuario.Canton = Canton;
                 usuario.Distrito = Distrito;
-
                 usuario.FechaRegistro = DateTime.Now;
                 usuario.Activo = true;
+
                 _db.Usuarios.Add(usuario);
                 _db.SaveChanges();
 

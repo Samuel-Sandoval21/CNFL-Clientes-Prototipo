@@ -9,13 +9,14 @@ namespace CNFL_Clientes_Prototipo.Models
         public string Cedula { get; set; }
         public string Nombre { get; set; }
         public string Apellidos { get; set; }
+        public string NombreUsuario { get; set; }
         public string Correo { get; set; }
         public string CorreoSecundario { get; set; }
         public string Telefono { get; set; }
         public string TelefonoSecundario { get; set; }
         public string Sexo { get; set; }
         public string Contraseña { get; set; }
-        public DateTime FechaRegistro { get; set; }   // ← ya no dará error
+        public DateTime FechaRegistro { get; set; }
         public bool Activo { get; set; }
 
         public string Provincia { get; set; }

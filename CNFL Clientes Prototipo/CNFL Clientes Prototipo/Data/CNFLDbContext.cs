@@ -38,6 +38,7 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Tramite>().ToTable("Tramites");
             modelBuilder.Entity<Suscripcion>().ToTable("Suscripciones");
             modelBuilder.Entity<Pago>().ToTable("Pagos");
+            modelBuilder.Entity<ActividadEconomica>().ToTable("ActividadesEconomicas");   // 👈 FIX
 
             // ===== Relaciones =====
 

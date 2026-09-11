@@ -401,15 +401,13 @@ body {
         font-size: 24px;
     }
 
-    /* SVG icon styling: usar currentColor para coincidir con el estado (activo/inactivo) */
-    .tab-item .tab-icon svg {
-        width: 26px;
-        height: 26px;
-        stroke: currentColor;
-        fill: none;
-    }
+        .tab-item .tab-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke: currentColor;
+            fill: none;
+        }
 
-    /* Estilo del icono activo: círculo de fondo y color destacado */
     .tab-item.active .tab-icon {
         display: grid;
         place-items: center;
@@ -434,13 +432,14 @@ body {
         text-decoration: none;
     }
 
-/* ===== LOGIN ===== */
+/* ===== LOGIN / REGISTRO ===== */
 .login-wrap {
     padding: 20px;
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-y: auto;
     background: radial-gradient(700px 380px at 80% -8%, rgba(255,105,45,.16), transparent 60%), linear-gradient(160deg, #fff, #f2f4ff);
 }
 
@@ -495,12 +494,22 @@ body {
                 color: #aab0be;
             }
 
+            /* Fix autofill Chrome */
+            .login-wrap .field .inp input:-webkit-autofill,
+            .login-wrap .field .inp input:-webkit-autofill:hover,
+            .login-wrap .field .inp input:-webkit-autofill:focus {
+                -webkit-text-fill-color: var(--ink) !important;
+                -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+                transition: background-color 9999s ease-in-out 0s;
+            }
+
 .login-foot {
     margin-top: auto;
     text-align: center;
     font-size: 11px;
     color: var(--muted);
     line-height: 1.5;
+    padding-top: 20px;
 }
 
     .login-foot a {
@@ -540,27 +549,29 @@ body {
         font-weight: 700;
     }
 
-@media (max-width: 440px) {
-    .app-container {
-        height: 100vh;
-        border-radius: 0;
-        box-shadow: none;
-    }
+/* ===== BOTÓN MOSTRAR/OCULTAR CONTRASEÑA ===== */
+.toggle-password {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: grid;
+    place-items: center;
+    color: #aab0be;
+    transition: color .15s;
+    flex-shrink: 0;
 }
 
-@media (min-width: 441px) {
-    .app-container {
-        margin-top: 40px;
+    .toggle-password:hover {
+        color: var(--blue);
     }
-}
 
-/* ============================================================
-   CNFL · MENÚ DE AJUSTES + i18n (Agregado — no tocar lo de arriba)
-   ============================================================ */
+    .toggle-password svg {
+        width: 18px;
+        height: 18px;
+    }
 
-/* El ícono de engranaje es igual que los otros .icon-btn, no necesita CSS extra */
-
-/* ---------- OVERLAY ---------- */
+/* ===== MENÚ DE AJUSTES + i18n ===== */
 .cnfl-settings-overlay {
     position: absolute;
     inset: 0;
@@ -577,7 +588,6 @@ body {
         pointer-events: auto;
     }
 
-/* ---------- MENÚ FLOTANTE ---------- */
 .cnfl-settings-menu {
     position: absolute;
     top: 96px;
@@ -603,7 +613,6 @@ body {
         pointer-events: auto;
     }
 
-/* Cabecera del menú (usuario) */
 .cnfl-settings-user {
     display: flex;
     align-items: center;
@@ -645,7 +654,6 @@ body {
             margin-top: 2px;
         }
 
-/* Etiquetas de sección */
 .cnfl-settings-section-label {
     font-size: 10.5px;
     font-weight: 800;
@@ -655,7 +663,6 @@ body {
     padding: 12px 14px 6px;
 }
 
-/* Grid de idiomas */
 .cnfl-lang-grid {
     display: flex;
     flex-wrap: wrap;
@@ -699,7 +706,6 @@ body {
         letter-spacing: .04em;
     }
 
-/* Items del menú */
 .cnfl-settings-item {
     display: flex;
     align-items: center;
@@ -744,9 +750,171 @@ body {
             background: #fdeaea;
         }
 
-/* Separador */
 .cnfl-settings-sep {
     height: 1px;
     background: var(--line);
     margin: 6px 12px;
+}
+
+/* ===== MODAL POLÍTICA / CONSENTIMIENTO ===== */
+.cnfl-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, .55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+    .cnfl-modal-overlay.open {
+        display: flex;
+    }
+
+.cnfl-modal-box {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+}
+
+.cnfl-modal-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .cnfl-modal-head h3 {
+        font-size: 16px;
+        margin: 0;
+        font-weight: 800;
+    }
+
+.cnfl-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--muted);
+}
+
+.cnfl-modal-body {
+    padding: 18px 20px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+}
+
+    .cnfl-modal-body h4 {
+        font-size: 14px;
+        margin: 12px 0 6px;
+    }
+
+    .cnfl-modal-body p {
+        margin: 6px 0;
+    }
+
+/* ===== TÉRMINOS Y CONDICIONES ===== */
+.cnfl-terms {
+    background: #f8f9fe;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    padding: 14px;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+    .cnfl-terms label {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        line-height: 1.4;
+    }
+
+        .cnfl-terms label input[type="checkbox"] {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+    .cnfl-terms a {
+        color: var(--blue);
+        text-decoration: underline;
+        font-weight: 700;
+    }
+
+/* ===== SELECT2 ===== */
+.select2-container {
+    width: 100% !important;
+}
+
+    .select2-container .select2-selection--single {
+        height: auto !important;
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding: 0 !important;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: normal;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    right: 0 !important;
+}
+
+.select2-container--open .select2-dropdown {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(16, 20, 40, .15) !important;
+    border: 1px solid var(--line) !important;
+    z-index: 99999 !important;
+}
+
+.select2-results__option {
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+    border-radius: 8px !important;
+    border: 1px solid var(--line) !important;
+    padding: 6px 10px !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
+}
+
+@media (max-width: 440px) {
+    .app-container {
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+
+@media (min-width: 441px) {
+    .app-container {
+        margin-top: 40px;
+    }
 }

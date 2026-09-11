@@ -3,24 +3,49 @@
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<div class="login-wrap" style="padding:24px 20px;">
-    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-        <a href="@Url.Action("Login", "Cuenta")" style="font-size:28px; color:var(--ink); text-decoration:none;">←</a>
-        <div class="login-h" style="font-size:24px; margin:0;">Recuperar Contraseña</div>
-    </div>
-    <div class="login-p" style="font-size:13px; margin-bottom:16px;">Ingresa tu correo y crea una nueva contraseña.</div>
+@section Styles {
+    <style>
+        .toggle-password {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: grid;
+            place-items: center;
+            color: #aab0be;
+            flex-shrink: 0;
+            transition: color .2s ease;
+        }
 
-    @if (ViewBag.Error != null)
-    {
-        <div style="background:#FFEBEE; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #FFCDD2;">
-            <span style="color:#D32F2F; font-weight:700;">❌ @ViewBag.Error</span>
-        </div>
-    }
+            .toggle-password:hover {
+                color: #1E23E6 !important;
+            }
+
+            .toggle-password svg {
+                width: 20px;
+                height: 20px;
+            }
+    </style>
+}
+
+<div class="login-wrap">
+    <div style="text-align:center;">
+        <div style="font-size:48px; margin-bottom:8px;">🔐</div>
+        <div class="login-h" style="margin-top:0;">Recuperar<br>contraseña</div>
+        <div class="login-p">Ingresa tu correo y restablece tu contraseña.</div>
+    </div>
 
     @if (TempData["Mensaje"] != null)
     {
         <div style="background:#E8F5E9; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #A5D6A7;">
             <span style="color:#2E7D32; font-weight:700;">✅ @TempData["Mensaje"]</span>
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div style="background:#FFEBEE; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #FFCDD2;">
+            <span style="color:#D32F2F; font-weight:700;">❌ @ViewBag.Error</span>
         </div>
     }
 
@@ -31,38 +56,73 @@
         <div class="field">
             <label>CORREO ELECTRÓNICO</label>
             <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
-                <input type="email" name="correo" placeholder="usuario@correo.com" required />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <path d="m22 7-10 5L2 7" />
+                </svg>
+                <input type="email" name="correo" placeholder="usuario@correo.com" autocomplete="off" required />
             </div>
-            <div style="font-size:11px; color:var(--muted); margin-top:4px;">Recibirás un enlace de verificación.</div>
         </div>
 
         <div class="field">
             <label>NUEVA CONTRASEÑA</label>
             <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="nuevaClave" placeholder="••••••••" required />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="10" width="16" height="10" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                </svg>
+                <input type="password" name="nuevaClave" id="passNueva" placeholder="••••••••" autocomplete="new-password" required minlength="6" />
+                <button type="button" class="toggle-password" data-target="passNueva" title="Mostrar/ocultar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
             </div>
-            <div style="font-size:11px; color:var(--muted); margin-top:4px;">Mínimo 6 caracteres.</div>
         </div>
 
         <div class="field">
             <label>CONFIRMAR CONTRASEÑA</label>
             <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="confirmarClave" placeholder="••••••••" required />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="10" width="16" height="10" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                </svg>
+                <input type="password" name="confirmarClave" id="passConfirmar" placeholder="••••••••" autocomplete="new-password" required minlength="6" />
+                <button type="button" class="toggle-password" data-target="passConfirmar" title="Mostrar/ocultar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
             </div>
-            <div style="font-size:11px; color:var(--muted); margin-top:4px;">Confirma tu nueva contraseña.</div>
         </div>
 
-        <button type="submit" class="btn btn-cta btn-block" style="margin-top:8px;">Restablecer Contraseña</button>
+        <button type="submit" class="btn btn-cta btn-block" style="margin-top:20px;">Restablecer contraseña</button>
     }
 
-    <div style="text-align:center; margin-top:16px;">
-        <a href="@Url.Action("Login", "Cuenta")" style="color:var(--blue); font-weight:700; font-size:13px;">Inicia sesión aquí</a>
-    </div>
-
-    <div class="login-foot" style="margin-top:16px;">
-        <span style="opacity:.7;">Consentimiento informado · Política de privacidad</span>
+    <div class="login-foot">
+        <a href="@Url.Action("Login", "Cuenta")">← Volver al inicio de sesión</a>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(function () {
+            $('.toggle-password').on('click', function () {
+                var targetId = $(this).data('target');
+                var $input = $('#' + targetId);
+                var esPassword = $input.attr('type') === 'password';
+
+                if (esPassword) {
+                    $input.attr('type', 'text');
+                    $(this).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>');
+                } else {
+                    $input.attr('type', 'password');
+                    $(this).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>');
+                }
+            });
+        });
+    </script>
+}
