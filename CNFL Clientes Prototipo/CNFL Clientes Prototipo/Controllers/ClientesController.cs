@@ -32,6 +32,56 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuario == null)
                 return HttpNotFound();
 
+            // NISEs del usuario
+            var nises = _db.NISEs
+                .Where(n => n.UsuarioId == usuarioId)
+                .ToList();
+
+            // Facturas del usuario (a través de sus NISEs)
+            var niseIds = nises.Select(n => n.NiseId).ToList();
+            var facturas = _db.Facturas
+                .Where(f => niseIds.Contains(f.NiseId))
+                .OrderByDescending(f => f.FechaEmision)
+                .ToList();
+
+            // Suscripciones activas
+            var suscripciones = _db.Suscripciones
+                .Where(s => s.UsuarioId == usuarioId && s.Activa)
+                .ToList();
+
+            // Últimos 5 pagos
+            var pagos = _db.Pagos
+                .Include("Factura")
+                .Where(p => p.UsuarioId == usuarioId)
+                .OrderByDescending(p => p.FechaCreacion)
+                .Take(5)
+                .ToList();
+
+            // Averías activas
+            var averiasActivas = _db.Averias
+                .Include("NISE")
+                .Where(a => a.UsuarioId == usuarioId
+                         && a.Estado != "Problema resuelto"
+                         && a.Estado != "Resuelto")
+                .OrderByDescending(a => a.FechaReporte)
+                .ToList();
+
+            // KPIs
+            ViewBag.TotalNISEs = nises.Count;
+            ViewBag.TotalFacturasPendientes = facturas.Count(f => !f.Pagada);
+            ViewBag.MontoPendiente = facturas.Where(f => !f.Pagada).Sum(f => (decimal?)f.Monto) ?? 0m;
+            ViewBag.TotalSuscripciones = suscripciones.Count;
+            ViewBag.TotalAveriasActivas = averiasActivas.Count;
+            ViewBag.NotificacionesNoLeidas = _db.Notificaciones
+                .Count(n => n.UsuarioId == usuarioId && !n.Leida);
+
+            // Listas
+            ViewBag.NISEs = nises;
+            ViewBag.UltimasFacturas = facturas.Take(3).ToList();
+            ViewBag.Suscripciones = suscripciones;
+            ViewBag.UltimosPagos = pagos;
+            ViewBag.AveriasActivas = averiasActivas;
+
             return View(usuario);
         }
 
@@ -490,6 +540,55 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             ViewBag.Mensaje = "Reporte de alumbrado enviado correctamente. Número de seguimiento: #" + averia.AveriaId;
             return View();
+        }
+
+        // ============================================================
+        // CALCULADORA DE CONSUMO
+        // ============================================================
+
+        // GET: Clientes/Calculadora
+        public ActionResult Calculadora()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            return View();
+        }
+
+        // ============================================================
+        // CHATBOT
+        // ============================================================
+
+        // GET: Clientes/Chatbot
+        public ActionResult Chatbot()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            return View();
+        }
+
+        // ============================================================
+        // HISTORIAL DE PAGOS
+        // ============================================================
+
+        // GET: Clientes/HistorialPagos
+        public ActionResult HistorialPagos()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            var pagos = _db.Pagos
+                .Include("Factura")
+                .Include("Factura.NISE")
+                .Where(p => p.UsuarioId == usuarioId)
+                .OrderByDescending(p => p.FechaCreacion)
+                .ToList();
+
+            return View(pagos);
         }
 
         // ============================================================

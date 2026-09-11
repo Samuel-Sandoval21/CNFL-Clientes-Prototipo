@@ -1,0 +1,213 @@
+﻿@{
+    ViewBag.Title = "Chatbot";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+@section Styles {
+    <style>
+        .cb-hero {
+            background: linear-gradient(135deg, #fef3e0, #fde2b8);
+            border-radius: 22px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 8px 20px -10px rgba(185,121,26,.4);
+            margin-top: 8px;
+        }
+
+            .cb-hero .bot {
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                background: #fff;
+                display: grid;
+                place-items: center;
+                font-size: 26px;
+                flex-shrink: 0;
+            }
+
+            .cb-hero h1 {
+                margin: 0;
+                font-size: 17px;
+                font-weight: 800;
+                color: #7a4d0e;
+            }
+
+            .cb-hero p {
+                margin: 4px 0 0;
+                font-size: 12px;
+                color: #b9791a;
+            }
+
+        .cb-chat {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            margin-top: 14px;
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .cb-msg {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+            .cb-msg.bot {
+                background: #eef0ff;
+                color: var(--ink);
+                border-bottom-left-radius: 4px;
+                align-self: flex-start;
+            }
+
+            .cb-msg.user {
+                background: var(--blue);
+                color: #fff;
+                border-bottom-right-radius: 4px;
+                align-self: flex-end;
+            }
+
+        .cb-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .cb-option {
+            background: #fff;
+            border: 1.5px solid var(--blue);
+            color: var(--blue);
+            font-weight: 700;
+            font-size: 12px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all .12s;
+        }
+
+            .cb-option:hover {
+                background: var(--blue);
+                color: #fff;
+            }
+
+        .cb-input-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .cb-input {
+            flex: 1;
+            border: 1.5px solid var(--line);
+            border-radius: 14px;
+            padding: 13px 15px;
+            font-size: 13.5px;
+            font-family: inherit;
+            outline: none;
+        }
+
+            .cb-input:focus {
+                border-color: var(--blue);
+            }
+
+        .cb-send {
+            background: var(--blue);
+            color: #fff;
+            border: 0;
+            width: 48px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            transition: transform .12s;
+        }
+
+            .cb-send:active {
+                transform: scale(.94);
+            }
+    </style>
+}
+
+<div class="cb-hero">
+    <div class="bot">🤖</div>
+    <div>
+        <h1>Chatbot CNFL</h1>
+        <p>Asistente virtual · En línea</p>
+    </div>
+</div>
+
+<div class="cb-chat" id="chat">
+    <div class="cb-msg bot">
+        ¡Hola! 👋 Soy el asistente virtual de CNFL. ¿En qué te puedo ayudar hoy?
+    </div>
+</div>
+
+<div class="cb-options" id="opciones">
+    <button class="cb-option" onclick="preguntar('¿Cómo pago mi factura?')">¿Cómo pago mi factura?</button>
+    <button class="cb-option" onclick="preguntar('¿Cómo reporto una avería?')">Reportar avería</button>
+    <button class="cb-option" onclick="preguntar('¿Qué es el NISE?')">¿Qué es el NISE?</button>
+    <button class="cb-option" onclick="preguntar('Horarios de atención')">Horarios</button>
+</div>
+
+<div class="cb-input-row">
+    <input type="text" id="msgInput" class="cb-input" placeholder="Escribí tu mensaje..." onkeypress="if(event.key==='Enter') enviar()" />
+    <button type="button" class="cb-send" onclick="enviar()">➤</button>
+</div>
+
+@section Scripts {
+    <script>
+        var respuestas = {
+            '¿cómo pago mi factura?': 'Podés pagar desde la pestaña <b>Facturas</b> en la app. Aceptamos tarjeta, SINPE Móvil e IBAN. 💳',
+            'reportar avería': 'Andá a la pestaña <b>Reportes</b> → <b>Reportar avería</b>. Llená el formulario y te asignaremos un número de seguimiento. ⚡',
+            '¿qué es el nise?': 'El <b>NISE</b> es tu Número de Identificación del Servicio Eléctrico. Lo encontrás en tu factura. 🔌',
+            'horarios de atención': 'Atendemos de <b>lunes a viernes de 7:00 a 17:00</b>. Emergencias 24/7 al 800-CNFL. 🕒',
+            'default': 'Gracias por tu mensaje. Un agente te contactará pronto. También podés llamar al <b>800-CNFL</b>. 📞'
+        };
+
+        function agregarMensaje(texto, tipo) {
+            var chat = document.getElementById('chat');
+            var msg = document.createElement('div');
+            msg.className = 'cb-msg ' + tipo;
+            msg.innerHTML = texto;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function buscarRespuesta(texto) {
+            var t = texto.toLowerCase();
+            for (var key in respuestas) {
+                if (key === 'default') continue;
+                if (t.indexOf(key.replace('¿', '').replace('?', '')) !== -1) {
+                    return respuestas[key];
+                }
+            }
+            return respuestas['default'];
+        }
+
+        function preguntar(texto) {
+            agregarMensaje(texto, 'user');
+            setTimeout(function () {
+                agregarMensaje(buscarRespuesta(texto), 'bot');
+            }, 500);
+        }
+
+        function enviar() {
+            var input = document.getElementById('msgInput');
+            var texto = input.value.trim();
+            if (!texto) return;
+            input.value = '';
+            preguntar(texto);
+        }
+    </script>
+}

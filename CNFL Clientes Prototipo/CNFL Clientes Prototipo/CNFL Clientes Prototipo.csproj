@@ -281,14 +281,14 @@
     <Content Include="Views\Admin\Dashboard.cshtml" />
     <Content Include="Views\Admin\Reportes.cshtml" />
     <Content Include="Views\Clientes\Inicio.cshtml" />
-    <Content Include="Views\Clientes\Chat.cshtml" />
+    <Content Include="Views\Clientes\Chatbot.cshtml" />
     <Content Include="Views\Clientes\Pagos.cshtml" />
     <Content Include="Views\Clientes\Tienda.cshtml" />
     <Content Include="Views\Clientes\Tramites.cshtml" />
     <Content Include="Views\Clientes\MiPerfil.cshtml" />
     <Content Include="Views\Clientes\Reportes.cshtml" />
     <Content Include="Views\Clientes\EditarDatos.cshtml" />
-    <Content Include="Views\Clientes\Suscripciones.cshtml" />
+    <Content Include="Views\Clientes\MisSuscripciones.cshtml" />
     <Content Include="Views\Clientes\Calculadora.cshtml" />
     <Content Include="Views\Clientes\MisNotificaciones.cshtml" />
     <Content Include="Views\Clientes\HistorialCompras.cshtml" />
@@ -368,6 +368,7 @@
     <Content Include="Views\Clientes\MapaAverias.cshtml" />
     <Content Include="Views\Clientes\TiposReportes.cshtml" />
     <Content Include="Views\Clientes\TiposReportesDetalle.cshtml" />
+    <Content Include="Views\Clientes\HistorialPagos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

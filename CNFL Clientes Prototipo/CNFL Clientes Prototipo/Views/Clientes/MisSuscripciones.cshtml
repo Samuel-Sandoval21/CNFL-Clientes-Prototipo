@@ -1,0 +1,222 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Suscripcion>
+
+@{
+    ViewBag.Title = "Mis Suscripciones";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+
+    var totalActivas = Model != null ? Model.Count(s => s.Activa) : 0;
+    var totalMensual = Model != null
+        ? Model.Where(s => s.Activa && s.MontoMensual.HasValue)
+               .Sum(s => s.MontoMensual.Value)
+        : 0m;
+}
+
+@section Styles {
+    <style>
+        .sub-hero {
+            background: linear-gradient(135deg, #eaf6fa, #d6ebf2);
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: 0 8px 20px -10px rgba(44,138,163,.3);
+            margin-top: 8px;
+        }
+
+            .sub-hero h1 {
+                margin: 0;
+                font-size: 20px;
+                font-weight: 800;
+                color: #1c6479;
+            }
+
+            .sub-hero p {
+                margin: 4px 0 0;
+                font-size: 12.5px;
+                color: #2c8aa3;
+            }
+
+        .sub-kpis {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .sub-kpi {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 12px 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .sub-kpi .lbl {
+                font-size: 10.5px;
+                font-weight: 800;
+                color: var(--muted);
+                letter-spacing: .3px;
+            }
+
+            .sub-kpi .val {
+                font-size: 18px;
+                font-weight: 800;
+                color: var(--ink);
+                margin-top: 3px;
+            }
+
+                .sub-kpi .val.ok {
+                    color: #2f8f3e;
+                }
+
+        .sub-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--ink);
+            margin: 22px 0 10px;
+            letter-spacing: -.01em;
+        }
+
+        .sub-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .sub-card .row1 {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .sub-card .name {
+                font-size: 14.5px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .sub-card .badge {
+                font-size: 10.5px;
+                font-weight: 800;
+                padding: 4px 10px;
+                border-radius: 999px;
+            }
+
+                .sub-card .badge.activa {
+                    background: #e9f7ec;
+                    color: #2f8f3e;
+                }
+
+                .sub-card .badge.inactiva {
+                    background: #fdecea;
+                    color: #d33;
+                }
+
+            .sub-card .meta {
+                font-size: 12px;
+                color: var(--muted);
+                margin-top: 8px;
+                line-height: 1.6;
+            }
+
+                .sub-card .meta b {
+                    color: var(--ink);
+                    font-weight: 700;
+                }
+
+            .sub-card .monto {
+                font-size: 16px;
+                font-weight: 800;
+                color: var(--blue);
+                margin-top: 8px;
+            }
+
+        .sub-empty {
+            background: #fff;
+            border: 1px dashed var(--line);
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+            .sub-empty .e {
+                font-size: 40px;
+                margin-bottom: 8px;
+            }
+
+            .sub-empty .t {
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .sub-empty .s {
+                font-size: 12.5px;
+                color: var(--muted);
+                margin-top: 5px;
+                line-height: 1.4;
+            }
+    </style>
+}
+
+<div class="sub-hero">
+    <h1>📦 Mis suscripciones</h1>
+    <p>Servicios contratados y suscripciones activas.</p>
+</div>
+
+<div class="sub-kpis">
+    <div class="sub-kpi">
+        <div class="lbl">ACTIVAS</div>
+        <div class="val ok">@totalActivas</div>
+    </div>
+    <div class="sub-kpi">
+        <div class="lbl">MONTO MENSUAL</div>
+        <div class="val">₡@totalMensual.ToString("N0")</div>
+    </div>
+</div>
+
+<div class="sub-title">Todas mis suscripciones</div>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var s in Model)
+    {
+        <div class="sub-card">
+            <div class="row1">
+                <div class="name">@s.Servicio</div>
+                @if (s.Activa)
+                {
+                    <div class="badge activa">Activa</div>
+                }
+                else
+                {
+                    <div class="badge inactiva">Inactiva</div>
+                }
+            </div>
+
+            <div class="meta">
+                📅 Inicio: <b>@s.FechaInicio.ToString("dd/MM/yyyy")</b>
+                @if (s.FechaFin.HasValue)
+                {
+                    <br>@:🔚 Fin: <b>@s.FechaFin.Value.ToString("dd/MM/yyyy")</b>
+                }
+            </div>
+
+            @if (s.MontoMensual.HasValue)
+            {
+                <div class="monto">₡@s.MontoMensual.Value.ToString("N0") / mes</div>
+            }
+        </div>
+    }
+}
+else
+{
+    <div class="sub-empty">
+        <div class="e">📦</div>
+        <div class="t">Sin suscripciones registradas</div>
+        <div class="s">Cuando contrates un servicio aparecerá acá con su estado y monto mensual.</div>
+    </div>
+}

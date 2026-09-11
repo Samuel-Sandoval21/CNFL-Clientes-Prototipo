@@ -3,28 +3,505 @@
 @{
     ViewBag.Title = "Mi Perfil";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
+
+    var nises = ViewBag.NISEs as List<CNFL_Clientes_Prototipo.Models.NISE> ?? new List<CNFL_Clientes_Prototipo.Models.NISE>();
+    var facturas = ViewBag.UltimasFacturas as List<CNFL_Clientes_Prototipo.Models.Factura> ?? new List<CNFL_Clientes_Prototipo.Models.Factura>();
+    var averias = ViewBag.AveriasActivas as List<CNFL_Clientes_Prototipo.Models.Averia> ?? new List<CNFL_Clientes_Prototipo.Models.Averia>();
+
+    var inicial = (Model.Nombre != null && Model.Nombre.Length > 0) ? Model.Nombre.Substring(0, 1).ToUpper() : "U";
 }
 
-<link rel="stylesheet" href="~/Content/cliente/perfil.css" />
+@section Styles {
+    <style>
+        .mp-hero {
+            background: linear-gradient(135deg, var(--blue), #2a4fd6);
+            border-radius: 22px;
+            padding: 22px 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 12px 30px -12px rgba(16,20,60,.45);
+            margin-top: 8px;
+        }
 
-<div class="perfil-container">
-    <h2>Mi Perfil</h2>
+        .mp-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.2);
+            display: grid;
+            place-items: center;
+            font-size: 26px;
+            font-weight: 800;
+            border: 2px solid rgba(255,255,255,.5);
+            flex-shrink: 0;
+        }
 
-    <div class="perfil-card">
-        <div class="perfil-avatar">
-            <span class="avatar-inicial">@(Session["Nombre"]?.ToString()?[0] ?? 'U')</span>
-        </div>
-        <div class="perfil-info">
-            <p><strong>Nombre:</strong> @Session["Nombre"]</p>
-            <p><strong>Cédula:</strong> @Session["Cedula"]</p>
-            <p><strong>Correo:</strong> @Model.Correo</p>
-            <p><strong>Teléfono:</strong> @Model.Telefono</p>
-            <p><strong>Fecha Registro:</strong> @Model.FechaRegistro.ToString("dd/MM/yyyy")</p>
-            <a href="@Url.Action("EditarDatos", "Clientes")" class="btn-editar">Editar Perfil</a>
-        </div>
+        .mp-hero .info h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+        }
+
+        .mp-hero .info .correo {
+            font-size: 12.5px;
+            opacity: .85;
+            margin-top: 4px;
+        }
+
+        .mp-hero .info .cedula {
+            font-size: 11.5px;
+            opacity: .75;
+            margin-top: 2px;
+        }
+
+        .mp-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--ink);
+            margin: 22px 0 10px;
+            letter-spacing: -.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .mp-title .cnt {
+                background: #eef0ff;
+                color: var(--blue);
+                font-size: 11px;
+                font-weight: 800;
+                padding: 2px 8px;
+                border-radius: 999px;
+            }
+
+        .mp-kpis {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .mp-kpi {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .mp-kpi .lbl {
+                font-size: 11px;
+                font-weight: 800;
+                color: var(--muted);
+                letter-spacing: .3px;
+            }
+
+            .mp-kpi .val {
+                font-size: 20px;
+                font-weight: 800;
+                color: var(--ink);
+                margin-top: 4px;
+            }
+
+                .mp-kpi .val.danger {
+                    color: #d33;
+                }
+
+                .mp-kpi .val.ok {
+                    color: #2f8f3e;
+                }
+
+            .mp-kpi .sub {
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+
+        .mp-nise {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .mp-nise .row1 {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .mp-nise .num {
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--blue);
+            }
+
+            .mp-nise .tipo {
+                font-size: 10.5px;
+                font-weight: 800;
+                padding: 4px 9px;
+                border-radius: 999px;
+                background: #eef0ff;
+                color: var(--blue);
+            }
+
+                .mp-nise .tipo.comercial {
+                    background: #fef3e0;
+                    color: #b9791a;
+                }
+
+            .mp-nise .dir {
+                font-size: 12.5px;
+                color: var(--muted);
+                margin-top: 6px;
+                line-height: 1.4;
+            }
+
+            .mp-nise .zona {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 3px;
+            }
+
+        .mp-quick {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+            .mp-quick a {
+                background: #fff;
+                border: 1px solid var(--line);
+                border-radius: 18px;
+                padding: 16px 14px;
+                text-decoration: none;
+                color: inherit;
+                box-shadow: var(--shadow-sm);
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                transition: transform .15s, box-shadow .2s;
+            }
+
+                .mp-quick a:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 22px -10px rgba(16,20,60,.25);
+                    text-decoration: none;
+                    color: inherit;
+                }
+
+            .mp-quick .ico {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: grid;
+                place-items: center;
+                font-size: 20px;
+            }
+
+            .mp-quick .t {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .mp-quick .s {
+                font-size: 11px;
+                color: var(--muted);
+                line-height: 1.3;
+            }
+
+            .mp-quick a.q1 .ico {
+                background: #eef0ff;
+            }
+
+            .mp-quick a.q2 .ico {
+                background: #eaf6fa;
+            }
+
+            .mp-quick a.q3 .ico {
+                background: #e9f7ec;
+            }
+
+            .mp-quick a.q4 .ico {
+                background: #fef3e0;
+            }
+
+            .mp-quick a.q5 .ico {
+                background: #f0eaf9;
+            }
+
+            .mp-quick a.q6 .ico {
+                background: #fdecea;
+            }
+
+        .mp-list {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 4px 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mp-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .mp-list-item:last-child {
+                border-bottom: 0;
+            }
+
+            .mp-list-item:hover {
+                background: #fafbff;
+                text-decoration: none;
+                color: inherit;
+            }
+
+            .mp-list-item .l {
+                font-size: 12.5px;
+                font-weight: 700;
+                color: var(--ink);
+            }
+
+            .mp-list-item .r {
+                font-size: 12.5px;
+                font-weight: 800;
+            }
+
+                .mp-list-item .r.pend {
+                    color: #d33;
+                }
+
+                .mp-list-item .r.pag {
+                    color: #2f8f3e;
+                }
+
+        .mp-empty {
+            background: #fff;
+            border: 1px dashed var(--line);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+            .mp-empty .e {
+                font-size: 28px;
+                margin-bottom: 6px;
+            }
+
+            .mp-empty .t {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .mp-empty .s {
+                font-size: 12px;
+                color: var(--muted);
+                margin-top: 4px;
+                line-height: 1.4;
+            }
+
+        .mp-btn-edit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--blue);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 14px;
+            padding: 14px;
+            border-radius: 14px;
+            margin: 20px 0 10px;
+            transition: transform .12s;
+        }
+
+            .mp-btn-edit:hover {
+                text-decoration: none;
+                color: #fff;
+                transform: scale(.98);
+            }
+
+        .mp-btn-logout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #fff;
+            color: #d33;
+            border: 1.5px solid #f5c6c6;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 14px;
+            padding: 14px;
+            border-radius: 14px;
+            margin: 0 0 30px;
+            cursor: pointer;
+            font-family: inherit;
+            width: 100%;
+            transition: transform .12s, background .15s;
+        }
+
+            .mp-btn-logout:hover {
+                background: #fdecea;
+                color: #d33;
+                text-decoration: none;
+                transform: scale(.98);
+            }
+
+            .mp-btn-logout:active {
+                transform: scale(.96);
+            }
+    </style>
+}
+
+<div class="mp-hero">
+    <div class="mp-avatar">@inicial</div>
+    <div class="info">
+        <h2>@Model.Nombre @Model.Apellidos</h2>
+        <div class="correo">✉️ @Model.Correo</div>
+        <div class="cedula">🆔 @Model.Cedula</div>
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/Scripts/cliente/perfil.js"></script>
+<div class="mp-title">Resumen de tu cuenta</div>
+<div class="mp-kpis">
+    <div class="mp-kpi">
+        <div class="lbl">NISEs ACTIVOS</div>
+        <div class="val">@ViewBag.TotalNISEs</div>
+        <div class="sub">Puntos de servicio</div>
+    </div>
+    <div class="mp-kpi">
+        <div class="lbl">FACTURAS PENDIENTES</div>
+        <div class="val @(ViewBag.TotalFacturasPendientes > 0 ? "danger" : "ok")">@ViewBag.TotalFacturasPendientes</div>
+        <div class="sub">₡@(((decimal)ViewBag.MontoPendiente).ToString("N0"))</div>
+    </div>
+    <div class="mp-kpi">
+        <div class="lbl">SUSCRIPCIONES</div>
+        <div class="val">@ViewBag.TotalSuscripciones</div>
+        <div class="sub">Servicios activos</div>
+    </div>
+    <div class="mp-kpi">
+        <div class="lbl">AVERÍAS ACTIVAS</div>
+        <div class="val @(ViewBag.TotalAveriasActivas > 0 ? "danger" : "ok")">@ViewBag.TotalAveriasActivas</div>
+        <div class="sub">Reportes en curso</div>
+    </div>
+</div>
+
+<div class="mp-title">
+    Mis NISEs <span class="cnt">@nises.Count</span>
+</div>
+
+@if (nises.Any())
+{
+    foreach (var n in nises)
+    {
+        var tipoClass = (n.TipoServicio != null && n.TipoServicio.ToLower().Contains("comercial")) ? "comercial" : "";
+        <div class="mp-nise">
+            <div class="row1">
+                <div class="num">🔌 NISE @n.NumeroNise</div>
+                <div class="tipo @tipoClass">@n.TipoServicio</div>
+            </div>
+            <div class="dir">📍 @n.Direccion</div>
+            <div class="zona">@n.Provincia · @n.Canton · @n.Distrito</div>
+        </div>
+    }
 }
+else
+{
+    <div class="mp-empty">
+        <div class="e">🔌</div>
+        <div class="t">Sin NISEs registrados</div>
+        <div class="s">Cuando se te asigne un NISE aparecerá acá automáticamente.</div>
+    </div>
+}
+
+<div class="mp-title">Accesos rápidos</div>
+<div class="mp-quick">
+    <a href="@Url.Action("Calculadora", "Clientes")" class="q1">
+        <div class="ico">🧮</div>
+        <div class="t">Calculadora</div>
+        <div class="s">Estimá tu consumo</div>
+    </a>
+    <a href="@Url.Action("MisSuscripciones", "Clientes")" class="q2">
+        <div class="ico">📦</div>
+        <div class="t">Suscripciones</div>
+        <div class="s">@ViewBag.TotalSuscripciones activas</div>
+    </a>
+    <a href="@Url.Action("HistorialPagos", "Clientes")" class="q3">
+        <div class="ico">🧾</div>
+        <div class="t">Historial compras</div>
+        <div class="s">Pagos y facturas</div>
+    </a>
+    <a href="@Url.Action("Chatbot", "Clientes")" class="q4">
+        <div class="ico">🤖</div>
+        <div class="t">Chatbot CNFL</div>
+        <div class="s">Ayuda inmediata</div>
+    </a>
+    <a href="@Url.Action("Reportes", "Clientes")" class="q5">
+        <div class="ico">📋</div>
+        <div class="t">Reportes</div>
+        <div class="s">Averías y consultas</div>
+    </a>
+    <a href="@Url.Action("Tienda", "Clientes")" class="q6">
+        <div class="ico">🛒</div>
+        <div class="t">Tienda CNFL</div>
+        <div class="s">Productos y servicios</div>
+    </a>
+</div>
+
+@if (facturas.Any())
+{
+    <div class="mp-title">Últimas facturas</div>
+    <div class="mp-list">
+        @foreach (var f in facturas)
+        {
+            <a href="@Url.Action("MisFacturas", "Clientes")" class="mp-list-item">
+                <div class="l">@f.NumeroFactura · @f.FechaEmision.ToString("dd/MM/yyyy")</div>
+                <div class="r @(f.Pagada ? "pag" : "pend")">
+                    ₡@f.Monto.ToString("N0") @(f.Pagada ? "✓" : "")
+                </div>
+            </a>
+        }
+    </div>
+}
+
+@if (averias.Any())
+{
+    <div class="mp-title">Averías en seguimiento</div>
+    <div class="mp-list">
+        @foreach (var a in averias)
+        {
+            <a href="@Url.Action("EstadoAveria", "Clientes", new { id = a.AveriaId })" class="mp-list-item">
+                <div class="l">#@a.AveriaId · @a.Tipo</div>
+                <div class="r pend">@a.Estado</div>
+            </a>
+        }
+    </div>
+}
+
+<a href="@Url.Action("EditarDatos", "Clientes")" class="mp-btn-edit">
+    ✏️ Editar Perfil
+</a>
+
+<button type="button" class="mp-btn-logout" onclick="cnflLogout()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+    Cerrar sesión
+</button>

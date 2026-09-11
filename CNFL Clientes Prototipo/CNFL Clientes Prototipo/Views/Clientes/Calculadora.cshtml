@@ -1,41 +1,195 @@
 ﻿@{
-    ViewBag.Title = "Calculadora Energética";
+    ViewBag.Title = "Calculadora";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<div class="calculadora-container">
-    <h2>Calculadora Energética</h2>
-    <p>Estima el costo de tus equipos eléctricos.</p>
+@section Styles {
+    <style>
+        .calc-hero {
+            background: linear-gradient(135deg, var(--blue), #2a4fd6);
+            border-radius: 22px;
+            padding: 22px 20px;
+            color: #fff;
+            box-shadow: 0 12px 30px -12px rgba(16,20,60,.45);
+            margin-top: 8px;
+        }
 
-    <div class="calculadora-card">
-        <div class="form-group">
-            <label>Equipo:</label>
-            <select id="equipoSelect">
-                <option value="100">Refrigeradora (100W)</option>
-                <option value="60">Televisor (60W)</option>
-                <option value="120">Lavadora (120W)</option>
-                <option value="1500">Microondas (1500W)</option>
-                <option value="2000">Aire acondicionado (2000W)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Horas al día:</label>
-            <input type="number" id="horasDia" value="4" min="1" max="24" />
-        </div>
-        <button id="calcularBtn" class="btn-calcular">Calcular</button>
+            .calc-hero h1 {
+                margin: 0;
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+            }
+
+            .calc-hero p {
+                margin: 6px 0 0;
+                font-size: 12.5px;
+                opacity: .9;
+                line-height: 1.4;
+            }
+
+        .calc-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .calc-field {
+            margin-bottom: 14px;
+        }
+
+        .calc-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .calc-input, .calc-select {
+            width: 100%;
+            border: 1.5px solid var(--line);
+            border-radius: 14px;
+            padding: 13px 15px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--ink);
+            outline: none;
+            background: #fff;
+            transition: border-color .15s;
+        }
+
+            .calc-input:focus, .calc-select:focus {
+                border-color: var(--blue);
+            }
+
+        .calc-btn {
+            width: 100%;
+            background: var(--blue);
+            color: #fff;
+            border: 0;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14px;
+            padding: 15px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: transform .12s;
+            margin-top: 6px;
+        }
+
+            .calc-btn:active {
+                transform: scale(.97);
+            }
+
+        .calc-result {
+            background: linear-gradient(135deg, #e9f7ec, #d6f0dc);
+            border: 1px solid #cdeed4;
+            border-radius: 18px;
+            padding: 18px;
+            margin-top: 16px;
+            display: none;
+        }
+
+            .calc-result.show {
+                display: block;
+            }
+
+            .calc-result .lbl {
+                font-size: 11.5px;
+                font-weight: 800;
+                color: #2f8f3e;
+                letter-spacing: .3px;
+            }
+
+            .calc-result .monto {
+                font-size: 28px;
+                font-weight: 800;
+                color: #1e6b2c;
+                margin-top: 4px;
+            }
+
+            .calc-result .detalle {
+                font-size: 12px;
+                color: #4a9a57;
+                margin-top: 8px;
+                line-height: 1.5;
+            }
+
+        .calc-tips {
+            background: #eef0ff;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: var(--blue);
+            line-height: 1.5;
+            margin-top: 14px;
+        }
+
+            .calc-tips b {
+                font-weight: 800;
+            }
+    </style>
+}
+
+<div class="calc-hero">
+    <h1>🧮 Calculadora de consumo</h1>
+    <p>Estimá el monto aproximado de tu factura según el consumo de tus electrodomésticos.</p>
+</div>
+
+<div class="calc-card">
+    <div class="calc-field">
+        <label class="calc-label">TARIFA (₡ / kWh)</label>
+        <select id="tarifa" class="calc-select">
+            <option value="78">Residencial — ₡78 / kWh</option>
+            <option value="95">Comercial — ₡95 / kWh</option>
+            <option value="110">Industrial — ₡110 / kWh</option>
+        </select>
     </div>
 
-    <div class="resultado-card" id="resultadoCard" style="display:none;">
-        <h3>Resultado estimado</h3>
-        <p><strong>Consumo mensual:</strong> <span id="consumoMensual">0</span> kWh</p>
-        <p><strong>Costo estimado:</strong> ₡<span id="costoEstimado">0</span></p>
+    <div class="calc-field">
+        <label class="calc-label">CONSUMO MENSUAL (kWh)</label>
+        <input type="number" id="kwh" class="calc-input" placeholder="Ej: 250" min="0" step="1" />
+    </div>
+
+    <button type="button" class="calc-btn" onclick="calcular()">Calcular monto</button>
+
+    <div class="calc-result" id="resultado">
+        <div class="lbl">MONTO ESTIMADO</div>
+        <div class="monto" id="monto">₡0</div>
+        <div class="detalle" id="detalle"></div>
+    </div>
+
+    <div class="calc-tips">
+        💡 <b>Tip:</b> Un hogar promedio consume entre 150 y 300 kWh al mes. Si tu consumo es mayor, revisá equipos como aire acondicionado, secadora o refrigeradora.
     </div>
 </div>
 
-@section Styles {
-    <link rel="stylesheet" href="~/Content/cliente/calculadora.css" />
-}
-
 @section Scripts {
-    <script src="~/Scripts/cliente/calculadora.js"></script>
+    <script>
+        function calcular() {
+            var kwh = parseFloat(document.getElementById('kwh').value) || 0;
+            var tarifa = parseFloat(document.getElementById('tarifa').value) || 0;
+
+            if (kwh <= 0) {
+                alert('Ingresá un consumo mayor a 0.');
+                return;
+            }
+
+            var subtotal = kwh * tarifa;
+            var iva = subtotal * 0.13;
+            var total = subtotal + iva;
+
+            document.getElementById('monto').innerText = '₡' + total.toLocaleString('es-CR', { maximumFractionDigits: 0 });
+            document.getElementById('detalle').innerHTML =
+                'Consumo: <b>' + kwh + ' kWh</b><br>' +
+                'Subtotal: ₡' + subtotal.toLocaleString('es-CR', { maximumFractionDigits: 0 }) + '<br>' +
+                'IVA (13%): ₡' + iva.toLocaleString('es-CR', { maximumFractionDigits: 0 });
+
+            document.getElementById('resultado').classList.add('show');
+        }
+    </script>
 }

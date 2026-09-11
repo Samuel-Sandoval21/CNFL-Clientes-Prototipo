@@ -1,0 +1,225 @@
+﻿@model List<CNFL_Clientes_Prototipo.Models.Pago>
+
+@{
+    ViewBag.Title = "Historial de Pagos";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+
+    var totalPagado = Model != null ? Model.Where(p => p.Estado == "Confirmado").Sum(p => (decimal?)p.Monto) ?? 0m : 0m;
+    var confirmados = Model != null ? Model.Count(p => p.Estado == "Confirmado") : 0;
+    var pendientes = Model != null ? Model.Count(p => p.Estado == "Pendiente") : 0;
+}
+
+@section Styles {
+    <style>
+        .hp-hero {
+            background: linear-gradient(135deg, #e9f7ec, #d6f0dc);
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: 0 8px 20px -10px rgba(47,143,62,.3);
+            margin-top: 8px;
+        }
+
+            .hp-hero h1 {
+                margin: 0;
+                font-size: 20px;
+                font-weight: 800;
+                color: #1e6b2c;
+            }
+
+            .hp-hero p {
+                margin: 4px 0 0;
+                font-size: 12.5px;
+                color: #4a9a57;
+            }
+
+        .hp-kpis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .hp-kpi {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 10px 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .hp-kpi .lbl {
+                font-size: 10px;
+                font-weight: 800;
+                color: var(--muted);
+                letter-spacing: .3px;
+            }
+
+            .hp-kpi .val {
+                font-size: 15px;
+                font-weight: 800;
+                color: var(--ink);
+                margin-top: 3px;
+            }
+
+                .hp-kpi .val.ok {
+                    color: #2f8f3e;
+                }
+
+                .hp-kpi .val.warn {
+                    color: #b9791a;
+                }
+
+        .hp-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--ink);
+            margin: 22px 0 10px;
+            letter-spacing: -.01em;
+        }
+
+        .hp-item {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .hp-item .row1 {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .hp-item .monto {
+                font-size: 15px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .hp-item .estado {
+                font-size: 10.5px;
+                font-weight: 800;
+                padding: 4px 9px;
+                border-radius: 999px;
+            }
+
+                .hp-item .estado.confirmado {
+                    background: #e9f7ec;
+                    color: #2f8f3e;
+                }
+
+                .hp-item .estado.pendiente {
+                    background: #fef3e0;
+                    color: #b9791a;
+                }
+
+                .hp-item .estado.rechazado {
+                    background: #fdecea;
+                    color: #d33;
+                }
+
+            .hp-item .meta {
+                font-size: 12px;
+                color: var(--muted);
+                margin-top: 6px;
+                line-height: 1.5;
+            }
+
+                .hp-item .meta b {
+                    color: var(--ink);
+                    font-weight: 700;
+                }
+
+        .hp-empty {
+            background: #fff;
+            border: 1px dashed var(--line);
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+            .hp-empty .e {
+                font-size: 40px;
+                margin-bottom: 8px;
+            }
+
+            .hp-empty .t {
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .hp-empty .s {
+                font-size: 12.5px;
+                color: var(--muted);
+                margin-top: 5px;
+                line-height: 1.4;
+            }
+    </style>
+}
+
+<div class="hp-hero">
+    <h1>🧾 Historial de pagos</h1>
+    <p>Todos tus pagos registrados en la app.</p>
+</div>
+
+<div class="hp-kpis">
+    <div class="hp-kpi">
+        <div class="lbl">TOTAL PAGADO</div>
+        <div class="val ok">₡@totalPagado.ToString("N0")</div>
+    </div>
+    <div class="hp-kpi">
+        <div class="lbl">CONFIRMADOS</div>
+        <div class="val">@confirmados</div>
+    </div>
+    <div class="hp-kpi">
+        <div class="lbl">PENDIENTES</div>
+        <div class="val warn">@pendientes</div>
+    </div>
+</div>
+
+<div class="hp-title">Todos los pagos</div>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var p in Model)
+    {
+        var estadoClass = "pendiente";
+        if (p.Estado == "Confirmado") { estadoClass = "confirmado"; }
+        else if (p.Estado == "Rechazado") { estadoClass = "rechazado"; }
+
+        var numFactura = p.Factura != null ? p.Factura.NumeroFactura : "N/A";
+
+        <div class="hp-item">
+            <div class="row1">
+                <div class="monto">₡@p.Monto.ToString("N0")</div>
+                <div class="estado @estadoClass">@p.Estado</div>
+            </div>
+            <div class="meta">
+                Factura: <b>@numFactura</b><br>
+                Método: <b>@p.Metodo</b><br>
+                Fecha: <b>@p.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</b>
+                @if (p.FechaConfirmacion.HasValue)
+                {
+                    <br>@:Confirmado: <b>@p.FechaConfirmacion.Value.ToString("dd/MM/yyyy HH:mm")</b>
+                }
+                @if (!string.IsNullOrEmpty(p.ReferenciaExterna))
+                {
+                    <br>@:Ref: <b>@p.ReferenciaExterna</b>
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="hp-empty">
+        <div class="e">🧾</div>
+        <div class="t">Sin pagos registrados</div>
+        <div class="s">Cuando realices tu primer pago aparecerá acá con su comprobante.</div>
+    </div>
+}
