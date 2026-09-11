@@ -3,38 +3,276 @@
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 }
 
-<link rel="stylesheet" href="~/Content/cliente/reportes.css" />
+@section Styles {
+    <style>
+        /* ============================================
+           REPORTES — Vista principal
+           ============================================ */
+        .rep-header {
+            margin-bottom: 18px;
+        }
 
-<div class="reportes-container">
-    <h2>Reportes</h2>
+            .rep-header h1 {
+                font-size: 24px;
+                font-weight: 800;
+                color: var(--blue);
+                margin: 0;
+                letter-spacing: -0.02em;
+            }
 
-    <div class="reportes-grid">
-        <a href="@Url.Action("ReportarAveria", "Clientes")" class="reporte-card">
-            <span class="reporte-icon">⚡</span>
-            <div>
-                <strong>Reportar avería eléctrica</strong>
-                <span>Problemas con tu servicio</span>
-            </div>
-        </a>
+            .rep-header .rep-sub {
+                font-size: 13px;
+                color: var(--muted);
+                margin-top: 6px;
+                line-height: 1.5;
+                max-width: 320px;
+            }
 
-        <a href="@Url.Action("ReportarAlumbrado", "Clientes")" class="reporte-card">
-            <span class="reporte-icon">💡</span>
-            <div>
-                <strong>Reportar alumbrado público</strong>
-                <span>Fallas en tu comunidad</span>
-            </div>
-        </a>
+        /* Card grande con imagen */
+        .rep-card {
+            display: block;
+            position: relative;
+            height: 140px;
+            border-radius: 22px;
+            overflow: hidden;
+            text-decoration: none;
+            color: #fff;
+            margin-bottom: 14px;
+            box-shadow: 0 12px 28px -14px rgba(16, 20, 60, .35);
+            transition: transform .15s ease;
+            cursor: pointer;
+        }
 
-        <a href="#" class="reporte-card" onclick="alert('Historial de reportes')">
-            <span class="reporte-icon">📋</span>
-            <div>
-                <strong>Historial de reportes</strong>
-                <span>Seguimiento de tus reportes</span>
-            </div>
-        </a>
-    </div>
+            .rep-card:hover {
+                transform: translateY(-2px);
+                text-decoration: none;
+                color: #fff;
+            }
+
+            .rep-card:active {
+                transform: scale(.98);
+            }
+
+            /* Imagen de fondo */
+            .rep-card .rep-bg {
+                position: absolute;
+                inset: 0;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+
+            /* Overlay para que el texto se lea */
+            .rep-card .rep-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(90deg, rgba(0, 20, 130, .92) 0%, rgba(0, 20, 130, .70) 45%, rgba(0, 20, 130, .25) 100%);
+            }
+
+            /* Contenido */
+            .rep-card .rep-content {
+                position: relative;
+                z-index: 2;
+                padding: 18px 20px;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .rep-card .rep-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, .18);
+                backdrop-filter: blur(6px);
+                display: grid;
+                place-items: center;
+                font-size: 22px;
+            }
+
+            .rep-card .rep-title {
+                font-size: 17px;
+                font-weight: 800;
+                line-height: 1.15;
+                letter-spacing: -0.01em;
+                margin-top: 6px;
+            }
+
+            .rep-card .rep-desc {
+                font-size: 12px;
+                opacity: .92;
+                margin-top: 3px;
+                line-height: 1.35;
+            }
+
+            .rep-card .rep-arrow {
+                position: absolute;
+                top: 18px;
+                right: 18px;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, .22);
+                backdrop-filter: blur(6px);
+                display: grid;
+                place-items: center;
+            }
+
+                .rep-card .rep-arrow svg {
+                    width: 16px;
+                    height: 16px;
+                }
+
+            /* Variante: card grande */
+            .rep-card.tall {
+                height: 160px;
+            }
+
+            /* Card simple (sin imagen, para "Historial") */
+            .rep-card.plain {
+                background: #fff;
+                color: var(--ink);
+                border: 1px solid var(--line);
+                box-shadow: var(--shadow-sm);
+                display: flex;
+                align-items: center;
+                padding: 0;
+                height: auto;
+                margin-bottom: 14px;
+            }
+
+                .rep-card.plain:hover {
+                    color: var(--ink);
+                }
+
+                .rep-card.plain .p-icon {
+                    width: 52px;
+                    height: 52px;
+                    border-radius: 14px;
+                    background: #eef0ff;
+                    display: grid;
+                    place-items: center;
+                    margin: 14px 14px 14px 16px;
+                    flex: none;
+                    font-size: 24px;
+                }
+
+                .rep-card.plain .p-body {
+                    flex: 1;
+                    padding: 14px 16px 14px 0;
+                }
+
+                .rep-card.plain .p-title {
+                    font-weight: 800;
+                    font-size: 14px;
+                    color: var(--ink);
+                    line-height: 1.2;
+                }
+
+                .rep-card.plain .p-desc {
+                    font-size: 12px;
+                    color: var(--muted);
+                    margin-top: 3px;
+                    line-height: 1.35;
+                }
+
+                .rep-card.plain .p-chev {
+                    color: #c3c8d4;
+                    margin-right: 14px;
+                }
+    </style>
+}
+
+<!-- Header -->
+<div class="rep-header">
+    <h1>Reportes</h1>
+    <div class="rep-sub">Reportá averías, consultá el estado y seguí tus reportes.</div>
 </div>
 
+<!-- Card 1: Reportar avería eléctrica -->
+<a href="@Url.Action("ReportarAveria", "Clientes")" class="rep-card tall">
+    <div class="rep-bg" style="background-image: url('https://www.cnfl.go.cr/contenido/imagenes/menu_averias/electrico600.jpg');"></div>
+    <div class="rep-overlay"></div>
+    <div class="rep-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
+    </div>
+    <div class="rep-content">
+        <div class="rep-icon">⚡</div>
+        <div>
+            <div class="rep-title">Reportar avería eléctrica</div>
+            <div class="rep-desc">Sin energía, baja tensión, poste caído y más</div>
+        </div>
+    </div>
+</a>
+
+<!-- Card 2: Reportar alumbrado público -->
+<a href="@Url.Action("ReportarAlumbrado", "Clientes")" class="rep-card tall">
+    <div class="rep-bg" style="background-image: url('https://www.cnfl.go.cr/contenido/imagenes/menu_averias/alumbrado600.jpg');"></div>
+    <div class="rep-overlay"></div>
+    <div class="rep-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
+    </div>
+    <div class="rep-content">
+        <div class="rep-icon">💡</div>
+        <div>
+            <div class="rep-title">Reportar alumbrado público</div>
+            <div class="rep-desc">Fallas en tu comunidad, lámparas y postes</div>
+        </div>
+    </div>
+</a>
+
+<!-- Card 3: Historial de reportes (simple) -->
+<a href="@Url.Action("HistorialReportes", "Clientes")" class="rep-card plain">
+    <div class="p-icon">📋</div>
+    <div class="p-body">
+        <div class="p-title">Historial de reportes</div>
+        <div class="p-desc">Seguí el estado de tus reportes anteriores</div>
+    </div>
+    <div class="p-chev">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
+    </div>
+</a>
+
+<!-- Card 4: Consultar avería (simple) -->
+<a href="@Url.Action("ConsultarAveria", "Clientes")" class="rep-card plain">
+    <div class="p-icon" style="background:#e9f7ec;">🔎</div>
+    <div class="p-body">
+        <div class="p-title">Consultar avería</div>
+        <div class="p-desc">Ingresá el número de reporte para ver su estado</div>
+    </div>
+    <div class="p-chev">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
+    </div>
+</a>
+
+<!-- Card 5: Mapa de averías (simple) -->
+<a href="@Url.Action("MapaAverias", "Clientes")" class="rep-card plain">
+    <div class="p-icon" style="background:#eef6ff;">🗺️</div>
+    <div class="p-body">
+        <div class="p-title">Mapa de averías</div>
+        <div class="p-desc">Vé las averías activas en tu sector</div>
+    </div>
+    <div class="p-chev">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
+    </div>
+</a>
+
 @section Scripts {
-    <script src="~/Scripts/cliente/reportes.js"></script>
+    <script>
+        // Si alguna imagen de fondo de CNFL no carga, usamos un degradado por defecto
+        document.querySelectorAll('.rep-card').forEach(function (card) {
+            var bg = card.querySelector('.rep-bg');
+            if (!bg) return;
+            var url = bg.style.backgroundImage;
+            var test = new Image();
+            test.onerror = function () {
+                // Si falla la imagen, aplicamos un degradado azul
+                bg.style.background = 'linear-gradient(135deg, #001482, #1E23E6)';
+            };
+            // Extrae la URL del url('...')
+            var m = url.match(/url\(['"]?(.*?)['"]?\)/);
+            if (m && m[1]) test.src = m[1];
+        });
+    </script>
 }

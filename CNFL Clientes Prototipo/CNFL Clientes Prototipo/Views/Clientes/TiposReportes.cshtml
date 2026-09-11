@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "Tipos de Reportes";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+}
+
+@section Styles {
+    <style>
+        .tr-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--blue);
+            text-decoration: none;
+            margin-bottom: 14px;
+        }
+
+            .tr-back:hover {
+                text-decoration: underline;
+            }
+
+        .tr-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--blue);
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .tr-header .tr-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        .tr-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .tr-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px 14px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: var(--shadow-sm);
+            transition: transform .15s, box-shadow .2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .tr-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 22px -10px rgba(16,20,60,.25);
+                text-decoration: none;
+                color: inherit;
+            }
+
+            .tr-card .ico {
+                width: 52px;
+                height: 52px;
+                border-radius: 16px;
+                display: grid;
+                place-items: center;
+                font-size: 24px;
+            }
+
+            .tr-card .t {
+                font-size: 13.5px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .tr-card .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                line-height: 1.4;
+            }
+
+            .tr-card.c1 .ico {
+                background: #fdecea;
+            }
+
+            .tr-card.c2 .ico {
+                background: #fef3e0;
+            }
+
+            .tr-card.c3 .ico {
+                background: #eaf6fa;
+            }
+
+            .tr-card.c4 .ico {
+                background: #eef0ff;
+            }
+
+            .tr-card.c5 .ico {
+                background: #f0eaf9;
+            }
+
+            .tr-card.c6 .ico {
+                background: #e9f7ec;
+            }
+    </style>
+}
+
+<div class="tr-header" style="text-align:left;">
+    <a href="@Url.Action("Reportes", "Clientes")" class="tr-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg>
+        Volver a Reportes
+    </a>
+    <h1>Tipos de reportes</h1>
+    <div class="tr-sub">Elegí el tipo de avería que querés reportar.</div>
+</div>
+
+<div class="tr-grid">
+    <a href="@Url.Action("ReportarAveria", "Clientes", new { tipo = "Poste caído" })" class="tr-card c1">
+        <div class="ico">⚡</div>
+        <div class="t">Poste caído</div>
+        <div class="s">Poste en el suelo o inclinado</div>
+    </a>
+
+    <a href="@Url.Action("ReportarAveria", "Clientes", new { tipo = "Cable cortado" })" class="tr-card c2">
+        <div class="ico">🔌</div>
+        <div class="t">Cable cortado</div>
+        <div class="s">Cables eléctricos sueltos</div>
+    </a>
+
+    <a href="@Url.Action("ReportarAveria", "Clientes", new { tipo = "Transformador" })" class="tr-card c3">
+        <div class="ico">🔋</div>
+        <div class="t">Transformador</div>
+        <div class="s">Falla o ruido en transformador</div>
+    </a>
+
+    <a href="@Url.Action("ReportarAveria", "Clientes", new { tipo = "Cortocircuito" })" class="tr-card c4">
+        <div class="ico">💥</div>
+        <div class="t">Cortocircuito</div>
+        <div class="s">Chispas o apagones</div>
+    </a>
+
+    <a href="@Url.Action("ReportarAveria", "Clientes", new { tipo = "Iluminación pública" })" class="tr-card c5">
+        <div class="ico">💡</div>
+        <div class="t">Iluminación</div>
+        <div class="s">Lámparas públicas fundidas</div>
+    </a>
+
+    <a href="@Url.Action("ReportarAveria", "Clientes", new { tipo = "Otro" })" class="tr-card c6">
+        <div class="ico">📝</div>
+        <div class="t">Otro</div>
+        <div class="s">Otro tipo de problema</div>
+    </a>
+</div>

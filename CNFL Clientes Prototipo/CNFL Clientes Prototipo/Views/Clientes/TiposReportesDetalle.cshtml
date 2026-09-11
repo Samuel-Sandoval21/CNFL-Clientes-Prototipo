@@ -1,11 +1,12 @@
 ﻿@{
-    ViewBag.Title = "Reportar Alumbrado";
+    ViewBag.Title = "Detalle del Reporte";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    var tipo = ViewBag.Tipo ?? "Avería";
 }
 
 @section Styles {
     <style>
-        .ra-back {
+        .td-back {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -16,11 +17,11 @@
             margin-bottom: 14px;
         }
 
-            .ra-back:hover {
+            .td-back:hover {
                 text-decoration: underline;
             }
 
-        .ra-header h1 {
+        .td-header h1 {
             font-size: 24px;
             font-weight: 800;
             color: var(--blue);
@@ -28,14 +29,14 @@
             letter-spacing: -0.02em;
         }
 
-        .ra-header .ra-sub {
+        .td-header .td-sub {
             font-size: 13px;
             color: var(--muted);
             margin-top: 6px;
             line-height: 1.5;
         }
 
-        .ra-card {
+        .td-card {
             background: #fff;
             border: 1px solid var(--line);
             border-radius: 20px;
@@ -44,36 +45,36 @@
             box-shadow: var(--shadow-sm);
         }
 
-            .ra-card .ico-big {
+            .td-card .ico-big {
                 width: 64px;
                 height: 64px;
                 border-radius: 20px;
-                background: #f0eaf9;
+                background: #eef0ff;
                 display: grid;
                 place-items: center;
                 font-size: 30px;
                 margin-bottom: 14px;
             }
 
-            .ra-card .tipo-nombre {
+            .td-card .tipo-nombre {
                 font-size: 18px;
                 font-weight: 800;
                 color: var(--ink);
                 margin-bottom: 6px;
             }
 
-            .ra-card .tipo-desc {
+            .td-card .tipo-desc {
                 font-size: 13px;
                 color: var(--muted);
                 line-height: 1.6;
                 margin-bottom: 18px;
             }
 
-        .ra-field {
+        .td-field {
             margin-bottom: 14px;
         }
 
-        .ra-label {
+        .td-label {
             font-size: 12px;
             font-weight: 800;
             color: var(--muted);
@@ -81,7 +82,7 @@
             margin-bottom: 7px;
         }
 
-        .ra-input, .ra-textarea, .ra-select {
+        .td-input, .td-textarea {
             width: 100%;
             border: 1.5px solid var(--line);
             border-radius: 14px;
@@ -94,16 +95,16 @@
             transition: border-color .15s;
         }
 
-            .ra-input:focus, .ra-textarea:focus, .ra-select:focus {
+            .td-input:focus, .td-textarea:focus {
                 border-color: var(--blue);
             }
 
-        .ra-textarea {
+        .td-textarea {
             resize: vertical;
             min-height: 90px;
         }
 
-        .ra-btn {
+        .td-btn {
             width: 100%;
             background: var(--blue);
             color: #fff;
@@ -118,11 +119,11 @@
             transition: transform .12s;
         }
 
-            .ra-btn:active {
+            .td-btn:active {
                 transform: scale(.97);
             }
 
-        .ra-btn-sec {
+        .td-btn-sec {
             width: 100%;
             background: #fff;
             color: var(--blue);
@@ -139,7 +140,7 @@
             text-align: center;
         }
 
-            .ra-btn-sec:hover {
+            .td-btn-sec:hover {
                 background: #f5f7ff;
                 text-decoration: none;
                 color: var(--blue);
@@ -147,54 +148,37 @@
     </style>
 }
 
-<div class="ra-header" style="text-align:left;">
-    <a href="@Url.Action("TiposReportes", "Clientes")" class="ra-back">
+<div class="td-header" style="text-align:left;">
+    <a href="@Url.Action("TiposReportes", "Clientes")" class="td-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg>
         Volver a tipos
     </a>
-    <h1>Reportar alumbrado</h1>
-    <div class="ra-sub">Reportá una lámpara fundida, intermitente o un poste de alumbrado con problemas.</div>
+    <h1>Detalle del reporte</h1>
+    <div class="td-sub">Completá los datos para enviar tu reporte de avería.</div>
 </div>
 
-@using (Html.BeginForm("ReportarAlumbrado", "Clientes", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-
-    <div class="ra-card">
-        <div class="ico-big">💡</div>
-        <div class="tipo-nombre">Alumbrado público</div>
-        <div class="tipo-desc">
-            Indicá la ubicación exacta y el problema que presenta el alumbrado para que un operador lo revise.
-        </div>
-
-        <div class="ra-field">
-            <label class="ra-label">NÚMERO DE NISE</label>
-            <input type="text" name="NISE" class="ra-input" placeholder="Ej: 123456789" required />
-        </div>
-
-        <div class="ra-field">
-            <label class="ra-label">DIRECCIÓN</label>
-            <input type="text" name="Direccion" class="ra-input" placeholder="Ej: San José, Avenida 5, frente al parque" required />
-        </div>
-
-        <div class="ra-field">
-            <label class="ra-label">TIPO DE PROBLEMA</label>
-            <select name="TipoProblema" class="ra-select" required>
-                <option value="">Seleccioná una opción</option>
-                <option value="Lámpara fundida">Lámpara fundida</option>
-                <option value="Lámpara intermitente">Lámpara intermitente</option>
-                <option value="Poste sin luz">Poste sin luz</option>
-                <option value="Lámpara encendida de día">Lámpara encendida de día</option>
-                <option value="Otro">Otro</option>
-            </select>
-        </div>
-
-        <div class="ra-field">
-            <label class="ra-label">DESCRIPCIÓN</label>
-            <textarea name="Descripcion" class="ra-textarea" placeholder="Describí brevemente el problema..."></textarea>
-        </div>
-
-        <button type="submit" class="ra-btn">Enviar reporte</button>
-        <a href="@Url.Action("TiposReportes", "Clientes")" class="ra-btn-sec">Cancelar</a>
+<div class="td-card">
+    <div class="ico-big">⚡</div>
+    <div class="tipo-nombre">@tipo</div>
+    <div class="tipo-desc">
+        Reportá este tipo de avería. Un operador revisará tu caso y te notificará cuando esté en camino.
     </div>
-}
+
+    <div class="td-field">
+        <label class="td-label">NÚMERO DE NISE</label>
+        <input type="text" class="td-input" placeholder="Ej: 123456789" />
+    </div>
+
+    <div class="td-field">
+        <label class="td-label">DIRECCIÓN</label>
+        <input type="text" class="td-input" placeholder="Ej: San José, Avenida 5" />
+    </div>
+
+    <div class="td-field">
+        <label class="td-label">DESCRIPCIÓN</label>
+        <textarea class="td-textarea" placeholder="Describí brevemente el problema..."></textarea>
+    </div>
+
+    <button type="button" class="td-btn" onclick="alert('Reporte enviado correctamente.')">Enviar reporte</button>
+    <a href="@Url.Action("TiposReportes", "Clientes")" class="td-btn-sec">Cancelar</a>
+</div>

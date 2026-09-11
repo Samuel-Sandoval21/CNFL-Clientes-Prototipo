@@ -11,6 +11,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
     {
         private CNFLDbContext _db = new CNFLDbContext();
 
+        // ============================================================
+        // PERFIL Y DATOS DEL USUARIO
+        // ============================================================
+
         // GET: Clientes/MiPerfil
         public ActionResult MiPerfil()
         {
@@ -31,6 +35,64 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View(usuario);
         }
 
+        // GET: Clientes/EditarPerfil -> redirige al formulario de editar datos
+        public ActionResult EditarPerfil()
+        {
+            return RedirectToAction("EditarDatos");
+        }
+
+        // GET: Clientes/EditarDatos
+        public ActionResult EditarDatos()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            var usuario = _db.Usuarios
+                .Include("NISEs")
+                .Include("Averias")
+                .Include("Notificaciones")
+                .Include("Suscripciones")
+                .FirstOrDefault(u => u.UsuarioId == usuarioId);
+
+            if (usuario == null)
+                return HttpNotFound();
+
+            return View(usuario);
+        }
+
+        // POST: Clientes/EditarDatos
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarDatos(Usuario model)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var usuario = _db.Usuarios.Find(usuarioId);
+            if (usuario == null)
+                return HttpNotFound();
+
+            usuario.Nombre = model.Nombre;
+            usuario.Apellidos = model.Apellidos;
+            usuario.Correo = model.Correo;
+            usuario.Telefono = model.Telefono;
+
+            _db.SaveChanges();
+
+            return RedirectToAction("MiPerfil");
+        }
+
+        // ============================================================
+        // FACTURAS Y PAGOS
+        // ============================================================
+
         // GET: Clientes/MisFacturas
         public ActionResult MisFacturas()
         {
@@ -41,6 +103,19 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var usuario = _db.Usuarios.Find(usuarioId);
             if (usuario == null)
                 return HttpNotFound();
+
+            var nisesIds = _db.NISEs.Where(n => n.UsuarioId == usuarioId).Select(n => n.NiseId).ToList();
+            var facturas = _db.Facturas.Where(f => nisesIds.Contains(f.NiseId)).OrderByDescending(f => f.FechaEmision).ToList();
+
+            return View(facturas);
+        }
+
+        // GET: Clientes/Pagos
+        public ActionResult Pagos()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
 
             var nisesIds = _db.NISEs.Where(n => n.UsuarioId == usuarioId).Select(n => n.NiseId).ToList();
             var facturas = _db.Facturas.Where(f => nisesIds.Contains(f.NiseId)).OrderByDescending(f => f.FechaEmision).ToList();
@@ -75,66 +150,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return Json(new { success = false, message = "La factura no existe o ya fue pagada." });
         }
 
-        // GET: Clientes/ReportarAveria
-        public ActionResult ReportarAveria()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
-            ViewBag.NISEs = new SelectList(nises, "NiseId", "NumeroNise");
-            return View();
-        }
-
-        // POST: Clientes/ReportarAveria
-        [HttpPost]
-        public ActionResult ReportarAveria(Averia averia)
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            if (ModelState.IsValid)
-            {
-                averia.UsuarioId = usuarioId.Value;
-                averia.FechaReporte = DateTime.Now;
-                averia.Estado = "Ingresado";
-                _db.Averias.Add(averia);
-                _db.SaveChanges();
-
-                var notificacion = new Notificacion
-                {
-                    UsuarioId = usuarioId.Value,
-                    Titulo = "Avería reportada",
-                    Mensaje = $"Su reporte de avería #{averia.AveriaId} ha sido ingresado correctamente.",
-                    Fecha = DateTime.Now,
-                    Leida = false,
-                    Tipo = "Averia"
-                };
-                _db.Notificaciones.Add(notificacion);
-                _db.SaveChanges();
-
-                ViewBag.Mensaje = "Avería reportada exitosamente. Número de seguimiento: #" + averia.AveriaId;
-            }
-
-            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
-            ViewBag.NISEs = new SelectList(nises, "NiseId", "NumeroNise");
-            return View(averia);
-        }
-
-        // GET: Clientes/EstadoAveria
-        public ActionResult EstadoAveria(int id)
-        {
-            var averia = _db.Averias
-                .Include("NISE")
-                .FirstOrDefault(a => a.AveriaId == id);
-
-            if (averia == null)
-                return HttpNotFound();
-
-            return View(averia);
-        }
+        // ============================================================
+        // NOTIFICACIONES Y SUSCRIPCIONES
+        // ============================================================
 
         // GET: Clientes/MisNotificaciones
         public ActionResult MisNotificaciones()
@@ -171,69 +189,32 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View(suscripciones);
         }
 
-        // GET: Clientes/Pagos
-        public ActionResult Pagos()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            var nisesIds = _db.NISEs.Where(n => n.UsuarioId == usuarioId).Select(n => n.NiseId).ToList();
-            var facturas = _db.Facturas.Where(f => nisesIds.Contains(f.NiseId)).OrderByDescending(f => f.FechaEmision).ToList();
-
-            return View(facturas);
-        }
-
-        // POST: Clientes/EditarDatos
+        // POST: Clientes/SuscribirServicio
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditarDatos(Usuario model)
+        public JsonResult SuscribirServicio(string servicio, decimal? montoMensual)
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+                return Json(new { success = false, message = "Debe iniciar sesión." });
 
-            if (!ModelState.IsValid)
+            var suscripcion = new Suscripcion
             {
-                return View(model);
-            }
+                UsuarioId = usuarioId.Value,
+                Servicio = servicio,
+                FechaInicio = DateTime.Now,
+                Activa = true,
+                MontoMensual = montoMensual
+            };
 
-            var usuario = _db.Usuarios.Find(usuarioId);
-            if (usuario == null)
-                return HttpNotFound();
-
-            usuario.Nombre = model.Nombre;
-            usuario.Apellidos = model.Apellidos;
-            usuario.Correo = model.Correo;
-            usuario.Telefono = model.Telefono;
-
+            _db.Suscripciones.Add(suscripcion);
             _db.SaveChanges();
 
-            return RedirectToAction("MiPerfil");
+            return Json(new { success = true, message = "Suscripción activada correctamente." });
         }
 
-        // GET: Clientes/ReportarAlumbrado
-        public ActionResult ReportarAlumbrado()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            return View();
-        }
-
-        // POST: Clientes/ReportarAlumbrado
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ReportarAlumbrado(string Tipo, string Descripcion, string Direccion)
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            ViewBag.Mensaje = "Reporte de alumbrado enviado correctamente. Gracias por su colaboración.";
-            return View();
-        }
+        // ============================================================
+        // DASHBOARD, REPORTES Y TIENDA
+        // ============================================================
 
         // GET: Clientes/Dashboard
         public ActionResult Dashboard()
@@ -255,7 +236,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
-        // GET: Clientes/Tienda (Productos y Servicios)
+        // GET: Clientes/Tienda
         public ActionResult Tienda()
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -265,10 +246,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
-        // ============================================================
         // GET: Clientes/DetalleProducto?id=tienda
-        // Vista genérica para cada categoría de Productos y Servicios
-        // ============================================================
         public ActionResult DetalleProducto(string id)
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -280,7 +258,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             ViewBag.CategoriaId = id;
 
-            // Título y subtítulo según la categoría
             var titulos = new Dictionary<string, string>
             {
                 { "tienda", "Tienda CNFL" },
@@ -319,55 +296,205 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
-        // GET: Clientes/EditarPerfil -> redirige al formulario de editar datos
-        public ActionResult EditarPerfil()
-        {
-            return RedirectToAction("EditarDatos");
-        }
+        // ============================================================
+        // REPORTES DE AVERÍAS — FLUJO COMPLETO
+        // ============================================================
 
-        // GET: Clientes/EditarDatos
-        public ActionResult EditarDatos()
+        // GET: Clientes/TiposReportes
+        // Vista intermedia que muestra los tipos de avería disponibles
+        public ActionResult TiposReportes()
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            var usuario = _db.Usuarios
-                .Include("NISEs")
-                .Include("Averias")
-                .Include("Notificaciones")
-                .Include("Suscripciones")
-                .FirstOrDefault(u => u.UsuarioId == usuarioId);
-
-            if (usuario == null)
-                return HttpNotFound();
-
-            return View(usuario);
+            return View();
         }
 
-        // POST: Clientes/SuscribirServicio
-        [HttpPost]
-        public JsonResult SuscribirServicio(string servicio, decimal? montoMensual)
+        // GET: Clientes/TiposReportesDetalle?tipo=Poste caído
+        // Vista de confirmación con formulario prellenado
+        public ActionResult TiposReportesDetalle(string tipo)
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null)
-                return Json(new { success = false, message = "Debe iniciar sesión." });
+                return RedirectToAction("Login", "Cuenta");
 
-            var suscripcion = new Suscripcion
-            {
-                UsuarioId = usuarioId.Value,
-                Servicio = servicio,
-                FechaInicio = DateTime.Now,
-                Activa = true,
-                MontoMensual = montoMensual
-            };
-
-            _db.Suscripciones.Add(suscripcion);
-            _db.SaveChanges();
-
-            return Json(new { success = true, message = "Suscripción activada correctamente." });
+            ViewBag.Tipo = string.IsNullOrWhiteSpace(tipo) ? "Avería" : tipo;
+            return View();
         }
 
+        // GET: Clientes/ReportarAveria
+        // Acepta ?tipo=X para prellenar el tipo de avería
+        public ActionResult ReportarAveria(string tipo)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
+            ViewBag.NISEs = new SelectList(nises, "NiseId", "NumeroNise");
+            ViewBag.Tipo = tipo ?? "";
+            return View();
+        }
+
+        // POST: Clientes/ReportarAveria
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ReportarAveria(Averia averia)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            if (ModelState.IsValid)
+            {
+                averia.UsuarioId = usuarioId.Value;
+                averia.FechaReporte = DateTime.Now;
+                averia.Estado = "Ingresado";
+                _db.Averias.Add(averia);
+                _db.SaveChanges();
+
+                var notificacion = new Notificacion
+                {
+                    UsuarioId = usuarioId.Value,
+                    Titulo = "Avería reportada",
+                    Mensaje = $"Su reporte de avería #{averia.AveriaId} ha sido ingresado correctamente.",
+                    Fecha = DateTime.Now,
+                    Leida = false,
+                    Tipo = "Averia"
+                };
+                _db.Notificaciones.Add(notificacion);
+                _db.SaveChanges();
+
+                ViewBag.Mensaje = "Avería reportada exitosamente. Número de seguimiento: #" + averia.AveriaId;
+            }
+
+            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
+            ViewBag.NISEs = new SelectList(nises, "NiseId", "NumeroNise");
+            return View(averia);
+        }
+
+        // GET: Clientes/EstadoAveria/5
+        public ActionResult EstadoAveria(int id)
+        {
+            var averia = _db.Averias
+                .Include("NISE")
+                .FirstOrDefault(a => a.AveriaId == id);
+
+            if (averia == null)
+                return HttpNotFound();
+
+            return View(averia);
+        }
+
+        // GET: Clientes/ConsultarAveria
+        public ActionResult ConsultarAveria()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            return View();
+        }
+
+        // GET: Clientes/GenerarComprobante
+        public ActionResult GenerarComprobante()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            return View();
+        }
+
+        // GET: Clientes/MapaAverias
+        public ActionResult MapaAverias()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            return View();
+        }
+
+        // GET: Clientes/HistorialReportes
+        public ActionResult HistorialReportes()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            var averias = _db.Averias
+                .Include("NISE")
+                .Where(a => a.UsuarioId == usuarioId)
+                .OrderByDescending(a => a.FechaReporte)
+                .ToList();
+
+            return View(averias);
+        }
+
+        // ============================================================
+        // ALUMBRADO PÚBLICO
+        // ============================================================
+
+        // GET: Clientes/ReportarAlumbrado
+        public ActionResult ReportarAlumbrado()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            return View();
+        }
+
+        // POST: Clientes/ReportarAlumbrado
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ReportarAlumbrado(string NISE, string TipoProblema, string Direccion, string Descripcion)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Cuenta");
+
+            // Validación mínima
+            if (string.IsNullOrWhiteSpace(Direccion) || string.IsNullOrWhiteSpace(TipoProblema))
+            {
+                ViewBag.Error = "Debe completar la dirección y el tipo de problema.";
+                return View();
+            }
+
+            // Registrar como avería tipo "Iluminación pública"
+            var averia = new Averia
+            {
+                UsuarioId = usuarioId.Value,
+                Tipo = "Iluminación pública",
+                Descripcion = $"Tipo: {TipoProblema}. Dirección: {Direccion}. Detalle: {Descripcion}",
+                FechaReporte = DateTime.Now,
+                Estado = "Ingresado"
+            };
+
+            _db.Averias.Add(averia);
+            _db.SaveChanges();
+
+            var notificacion = new Notificacion
+            {
+                UsuarioId = usuarioId.Value,
+                Titulo = "Reporte de alumbrado enviado",
+                Mensaje = $"Su reporte de alumbrado #{averia.AveriaId} fue registrado. Gracias por su colaboración.",
+                Fecha = DateTime.Now,
+                Leida = false,
+                Tipo = "Averia"
+            };
+            _db.Notificaciones.Add(notificacion);
+            _db.SaveChanges();
+
+            ViewBag.Mensaje = "Reporte de alumbrado enviado correctamente. Número de seguimiento: #" + averia.AveriaId;
+            return View();
+        }
+
+        // ============================================================
+        // DISPOSE
+        // ============================================================
         protected override void Dispose(bool disposing)
         {
             if (disposing)

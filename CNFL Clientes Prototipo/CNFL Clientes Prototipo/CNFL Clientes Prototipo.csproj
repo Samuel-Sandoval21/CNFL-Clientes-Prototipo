@@ -363,6 +363,11 @@
     <Content Include="Views\Clientes\MisFacturas.cshtml" />
     <Content Include="Views\Clientes\ReportarAlumbrado.cshtml" />
     <Content Include="Views\Clientes\DetalleProducto.cshtml" />
+    <Content Include="Views\Clientes\HistorialReportes.cshtml" />
+    <Content Include="Views\Clientes\ConsultarAveria.cshtml" />
+    <Content Include="Views\Clientes\MapaAverias.cshtml" />
+    <Content Include="Views\Clientes\TiposReportes.cshtml" />
+    <Content Include="Views\Clientes\TiposReportesDetalle.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
