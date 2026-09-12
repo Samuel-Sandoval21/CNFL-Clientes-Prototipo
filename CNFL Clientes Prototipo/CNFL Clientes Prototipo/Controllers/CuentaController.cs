@@ -102,61 +102,89 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
         // POST: Cuenta/Registro
         [HttpPost]
-        public ActionResult Registro(Usuario usuario, string confirmarContraseña,
+        public ActionResult Registro(Usuario usuario, string confirmarContraseña, string NombreCompleto,
                                      string Provincia, string Canton, string Distrito)
         {
-            if (ModelState.IsValid)
+            // Separar "Nombre completo" en Nombre / Apellidos (formato costarricense: 2 apellidos)
+            if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
-                if (usuario.Contraseña != confirmarContraseña)
+                var partes = NombreCompleto.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (partes.Length >= 3)
                 {
-                    ModelState.AddModelError("", "Las contraseñas no coinciden.");
-                    return View(usuario);
+                    usuario.Apellidos = string.Join(" ", partes.Skip(partes.Length - 2));
+                    usuario.Nombre = string.Join(" ", partes.Take(partes.Length - 2));
                 }
-
-                if (_db.Usuarios.Any(u => u.Cedula == usuario.Cedula))
+                else if (partes.Length == 2)
                 {
-                    ModelState.AddModelError("Cedula", "Ya existe un usuario con esta cédula.");
-                    return View(usuario);
+                    usuario.Nombre = partes[0];
+                    usuario.Apellidos = partes[1];
                 }
-
-                if (_db.Usuarios.Any(u => u.Correo == usuario.Correo))
+                else
                 {
-                    ModelState.AddModelError("Correo", "Ya existe un usuario con este correo.");
-                    return View(usuario);
+                    usuario.Nombre = NombreCompleto.Trim();
+                    usuario.Apellidos = "";
                 }
-
-                if (!string.IsNullOrWhiteSpace(usuario.NombreUsuario) &&
-                    _db.Usuarios.Any(u => u.NombreUsuario == usuario.NombreUsuario))
-                {
-                    ModelState.AddModelError("NombreUsuario", "Ya existe un usuario con este nombre de usuario.");
-                    return View(usuario);
-                }
-
-                usuario.Provincia = Provincia;
-                usuario.Canton = Canton;
-                usuario.Distrito = Distrito;
-                usuario.FechaRegistro = DateTime.Now;
-                usuario.Activo = true;
-
-                _db.Usuarios.Add(usuario);
-                _db.SaveChanges();
-
-                var rolCliente = _db.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
-                if (rolCliente != null)
-                {
-                    var usuarioRol = new UsuarioRol
-                    {
-                        UsuarioId = usuario.UsuarioId,
-                        RolId = rolCliente.RolId
-                    };
-                    _db.UsuarioRoles.Add(usuarioRol);
-                    _db.SaveChanges();
-                }
-
-                TempData["Mensaje"] = "Cuenta creada exitosamente. Ahora puedes iniciar sesión.";
-                return RedirectToAction("Login");
             }
-            return View(usuario);
+
+            if (string.IsNullOrWhiteSpace(usuario.Nombre))
+            {
+                ModelState.AddModelError("", "Debe ingresar su nombre completo.");
+                ViewBag.NombreCompleto = NombreCompleto;
+                return View(usuario);
+            }
+
+            if (usuario.Contraseña != confirmarContraseña)
+            {
+                ModelState.AddModelError("", "Las contraseñas no coinciden.");
+                ViewBag.NombreCompleto = NombreCompleto;
+                return View(usuario);
+            }
+
+            if (_db.Usuarios.Any(u => u.Cedula == usuario.Cedula))
+            {
+                ModelState.AddModelError("Cedula", "Ya existe un usuario con esta cédula.");
+                ViewBag.NombreCompleto = NombreCompleto;
+                return View(usuario);
+            }
+
+            if (_db.Usuarios.Any(u => u.Correo == usuario.Correo))
+            {
+                ModelState.AddModelError("Correo", "Ya existe un usuario con este correo.");
+                ViewBag.NombreCompleto = NombreCompleto;
+                return View(usuario);
+            }
+
+            if (!string.IsNullOrWhiteSpace(usuario.NombreUsuario) &&
+                _db.Usuarios.Any(u => u.NombreUsuario == usuario.NombreUsuario))
+            {
+                ModelState.AddModelError("NombreUsuario", "Ya existe un usuario con este nombre de usuario.");
+                ViewBag.NombreCompleto = NombreCompleto;
+                return View(usuario);
+            }
+
+            usuario.Provincia = Provincia;
+            usuario.Canton = Canton;
+            usuario.Distrito = Distrito;
+            usuario.FechaRegistro = DateTime.Now;
+            usuario.Activo = true;
+
+            _db.Usuarios.Add(usuario);
+            _db.SaveChanges();
+
+            var rolCliente = _db.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
+            if (rolCliente != null)
+            {
+                var usuarioRol = new UsuarioRol
+                {
+                    UsuarioId = usuario.UsuarioId,
+                    RolId = rolCliente.RolId
+                };
+                _db.UsuarioRoles.Add(usuarioRol);
+                _db.SaveChanges();
+            }
+
+            TempData["Mensaje"] = "Cuenta creada exitosamente. Ahora puedes iniciar sesión.";
+            return RedirectToAction("Login");
         }
 
         // GET: Cuenta/RecuperarClave

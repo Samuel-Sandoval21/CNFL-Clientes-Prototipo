@@ -27,6 +27,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .Include("Averias")
                 .Include("Notificaciones")
                 .Include("Suscripciones")
+                .Include("ActividadEconomica")
                 .FirstOrDefault(u => u.UsuarioId == usuarioId);
 
             if (usuario == null)
@@ -96,6 +97,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .Include("Averias")
                 .Include("Notificaciones")
                 .Include("Suscripciones")
+                .Include("ActividadEconomica")
                 .FirstOrDefault(u => u.UsuarioId == usuarioId);
 
             if (usuario == null)
@@ -107,26 +109,49 @@ namespace CNFL_Clientes_Prototipo.Controllers
         // POST: Clientes/EditarDatos
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditarDatos(Usuario model)
+        public ActionResult EditarDatos(Usuario model, string NombreCompleto)
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
 
-            if (!ModelState.IsValid)
-                return View(model);
-
             var usuario = _db.Usuarios.Find(usuarioId);
             if (usuario == null)
                 return HttpNotFound();
 
-            usuario.Nombre = model.Nombre;
-            usuario.Apellidos = model.Apellidos;
+            // Separar "Nombre completo" en Nombre / Apellidos
+            if (!string.IsNullOrWhiteSpace(NombreCompleto))
+            {
+                var partes = NombreCompleto.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (partes.Length >= 3)
+                {
+                    usuario.Apellidos = string.Join(" ", partes.Skip(partes.Length - 2));
+                    usuario.Nombre = string.Join(" ", partes.Take(partes.Length - 2));
+                }
+                else if (partes.Length == 2)
+                {
+                    usuario.Nombre = partes[0];
+                    usuario.Apellidos = partes[1];
+                }
+                else
+                {
+                    usuario.Nombre = NombreCompleto.Trim();
+                    usuario.Apellidos = "";
+                }
+            }
+
             usuario.Correo = model.Correo;
+            usuario.CorreoSecundario = model.CorreoSecundario;
             usuario.Telefono = model.Telefono;
+            usuario.TelefonoSecundario = model.TelefonoSecundario;
+            usuario.ActividadEconomicaId = model.ActividadEconomicaId;
 
             _db.SaveChanges();
 
+            // Mantener sincronizado el nombre mostrado en el header/menú
+            Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
+
+            TempData["Mensaje"] = "Datos actualizados correctamente.";
             return RedirectToAction("MiPerfil");
         }
 

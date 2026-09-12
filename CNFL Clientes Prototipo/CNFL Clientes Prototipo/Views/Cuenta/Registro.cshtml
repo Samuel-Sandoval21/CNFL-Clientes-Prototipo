@@ -8,7 +8,6 @@
 @section Styles {
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        /* Fix Select2 */
         .select2-container {
             width: 100% !important;
         }
@@ -62,7 +61,6 @@
             font-size: 13px !important;
         }
 
-        /* Selects de ubicación */
         .field select.native-select {
             width: 100%;
             border: none;
@@ -80,7 +78,13 @@
                 background: #fff;
             }
 
-        /* Botón mostrar/ocultar contraseña */
+        .field .hint {
+            font-size: 11px;
+            color: #aab0be;
+            margin-top: 4px;
+            padding-left: 4px;
+        }
+
         .toggle-password {
             background: none;
             border: none;
@@ -138,25 +142,17 @@
             </div>
         </div>
 
-        <!-- 2. NOMBRE -->
+        <!-- 2. NOMBRE COMPLETO -->
         <div class="field">
-            <label>NOMBRE *</label>
+            <label>NOMBRE COMPLETO *</label>
             <div class="inp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                <input type="text" name="Nombre" placeholder="Su nombre" autocomplete="off" required />
+                <input type="text" name="NombreCompleto" value="@ViewBag.NombreCompleto" placeholder="Ej: María José Rodríguez Vargas" autocomplete="off" required />
             </div>
+            <div class="hint">Incluya nombre(s) y ambos apellidos</div>
         </div>
 
-        <!-- 3. APELLIDOS -->
-        <div class="field">
-            <label>APELLIDOS *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                <input type="text" name="Apellidos" placeholder="Sus apellidos" autocomplete="off" required />
-            </div>
-        </div>
-
-        <!-- 4. SEXO -->
+        <!-- 3. SEXO -->
         <div class="field">
             <label>SEXO *</label>
             <div style="display:flex; gap:18px; align-items:center; padding-left:8px;">
@@ -165,43 +161,25 @@
             </div>
         </div>
 
-        <!-- 5. CORREO 1 -->
+        <!-- 4. CORREO -->
         <div class="field">
-            <label>CORREO 1 *</label>
+            <label>CORREO *</label>
             <div class="inp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
                 <input type="email" name="Correo" placeholder="usuario@correo.com" autocomplete="off" required />
             </div>
         </div>
 
-        <!-- 6. CORREO 2 -->
+        <!-- 5. TELÉFONO -->
         <div class="field">
-            <label>CORREO 2 (OPCIONAL)</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
-                <input type="email" name="CorreoSecundario" placeholder="otro@correo.com" autocomplete="off" />
-            </div>
-        </div>
-
-        <!-- 7. TELÉFONO 1 -->
-        <div class="field">
-            <label>TELÉFONO 1 *</label>
+            <label>TELÉFONO *</label>
             <div class="inp">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
                 <input type="text" name="Telefono" placeholder="8888-8888" autocomplete="off" required />
             </div>
         </div>
 
-        <!-- 8. TELÉFONO 2 -->
-        <div class="field">
-            <label>TELÉFONO 2 (OPCIONAL)</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-                <input type="text" name="TelefonoSecundario" placeholder="8888-0000" autocomplete="off" />
-            </div>
-        </div>
-
-        <!-- 9. NOMBRE DE USUARIO -->
+        <!-- 6. NOMBRE DE USUARIO -->
         <div class="field">
             <label>NOMBRE DE USUARIO *</label>
             <div class="inp">
@@ -210,16 +188,17 @@
             </div>
         </div>
 
-        <!-- 10. ACTIVIDAD ECONÓMICA -->
+        <!-- 7. ACTIVIDAD ECONÓMICA (OPCIONAL) -->
         <div class="field">
-            <label>ACTIVIDAD ECONÓMICA *</label>
+            <label>ACTIVIDAD ECONÓMICA (OPCIONAL)</label>
             <div class="inp" style="padding:6px 14px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3z" /><path d="M3 11h18v10H3z" /></svg>
-                <select id="actividadEconomica" name="ActividadEconomicaId" style="width:100%;" required></select>
+                <select id="actividadEconomica" name="ActividadEconomicaId" style="width:100%;"></select>
             </div>
+            <div class="hint">Si no la conoce ahora, puede completarla luego en Editar Perfil</div>
         </div>
 
-        <!-- 11. UBICACIÓN -->
+        <!-- 8. UBICACIÓN -->
         <div class="field" style="display:flex; gap:8px;">
             <div style="flex:1;">
                 <label>PROVINCIA *</label>
@@ -247,7 +226,7 @@
             </div>
         </div>
 
-        <!-- 12. CONTRASEÑA -->
+        <!-- 9. CONTRASEÑA -->
         <div class="field">
             <label>CONTRASEÑA *</label>
             <div class="inp">
@@ -262,7 +241,7 @@
             </div>
         </div>
 
-        <!-- 13. CONFIRMAR CONTRASEÑA -->
+        <!-- 10. CONFIRMAR CONTRASEÑA -->
         <div class="field">
             <label>CONFIRMAR CONTRASEÑA *</label>
             <div class="inp">
@@ -277,7 +256,7 @@
             </div>
         </div>
 
-        <!-- 14. TÉRMINOS -->
+        <!-- 11. TÉRMINOS -->
         <div style="background:#f8f9fe; border-radius:12px; border:1px solid #EDEFF3; padding:14px; margin-top:14px; display:flex; flex-direction:column; gap:12px;">
             <label style="display:flex; align-items:flex-start; gap:10px; font-size:13px; font-weight:600; cursor:pointer; line-height:1.5; color:#0E1116;">
                 <input type="checkbox" name="AceptaPolitica" value="true" required style="width:18px; height:18px; margin-top:2px; flex-shrink:0; cursor:pointer; accent-color:#1E23E6;" />
@@ -312,34 +291,31 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(function () {
-       // ============================================
-// Select2 Actividad Económica — carga con AJAX
-// ============================================
-$('#actividadEconomica').select2({
-    placeholder: 'Seleccione o busque una actividad...',
-    allowClear: true,
-    width: '100%',
-    minimumInputLength: 0,
-    language: {
-        noResults: function () { return "Sin resultados"; },
-        searching: function () { return "Buscando..."; },
-        inputTooShort: function () { return "Escriba para buscar..."; }
-    },
-    ajax: {
-        url: '@Url.Action("SearchActividades", "Cuenta")',
-        dataType: 'json',
-        delay: 250,
-        data: function (params) {
-            return { q: params.term || '' };
-        },
-        processResults: function (data) {
-            return { results: data };
-        },
-        cache: true
-    }
-});
+            $('#actividadEconomica').select2({
+                placeholder: 'Seleccione o busque una actividad (opcional)...',
+                allowClear: true,
+                width: '100%',
+                minimumInputLength: 0,
+                language: {
+                    noResults: function () { return "Sin resultados"; },
+                    searching: function () { return "Buscando..."; },
+                    inputTooShort: function () { return "Escriba para buscar..."; }
+                },
+                ajax: {
+                    url: '@Url.Action("SearchActividades", "Cuenta")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return { q: params.term || '' };
+                    },
+                    processResults: function (data) {
+                        return { results: data };
+                    },
+                    cache: true
+                }
+            });
 
-            // Provincia / Cantón / Distrito — Costa Rica completo (7 provincias, 82 cantones, 481 distritos)
+            // Provincia / Cantón / Distrito — Costa Rica completo
             const dataCR = {
                 "San José": {
                     "San José": ["Carmen", "Merced", "Hospital", "Catedral", "Zapote", "San Francisco de Dos Ríos", "Uruca", "Mata Redonda", "Pavas", "Hatillo", "San Sebastián"],

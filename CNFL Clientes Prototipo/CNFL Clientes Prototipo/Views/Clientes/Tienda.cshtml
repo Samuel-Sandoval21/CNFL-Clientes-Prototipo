@@ -10,27 +10,27 @@
         /* ═══ CARRUSEL ═══ */
         .tn-carousel {
             position: relative;
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
             margin-top: 8px;
-            box-shadow: 0 10px 24px -12px rgba(16,20,60,.4);
+            box-shadow: 0 14px 30px -14px rgba(16,20,60,.45);
         }
 
         .tn-track {
             display: flex;
-            transition: transform .4s ease;
+            transition: transform .4s cubic-bezier(.4,0,.2,1);
             touch-action: pan-y;
         }
 
         .tn-slide {
             flex: 0 0 100%;
-            min-height: 140px;
-            padding: 20px 18px;
+            min-height: 154px;
+            padding: 22px 20px;
             color: #fff;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             position: relative;
             overflow: hidden;
             cursor: pointer;
@@ -39,34 +39,41 @@
             .tn-slide::after {
                 content: "";
                 position: absolute;
-                right: -50px;
-                top: -50px;
-                width: 160px;
-                height: 160px;
-                background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+                right: -60px;
+                top: -60px;
+                width: 190px;
+                height: 190px;
+                background: radial-gradient(circle, rgba(255,255,255,.20), transparent 70%);
             }
 
             .tn-slide .ico {
-                font-size: 28px;
+                width: 44px;
+                height: 44px;
+                border-radius: 14px;
+                background: rgba(255,255,255,.22);
+                backdrop-filter: blur(6px);
+                display: grid;
+                place-items: center;
+                font-size: 21px;
                 margin-bottom: 2px;
             }
 
             .tn-slide .t {
-                font-size: 17px;
+                font-size: 18px;
                 font-weight: 800;
                 letter-spacing: -.01em;
             }
 
             .tn-slide .s {
                 font-size: 12px;
-                opacity: .88;
+                opacity: .9;
                 line-height: 1.4;
-                max-width: 85%;
+                max-width: 82%;
             }
 
         .tn-dots {
             position: absolute;
-            bottom: 10px;
+            bottom: 12px;
             left: 0;
             right: 0;
             display: flex;
@@ -80,12 +87,12 @@
                 height: 6px;
                 border-radius: 50%;
                 background: rgba(255,255,255,.45);
-                transition: .2s;
+                transition: .25s;
             }
 
                 .tn-dots span.active {
                     background: #fff;
-                    width: 18px;
+                    width: 20px;
                     border-radius: 4px;
                 }
 
@@ -94,7 +101,7 @@
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding: 14px 2px 4px;
+            padding: 16px 2px 6px;
             scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
         }
@@ -108,171 +115,227 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            background: #f4f6fb;
+            background: #fff;
             color: var(--ink);
-            border: 1px solid var(--line);
+            border: 1.5px solid var(--line);
             font-family: inherit;
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: 800;
-            padding: 8px 14px;
+            padding: 9px 15px;
             border-radius: 999px;
             cursor: pointer;
             white-space: nowrap;
             transition: .15s;
             text-decoration: none;
+            box-shadow: var(--shadow-sm);
         }
 
             .tn-chip.active {
-                background: #2f8f3e;
+                background: linear-gradient(135deg, var(--orange), #ff8a5c);
                 color: #fff;
-                border-color: #2f8f3e;
+                border-color: transparent;
+                box-shadow: 0 8px 16px -6px rgba(255,105,45,.55);
             }
 
             .tn-chip:hover {
                 text-decoration: none;
             }
 
-        /* ═══ SECCIONES ═══ */
+        /* ═══ ENCABEZADO DE SECCIÓN ═══ */
         .tn-section {
             scroll-margin-top: 70px;
+            margin-top: 24px;
         }
 
-        .ti-section-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: var(--ink);
-            margin: 20px 0 10px;
-            letter-spacing: -.01em;
+        .tn-sec-head {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
-            .ti-section-title .cnt {
-                background: #e9f7ec;
-                color: #2f8f3e;
-                font-size: 10.5px;
-                font-weight: 800;
-                padding: 2px 8px;
-                border-radius: 999px;
+            .tn-sec-head .badge-ico {
+                width: 30px;
+                height: 30px;
+                border-radius: 10px;
+                display: grid;
+                place-items: center;
+                font-size: 15px;
+                flex-shrink: 0;
             }
 
-        .ti-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            .tn-sec-head .txt {
+                flex: 1;
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--ink);
+                letter-spacing: -.01em;
+            }
+
+            .tn-sec-head .cnt {
+                font-size: 10.5px;
+                font-weight: 800;
+                padding: 3px 9px;
+                border-radius: 999px;
+                flex-shrink: 0;
+            }
+
+        /* ═══ FILAS DE PRODUCTOS/SERVICIOS ═══ */
+        .tn-rows {
+            display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
-        .ti-card {
+        .tn-row {
             background: #fff;
             border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 12px 12px;
+            border-radius: 16px;
+            padding: 13px 14px;
+            display: flex;
+            align-items: center;
+            gap: 13px;
             text-decoration: none;
             color: inherit;
             box-shadow: var(--shadow-sm);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            transition: transform .15s, box-shadow .2s;
-            min-height: 108px;
+            transition: transform .13s, box-shadow .2s;
         }
 
-            .ti-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 18px -8px rgba(16,20,60,.25);
+            .tn-row:hover {
+                transform: translateX(3px);
+                box-shadow: 0 8px 18px -8px rgba(16,20,60,.22);
                 text-decoration: none;
                 color: inherit;
             }
 
-            .ti-card .ico {
-                width: 36px;
-                height: 36px;
-                border-radius: 10px;
+            .tn-row .ico {
+                width: 44px;
+                height: 44px;
+                border-radius: 13px;
                 display: grid;
                 place-items: center;
-                font-size: 18px;
-                background: #eef0ff;
+                font-size: 20px;
                 flex-shrink: 0;
             }
 
-            .ti-card .t {
-                font-size: 11.5px;
+            .tn-row .body {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .tn-row .t {
+                font-size: 13px;
                 font-weight: 800;
                 color: var(--ink);
-                line-height: 1.2;
+                line-height: 1.25;
             }
 
-            .ti-card .s {
-                font-size: 10px;
+            .tn-row .s {
+                font-size: 11px;
                 color: var(--muted);
-                line-height: 1.3;
+                margin-top: 2px;
             }
 
-            /* Colores por categoría */
-            .ti-card.c1 .ico {
-                background: #fdecea;
+            .tn-row .chev {
+                color: #c7cbd6;
+                flex-shrink: 0;
             }
 
-            .ti-card.c2 .ico {
-                background: #eaf6fa;
-            }
+                .tn-row .chev svg {
+                    width: 18px;
+                    height: 18px;
+                }
 
-            .ti-card.c3 .ico {
-                background: #e9f7ec;
-            }
+        /* Paletas por grupo de sección (colores oficiales CNFL + auxiliares) */
+        .pal-hogar .ico {
+            background: #eaf6fa;
+            color: var(--sky);
+        }
 
-            .ti-card.c4 .ico {
-                background: #fef3e0;
-            }
+        .pal-hogar .badge-ico {
+            background: #eaf6fa;
+            color: var(--sky);
+        }
 
-            .ti-card.c5 .ico {
-                background: #f0eaf9;
-            }
+        .pal-hogar .cnt {
+            background: #eaf6fa;
+            color: #2a8aa3;
+        }
 
-            .ti-card.c6 .ico {
-                background: #eef0ff;
-            }
+        .pal-productos .ico {
+            background: #fef3e0;
+            color: var(--orange);
+        }
 
-            .ti-card.c7 .ico {
-                background: #fdecea;
-            }
+        .pal-productos .badge-ico {
+            background: #fef3e0;
+            color: var(--orange);
+        }
 
-            .ti-card.c8 .ico {
-                background: #e9f7ec;
-            }
+        .pal-productos .cnt {
+            background: #fef3e0;
+            color: #b9791a;
+        }
 
-            .ti-card.c9 .ico {
-                background: #fef3e0;
-            }
+        .pal-servicios .ico {
+            background: #eef0ff;
+            color: var(--blue);
+        }
 
-            .ti-card.c10 .ico {
-                background: #eaf6fa;
-            }
+        .pal-servicios .badge-ico {
+            background: #eef0ff;
+            color: var(--blue);
+        }
 
-            .ti-card.c11 .ico {
-                background: #f0eaf9;
-            }
+        .pal-servicios .cnt {
+            background: #eef0ff;
+            color: var(--blue);
+        }
 
-            .ti-card.c12 .ico {
-                background: #eef0ff;
-            }
+        .pal-conect .ico {
+            background: #e9f7ec;
+            color: var(--green);
+        }
 
-            .ti-card.c13 .ico {
-                background: #fdecea;
-            }
+        .pal-conect .badge-ico {
+            background: #e9f7ec;
+            color: var(--green);
+        }
 
-            .ti-card.c14 .ico {
-                background: #e9f7ec;
-            }
+        .pal-conect .cnt {
+            background: #e9f7ec;
+            color: #2f8f3e;
+        }
 
-            .ti-card.c15 .ico {
-                background: #fef3e0;
-            }
+        .pal-complementarios .ico {
+            background: #f0eaf9;
+            color: #8a5fc7;
+        }
 
-            .ti-card.c16 .ico {
-                background: #eaf6fa;
-            }
+        .pal-complementarios .badge-ico {
+            background: #f0eaf9;
+            color: #8a5fc7;
+        }
+
+        .pal-complementarios .cnt {
+            background: #f0eaf9;
+            color: #8a5fc7;
+        }
+
+        .pal-marketplace .ico {
+            background: #fdecea;
+            color: #e5484d;
+        }
+
+        .pal-marketplace .badge-ico {
+            background: #fdecea;
+            color: #e5484d;
+        }
+
+        .pal-marketplace .cnt {
+            background: #fdecea;
+            color: #c93a3f;
+        }
     </style>
 }
 
@@ -298,154 +361,220 @@
 
 <!-- ═══════════════ SCROLL DE CATEGORÍAS ═══════════════ -->
 <div class="tn-catscroll" id="tnCatScroll">
-    <a href="#sec-hogar360" class="tn-chip">🏡 Hogar 360</a>
-    <a href="#sec-productos" class="tn-chip">🔌 Productos</a>
-    <a href="#sec-servicios" class="tn-chip">🛠️ Servicios</a>
-    <a href="#sec-conectividad" class="tn-chip">📶 5G y Videovigilancia</a>
-    <a href="#sec-complementarios" class="tn-chip">🧩 Complementarios</a>
-    <a href="#sec-marketplace" class="tn-chip">🔁 Marketplace</a>
+    <a href="#sec-hogar360" class="tn-chip" data-i18n="tienda.chip.hogar360">🏡 Hogar 360</a>
+    <a href="#sec-productos" class="tn-chip" data-i18n="tienda.chip.productos">🛍️ Productos</a>
+    <a href="#sec-servicios" class="tn-chip" data-i18n="tienda.chip.servicios">🛠️ Servicios</a>
+    <a href="#sec-conectividad" class="tn-chip" data-i18n="tienda.chip.conectividad">📶 5G y Seguridad</a>
+    <a href="#sec-complementarios" class="tn-chip" data-i18n="tienda.chip.complementarios">🧩 Complementarios</a>
+    <a href="#sec-marketplace" class="tn-chip" data-i18n="tienda.chip.marketplace">🔁 Marketplace</a>
 </div>
 
 <!-- ═══════════════ HOGAR 360 ═══════════════ -->
-<div class="tn-section" id="sec-hogar360">
-    <div class="ti-section-title">
-        🏡 Servicios Hogar 360 <span class="cnt">3</span>
+<div class="tn-section pal-hogar" id="sec-hogar360">
+    <div class="tn-sec-head">
+        <div class="badge-ico">🏡</div>
+        <div class="txt" data-i18n="tienda.sec.hogar360">Servicios Hogar 360</div>
+        <div class="cnt">3</div>
     </div>
-    <div class="ti-grid">
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "supresores" })" class="ti-card c1">
+    <div class="tn-rows">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "supresores" })" class="tn-row">
             <div class="ico">🔌</div>
-            <div class="t">Supresores y Bases</div>
-            <div class="s">Protección eléctrica</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.supresores.t">Supresores y Bases</div>
+                <div class="s" data-i18n="tienda.item.supresores.s">Protección eléctrica</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "cargadores" })" class="ti-card c2">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "cargadores" })" class="tn-row">
             <div class="ico">🔋</div>
-            <div class="t">Cargadores Semirápidos</div>
-            <div class="s">Vehículos eléctricos</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.cargadores.t">Cargadores Semirápidos</div>
+                <div class="s" data-i18n="tienda.item.cargadores.s">Vehículos eléctricos</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "soluciones-energeticas" })" class="ti-card c3">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "soluciones-energeticas" })" class="tn-row">
             <div class="ico">🔧</div>
-            <div class="t">Soluciones Energéticas</div>
-            <div class="s">Diagnóstico a medida</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.solEnerg.t">Soluciones Energéticas</div>
+                <div class="s" data-i18n="tienda.item.solEnerg.s">Diagnóstico a medida</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
     </div>
 </div>
 
 <!-- ═══════════════ PRODUCTOS ═══════════════ -->
-<div class="tn-section" id="sec-productos">
-    <div class="ti-section-title">
-        🛍️ Productos <span class="cnt">2</span>
+<div class="tn-section pal-productos" id="sec-productos">
+    <div class="tn-sec-head">
+        <div class="badge-ico">🛍️</div>
+        <div class="txt" data-i18n="tienda.sec.productos">Productos</div>
+        <div class="cnt">2</div>
     </div>
-    <div class="ti-grid">
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "bienes" })" class="ti-card c4">
+    <div class="tn-rows">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "bienes" })" class="tn-row">
             <div class="ico">🏢</div>
-            <div class="t">Bienes Inmuebles</div>
-            <div class="s">Locales y propiedades</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.bienes.t">Bienes Inmuebles</div>
+                <div class="s" data-i18n="tienda.item.bienes.s">Locales y propiedades</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "tienda" })" class="ti-card c5">
-            <div class="ico">🛍️</div>
-            <div class="t">Tienda CNFL</div>
-            <div class="s">Productos del hogar</div>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "tienda" })" class="tn-row">
+            <div class="ico">🛒</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.tiendaCnfl.t">Tienda CNFL</div>
+                <div class="s" data-i18n="tienda.item.tiendaCnfl.s">Electrodomésticos, tecnología y más</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
     </div>
 </div>
 
 <!-- ═══════════════ SERVICIOS ═══════════════ -->
-<div class="tn-section" id="sec-servicios">
-    <div class="ti-section-title">
-        🛠️ Servicios <span class="cnt">6</span>
+<div class="tn-section pal-servicios" id="sec-servicios">
+    <div class="tn-sec-head">
+        <div class="badge-ico">🛠️</div>
+        <div class="txt" data-i18n="tienda.sec.servicios">Servicios</div>
+        <div class="cnt">6</div>
     </div>
-    <div class="ti-grid">
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "seguro-hogar" })" class="ti-card c6">
+    <div class="tn-rows">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "seguro-hogar" })" class="tn-row">
             <div class="ico">🏠</div>
-            <div class="t">Seguro de Hogar</div>
-            <div class="s">Contra incendio y rayo</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.seguroHogar.t">Seguro de Hogar</div>
+                <div class="s" data-i18n="tienda.item.seguroHogar.s">Contra incendio y rayo</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "asiste" })" class="ti-card c7">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "asiste" })" class="tn-row">
             <div class="ico">🛟</div>
-            <div class="t">CNFL Te Asiste</div>
-            <div class="s">Asistencias y seguros</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.asiste.t">CNFL Te Asiste</div>
+                <div class="s" data-i18n="tienda.item.asiste.s">Asistencias y seguros</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "sri" })" class="ti-card c8">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "sri" })" class="tn-row">
             <div class="ico">⚡</div>
-            <div class="t">Ingeniería Eléctrica</div>
-            <div class="s">Soluciones SIE</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.sri.t">Ingeniería Eléctrica</div>
+                <div class="s" data-i18n="tienda.item.sri.s">Soluciones SIE</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "movilidad" })" class="ti-card c9">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "movilidad" })" class="tn-row">
             <div class="ico">🚗</div>
-            <div class="t">Movilidad Eléctrica</div>
-            <div class="s">Vehículos y carga</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.movilidad.t">Movilidad Eléctrica</div>
+                <div class="s" data-i18n="tienda.item.movilidad.s">Vehículos y estaciones de carga</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "alquileres" })" class="ti-card c10">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "alquileres" })" class="tn-row">
             <div class="ico">🔑</div>
-            <div class="t">Alquileres</div>
-            <div class="s">Espacios de la CNFL</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.alquileres.t">Alquileres</div>
+                <div class="s" data-i18n="tienda.item.alquileres.s">Espacios de la CNFL</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "reparacion" })" class="ti-card c11">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "reparacion" })" class="tn-row">
             <div class="ico">🛠️</div>
-            <div class="t">Reparación y Mant.</div>
-            <div class="s">Servicio técnico</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.reparacion.t">Reparación y Mantenimiento</div>
+                <div class="s" data-i18n="tienda.item.reparacion.s">Servicio técnico</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
     </div>
 </div>
 
-<!-- ═══════════════ 5G Y VIDEOVIGILANCIA ═══════════════ -->
-<div class="tn-section" id="sec-conectividad">
-    <div class="ti-section-title">
-        📶 Conectividad y Seguridad <span class="cnt">2</span>
+<!-- ═══════════════ 5G Y SEGURIDAD ═══════════════ -->
+<div class="tn-section pal-conect" id="sec-conectividad">
+    <div class="tn-sec-head">
+        <div class="badge-ico">📶</div>
+        <div class="txt" data-i18n="tienda.sec.conectividad">Conectividad y Seguridad</div>
+        <div class="cnt">2</div>
     </div>
-    <div class="ti-grid">
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "internet" })" class="ti-card c12">
+    <div class="tn-rows">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "internet" })" class="tn-row">
             <div class="ico">📡</div>
-            <div class="t">Internet Fijo 5G</div>
-            <div class="s">Viví la velocidad</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.internet.t">Internet Fijo 5G</div>
+                <div class="s" data-i18n="tienda.item.internet.s">Viví la velocidad</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "videovigilancia" })" class="ti-card c13">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "videovigilancia" })" class="tn-row">
             <div class="ico">🎥</div>
-            <div class="t">Videovigilancia</div>
-            <div class="s">Seguridad hogar o negocio</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.videovigilancia.t">Videovigilancia</div>
+                <div class="s" data-i18n="tienda.item.videovigilancia.s">Seguridad hogar o negocio</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
     </div>
 </div>
 
 <!-- ═══════════════ COMPLEMENTARIOS ═══════════════ -->
-<div class="tn-section" id="sec-complementarios">
-    <div class="ti-section-title">
-        🧩 Complementarios <span class="cnt">3</span>
+<div class="tn-section pal-complementarios" id="sec-complementarios">
+    <div class="tn-sec-head">
+        <div class="badge-ico">🧩</div>
+        <div class="txt" data-i18n="tienda.sec.complementarios">Complementarios</div>
+        <div class="cnt">3</div>
     </div>
-    <div class="ti-grid">
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "ambientales" })" class="ti-card c14">
+    <div class="tn-rows">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "ambientales" })" class="tn-row">
             <div class="ico">🌱</div>
-            <div class="t">Servicios Ambientales</div>
-            <div class="s">Sostenibilidad</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.ambientales.t">Servicios Ambientales</div>
+                <div class="s" data-i18n="tienda.item.ambientales.s">Sostenibilidad</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "calibracion" })" class="ti-card c15">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "calibracion" })" class="tn-row">
             <div class="ico">🔬</div>
-            <div class="t">Calibración</div>
-            <div class="s">Equipos certificados</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.calibracion.t">Calibración</div>
+                <div class="s" data-i18n="tienda.item.calibracion.s">Equipos certificados</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "anonos" })" class="ti-card c16">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "anonos" })" class="tn-row">
             <div class="ico">🔧</div>
-            <div class="t">Taller Anonos</div>
-            <div class="s">Reparación especializada</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.anonos.t">Taller Anonos</div>
+                <div class="s" data-i18n="tienda.item.anonos.s">Reparación especializada</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
     </div>
 </div>
 
 <!-- ═══════════════ MARKETPLACE / SUSCRIPCIONES ═══════════════ -->
-<div class="tn-section" id="sec-marketplace" style="margin-bottom:24px;">
-    <div class="ti-section-title">
-        🔁 Marketplace y Suscripciones <span class="cnt">2</span>
+<div class="tn-section pal-marketplace" id="sec-marketplace" style="margin-bottom:28px;">
+    <div class="tn-sec-head">
+        <div class="badge-ico">🔁</div>
+        <div class="txt" data-i18n="tienda.sec.marketplace">Marketplace y Suscripciones</div>
+        <div class="cnt">2</div>
     </div>
-    <div class="ti-grid">
-        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "marketplace" })" class="ti-card c1">
+    <div class="tn-rows">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "marketplace" })" class="tn-row">
             <div class="ico">🔁</div>
-            <div class="t">Marketplace</div>
-            <div class="s">Comprá y vendé entre clientes</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.marketplace.t">Marketplace</div>
+                <div class="s" data-i18n="tienda.item.marketplace.s">Comprá y vendé entre clientes</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
-        <a href="@Url.Action("MisSuscripciones", "Clientes")" class="ti-card c2">
+        <a href="@Url.Action("MisSuscripciones", "Clientes")" class="tn-row">
             <div class="ico">📦</div>
-            <div class="t">Mis Suscripciones</div>
-            <div class="s">Servicios activos e inactivos</div>
+            <div class="body">
+                <div class="t" data-i18n="tienda.item.suscripciones.t">Mis Suscripciones</div>
+                <div class="s" data-i18n="tienda.item.suscripciones.s">Servicios activos e inactivos</div>
+            </div>
+            <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" /></svg></div>
         </a>
     </div>
 </div>
@@ -502,7 +631,6 @@
             var chips = document.querySelectorAll('#tnCatScroll .tn-chip');
             var sections = document.querySelectorAll('.tn-section');
 
-            // Click en chip → salto suave DENTRO de .app-content
             chips.forEach(function (chip) {
                 chip.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -515,14 +643,12 @@
                 });
             });
 
-            // Centrar chip horizontalmente SIN afectar scroll vertical
             function centerChip(chip) {
                 if (!catScroll || !chip) return;
                 var target = chip.offsetLeft - (catScroll.clientWidth / 2) + (chip.offsetWidth / 2);
                 catScroll.scrollTo({ left: target, behavior: 'smooth' });
             }
 
-            // IntersectionObserver usando .app-content como root
             if ('IntersectionObserver' in window && appContent) {
                 var obs = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
