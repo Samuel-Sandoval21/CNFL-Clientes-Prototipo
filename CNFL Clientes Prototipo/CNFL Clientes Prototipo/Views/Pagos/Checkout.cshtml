@@ -1,0 +1,294 @@
+﻿@{
+    ViewBag.Title = "Método de pago";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    var total = (decimal)ViewBag.Total;
+    var subtotal = (decimal)ViewBag.Subtotal;
+    var impuesto = (decimal)ViewBag.Impuesto;
+    var metodos = ViewBag.MetodosGuardados as List<CNFL_Clientes_Prototipo.Models.MetodoPago> ?? new List<CNFL_Clientes_Prototipo.Models.MetodoPago>();
+}
+
+@section Styles {
+    <style>
+        .ck-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--blue);
+            text-decoration: none;
+            margin-bottom: 14px;
+        }
+
+            .ck-back:hover {
+                text-decoration: underline;
+            }
+
+        .ck-hero {
+            background: linear-gradient(135deg, var(--blue), #2a4fd6);
+            border-radius: 22px;
+            padding: 22px 20px;
+            color: #fff;
+            margin-top: 8px;
+            box-shadow: 0 12px 30px -12px rgba(16,20,60,.45);
+        }
+
+            .ck-hero .greet {
+                font-size: 12px;
+                opacity: .85;
+            }
+
+            .ck-hero h1 {
+                margin: 4px 0 0;
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+            }
+
+            .ck-hero .total {
+                margin-top: 16px;
+                padding-top: 14px;
+                border-top: 1px solid rgba(255,255,255,.2);
+            }
+
+                .ck-hero .total .lbl {
+                    font-size: 11px;
+                    opacity: .8;
+                    font-weight: 800;
+                    letter-spacing: .05em;
+                }
+
+        .ck-section {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px;
+            margin-top: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ck-section-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--ink);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ck-method {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 14px;
+            border: 1.5px solid var(--line);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            z-index: 1;
+        }
+
+            .ck-method:last-child {
+                margin-bottom: 0;
+            }
+
+            .ck-method:hover {
+                border-color: var(--blue);
+                background: #f5f7ff;
+                text-decoration: none;
+                color: inherit;
+            }
+
+            .ck-method .ico {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: grid;
+                place-items: center;
+                font-size: 20px;
+                flex-shrink: 0;
+            }
+
+            .ck-method.m1 .ico {
+                background: #eef0ff;
+            }
+
+            .ck-method.m2 .ico {
+                background: #e9f7ec;
+            }
+
+            .ck-method.m3 .ico {
+                background: #eaf6fa;
+            }
+
+            .ck-method.m4 .ico {
+                background: #fef3e0;
+            }
+
+            .ck-method .body {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .ck-method .t {
+                font-size: 13.5px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .ck-method .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+
+            .ck-method .chev {
+                color: #c7cbd6;
+                font-size: 20px;
+                flex-shrink: 0;
+            }
+
+        .ck-resume {
+            background: #f7f8fc;
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 6px;
+        }
+
+            .ck-resume .row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 12.5px;
+                color: var(--muted);
+                padding: 3px 0;
+            }
+
+                .ck-resume .row b {
+                    color: var(--ink);
+                }
+
+        .ck-guardados-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--muted);
+            letter-spacing: .05em;
+            margin-bottom: 8px;
+            margin-top: 4px;
+        }
+
+        .ck-guardados {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-bottom: 12px;
+            scrollbar-width: none;
+        }
+
+            .ck-guardados::-webkit-scrollbar {
+                display: none;
+            }
+
+        .ck-guardado {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            border: 1.5px solid var(--line);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+            .ck-guardado .ico {
+                font-size: 14px;
+            }
+    </style>
+}
+
+<a href="@Url.Action("Index", "Carrito")" class="ck-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg>
+    Volver al carrito
+</a>
+
+<div class="ck-hero">
+    <div class="greet">Total a pagar</div>
+    <h1>₡@total.ToString("N0")</h1>
+    <div class="total">
+        <div class="lbl">Seleccioná cómo querés pagar</div>
+    </div>
+</div>
+
+@if (metodos.Any())
+{
+    <div class="ck-section">
+        <div class="ck-guardados-title">MÉTODOS GUARDADOS</div>
+        <div class="ck-guardados">
+            @foreach (var m in metodos)
+            {
+                <div class="ck-guardado">
+                    <span class="ico">@(m.Tipo == "Tarjeta" ? "💳" : m.Tipo == "SINPE" ? "📱" : m.Tipo == "IBAN" ? "🏦" : "🎟️")</span>
+                    @m.Alias @if (!string.IsNullOrEmpty(m.Ultimos4))
+                    {<text>· ****@m.Ultimos4</text>}
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="ck-section">
+    <div class="ck-section-title">💳 Métodos de pago</div>
+
+    <a href="@Url.Action("Tarjeta", "Pagos")" class="ck-method m1">
+        <div class="ico">💳</div>
+        <div class="body">
+            <div class="t">Tarjeta de crédito o débito</div>
+            <div class="s">Visa, Mastercard, American Express</div>
+        </div>
+        <div class="chev">›</div>
+    </a>
+
+    <a href="@Url.Action("Sinpe", "Pagos")" class="ck-method m2">
+        <div class="ico">📱</div>
+        <div class="body">
+            <div class="t">SINPE Móvil</div>
+            <div class="s">Transferencia desde tu celular</div>
+        </div>
+        <div class="chev">›</div>
+    </a>
+
+    <a href="@Url.Action("Iban", "Pagos")" class="ck-method m3">
+        <div class="ico">🏦</div>
+        <div class="body">
+            <div class="t">Transferencia IBAN</div>
+            <div class="s">Desde tu banco hacia la cuenta CNFL</div>
+        </div>
+        <div class="chev">›</div>
+    </a>
+
+    <a href="@Url.Action("Tokens", "Pagos")" class="ck-method m4">
+        <div class="ico">🎟️</div>
+        <div class="body">
+            <div class="t">Tokens CNFL</div>
+            <div class="s">Usá tus tokens acumulados</div>
+        </div>
+        <div class="chev">›</div>
+    </a>
+</div>
+
+<div class="ck-section">
+    <div class="ck-section-title">📋 Resumen de compra</div>
+    <div class="ck-resume">
+        <div class="row"><span>Subtotal</span><b>₡@subtotal.ToString("N0")</b></div>
+        <div class="row"><span>IVA (13%)</span><b>₡@impuesto.ToString("N0")</b></div>
+        <div class="row"><span style="color:var(--ink);font-weight:800;">Total</span><b style="color:var(--blue);font-size:15px;">₡@total.ToString("N0")</b></div>
+    </div>
+</div>

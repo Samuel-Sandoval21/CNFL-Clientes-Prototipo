@@ -186,8 +186,11 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\CarritoController.cs" />
     <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PagosController.cs" />
+    <Compile Include="Controllers\TiendaController.cs" />
     <Compile Include="Controllers\TramitesController.cs" />
     <Compile Include="Data\CNFLDbContext.cs" />
     <Compile Include="Filters\SessionAuthorizeAttribute.cs" />
@@ -201,6 +204,7 @@
     <Compile Include="Models\NISE.cs" />
     <Compile Include="Models\Notificacion.cs" />
     <Compile Include="Models\Pago.cs" />
+    <Compile Include="Models\PagoDtos.cs" />
     <Compile Include="Models\ReporteMapa.cs" />
     <Compile Include="Models\ReportesViewModel.cs" />
     <Compile Include="Models\Rol.cs" />
@@ -283,9 +287,7 @@
     <Content Include="Views\Admin\Clientes.cshtml" />
     <Content Include="Views\Admin\Dashboard.cshtml" />
     <Content Include="Views\Admin\Reportes.cshtml" />
-    <Content Include="Views\Clientes\Inicio.cshtml" />
     <Content Include="Views\Clientes\Chatbot.cshtml" />
-    <Content Include="Views\Clientes\Pagos.cshtml" />
     <Content Include="Views\Clientes\Tienda.cshtml" />
     <Content Include="Views\Clientes\MiPerfil.cshtml" />
     <Content Include="Views\Clientes\Reportes.cshtml" />
@@ -293,7 +295,6 @@
     <Content Include="Views\Clientes\MisSuscripciones.cshtml" />
     <Content Include="Views\Clientes\Calculadora.cshtml" />
     <Content Include="Views\Clientes\MisNotificaciones.cshtml" />
-    <Content Include="Views\Clientes\HistorialCompras.cshtml" />
     <Content Include="Views\Shared\_LayoutAdmin.cshtml" />
     <Content Include="Views\Shared\_LayoutCliente.cshtml" />
     <Content Include="Views\Shared\_LayoutLogin.cshtml" />
@@ -351,13 +352,10 @@
     <Content Include="Views\Cuenta\Login.cshtml" />
     <Content Include="Views\Cuenta\Registro.cshtml" />
     <Content Include="Views\Clientes\Dashboard.cshtml" />
-    <Content Include="Views\Clientes\ServiciosContratados.cshtml" />
     <Content Include="Views\Cuenta\RecuperarClave.cshtml" />
-    <Content Include="Views\Clientes\Carrito.cshtml" />
     <Content Include="Views\Admin\Averias.cshtml" />
     <Content Include="Views\Admin\DetalleAveria.cshtml" />
     <Content Include="Views\Admin\DetalleCliente.cshtml" />
-    <Content Include="Views\Clientes\ReportarAveria.cshtml" />
     <Content Include="Views\Clientes\EstadoAveria.cshtml" />
     <Content Include="Views\Shared\_LayoutApp.cshtml" />
     <Content Include="Views\Clientes\MisFacturas.cshtml" />
@@ -373,6 +371,14 @@
     <Content Include="Views\Tramites\Detalle.cshtml" />
     <Content Include="Views\Tramites\MisTramites.cshtml" />
     <Content Include="Views\Clientes\GenerarComprobante.cshtml" />
+    <Content Include="Views\Carrito\Index.cshtml" />
+    <Content Include="Views\Pagos\Checkout.cshtml" />
+    <Content Include="Views\Pagos\Tarjeta.cshtml" />
+    <Content Include="Views\Pagos\Sinpe.cshtml" />
+    <Content Include="Views\Pagos\Iban.cshtml" />
+    <Content Include="Views\Pagos\Tokens.cshtml" />
+    <Content Include="Views\Pagos\Confirmacion.cshtml" />
+    <Content Include="Views\Pagos\MisCompras.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

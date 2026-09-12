@@ -38,9 +38,6 @@ namespace CNFL_Clientes_Prototipo.Models
     // DTOs para los GRÁFICOS del Dashboard
     // ═══════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Gráfico 1: Dona — Distribución de consumo por NISE
-    /// </summary>
     public class DistribucionNiseDto
     {
         public string label { get; set; }
@@ -48,9 +45,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public string color { get; set; }
     }
 
-    /// <summary>
-    /// Gráfico 2: Línea — Evolución mensual del consumo
-    /// </summary>
     public class ConsumoMensualDto
     {
         public string mes { get; set; }
@@ -58,9 +52,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public double kwh { get; set; }
     }
 
-    /// <summary>
-    /// Gráfico 3: Barras apiladas — Actividad semanal en la app
-    /// </summary>
     public class ActividadSemanalDto
     {
         public string dia { get; set; }
@@ -70,9 +61,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public int perfil { get; set; }
     }
 
-    /// <summary>
-    /// Gráfico 4: Barras horizontales — Secciones más visitadas
-    /// </summary>
     public class SeccionTopDto
     {
         public string nombre { get; set; }
@@ -80,12 +68,9 @@ namespace CNFL_Clientes_Prototipo.Models
     }
 
     // ═══════════════════════════════════════════════════════════
-    // DTOs de la TIENDA (Productos y Servicios)
+    // DTOs de la TIENDA
     // ═══════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Banners del carrusel en Productos y Servicios
-    /// </summary>
     public class BannerDto
     {
         public string Titulo { get; set; }

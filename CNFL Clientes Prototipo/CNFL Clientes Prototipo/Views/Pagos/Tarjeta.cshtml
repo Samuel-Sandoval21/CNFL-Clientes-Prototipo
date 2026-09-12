@@ -1,0 +1,331 @@
+﻿@{
+    ViewBag.Title = "Pago con tarjeta";
+    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    var total = (decimal)ViewBag.Total;
+}
+
+@section Styles {
+    <style>
+        .tk-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--blue);
+            text-decoration: none;
+            margin-bottom: 14px;
+        }
+
+            .tk-back:hover {
+                text-decoration: underline;
+            }
+
+        .tk-hero {
+            background: linear-gradient(135deg, #1E23E6, #2a4fd6);
+            border-radius: 22px;
+            padding: 22px 20px;
+            color: #fff;
+            margin-top: 8px;
+            box-shadow: 0 12px 30px -12px rgba(30,35,230,.5);
+        }
+
+            .tk-hero .lbl {
+                font-size: 11px;
+                opacity: .85;
+                font-weight: 800;
+                letter-spacing: .05em;
+            }
+
+            .tk-hero h1 {
+                margin: 4px 0 0;
+                font-size: 20px;
+                font-weight: 800;
+            }
+
+            .tk-hero .total {
+                font-size: 26px;
+                font-weight: 800;
+                margin-top: 8px;
+            }
+
+        .tk-card-visual {
+            background: linear-gradient(135deg, #001482, #1E23E6);
+            border-radius: 18px;
+            padding: 22px;
+            color: #fff;
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 14px 30px -12px rgba(0,20,130,.6);
+            aspect-ratio: 1.586;
+            max-width: 340px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+            .tk-card-visual::after {
+                content: "";
+                position: absolute;
+                right: -60px;
+                bottom: -60px;
+                width: 180px;
+                height: 180px;
+                background: radial-gradient(circle, rgba(255,255,255,.12), transparent 70%);
+            }
+
+            .tk-card-visual .chip {
+                width: 40px;
+                height: 30px;
+                border-radius: 6px;
+                background: linear-gradient(135deg, #ffd700, #f5a623);
+                margin-bottom: 24px;
+            }
+
+            .tk-card-visual .num {
+                font-size: 18px;
+                font-weight: 700;
+                letter-spacing: 2px;
+                font-family: 'Courier New', monospace;
+                margin-top: 14px;
+            }
+
+            .tk-card-visual .row {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 22px;
+                font-size: 11px;
+                opacity: .85;
+            }
+
+                .tk-card-visual .row .lbl {
+                    font-size: 9.5px;
+                    opacity: .75;
+                    letter-spacing: .05em;
+                    text-transform: uppercase;
+                }
+
+                .tk-card-visual .row .val {
+                    font-size: 12.5px;
+                    font-weight: 700;
+                    margin-top: 2px;
+                }
+
+            .tk-card-visual .brand {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                font-size: 15px;
+                font-weight: 800;
+                font-style: italic;
+            }
+
+        .tk-form {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            margin-top: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tk-field {
+            margin-bottom: 14px;
+        }
+
+        .tk-label {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--muted);
+            letter-spacing: .04em;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .tk-input {
+            width: 100%;
+            border: 1.5px solid var(--line);
+            border-radius: 12px;
+            padding: 13px 15px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--ink);
+            background: #fafbff;
+            outline: none;
+            transition: border-color .15s, background .15s;
+        }
+
+            .tk-input:focus {
+                border-color: var(--blue);
+                background: #fff;
+            }
+
+        .tk-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .tk-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--blue), #2a4fd6);
+            color: #fff;
+            border: 0;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14px;
+            padding: 16px;
+            border-radius: 14px;
+            margin-top: 12px;
+            cursor: pointer;
+            box-shadow: 0 8px 18px -8px rgba(30,35,230,.6);
+            transition: transform .12s;
+        }
+
+            .tk-btn:active {
+                transform: scale(.97);
+            }
+
+            .tk-btn:disabled {
+                background: #b8c2e0;
+                cursor: not-allowed;
+                box-shadow: none;
+            }
+
+        .tk-security {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #e9f7ec;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-top: 14px;
+            font-size: 11.5px;
+            color: #2f8f3e;
+            font-weight: 700;
+        }
+    </style>
+}
+
+<a href="@Url.Action("Index", "Carrito")" class="tk-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg>
+    Volver al carrito
+</a>
+
+<div class="tk-hero">
+    <div class="lbl">PAGO CON TARJETA</div>
+    <h1>💳 Ingresá los datos</h1>
+    <div class="total">₡@total.ToString("N0")</div>
+</div>
+
+<div class="tk-card-visual">
+    <div class="chip"></div>
+    <div class="brand" id="brand">VISA</div>
+    <div class="num" id="prevNum">•••• •••• •••• ••••</div>
+    <div class="row">
+        <div>
+            <div class="lbl">Titular</div>
+            <div class="val" id="prevName">NOMBRE APELLIDO</div>
+        </div>
+        <div>
+            <div class="lbl">Vence</div>
+            <div class="val" id="prevExp">MM/AA</div>
+        </div>
+    </div>
+</div>
+
+<div class="tk-form">
+    <div class="tk-field">
+        <label class="tk-label">NÚMERO DE TARJETA</label>
+        <input type="text" id="numTarjeta" class="tk-input" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric" />
+    </div>
+
+    <div class="tk-field">
+        <label class="tk-label">NOMBRE DEL TITULAR</label>
+        <input type="text" id="nomTitular" class="tk-input" placeholder="Como aparece en la tarjeta" />
+    </div>
+
+    <div class="tk-row-2">
+        <div class="tk-field">
+            <label class="tk-label">VENCIMIENTO</label>
+            <input type="text" id="vencimiento" class="tk-input" placeholder="MM/AA" maxlength="5" inputmode="numeric" />
+        </div>
+        <div class="tk-field">
+            <label class="tk-label">CVV</label>
+            <input type="text" id="cvv" class="tk-input" placeholder="123" maxlength="4" inputmode="numeric" />
+        </div>
+    </div>
+
+    <button type="button" class="tk-btn" id="btnPagar" onclick="procesarTarjeta()">🔒 Pagar ₡@total.ToString("N0")</button>
+
+    <div class="tk-security">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z" /><path d="m9 12 2 2 4-4" /></svg>
+        Pago cifrado con seguridad de nivel bancario
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('numTarjeta').addEventListener('input', function (e) {
+            var v = e.target.value.replace(/\D/g, '').substring(0, 16);
+            v = v.replace(/(.{4})/g, '$1 ').trim();
+            e.target.value = v;
+            document.getElementById('prevNum').textContent = v || '•••• •••• •••• ••••';
+            var brand = 'VISA';
+            if (/^5[1-5]/.test(v.replace(/\s/g, ''))) brand = 'Mastercard';
+            else if (/^3[47]/.test(v.replace(/\s/g, ''))) brand = 'AMEX';
+            document.getElementById('brand').textContent = brand;
+        });
+        document.getElementById('nomTitular').addEventListener('input', function (e) {
+            document.getElementById('prevName').textContent = (e.target.value || 'NOMBRE APELLIDO').toUpperCase();
+        });
+        document.getElementById('vencimiento').addEventListener('input', function (e) {
+            var v = e.target.value.replace(/\D/g, '').substring(0, 4);
+            if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2);
+            e.target.value = v;
+            document.getElementById('prevExp').textContent = v || 'MM/AA';
+        });
+        document.getElementById('cvv').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+        });
+
+        function procesarTarjeta() {
+            var num = document.getElementById('numTarjeta').value.replace(/\s/g, '');
+            var nom = document.getElementById('nomTitular').value.trim();
+            var exp = document.getElementById('vencimiento').value.trim();
+            var cvv = document.getElementById('cvv').value.trim();
+
+            if (num.length < 15) { alert('Ingresá un número de tarjeta válido.'); return; }
+            if (!nom) { alert('Ingresá el nombre del titular.'); return; }
+            if (exp.length < 5) { alert('Ingresá la fecha de vencimiento.'); return; }
+            if (cvv.length < 3) { alert('Ingresá el CVV.'); return; }
+
+            var btn = document.getElementById('btnPagar');
+            btn.disabled = true;
+            btn.textContent = 'Procesando pago...';
+
+            setTimeout(function () {
+                fetch('@Url.Action("Procesar", "Pagos")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'metodo=Tarjeta&referencia=****' + num.substring(num.length - 4)
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        window.location.href = '@Url.Action("Confirmacion", "Pagos")/' + data.ordenId;
+                    } else {
+                        alert('❌ ' + data.message);
+                        btn.disabled = false;
+                        btn.textContent = '🔒 Pagar ₡@total.ToString("N0")';
+                    }
+                })
+                .catch(function () {
+                    alert('Error al procesar el pago.');
+                    btn.disabled = false;
+                    btn.textContent = '🔒 Pagar ₡@total.ToString("N0")';
+                });
+            }, 1200);
+        }
+    </script>
+}

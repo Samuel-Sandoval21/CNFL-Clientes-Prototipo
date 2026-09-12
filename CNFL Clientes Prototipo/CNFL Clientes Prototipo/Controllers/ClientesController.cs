@@ -119,7 +119,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuario == null)
                 return HttpNotFound();
 
-            // Separar "Nombre completo" en Nombre / Apellidos
             if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
                 var partes = NombreCompleto.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -148,7 +147,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             _db.SaveChanges();
 
-            // Mantener sincronizado el nombre mostrado en el header/menú
             Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
 
             TempData["Mensaje"] = "Datos actualizados correctamente.";
@@ -312,11 +310,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuario == null)
                 return HttpNotFound();
 
-            // NISEs
             var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
             var niseIds = nises.Select(n => n.NiseId).ToList();
 
-            // Facturas
             var facturas = _db.Facturas
                 .Include("NISE")
                 .Where(f => niseIds.Contains(f.NiseId))
@@ -327,7 +323,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var facturaActual = facturasPendientes.FirstOrDefault();
             var totalPendiente = facturasPendientes.Sum(f => (decimal?)f.Monto) ?? 0m;
 
-            // Averías activas (DTO público)
             var averiasActivas = _db.Averias
                 .Where(a => a.UsuarioId == usuarioId
                          && a.Estado != "Problema resuelto"
@@ -342,7 +337,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            // Trámites activos (DTO público)
             var tramitesActivos = _db.Tramites
                 .Where(t => t.UsuarioId == usuarioId && t.Estado != "Resuelto")
                 .OrderByDescending(t => t.FechaSolicitud)
@@ -358,7 +352,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            // Notificaciones (DTO público)
             var notificaciones = _db.Notificaciones
                 .Where(n => n.UsuarioId == usuarioId && !n.Leida)
                 .OrderByDescending(n => n.Fecha)
@@ -373,7 +366,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            // Gráfico 1: Dona por NISE (DTO público)
             var distribucionNise = new List<DistribucionNiseDto>();
             var coloresNise = new[] { "#1E23E6", "#FF692D", "#64B95A", "#64B9CD", "#F5A623" };
             int colorIdx = 0;
@@ -389,7 +381,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 colorIdx++;
             }
 
-            // Gráfico 2: Consumo mensual (DTO público)
             var meses = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
             var consumoMensual = facturas
                 .OrderByDescending(f => f.FechaEmision)
@@ -403,7 +394,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            // Gráfico 3: Actividad semanal (DTO público)
             var actividadSemana = new List<ActividadSemanalDto>
             {
                 new ActividadSemanalDto { dia = "Lun", facturas = 12, reportes = 3, tramites = 1, perfil = 2 },
@@ -415,7 +405,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 new ActividadSemanalDto { dia = "Dom", facturas = 2,  reportes = 1, tramites = 0, perfil = 1 }
             };
 
-            // Gráfico 4: Secciones top (DTO público)
             var seccionesTop = new List<SeccionTopDto>
             {
                 new SeccionTopDto { nombre = "Facturas",  visitas = 65 },
@@ -426,7 +415,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 new SeccionTopDto { nombre = "Chatbot",   visitas = 8 }
             };
 
-            // ViewBags
             ViewBag.Nombre = usuario.Nombre;
             ViewBag.TotalNISEs = nises.Count;
             ViewBag.TotalFacturasPendientes = facturasPendientes.Count;
@@ -470,43 +458,21 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             var banners = new List<BannerDto>
             {
-                new BannerDto {
-                    Titulo = "Servicios Hogar 360",
-                    Subtitulo = "Eficiencia energética, domótica, acometidas y más",
-                    Icono = "🏡", CategoriaId = "hogar360",
-                    ColorInicio = "#0033A0", ColorFin = "#2a4fd6"
-                },
-                new BannerDto {
-                    Titulo = "Internet Fijo 5G",
-                    Subtitulo = "Navegación fluida, streaming y gaming sin límites",
-                    Icono = "📶", CategoriaId = "internet",
-                    ColorInicio = "#1E23E6", ColorFin = "#64B9CD"
-                },
-                new BannerDto {
-                    Titulo = "Seguro de Hogar",
-                    Subtitulo = "Protegé tu vivienda contra incendio y otros riesgos",
-                    Icono = "🛡️", CategoriaId = "seguro-hogar",
-                    ColorInicio = "#0033A0", ColorFin = "#64B95A"
-                },
-                new BannerDto {
-                    Titulo = "Tienda CNFL",
-                    Subtitulo = "Electrodomésticos, tecnología y línea blanca a crédito",
-                    Icono = "🛒", CategoriaId = "tienda",
-                    ColorInicio = "#FF692D", ColorFin = "#F5A623"
-                },
-                new BannerDto {
-                    Titulo = "CNFL Te Asiste",
-                    Subtitulo = "Asistencias para el hogar cuando más las necesitás",
-                    Icono = "🤝", CategoriaId = "asiste",
-                    ColorInicio = "#64B95A", ColorFin = "#0033A0"
-                }
+                new BannerDto { Titulo = "Servicios Hogar 360", Subtitulo = "Eficiencia energética, domótica, acometidas y más", Icono = "🏡", CategoriaId = "hogar360", ColorInicio = "#0033A0", ColorFin = "#2a4fd6" },
+                new BannerDto { Titulo = "Internet Fijo 5G", Subtitulo = "Navegación fluida, streaming y gaming sin límites", Icono = "📶", CategoriaId = "internet", ColorInicio = "#1E23E6", ColorFin = "#64B9CD" },
+                new BannerDto { Titulo = "Seguro de Hogar", Subtitulo = "Protegé tu vivienda contra incendio y otros riesgos", Icono = "🛡️", CategoriaId = "seguro-hogar", ColorInicio = "#0033A0", ColorFin = "#64B95A" },
+                new BannerDto { Titulo = "Tienda CNFL", Subtitulo = "Electrodomésticos, tecnología y línea blanca a crédito", Icono = "🛒", CategoriaId = "tienda", ColorInicio = "#FF692D", ColorFin = "#F5A623" },
+                new BannerDto { Titulo = "CNFL Te Asiste", Subtitulo = "Asistencias para el hogar cuando más las necesitás", Icono = "🤝", CategoriaId = "asiste", ColorInicio = "#64B95A", ColorFin = "#0033A0" }
             };
 
             ViewBag.Banners = banners;
             return View();
         }
 
+        // ============================================================
         // GET: Clientes/DetalleProducto?id=tienda
+        // ⭐ AHORA CARGA LOS PRODUCTOS DESDE TiendaController
+        // ============================================================
         public ActionResult DetalleProducto(string id)
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -564,6 +530,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             ViewBag.Titulo = titulos.ContainsKey(id) ? titulos[id] : "Producto";
             ViewBag.Subtitulo = subtitulos.ContainsKey(id) ? subtitulos[id] : "";
+
+            // ⭐ CLAVE: Cargar el catálogo de productos de esa categoría
+            ViewBag.Productos = TiendaController.GetCatalogo(id);
 
             return View();
         }

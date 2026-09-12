@@ -4,6 +4,8 @@
     var categoriaId = ViewBag.CategoriaId as string ?? "tienda";
     var titulo = ViewBag.Titulo as string ?? "Producto";
     var subtitulo = ViewBag.Subtitulo as string ?? "";
+    var productos = ViewBag.Productos as List<CNFL_Clientes_Prototipo.Models.ProductoTiendaDto>
+                    ?? new List<CNFL_Clientes_Prototipo.Models.ProductoTiendaDto>();
 }
 
 @section Styles {
@@ -30,13 +32,34 @@
             color: #fff;
             box-shadow: 0 10px 24px -12px rgba(16,20,60,.45);
             margin-top: 8px;
+            position: relative;
+            overflow: hidden;
         }
+
+            .dp-hero::after {
+                content: "";
+                position: absolute;
+                right: -50px;
+                top: -50px;
+                width: 160px;
+                height: 160px;
+                background: radial-gradient(circle, rgba(255,255,255,.15), transparent 70%);
+            }
+
+            .dp-hero .ico-big {
+                font-size: 34px;
+                margin-bottom: 6px;
+                position: relative;
+                z-index: 2;
+            }
 
             .dp-hero h1 {
                 margin: 0;
                 font-size: 18px;
                 font-weight: 800;
                 letter-spacing: -.02em;
+                position: relative;
+                z-index: 2;
             }
 
             .dp-hero p {
@@ -44,6 +67,8 @@
                 font-size: 12px;
                 opacity: .9;
                 line-height: 1.4;
+                position: relative;
+                z-index: 2;
             }
 
         .dp-list {
@@ -101,22 +126,38 @@
                 margin-top: 6px;
             }
 
-            .dp-item .btn-sol {
-                background: var(--blue);
+                .dp-item .precio.consultar {
+                    color: #b9791a;
+                    font-size: 13px;
+                }
+
+            .dp-item .btn-add {
+                background: linear-gradient(135deg, var(--orange), #ff8a5c);
                 color: #fff;
                 border: 0;
                 font-family: inherit;
                 font-weight: 800;
                 font-size: 11.5px;
-                padding: 8px 14px;
+                padding: 9px 14px;
                 border-radius: 10px;
                 cursor: pointer;
                 transition: transform .12s;
                 white-space: nowrap;
+                box-shadow: 0 6px 12px -6px rgba(255,105,45,.6);
             }
 
-                .dp-item .btn-sol:active {
+                .dp-item .btn-add:active {
                     transform: scale(.94);
+                }
+
+                .dp-item .btn-add.consultar {
+                    background: linear-gradient(135deg, var(--blue), #2a4fd6);
+                    box-shadow: 0 6px 12px -6px rgba(30,35,230,.5);
+                }
+
+                .dp-item .btn-add:disabled {
+                    opacity: .7;
+                    cursor: not-allowed;
                 }
 
         .dp-empty {
@@ -154,463 +195,107 @@
 </a>
 
 <div class="dp-hero">
+    <div class="ico-big">🛍️</div>
     <h1>@titulo</h1>
     <p>@subtitulo</p>
 </div>
 
-<div class="dp-list">
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* SUPRESORES Y BASES *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "supresores")
-    {
-        <div class="dp-item">
-            <div class="ico">🔌</div>
-            <div class="body">
-                <div class="t">Supresor de picos 120V</div>
-                <div class="s">Protege tus electrodomésticos de variaciones de voltaje.</div>
-                <div class="precio">₡18,500</div>
+@if (productos.Any())
+{
+    <div class="dp-list">
+        @foreach (var p in productos)
+        {
+            var consultar = p.Precio == 0;
+            <div class="dp-item">
+                <div class="ico">@p.Icono</div>
+                <div class="body">
+                    <div class="t">@p.Nombre</div>
+                    <div class="s">@p.Descripcion</div>
+                    @if (consultar)
+                    {
+                        <div class="precio consultar">Consultar precio</div>
+                    }
+                    else
+                    {
+                        <div class="precio">₡@p.Precio.ToString("N0")</div>
+                    }
+                </div>
+                <button type="button"
+                        class="btn-add @(consultar ? "consultar" : "")"
+                        data-id="@p.Id"
+                        data-nombre="@p.Nombre"
+                        data-descripcion="@p.Descripcion"
+                        data-precio="@p.Precio"
+                        data-icono="@p.Icono"
+                        onclick="agregarAlCarrito(this)">
+                    @(consultar ? "Cotizar" : "🛒 Agregar")
+                </button>
             </div>
-            <button class="btn-sol" onclick="solicitar('Supresor de picos 120V', 18500)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">⚡</div>
-            <div class="body">
-                <div class="t">Supresor de picos 240V</div>
-                <div class="s">Ideal para aires acondicionados y equipos de alto consumo.</div>
-                <div class="precio">₡24,900</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Supresor de picos 240V', 24900)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🔋</div>
-            <div class="body">
-                <div class="t">Base múltiple con supresor</div>
-                <div class="s">6 tomacorrientes + USB, protección integrada.</div>
-                <div class="precio">₡15,900</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Base múltiple con supresor', 15900)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🛡️</div>
-            <div class="body">
-                <div class="t">Supresor industrial trifásico</div>
-                <div class="s">Para tableros y equipos industriales.</div>
-                <div class="precio">₡89,500</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Supresor industrial trifásico', 89500)">Solicitar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* CARGADORES SEMIRÁPIDOS *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "cargadores")
-    {
-        <div class="dp-item">
-            <div class="ico">🔌</div>
-            <div class="body">
-                <div class="t">Cargador semirápidos 7 kW</div>
-                <div class="s">Instalación residencial para vehículos eléctricos. Carga nocturna.</div>
-                <div class="precio">Desde ₡425,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Cargador semirápidos 7 kW', 425000)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">⚡</div>
-            <div class="body">
-                <div class="t">Cargador semirápidos 11 kW</div>
-                <div class="s">Para uso comercial. Carga en 3-4 horas.</div>
-                <div class="precio">Desde ₡680,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Cargador semirápidos 11 kW', 680000)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🚗</div>
-            <div class="body">
-                <div class="t">Cargador semirápidos 22 kW</div>
-                <div class="s">Instalación rápida para flotas o estaciones.</div>
-                <div class="precio">Desde ₡1,250,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Cargador semirápidos 22 kW', 1250000)">Solicitar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* BIENES INMUEBLES *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "bienes")
-    {
-        <div class="dp-item">
-            <div class="ico">🏢</div>
-            <div class="body">
-                <div class="t">Locales comerciales</div>
-                <div class="s">Locales en zonas estratégicas del GAM con servicio eléctrico.</div>
-                <div class="precio">Consultar</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Locales comerciales', 0)">Info</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🏠</div>
-            <div class="body">
-                <div class="t">Casas y residencias</div>
-                <div class="s">Propiedades residenciales con infraestructura CNFL.</div>
-                <div class="precio">Consultar</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Casas y residencias', 0)">Info</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🌳</div>
-            <div class="body">
-                <div class="t">Terrenos</div>
-                <div class="s">Terrenos con disponibilidad de servicio eléctrico.</div>
-                <div class="precio">Consultar</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Terrenos', 0)">Info</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* TIENDA CNFL *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "tienda")
-    {
-        <div class="dp-item">
-            <div class="ico">💡</div>
-            <div class="body">
-                <div class="t">Bombillos LED</div>
-                <div class="s">Ahorro energético y mayor duración. Varias potencias.</div>
-                <div class="precio">Desde ₡2,500</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Bombillos LED', 2500)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🔌</div>
-            <div class="body">
-                <div class="t">Extensiones y tomacorrientes</div>
-                <div class="s">Todo para tu hogar con calidad certificada.</div>
-                <div class="precio">Desde ₡3,900</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Extensiones y tomacorrientes', 3900)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🌡️</div>
-            <div class="body">
-                <div class="t">Termostatos inteligentes</div>
-                <div class="s">Controlá el consumo de tu A/C desde la app.</div>
-                <div class="precio">₡48,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Termostatos inteligentes', 48000)">Solicitar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* INTERNET FIJO 5G *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "internet")
-    {
-        <div class="dp-item">
-            <div class="ico">📡</div>
-            <div class="body">
-                <div class="t">Internet 5G Residencial Básico</div>
-                <div class="s">100 Mbps de velocidad simétrica. Instalación gratis.</div>
-                <div class="precio">₡18,900 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Internet 5G Residencial Básico', 18900)">Contratar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🚀</div>
-            <div class="body">
-                <div class="t">Internet 5G Residencial Plus</div>
-                <div class="s">300 Mbps + router WiFi 6 incluido.</div>
-                <div class="precio">₡28,500 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Internet 5G Residencial Plus', 28500)">Contratar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">💼</div>
-            <div class="body">
-                <div class="t">Internet 5G Empresarial</div>
-                <div class="s">500 Mbps + IP estática + soporte 24/7.</div>
-                <div class="precio">₡65,000 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Internet 5G Empresarial', 65000)">Contratar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* SEGURO DE HOGAR *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "seguro-hogar")
-    {
-        <div class="dp-item">
-            <div class="ico">🏠</div>
-            <div class="body">
-                <div class="t">Seguro Básico</div>
-                <div class="s">Cobertura contra incendio y rayo. Hasta ₡25 millones.</div>
-                <div class="precio">₡4,900 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Seguro Básico', 4900)">Contratar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🛡️</div>
-            <div class="body">
-                <div class="t">Seguro Amplio</div>
-                <div class="s">Incendio, rayo, cortocircuito y robo. Cobertura ₡75 millones.</div>
-                <div class="precio">₡9,500 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Seguro Amplio', 9500)">Contratar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">💎</div>
-            <div class="body">
-                <div class="t">Seguro Premium</div>
-                <div class="s">Cobertura total + responsabilidad civil + asistencia 24/7.</div>
-                <div class="precio">₡15,900 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Seguro Premium', 15900)">Contratar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* CNFL TE ASISTE *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "asiste")
-    {
-        <div class="dp-item">
-            <div class="ico">🚗</div>
-            <div class="body">
-                <div class="t">Asistencia Vial</div>
-                <div class="s">Grúa, cambio de llanta, paso de corriente.</div>
-                <div class="precio">₡3,900 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Asistencia Vial', 3900)">Contratar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🏥</div>
-            <div class="body">
-                <div class="t">Asistencia Médica</div>
-                <div class="s">Consulta médica telefónica y descuentos en farmacias.</div>
-                <div class="precio">₡5,500 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Asistencia Médica', 5500)">Contratar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🏠</div>
-            <div class="body">
-                <div class="t">Asistencia Hogar</div>
-                <div class="s">Electricista, plomero y cerrajero a domicilio.</div>
-                <div class="precio">₡6,900 / mes</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Asistencia Hogar', 6900)">Contratar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* INGENIERÍA ELÉCTRICA (SIE) *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "sri")
-    {
-        <div class="dp-item">
-            <div class="ico">📐</div>
-            <div class="body">
-                <div class="t">Diseño de instalaciones eléctricas</div>
-                <div class="s">Planos, memorias de cálculo y especificaciones técnicas.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Diseño de instalaciones eléctricas', 0)">Cotizar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">⚡</div>
-            <div class="body">
-                <div class="t">Estudios de carga y demanda</div>
-                <div class="s">Análisis técnico para nuevos servicios o ampliaciones.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Estudios de carga y demanda', 0)">Cotizar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🔍</div>
-            <div class="body">
-                <div class="t">Auditorías eléctricas</div>
-                <div class="s">Diagnóstico y optimización de consumos.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Auditorías eléctricas', 0)">Cotizar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* SERVICIOS AMBIENTALES *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "ambientales")
-    {
-        <div class="dp-item">
-            <div class="ico">📊</div>
-            <div class="body">
-                <div class="t">Huella de carbono</div>
-                <div class="s">Medición y certificación de emisiones empresariales.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Huella de carbono', 0)">Cotizar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">♻️</div>
-            <div class="body">
-                <div class="t">Gestión de residuos</div>
-                <div class="s">Planes de manejo y disposición de residuos.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Gestión de residuos', 0)">Cotizar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🌱</div>
-            <div class="body">
-                <div class="t">Compensación ambiental</div>
-                <div class="s">Programas de reforestación y proyectos verdes.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Compensación ambiental', 0)">Cotizar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* CALIBRACIÓN *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "calibracion")
-    {
-        <div class="dp-item">
-            <div class="ico">🔬</div>
-            <div class="body">
-                <div class="t">Calibración de medidores</div>
-                <div class="s">Verificación y ajuste de medidores eléctricos.</div>
-                <div class="precio">Desde ₡35,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Calibración de medidores', 35000)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">⚙️</div>
-            <div class="body">
-                <div class="t">Calibración de equipos de medición</div>
-                <div class="s">Multímetros, pinzas amperimétricas, analizadores.</div>
-                <div class="precio">Desde ₡50,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Calibración de equipos de medición', 50000)">Solicitar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* TALLER ANONOS *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "anonos")
-    {
-        <div class="dp-item">
-            <div class="ico">🔧</div>
-            <div class="body">
-                <div class="t">Reparación de transformadores</div>
-                <div class="s">Servicio especializado para transformadores de distribución.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Reparación de transformadores', 0)">Cotizar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">⚙️</div>
-            <div class="body">
-                <div class="t">Rebobinado de motores</div>
-                <div class="s">Motores eléctricos de hasta 500 HP.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Rebobinado de motores', 0)">Cotizar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🔩</div>
-            <div class="body">
-                <div class="t">Fabricación de piezas</div>
-                <div class="s">Torno y fresado de precisión.</div>
-                <div class="precio">Cotización</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Fabricación de piezas', 0)">Cotizar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* REPARACIÓN Y MANTENIMIENTO *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId == "reparacion")
-    {
-        <div class="dp-item">
-            <div class="ico">🔌</div>
-            <div class="body">
-                <div class="t">Mantenimiento preventivo</div>
-                <div class="s">Revisión periódica de instalaciones eléctricas.</div>
-                <div class="precio">Desde ₡45,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Mantenimiento preventivo', 45000)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">🛠️</div>
-            <div class="body">
-                <div class="t">Reparación de fallas eléctricas</div>
-                <div class="s">Diagnóstico y reparación de cortocircuitos y fallas.</div>
-                <div class="precio">Desde ₡35,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Reparación de fallas eléctricas', 35000)">Solicitar</button>
-        </div>
-        <div class="dp-item">
-            <div class="ico">📋</div>
-            <div class="body">
-                <div class="t">Inspección y certificación</div>
-                <div class="s">Certificación de instalaciones eléctricas.</div>
-                <div class="precio">Desde ₡65,000</div>
-            </div>
-            <button class="btn-sol" onclick="solicitar('Inspección y certificación', 65000)">Solicitar</button>
-        </div>
-    }
-
-    @* ══════════════════════════════════════════════════════════ *@
-    @* FALLBACK (si la categoría no coincide) *@
-    @* ══════════════════════════════════════════════════════════ *@
-    @if (categoriaId != "supresores" && categoriaId != "cargadores" && categoriaId != "bienes" &&
-         categoriaId != "tienda" && categoriaId != "internet" && categoriaId != "seguro-hogar" &&
-         categoriaId != "asiste" && categoriaId != "sri" && categoriaId != "ambientales" &&
-         categoriaId != "calibracion" && categoriaId != "anonos" && categoriaId != "reparacion")
-    {
-        <div class="dp-empty">
-            <div class="e">🔍</div>
-            <div class="t">Categoría no encontrada</div>
-            <div class="s">Volvé a la tienda para explorar nuestros productos y servicios.</div>
-        </div>
-    }
-
-</div>
+        }
+    </div>
+}
+else
+{
+    <div class="dp-empty">
+        <div class="e">🔍</div>
+        <div class="t">Productos próximamente</div>
+        <div class="s">Estamos trabajando en esta categoría. Volvé pronto.</div>
+    </div>
+}
 
 @section Scripts {
     <script>
-        function solicitar(nombre, precio) {
-            var mensaje = precio > 0
-                ? '¿Solicitar "' + nombre + '" por ₡' + precio.toLocaleString('es-CR') + '?'
-                : '¿Solicitar información sobre "' + nombre + '"?';
+        function agregarAlCarrito(btn) {
+            var productoId = btn.getAttribute('data-id');
+            var nombre = btn.getAttribute('data-nombre');
+            var descripcion = btn.getAttribute('data-descripcion');
+            var precio = parseFloat(btn.getAttribute('data-precio')) || 0;
+            var imagen = btn.getAttribute('data-icono') || '🛍️';
 
-            if (confirm(mensaje)) {
-                // Crear notificación via fetch
-                fetch('@Url.Action("SuscribirServicio", "Clientes")', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'servicio=' + encodeURIComponent(nombre) + '&montoMensual=' + precio
-                })
-                .then(function (r) { return r.json(); })
-                .then(function (res) {
-                    if (res.success) {
-                        alert('✅ Solicitud enviada. Un agente te contactará pronto.');
-                    } else {
-                        alert('✅ Solicitud registrada. Te contactaremos pronto.');
-                    }
-                })
-                .catch(function () {
-                    alert('✅ Solicitud registrada. Te contactaremos pronto.');
-                });
+            if (precio === 0) {
+                alert('Este producto requiere cotización. Un asesor te contactará.');
+                return;
             }
+
+            var textoOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '...';
+
+            fetch('@Url.Action("Agregar", "Carrito")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'productoId=' + encodeURIComponent(productoId) +
+                      '&nombre=' + encodeURIComponent(nombre) +
+                      '&descripcion=' + encodeURIComponent(descripcion) +
+                      '&precio=' + precio +
+                      '&imagen=' + encodeURIComponent(imagen)
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.success) {
+                    var badge = document.getElementById('cnflCartBadge');
+                    if (badge) {
+                        badge.textContent = data.totalItems;
+                        badge.style.display = 'inline-block';
+                    }
+                    btn.innerHTML = '✅ Agregado';
+                    btn.style.background = 'linear-gradient(135deg, #2f8f3e, #4ac265)';
+                    setTimeout(function () {
+                        btn.innerHTML = textoOriginal;
+                        btn.style.background = '';
+                        btn.disabled = false;
+                    }, 1500);
+                } else {
+                    alert('❌ ' + data.message);
+                    btn.innerHTML = textoOriginal;
+                    btn.disabled = false;
+                }
+            })
+            .catch(function () {
+                alert('Error al agregar al carrito.');
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+            });
         }
     </script>
 }

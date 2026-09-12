@@ -7,8 +7,6 @@ namespace CNFL_Clientes_Prototipo.Data
     {
         public CNFLDbContext() : base("name=CNFLDbContext")
         {
-            // 🔥 IMPORTANTE: Desactiva el cache inicializador para que EF
-            // siempre regenere el modelo cuando cambia
             Database.SetInitializer<CNFLDbContext>(null);
         }
 
@@ -24,6 +22,10 @@ namespace CNFL_Clientes_Prototipo.Data
         public DbSet<Tramite> Tramites { get; set; }
         public DbSet<Suscripcion> Suscripciones { get; set; }
         public DbSet<Pago> Pagos { get; set; }
+
+        public DbSet<CarritoItem> CarritoItems { get; set; }
+        public DbSet<OrdenCompra> OrdenesCompra { get; set; }
+        public DbSet<MetodoPago> MetodosPago { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -43,10 +45,11 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Pago>().ToTable("Pagos");
             modelBuilder.Entity<ActividadEconomica>().ToTable("ActividadesEconomicas");
 
-            // ============================================================
-            // Mapeo EXPLÍCITO de cada propiedad de Tramite
-            // Esto evita que EF6 invente columnas como NISE_NiseId
-            // ============================================================
+            modelBuilder.Entity<CarritoItem>().ToTable("CarritoItems");
+            modelBuilder.Entity<OrdenCompra>().ToTable("OrdenesCompra");
+            modelBuilder.Entity<MetodoPago>().ToTable("MetodosPago");
+
+            // Mapeo explícito Tramite
             modelBuilder.Entity<Tramite>()
                 .Property(t => t.TramiteId).HasColumnName("TramiteId");
             modelBuilder.Entity<Tramite>()
@@ -68,78 +71,156 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Tramite>()
                 .Property(t => t.DatosFormulario).HasColumnName("DatosFormulario");
 
-            // Relación explícita Tramite -> Usuario
+            // Mapeo explícito CarritoItem
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.CarritoItemId).HasColumnName("CarritoItemId");
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.ProductoId).HasColumnName("ProductoId");
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.Nombre).HasColumnName("Nombre");
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.Descripcion).HasColumnName("Descripcion");
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.Precio).HasColumnName("Precio");
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.Cantidad).HasColumnName("Cantidad");
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.Imagen).HasColumnName("Imagen");
+            modelBuilder.Entity<CarritoItem>()
+                .Property(c => c.FechaAgregado).HasColumnName("FechaAgregado");
+
+            // Mapeo explícito OrdenCompra
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.OrdenId).HasColumnName("OrdenId");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.NumeroOrden).HasColumnName("NumeroOrden");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.Subtotal).HasColumnName("Subtotal");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.Impuesto).HasColumnName("Impuesto");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.Total).HasColumnName("Total");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.Metodo).HasColumnName("Metodo");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.Estado).HasColumnName("Estado");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.ReferenciaPago).HasColumnName("ReferenciaPago");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.FechaCreacion).HasColumnName("FechaCreacion");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.FechaConfirmacion).HasColumnName("FechaConfirmacion");
+            modelBuilder.Entity<OrdenCompra>()
+                .Property(o => o.Detalle).HasColumnName("Detalle");
+
+            // Mapeo explícito MetodoPago
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.MetodoPagoId).HasColumnName("MetodoPagoId");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.Tipo).HasColumnName("Tipo");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.Alias).HasColumnName("Alias");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.Ultimos4).HasColumnName("Ultimos4");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.Titular).HasColumnName("Titular");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.FechaVencimiento).HasColumnName("FechaVencimiento");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.Banco).HasColumnName("Banco");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.CuentaIBAN).HasColumnName("CuentaIBAN");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.Predeterminado).HasColumnName("Predeterminado");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.Activo).HasColumnName("Activo");
+            modelBuilder.Entity<MetodoPago>()
+                .Property(m => m.FechaRegistro).HasColumnName("FechaRegistro");
+
+            // ============================================================
+            // Relaciones
+            // ============================================================
+
             modelBuilder.Entity<Tramite>()
                 .HasRequired(t => t.Usuario)
                 .WithMany(u => u.Tramites)
                 .HasForeignKey(t => t.UsuarioId)
                 .WillCascadeOnDelete(false);
 
-            // ============================================================
-            // Relaciones
-            // ============================================================
+            modelBuilder.Entity<CarritoItem>()
+                .HasRequired(c => c.Usuario)
+                .WithMany()
+                .HasForeignKey(c => c.UsuarioId)
+                .WillCascadeOnDelete(false);
 
-            // Usuario -> UsuarioRoles
+            modelBuilder.Entity<OrdenCompra>()
+                .HasRequired(o => o.Usuario)
+                .WithMany()
+                .HasForeignKey(o => o.UsuarioId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<MetodoPago>()
+                .HasRequired(m => m.Usuario)
+                .WithMany()
+                .HasForeignKey(m => m.UsuarioId)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.UsuarioRoles)
                 .WithRequired(ur => ur.Usuario)
                 .HasForeignKey(ur => ur.UsuarioId);
 
-            // Rol -> UsuarioRoles
             modelBuilder.Entity<Rol>()
                 .HasMany(r => r.UsuarioRoles)
                 .WithRequired(ur => ur.Rol)
                 .HasForeignKey(ur => ur.RolId);
 
-            // Usuario -> NISEs
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.NISEs)
                 .WithRequired(n => n.Usuario)
                 .HasForeignKey(n => n.UsuarioId);
 
-            // NISE -> Facturas
             modelBuilder.Entity<NISE>()
                 .HasMany(n => n.Facturas)
                 .WithRequired(f => f.NISE)
                 .HasForeignKey(f => f.NiseId);
 
-            // NISE -> Averias
             modelBuilder.Entity<NISE>()
                 .HasMany(n => n.Averias)
                 .WithRequired(a => a.NISE)
                 .HasForeignKey(a => a.NiseId);
 
-            // NISE -> Suspensiones
             modelBuilder.Entity<NISE>()
                 .HasMany(n => n.Suspensiones)
                 .WithRequired(s => s.NISE)
                 .HasForeignKey(s => s.NiseId);
 
-            // Usuario -> Averias
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Averias)
                 .WithRequired(a => a.Usuario)
                 .HasForeignKey(a => a.UsuarioId);
 
-            // Usuario -> Notificaciones
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Notificaciones)
                 .WithRequired(n => n.Usuario)
                 .HasForeignKey(n => n.UsuarioId);
 
-            // Usuario -> Suscripciones
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Suscripciones)
                 .WithRequired(s => s.Usuario)
                 .HasForeignKey(s => s.UsuarioId);
 
-            // Factura -> Pagos
             modelBuilder.Entity<Factura>()
                 .HasMany(f => f.Pagos)
                 .WithRequired(p => p.Factura)
                 .HasForeignKey(p => p.FacturaId);
 
-            // Usuario -> Pagos
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Pagos)
                 .WithRequired(p => p.Usuario)

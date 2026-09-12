@@ -89,6 +89,29 @@
 
                 <div class="cnfl-settings-sep"></div>
 
+                <!-- 🛒 CARRITO -->
+                <a class="cnfl-settings-item" href="@Url.Action("Index", "Carrito")" style="position:relative;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1" />
+                        <circle cx="20" cy="21" r="1" />
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                    </svg>
+                    <span>Mi carrito</span>
+                    <span id="cnflCartBadge" style="display:none; margin-left:auto; background:var(--orange); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px;">0</span>
+                </a>
+
+                <a class="cnfl-settings-item" href="@Url.Action("MisCompras", "Pagos")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <span>Mis compras</span>
+                </a>
+
+                <div class="cnfl-settings-sep"></div>
+
                 <a class="cnfl-settings-item" href="@Url.Action("MiPerfil", "Clientes")">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
                     <span data-i18n="settings.myProfile">Mi Perfil</span>
@@ -229,6 +252,21 @@
             var clock = document.getElementById('clock');
             if (clock) clock.textContent = h + ':' + m;
         }, 10000);
+
+        // Cargar contador del carrito
+        (function cargarBadgeCarrito() {
+            if (typeof fetch === 'undefined') return;
+            fetch('@Url.Action("Count", "Carrito")')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var badge = document.getElementById('cnflCartBadge');
+                    if (badge && data.totalItems > 0) {
+                        badge.textContent = data.totalItems;
+                        badge.style.display = 'inline-block';
+                    }
+                })
+                .catch(function () { });
+        })();
     </script>
 
     <script src="~/Scripts/cliente/app.js"></script>
