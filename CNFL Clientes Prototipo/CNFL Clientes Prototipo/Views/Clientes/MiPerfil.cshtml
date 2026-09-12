@@ -377,32 +377,32 @@
     </div>
 </div>
 
-<div class="mp-title">Resumen de tu cuenta</div>
+<div class="mp-title" data-i18n="perfil.resumen">Resumen de tu cuenta</div>
 <div class="mp-kpis">
     <div class="mp-kpi">
-        <div class="lbl">NISEs ACTIVOS</div>
+        <div class="lbl" data-i18n="perfil.kpi.nises">NISEs ACTIVOS</div>
         <div class="val">@ViewBag.TotalNISEs</div>
         <div class="sub">Puntos de servicio</div>
     </div>
     <div class="mp-kpi">
-        <div class="lbl">FACTURAS PENDIENTES</div>
+        <div class="lbl" data-i18n="perfil.kpi.facturas">FACTURAS PENDIENTES</div>
         <div class="val @(ViewBag.TotalFacturasPendientes > 0 ? "danger" : "ok")">@ViewBag.TotalFacturasPendientes</div>
         <div class="sub">₡@(((decimal)ViewBag.MontoPendiente).ToString("N0"))</div>
     </div>
     <div class="mp-kpi">
-        <div class="lbl">SUSCRIPCIONES</div>
+        <div class="lbl" data-i18n="perfil.kpi.suscripciones">SUSCRIPCIONES</div>
         <div class="val">@ViewBag.TotalSuscripciones</div>
         <div class="sub">Servicios activos</div>
     </div>
     <div class="mp-kpi">
-        <div class="lbl">AVERÍAS ACTIVAS</div>
+        <div class="lbl" data-i18n="perfil.kpi.averias">AVERÍAS ACTIVAS</div>
         <div class="val @(ViewBag.TotalAveriasActivas > 0 ? "danger" : "ok")">@ViewBag.TotalAveriasActivas</div>
         <div class="sub">Reportes en curso</div>
     </div>
 </div>
 
 <div class="mp-title">
-    Mis NISEs <span class="cnt">@nises.Count</span>
+    <span data-i18n="perfil.misNises">Mis NISEs</span> <span class="cnt">@nises.Count</span>
 </div>
 
 @if (nises.Any())
@@ -424,48 +424,48 @@ else
 {
     <div class="mp-empty">
         <div class="e">🔌</div>
-        <div class="t">Sin NISEs registrados</div>
+        <div class="t" data-i18n="perfil.misNises">Mis NISEs</div>
         <div class="s">Cuando se te asigne un NISE aparecerá acá automáticamente.</div>
     </div>
 }
 
-<div class="mp-title">Accesos rápidos</div>
+<div class="mp-title" data-i18n="perfil.accesos">Accesos rápidos</div>
 <div class="mp-quick">
     <a href="@Url.Action("Calculadora", "Clientes")" class="q1">
         <div class="ico">🧮</div>
-        <div class="t">Calculadora</div>
+        <div class="t" data-i18n="perfil.calculadora">Calculadora</div>
         <div class="s">Estimá tu consumo</div>
     </a>
     <a href="@Url.Action("MisSuscripciones", "Clientes")" class="q2">
         <div class="ico">📦</div>
-        <div class="t">Suscripciones</div>
+        <div class="t" data-i18n="perfil.suscripciones">Suscripciones</div>
         <div class="s">@ViewBag.TotalSuscripciones activas</div>
     </a>
     <a href="@Url.Action("HistorialPagos", "Clientes")" class="q3">
         <div class="ico">🧾</div>
-        <div class="t">Historial compras</div>
+        <div class="t" data-i18n="perfil.historialCompras">Historial compras</div>
         <div class="s">Pagos y facturas</div>
     </a>
     <a href="@Url.Action("Chatbot", "Clientes")" class="q4">
         <div class="ico">🤖</div>
-        <div class="t">Chatbot CNFL</div>
+        <div class="t" data-i18n="perfil.chatbot">Chatbot CNFL</div>
         <div class="s">Ayuda inmediata</div>
     </a>
     <a href="@Url.Action("Reportes", "Clientes")" class="q5">
         <div class="ico">📋</div>
-        <div class="t">Reportes</div>
+        <div class="t" data-i18n="perfil.reportes">Reportes</div>
         <div class="s">Averías y consultas</div>
     </a>
     <a href="@Url.Action("Tienda", "Clientes")" class="q6">
         <div class="ico">🛒</div>
-        <div class="t">Tienda CNFL</div>
+        <div class="t" data-i18n="perfil.tienda">Tienda CNFL</div>
         <div class="s">Productos y servicios</div>
     </a>
 </div>
 
 @if (facturas.Any())
 {
-    <div class="mp-title">Últimas facturas</div>
+    <div class="mp-title" data-i18n="perfil.ultimasFacturas">Últimas facturas</div>
     <div class="mp-list">
         @foreach (var f in facturas)
         {
@@ -481,7 +481,7 @@ else
 
 @if (averias.Any())
 {
-    <div class="mp-title">Averías en seguimiento</div>
+    <div class="mp-title" data-i18n="perfil.averiasSeg">Averías en seguimiento</div>
     <div class="mp-list">
         @foreach (var a in averias)
         {
@@ -494,7 +494,7 @@ else
 }
 
 <a href="@Url.Action("EditarDatos", "Clientes")" class="mp-btn-edit">
-    ✏️ Editar Perfil
+    ✏️ <span data-i18n="perfil.editar">Editar Perfil</span>
 </a>
 
 <button type="button" class="mp-btn-logout" onclick="cnflLogout()">
@@ -503,5 +503,5 @@ else
         <polyline points="16 17 21 12 16 7" />
         <line x1="21" y1="12" x2="9" y2="12" />
     </svg>
-    Cerrar sesión
+    <span data-i18n="perfil.cerrar">Cerrar sesión</span>
 </button>

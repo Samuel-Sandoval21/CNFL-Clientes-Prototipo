@@ -78,7 +78,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View(usuario);
         }
 
-        // GET: Clientes/EditarPerfil -> redirige al formulario de editar datos
+        // GET: Clientes/EditarPerfil
         public ActionResult EditarPerfil()
         {
             return RedirectToAction("EditarDatos");
@@ -114,9 +114,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return RedirectToAction("Login", "Cuenta");
 
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             var usuario = _db.Usuarios.Find(usuarioId);
             if (usuario == null)
@@ -272,7 +270,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // DASHBOARD, REPORTES Y TIENDA
+        // DASHBOARD
         // ============================================================
 
         // GET: Clientes/Dashboard
@@ -282,8 +280,150 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
 
+            var usuario = _db.Usuarios
+                .Include("NISEs")
+                .FirstOrDefault(u => u.UsuarioId == usuarioId);
+
+            if (usuario == null)
+                return HttpNotFound();
+
+            // NISEs
+            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
+            var niseIds = nises.Select(n => n.NiseId).ToList();
+
+            // Facturas
+            var facturas = _db.Facturas
+                .Include("NISE")
+                .Where(f => niseIds.Contains(f.NiseId))
+                .OrderByDescending(f => f.FechaEmision)
+                .ToList();
+
+            var facturasPendientes = facturas.Where(f => !f.Pagada).OrderBy(f => f.FechaVencimiento).ToList();
+            var facturaActual = facturasPendientes.FirstOrDefault();
+            var totalPendiente = facturasPendientes.Sum(f => (decimal?)f.Monto) ?? 0m;
+
+            // Averías activas (DTO público)
+            var averiasActivas = _db.Averias
+                .Where(a => a.UsuarioId == usuarioId
+                         && a.Estado != "Problema resuelto"
+                         && a.Estado != "Resuelto")
+                .OrderByDescending(a => a.FechaReporte)
+                .Select(a => new AveriaResumenDto
+                {
+                    AveriaId = a.AveriaId,
+                    Tipo = a.Tipo,
+                    Estado = a.Estado,
+                    FechaReporte = a.FechaReporte
+                })
+                .ToList();
+
+            // Trámites activos (DTO público)
+            var tramitesActivos = _db.Tramites
+                .Where(t => t.UsuarioId == usuarioId && t.Estado != "Resuelto")
+                .OrderByDescending(t => t.FechaSolicitud)
+                .Select(t => new TramiteResumenDto
+                {
+                    TramiteId = t.TramiteId,
+                    Tipo = t.Tipo,
+                    Categoria = t.Categoria,
+                    Estado = t.Estado,
+                    FechaSolicitud = t.FechaSolicitud,
+                    NumeroReferencia = t.NumeroReferencia,
+                    Descripcion = t.Descripcion
+                })
+                .ToList();
+
+            // Notificaciones (DTO público)
+            var notificaciones = _db.Notificaciones
+                .Where(n => n.UsuarioId == usuarioId && !n.Leida)
+                .OrderByDescending(n => n.Fecha)
+                .Take(3)
+                .Select(n => new NotificacionResumenDto
+                {
+                    NotificacionId = n.NotificacionId,
+                    Titulo = n.Titulo,
+                    Mensaje = n.Mensaje,
+                    Fecha = n.Fecha,
+                    Tipo = n.Tipo
+                })
+                .ToList();
+
+            // Gráfico 1: Dona por NISE (DTO público)
+            var distribucionNise = new List<DistribucionNiseDto>();
+            var coloresNise = new[] { "#1E23E6", "#FF692D", "#64B95A", "#64B9CD", "#F5A623" };
+            int colorIdx = 0;
+            foreach (var nise in nises)
+            {
+                var montoNise = facturas.Where(f => f.NiseId == nise.NiseId).Sum(f => (decimal?)f.Monto) ?? 0m;
+                distribucionNise.Add(new DistribucionNiseDto
+                {
+                    label = nise.NumeroNise,
+                    value = montoNise,
+                    color = coloresNise[colorIdx % coloresNise.Length]
+                });
+                colorIdx++;
+            }
+
+            // Gráfico 2: Consumo mensual (DTO público)
+            var meses = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
+            var consumoMensual = facturas
+                .OrderByDescending(f => f.FechaEmision)
+                .Take(6)
+                .OrderBy(f => f.FechaEmision)
+                .Select(f => new ConsumoMensualDto
+                {
+                    mes = meses[f.FechaEmision.Month - 1],
+                    monto = f.Monto,
+                    kwh = Math.Round((double)f.Monto / 78.0, 0)
+                })
+                .ToList();
+
+            // Gráfico 3: Actividad semanal (DTO público)
+            var actividadSemana = new List<ActividadSemanalDto>
+    {
+        new ActividadSemanalDto { dia = "Lun", facturas = 12, reportes = 3, tramites = 1, perfil = 2 },
+        new ActividadSemanalDto { dia = "Mar", facturas = 8,  reportes = 5, tramites = 2, perfil = 1 },
+        new ActividadSemanalDto { dia = "Mié", facturas = 15, reportes = 2, tramites = 4, perfil = 3 },
+        new ActividadSemanalDto { dia = "Jue", facturas = 6,  reportes = 8, tramites = 1, perfil = 2 },
+        new ActividadSemanalDto { dia = "Vie", facturas = 18, reportes = 1, tramites = 3, perfil = 4 },
+        new ActividadSemanalDto { dia = "Sáb", facturas = 4,  reportes = 2, tramites = 0, perfil = 1 },
+        new ActividadSemanalDto { dia = "Dom", facturas = 2,  reportes = 1, tramites = 0, perfil = 1 }
+    };
+
+            // Gráfico 4: Secciones top (DTO público)
+            var seccionesTop = new List<SeccionTopDto>
+    {
+        new SeccionTopDto { nombre = "Facturas",  visitas = 65 },
+        new SeccionTopDto { nombre = "Reportes",  visitas = 42 },
+        new SeccionTopDto { nombre = "Trámites",  visitas = 28 },
+        new SeccionTopDto { nombre = "Perfil",    visitas = 20 },
+        new SeccionTopDto { nombre = "Productos", visitas = 15 },
+        new SeccionTopDto { nombre = "Chatbot",   visitas = 8 }
+    };
+
+            // ViewBags
+            ViewBag.Nombre = usuario.Nombre;
+            ViewBag.TotalNISEs = nises.Count;
+            ViewBag.TotalFacturasPendientes = facturasPendientes.Count;
+            ViewBag.MontoPendiente = totalPendiente;
+            ViewBag.TotalAveriasActivas = averiasActivas.Count;
+            ViewBag.TotalTramitesActivos = tramitesActivos.Count;
+
+            ViewBag.FacturaActual = facturaActual;
+            ViewBag.AveriasActivas = averiasActivas;
+            ViewBag.TramitesActivos = tramitesActivos;
+            ViewBag.Notificaciones = notificaciones;
+
+            ViewBag.DistribucionJson = Newtonsoft.Json.JsonConvert.SerializeObject(distribucionNise);
+            ViewBag.ConsumoJson = Newtonsoft.Json.JsonConvert.SerializeObject(consumoMensual);
+            ViewBag.ActividadJson = Newtonsoft.Json.JsonConvert.SerializeObject(actividadSemana);
+            ViewBag.SeccionesJson = Newtonsoft.Json.JsonConvert.SerializeObject(seccionesTop);
+
             return View();
         }
+        // ============================================================
+        // REPORTES Y TIENDA
+        // ============================================================
 
         // GET: Clientes/Reportes
         public ActionResult Reportes()
@@ -369,7 +509,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
-        // GET: Clientes/TiposReportesDetalle?tipo=Poste caído
+        // GET: Clientes/TiposReportesDetalle
         public ActionResult TiposReportesDetalle(string tipo)
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -474,7 +614,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // GET: Clientes/MapaAveriasData
-        // Endpoint JSON que devuelve las averías con coordenadas válidas
         [HttpGet]
         public JsonResult MapaAveriasData()
         {

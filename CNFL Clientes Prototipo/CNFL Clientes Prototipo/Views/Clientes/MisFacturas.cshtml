@@ -7,14 +7,11 @@
     var facturas = Model ?? new List<CNFL_Clientes_Prototipo.Models.Factura>();
     var pendientes = facturas.Where(f => !f.Pagada).ToList();
     var pagadas = facturas.Where(f => f.Pagada).ToList();
-
     var totalPendiente = pendientes.Sum(f => (decimal?)f.Monto) ?? 0m;
-    var proximaFactura = pendientes.OrderBy(f => f.FechaVencimiento).FirstOrDefault();
 }
 
 @section Styles {
     <style>
-        /* === HERO === */
         .mf-hero {
             background: linear-gradient(135deg, var(--blue), #2a4fd6);
             border-radius: 22px;
@@ -65,7 +62,6 @@
                     text-align: right;
                 }
 
-        /* === KPIs === */
         .mf-kpis {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -103,7 +99,6 @@
                     color: #2f8f3e;
                 }
 
-        /* === SECCIONES === */
         .mf-title {
             font-size: 15px;
             font-weight: 800;
@@ -134,7 +129,6 @@
                     color: #2f8f3e;
                 }
 
-        /* === TARJETAS FACTURA === */
         .mf-card {
             background: #fff;
             border: 1px solid var(--line);
@@ -275,24 +269,6 @@
                     transform: scale(.97);
                 }
 
-            .mf-card .btn-ver {
-                background: #fff;
-                color: var(--blue);
-                border: 1.5px solid var(--line);
-                font-family: inherit;
-                font-weight: 800;
-                font-size: 13.5px;
-                padding: 12px 16px;
-                border-radius: 12px;
-                cursor: pointer;
-                transition: background .15s;
-            }
-
-                .mf-card .btn-ver:hover {
-                    background: #f5f7ff;
-                }
-
-        /* === ESTADO VACÍO === */
         .mf-empty {
             background: #fff;
             border: 1px dashed var(--line);
@@ -320,7 +296,6 @@
                 line-height: 1.5;
             }
 
-        /* === HISTORIAL COLAPSABLE === */
         .mf-collapse {
             background: #fff;
             border: 1px solid var(--line);
@@ -369,44 +344,41 @@
     </style>
 }
 
-<!-- HERO -->
 <div class="mf-hero">
-    <h1>💡 Mis Facturas</h1>
-    <div class="sub">Gestioná tus pagos pendientes e historial</div>
+    <h1 data-i18n="facturas.title">💡 Mis Facturas</h1>
+    <div class="sub" data-i18n="facturas.sub">Gestioná tus pagos pendientes e historial</div>
 
     <div class="monto-total">
         <div>
-            <div class="lbl">TOTAL PENDIENTE</div>
+            <div class="lbl" data-i18n="facturas.totalPendiente">TOTAL PENDIENTE</div>
             <div class="val">₡@totalPendiente.ToString("N0")</div>
         </div>
         <div class="cnt">
-            @pendientes.Count factura@(pendientes.Count == 1 ? "" : "s")<br>
-            por pagar
+            @pendientes.Count<br><span data-i18n="facturas.porPagar">por pagar</span>
         </div>
     </div>
 </div>
 
-<!-- KPIs -->
 <div class="mf-kpis">
     <div class="mf-kpi">
-        <div class="lbl">PENDIENTES</div>
+        <div class="lbl" data-i18n="facturas.kpi.pendientes">PENDIENTES</div>
         <div class="val @(pendientes.Count > 0 ? "danger" : "ok")">@pendientes.Count</div>
     </div>
     <div class="mf-kpi">
-        <div class="lbl">PAGADAS</div>
+        <div class="lbl" data-i18n="facturas.kpi.pagadas">PAGADAS</div>
         <div class="val ok">@pagadas.Count</div>
     </div>
     <div class="mf-kpi">
-        <div class="lbl">TOTAL</div>
+        <div class="lbl" data-i18n="facturas.kpi.total">TOTAL</div>
         <div class="val">@facturas.Count</div>
     </div>
 </div>
 
-<!-- FACTURAS PENDIENTES -->
 @if (pendientes.Any())
 {
     <div class="mf-title">
-        Pendientes de pago <span class="cnt warn">@pendientes.Count</span>
+        <span data-i18n="facturas.pendientes.title">Pendientes de pago</span>
+        <span class="cnt warn">@pendientes.Count</span>
     </div>
 
     foreach (var f in pendientes.OrderBy(f => f.FechaVencimiento))
@@ -435,7 +407,7 @@
             <div class="actions">
                 <button type="button" class="btn-pagar"
                         onclick="pagarFactura(@f.FacturaId, '@f.NumeroFactura', @f.Monto)">
-                    💳 Pagar ahora
+                    💳 <span data-i18n="facturas.pagar">Pagar ahora</span>
                 </button>
             </div>
         </div>
@@ -445,16 +417,16 @@ else
 {
     <div class="mf-empty" style="margin-top: 22px;">
         <div class="e">🎉</div>
-        <div class="t">¡Todo al día!</div>
-        <div class="s">No tenés facturas pendientes de pago.<br>Gracias por tu puntualidad.</div>
+        <div class="t" data-i18n="facturas.todoAlDia">¡Todo al día!</div>
+        <div class="s" data-i18n="facturas.todoAlDia.sub">No tenés facturas pendientes de pago. Gracias por tu puntualidad.</div>
     </div>
 }
 
-<!-- HISTORIAL DE PAGADAS (colapsable) -->
 @if (pagadas.Any())
 {
     <div class="mf-title">
-        Historial de pagos <span class="cnt ok">@pagadas.Count</span>
+        <span data-i18n="facturas.historial.title">Historial de pagos</span>
+        <span class="cnt ok">@pagadas.Count</span>
     </div>
 
     <div class="mf-collapse" id="collapseHistorial">
@@ -466,20 +438,15 @@ else
             @foreach (var f in pagadas.OrderByDescending(f => f.FechaEmision))
             {
                 var niseNum = f.NISE != null ? f.NISE.NumeroNise : "N/A";
-
                 <div class="mf-card pagada">
                     <div class="top">
                         <div class="nise">🔌 NISE @niseNum</div>
-                        <div class="badge-estado pagada">✓ Pagada</div>
+                        <div class="badge-estado pagada">✓ <span data-i18n="facturas.pagada.badge">Pagada</span></div>
                     </div>
-
                     <div class="monto">₡@f.Monto.ToString("N0")</div>
-
                     <div class="fecha pagada">
-                        ✅ Pagada el @f.FechaVencimiento.ToString("dd 'de' MMMM 'de' yyyy",
-                new System.Globalization.CultureInfo("es-CR"))
+                        ✅ @f.FechaVencimiento.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-CR"))
                     </div>
-
                     <div class="num-factura">Factura @f.NumeroFactura</div>
                 </div>
             }
@@ -495,10 +462,7 @@ else
         }
 
         function pagarFactura(facturaId, numeroFactura, monto) {
-            if (!confirm('¿Confirmás el pago de la factura ' + numeroFactura +
-                         ' por ₡' + monto.toLocaleString('es-CR') + '?')) {
-                return;
-            }
+            if (!confirm('¿Confirmás el pago de la factura ' + numeroFactura + ' por ₡' + monto.toLocaleString('es-CR') + '?')) return;
 
             fetch('@Url.Action("PagarFactura", "Clientes")', {
                 method: 'POST',
@@ -507,16 +471,10 @@ else
             })
             .then(function (r) { return r.json(); })
             .then(function (data) {
-                if (data.success) {
-                    alert('✅ ' + data.message);
-                    location.reload();
-                } else {
-                    alert('❌ ' + data.message);
-                }
+                if (data.success) { alert('✅ ' + data.message); location.reload(); }
+                else { alert('❌ ' + data.message); }
             })
-            .catch(function () {
-                alert('Error al procesar el pago. Intentá de nuevo.');
-            });
+            .catch(function () { alert('Error al procesar el pago.'); });
         }
     </script>
 }

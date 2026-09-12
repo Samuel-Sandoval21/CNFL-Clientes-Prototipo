@@ -1,45 +1,122 @@
-﻿@{
+﻿@model List<CNFL_Clientes_Prototipo.Models.Notificacion>
+
+@{
     ViewBag.Title = "Notificaciones";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    var notificaciones = Model ?? new List<CNFL_Clientes_Prototipo.Models.Notificacion>();
 }
 
-<link rel="stylesheet" href="~/Content/cliente/notificaciones.css" />
+@section Styles {
+    <style>
+        .nt-hero {
+            background: linear-gradient(135deg, #7a4d0e, #b9791a);
+            border-radius: 22px;
+            padding: 22px 20px;
+            color: #fff;
+            box-shadow: 0 12px 30px -12px rgba(122,77,14,.45);
+            margin-top: 8px;
+        }
 
-<div class="notificaciones-container">
-    <h2>Notificaciones</h2>
+            .nt-hero h1 {
+                margin: 0;
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+            }
 
-    <div class="notificaciones-lista">
-        <div class="notificacion-item no-leida">
-            <span class="notificacion-icon">⚡</span>
-            <div class="notificacion-contenido">
-                <h4>Avería · NISE 9950</h4>
-                <p>En atención · estimado 4:30pm</p>
-                <span class="notificacion-fecha">Hace 12 min</span>
-            </div>
-            <span class="badge-nueva">Nueva</span>
-        </div>
+        .nt-item {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-top: 10px;
+            box-shadow: var(--shadow-sm);
+        }
 
-        <div class="notificacion-item no-leida">
-            <span class="notificacion-icon">⛔</span>
-            <div class="notificacion-contenido">
-                <h4>Suspensión programada</h4>
-                <p>NISE 7788 · mañana 8:00–10:00am</p>
-                <span class="notificacion-fecha">Hace 1h</span>
-            </div>
-            <span class="badge-nueva">Nueva</span>
-        </div>
+            .nt-item .top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
 
-        <div class="notificacion-item">
-            <span class="notificacion-icon">📄</span>
-            <div class="notificacion-contenido">
-                <h4>Factura por vencer</h4>
-                <p>₡18,450 · vence en 5 días</p>
-                <span class="notificacion-fecha">Hace 3h</span>
-            </div>
-        </div>
-    </div>
+            .nt-item .titulo {
+                font-size: 13.5px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .nt-item .fecha {
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+
+            .nt-item .msg {
+                font-size: 12.5px;
+                color: var(--muted);
+                margin-top: 8px;
+                line-height: 1.5;
+            }
+
+            .nt-item .tipo-badge {
+                font-size: 10px;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 999px;
+                background: #eef0ff;
+                color: var(--blue);
+            }
+
+        .nt-empty {
+            background: #fff;
+            border: 1px dashed var(--line);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+            .nt-empty .e {
+                font-size: 40px;
+                margin-bottom: 8px;
+            }
+
+            .nt-empty .t {
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+    </style>
+}
+
+<div class="nt-hero">
+    <h1 data-i18n="notif.title">Notificaciones</h1>
 </div>
 
-@section Scripts {
-    <script src="~/Scripts/cliente/notificaciones.js"></script>
+@if (notificaciones.Any())
+{
+    foreach (var n in notificaciones)
+    {
+        <div class="nt-item">
+            <div class="top">
+                <div>
+                    <div class="titulo">@n.Titulo</div>
+                    <div class="fecha">@n.Fecha.ToString("dd/MM/yyyy HH:mm")</div>
+                </div>
+                @if (!string.IsNullOrEmpty(n.Tipo))
+                {
+                    <div class="tipo-badge">@n.Tipo</div>
+                }
+            </div>
+            <div class="msg">@n.Mensaje</div>
+        </div>
+    }
+}
+else
+{
+    <div class="nt-empty">
+        <div class="e">🔔</div>
+        <div class="t" data-i18n="notif.empty">Sin notificaciones por ahora</div>
+    </div>
 }

@@ -4,11 +4,9 @@
     ViewBag.Title = "Mis Suscripciones";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 
-    var totalActivas = Model != null ? Model.Count(s => s.Activa) : 0;
-    var totalMensual = Model != null
-        ? Model.Where(s => s.Activa && s.MontoMensual.HasValue)
-               .Sum(s => s.MontoMensual.Value)
-        : 0m;
+    var suscripciones = Model ?? new List<CNFL_Clientes_Prototipo.Models.Suscripcion>();
+    var totalActivas = suscripciones.Count(s => s.Activa);
+    var totalMensual = suscripciones.Where(s => s.Activa && s.MontoMensual.HasValue).Sum(s => s.MontoMensual.Value);
 }
 
 @section Styles {
@@ -163,48 +161,46 @@
 }
 
 <div class="sub-hero">
-    <h1>📦 Mis suscripciones</h1>
-    <p>Servicios contratados y suscripciones activas.</p>
+    <h1 data-i18n="subs.title">📦 Mis Suscripciones</h1>
+    <p data-i18n="subs.sub">Servicios contratados y suscripciones activas</p>
 </div>
 
 <div class="sub-kpis">
     <div class="sub-kpi">
-        <div class="lbl">ACTIVAS</div>
+        <div class="lbl" data-i18n="subs.activas">ACTIVAS</div>
         <div class="val ok">@totalActivas</div>
     </div>
     <div class="sub-kpi">
-        <div class="lbl">MONTO MENSUAL</div>
+        <div class="lbl" data-i18n="subs.mensual">MONTO MENSUAL</div>
         <div class="val">₡@totalMensual.ToString("N0")</div>
     </div>
 </div>
 
-<div class="sub-title">Todas mis suscripciones</div>
+<div class="sub-title" data-i18n="subs.todas">Todas mis suscripciones</div>
 
-@if (Model != null && Model.Any())
+@if (suscripciones.Any())
 {
-    foreach (var s in Model)
+    foreach (var s in suscripciones)
     {
         <div class="sub-card">
             <div class="row1">
                 <div class="name">@s.Servicio</div>
                 @if (s.Activa)
                 {
-                    <div class="badge activa">Activa</div>
+                    <div class="badge activa" data-i18n="subs.activas">Activa</div>
                 }
                 else
                 {
                     <div class="badge inactiva">Inactiva</div>
                 }
             </div>
-
             <div class="meta">
-                📅 Inicio: <b>@s.FechaInicio.ToString("dd/MM/yyyy")</b>
+                📅 <b>@s.FechaInicio.ToString("dd/MM/yyyy")</b>
                 @if (s.FechaFin.HasValue)
                 {
-                    <br>@:🔚 Fin: <b>@s.FechaFin.Value.ToString("dd/MM/yyyy")</b>
+                    <br>@:🔚 <b>@s.FechaFin.Value.ToString("dd/MM/yyyy")</b>
                 }
             </div>
-
             @if (s.MontoMensual.HasValue)
             {
                 <div class="monto">₡@s.MontoMensual.Value.ToString("N0") / mes</div>
@@ -216,7 +212,7 @@ else
 {
     <div class="sub-empty">
         <div class="e">📦</div>
-        <div class="t">Sin suscripciones registradas</div>
-        <div class="s">Cuando contrates un servicio aparecerá acá con su estado y monto mensual.</div>
+        <div class="t" data-i18n="subs.empty.title">Sin suscripciones registradas</div>
+        <div class="s" data-i18n="subs.empty.sub">Cuando contrates un servicio aparecerá acá.</div>
     </div>
 }

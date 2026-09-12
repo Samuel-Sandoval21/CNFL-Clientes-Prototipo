@@ -136,8 +136,8 @@
 }
 
 <div class="calc-hero">
-    <h1>🧮 Calculadora de consumo</h1>
-    <p>Estimá el monto aproximado de tu factura según el consumo de tus electrodomésticos.</p>
+    <h1 data-i18n="calc.title">🧮 Calculadora de consumo</h1>
+    <p data-i18n="calc.sub">Estimá el monto aproximado de tu factura según el consumo de tus electrodomésticos.</p>
 </div>
 
 <div class="calc-card">
@@ -164,7 +164,7 @@
     </div>
 
     <div class="calc-tips">
-        💡 <b>Tip:</b> Un hogar promedio consume entre 150 y 300 kWh al mes. Si tu consumo es mayor, revisá equipos como aire acondicionado, secadora o refrigeradora.
+        💡 <b>Tip:</b> Un hogar promedio consume entre 150 y 300 kWh al mes.
     </div>
 </div>
 
@@ -173,11 +173,7 @@
         function calcular() {
             var kwh = parseFloat(document.getElementById('kwh').value) || 0;
             var tarifa = parseFloat(document.getElementById('tarifa').value) || 0;
-
-            if (kwh <= 0) {
-                alert('Ingresá un consumo mayor a 0.');
-                return;
-            }
+            if (kwh <= 0) { alert('Ingresá un consumo mayor a 0.'); return; }
 
             var subtotal = kwh * tarifa;
             var iva = subtotal * 0.13;

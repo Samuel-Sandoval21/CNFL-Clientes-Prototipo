@@ -4,9 +4,10 @@
     ViewBag.Title = "Historial de Pagos";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
 
-    var totalPagado = Model != null ? Model.Where(p => p.Estado == "Confirmado").Sum(p => (decimal?)p.Monto) ?? 0m : 0m;
-    var confirmados = Model != null ? Model.Count(p => p.Estado == "Confirmado") : 0;
-    var pendientes = Model != null ? Model.Count(p => p.Estado == "Pendiente") : 0;
+    var pagos = Model ?? new List<CNFL_Clientes_Prototipo.Models.Pago>();
+    var totalPagado = pagos.Where(p => p.Estado == "Confirmado").Sum(p => (decimal?)p.Monto) ?? 0m;
+    var confirmados = pagos.Count(p => p.Estado == "Confirmado");
+    var pendientes = pagos.Count(p => p.Estado == "Pendiente");
 }
 
 @section Styles {
@@ -163,35 +164,34 @@
 }
 
 <div class="hp-hero">
-    <h1>🧾 Historial de pagos</h1>
-    <p>Todos tus pagos registrados en la app.</p>
+    <h1 data-i18n="pagos.title">🧾 Historial de pagos</h1>
+    <p data-i18n="pagos.sub">Todos tus pagos registrados en la app</p>
 </div>
 
 <div class="hp-kpis">
     <div class="hp-kpi">
-        <div class="lbl">TOTAL PAGADO</div>
+        <div class="lbl" data-i18n="pagos.totalPagado">TOTAL PAGADO</div>
         <div class="val ok">₡@totalPagado.ToString("N0")</div>
     </div>
     <div class="hp-kpi">
-        <div class="lbl">CONFIRMADOS</div>
+        <div class="lbl" data-i18n="pagos.confirmados">CONFIRMADOS</div>
         <div class="val">@confirmados</div>
     </div>
     <div class="hp-kpi">
-        <div class="lbl">PENDIENTES</div>
+        <div class="lbl" data-i18n="pagos.pendientes">PENDIENTES</div>
         <div class="val warn">@pendientes</div>
     </div>
 </div>
 
-<div class="hp-title">Todos los pagos</div>
+<div class="hp-title" data-i18n="pagos.todos">Todos los pagos</div>
 
-@if (Model != null && Model.Any())
+@if (pagos.Any())
 {
-    foreach (var p in Model)
+    foreach (var p in pagos)
     {
         var estadoClass = "pendiente";
         if (p.Estado == "Confirmado") { estadoClass = "confirmado"; }
         else if (p.Estado == "Rechazado") { estadoClass = "rechazado"; }
-
         var numFactura = p.Factura != null ? p.Factura.NumeroFactura : "N/A";
 
         <div class="hp-item">
@@ -219,7 +219,7 @@ else
 {
     <div class="hp-empty">
         <div class="e">🧾</div>
-        <div class="t">Sin pagos registrados</div>
-        <div class="s">Cuando realices tu primer pago aparecerá acá con su comprobante.</div>
+        <div class="t" data-i18n="pagos.empty.title">Sin pagos registrados</div>
+        <div class="s" data-i18n="pagos.empty.sub">Cuando realices tu primer pago aparecerá acá.</div>
     </div>
 }

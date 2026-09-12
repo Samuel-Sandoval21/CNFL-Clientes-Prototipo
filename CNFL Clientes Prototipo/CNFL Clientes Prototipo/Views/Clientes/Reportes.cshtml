@@ -5,274 +5,140 @@
 
 @section Styles {
     <style>
-        /* ============================================
-           REPORTES — Vista principal
-           ============================================ */
-        .rep-header {
-            margin-bottom: 18px;
-        }
-
-            .rep-header h1 {
-                font-size: 24px;
-                font-weight: 800;
-                color: var(--blue);
-                margin: 0;
-                letter-spacing: -0.02em;
-            }
-
-            .rep-header .rep-sub {
-                font-size: 13px;
-                color: var(--muted);
-                margin-top: 6px;
-                line-height: 1.5;
-                max-width: 320px;
-            }
-
-        /* Card grande con imagen */
-        .rep-card {
-            display: block;
-            position: relative;
-            height: 140px;
+        .rp-hero {
+            background: linear-gradient(135deg, #d33, #e74c3c);
             border-radius: 22px;
-            overflow: hidden;
-            text-decoration: none;
+            padding: 22px 20px;
             color: #fff;
-            margin-bottom: 14px;
-            box-shadow: 0 12px 28px -14px rgba(16, 20, 60, .35);
-            transition: transform .15s ease;
-            cursor: pointer;
+            box-shadow: 0 12px 30px -12px rgba(211,51,51,.45);
+            margin-top: 8px;
         }
 
-            .rep-card:hover {
+            .rp-hero h1 {
+                margin: 0;
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+            }
+
+            .rp-hero p {
+                margin: 6px 0 0;
+                font-size: 12.5px;
+                opacity: .9;
+                line-height: 1.4;
+            }
+
+        .rp-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .rp-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px 14px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform .15s, box-shadow .2s;
+        }
+
+            .rp-card:hover {
                 transform: translateY(-2px);
+                box-shadow: 0 10px 22px -10px rgba(16,20,60,.25);
                 text-decoration: none;
-                color: #fff;
+                color: inherit;
             }
 
-            .rep-card:active {
-                transform: scale(.98);
-            }
-
-            /* Imagen de fondo */
-            .rep-card .rep-bg {
-                position: absolute;
-                inset: 0;
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-            }
-
-            /* Overlay para que el texto se lea */
-            .rep-card .rep-overlay {
-                position: absolute;
-                inset: 0;
-                background: linear-gradient(90deg, rgba(0, 20, 130, .92) 0%, rgba(0, 20, 130, .70) 45%, rgba(0, 20, 130, .25) 100%);
-            }
-
-            /* Contenido */
-            .rep-card .rep-content {
-                position: relative;
-                z-index: 2;
-                padding: 18px 20px;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-
-            .rep-card .rep-icon {
-                width: 42px;
-                height: 42px;
-                border-radius: 12px;
-                background: rgba(255, 255, 255, .18);
-                backdrop-filter: blur(6px);
+            .rp-card .ico {
+                width: 46px;
+                height: 46px;
+                border-radius: 14px;
                 display: grid;
                 place-items: center;
                 font-size: 22px;
+                background: #eef0ff;
             }
 
-            .rep-card .rep-title {
-                font-size: 17px;
+            .rp-card .t {
+                font-size: 13.5px;
                 font-weight: 800;
-                line-height: 1.15;
-                letter-spacing: -0.01em;
-                margin-top: 6px;
-            }
-
-            .rep-card .rep-desc {
-                font-size: 12px;
-                opacity: .92;
-                margin-top: 3px;
-                line-height: 1.35;
-            }
-
-            .rep-card .rep-arrow {
-                position: absolute;
-                top: 18px;
-                right: 18px;
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, .22);
-                backdrop-filter: blur(6px);
-                display: grid;
-                place-items: center;
-            }
-
-                .rep-card .rep-arrow svg {
-                    width: 16px;
-                    height: 16px;
-                }
-
-            /* Variante: card grande */
-            .rep-card.tall {
-                height: 160px;
-            }
-
-            /* Card simple (sin imagen, para "Historial") */
-            .rep-card.plain {
-                background: #fff;
                 color: var(--ink);
-                border: 1px solid var(--line);
-                box-shadow: var(--shadow-sm);
-                display: flex;
-                align-items: center;
-                padding: 0;
-                height: auto;
-                margin-bottom: 14px;
+                line-height: 1.25;
             }
 
-                .rep-card.plain:hover {
-                    color: var(--ink);
-                }
+            .rp-card .s {
+                font-size: 11px;
+                color: var(--muted);
+                line-height: 1.3;
+            }
 
-                .rep-card.plain .p-icon {
-                    width: 52px;
-                    height: 52px;
-                    border-radius: 14px;
-                    background: #eef0ff;
-                    display: grid;
-                    place-items: center;
-                    margin: 14px 14px 14px 16px;
-                    flex: none;
-                    font-size: 24px;
-                }
+            .rp-card.c1 .ico {
+                background: #fdecea;
+            }
 
-                .rep-card.plain .p-body {
-                    flex: 1;
-                    padding: 14px 16px 14px 0;
-                }
+            .rp-card.c2 .ico {
+                background: #eef0ff;
+            }
 
-                .rep-card.plain .p-title {
-                    font-weight: 800;
-                    font-size: 14px;
-                    color: var(--ink);
-                    line-height: 1.2;
-                }
+            .rp-card.c3 .ico {
+                background: #e9f7ec;
+            }
 
-                .rep-card.plain .p-desc {
-                    font-size: 12px;
-                    color: var(--muted);
-                    margin-top: 3px;
-                    line-height: 1.35;
-                }
+            .rp-card.c4 .ico {
+                background: #fef3e0;
+            }
 
-                .rep-card.plain .p-chev {
-                    color: #c3c8d4;
-                    margin-right: 14px;
-                }
+            .rp-card.c5 .ico {
+                background: #f0eaf9;
+            }
+
+            .rp-card.c6 .ico {
+                background: #eaf6fa;
+            }
     </style>
 }
 
-<!-- Header -->
-<div class="rep-header">
-    <h1>Reportes</h1>
-    <div class="rep-sub">Reportá averías, consultá el estado y seguí tus reportes.</div>
+<div class="rp-hero">
+    <h1 data-i18n="reportes.title">📋 Reportes</h1>
+    <p data-i18n="reportes.sub">Reportá averías y consultá su estado</p>
 </div>
 
-<!-- Card 1: Reportar avería eléctrica -->
-<a href="@Url.Action("ReportarAveria", "Clientes")" class="rep-card tall">
-    <div class="rep-bg" style="background-image: url('https://www.cnfl.go.cr/contenido/imagenes/menu_averias/electrico600.jpg');"></div>
-    <div class="rep-overlay"></div>
-    <div class="rep-arrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
-    </div>
-    <div class="rep-content">
-        <div class="rep-icon">⚡</div>
-        <div>
-            <div class="rep-title">Reportar avería eléctrica</div>
-            <div class="rep-desc">Sin energía, baja tensión, poste caído y más</div>
-        </div>
-    </div>
-</a>
-
-<!-- Card 2: Reportar alumbrado público -->
-<a href="@Url.Action("ReportarAlumbrado", "Clientes")" class="rep-card tall">
-    <div class="rep-bg" style="background-image: url('https://www.cnfl.go.cr/contenido/imagenes/menu_averias/alumbrado600.jpg');"></div>
-    <div class="rep-overlay"></div>
-    <div class="rep-arrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
-    </div>
-    <div class="rep-content">
-        <div class="rep-icon">💡</div>
-        <div>
-            <div class="rep-title">Reportar alumbrado público</div>
-            <div class="rep-desc">Fallas en tu comunidad, lámparas y postes</div>
-        </div>
-    </div>
-</a>
-
-<!-- Card 3: Historial de reportes (simple) -->
-<a href="@Url.Action("HistorialReportes", "Clientes")" class="rep-card plain">
-    <div class="p-icon">📋</div>
-    <div class="p-body">
-        <div class="p-title">Historial de reportes</div>
-        <div class="p-desc">Seguí el estado de tus reportes anteriores</div>
-    </div>
-    <div class="p-chev">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
-    </div>
-</a>
-
-<!-- Card 4: Consultar avería (simple) -->
-<a href="@Url.Action("ConsultarAveria", "Clientes")" class="rep-card plain">
-    <div class="p-icon" style="background:#e9f7ec;">🔎</div>
-    <div class="p-body">
-        <div class="p-title">Consultar avería</div>
-        <div class="p-desc">Ingresá el número de reporte para ver su estado</div>
-    </div>
-    <div class="p-chev">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
-    </div>
-</a>
-
-<!-- Card 5: Mapa de averías (simple) -->
-<a href="@Url.Action("MapaAverias", "Clientes")" class="rep-card plain">
-    <div class="p-icon" style="background:#eef6ff;">🗺️</div>
-    <div class="p-body">
-        <div class="p-title">Mapa de averías</div>
-        <div class="p-desc">Vé las averías activas en tu sector</div>
-    </div>
-    <div class="p-chev">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6" /></svg>
-    </div>
-</a>
-
-@section Scripts {
-    <script>
-        // Si alguna imagen de fondo de CNFL no carga, usamos un degradado por defecto
-        document.querySelectorAll('.rep-card').forEach(function (card) {
-            var bg = card.querySelector('.rep-bg');
-            if (!bg) return;
-            var url = bg.style.backgroundImage;
-            var test = new Image();
-            test.onerror = function () {
-                // Si falla la imagen, aplicamos un degradado azul
-                bg.style.background = 'linear-gradient(135deg, #001482, #1E23E6)';
-            };
-            // Extrae la URL del url('...')
-            var m = url.match(/url\(['"]?(.*?)['"]?\)/);
-            if (m && m[1]) test.src = m[1];
-        });
-    </script>
-}
+<div class="rp-grid">
+    <a href="@Url.Action("TiposReportes", "Clientes")" class="rp-card c1">
+        <div class="ico">⚡</div>
+        <div class="t" data-i18n="reportes.reportar">Reportar avería</div>
+        <div class="s">Poste, cable, transformador</div>
+    </a>
+    <a href="@Url.Action("ConsultarAveria", "Clientes")" class="rp-card c2">
+        <div class="ico">🔍</div>
+        <div class="t" data-i18n="reportes.consultar">Consultar avería</div>
+        <div class="s">Estado por número de reporte</div>
+    </a>
+    <a href="@Url.Action("MapaAverias", "Clientes")" class="rp-card c3">
+        <div class="ico">🗺️</div>
+        <div class="t" data-i18n="reportes.mapa">Mapa de averías</div>
+        <div class="s">Reportes en tu zona</div>
+    </a>
+    <a href="@Url.Action("HistorialReportes", "Clientes")" class="rp-card c4">
+        <div class="ico">📄</div>
+        <div class="t" data-i18n="reportes.historial">Historial de reportes</div>
+        <div class="s">Tus reportes anteriores</div>
+    </a>
+    <a href="@Url.Action("ReportarAlumbrado", "Clientes")" class="rp-card c5">
+        <div class="ico">💡</div>
+        <div class="t" data-i18n="reportes.alumbrado">Reportar alumbrado público</div>
+        <div class="s">Lámparas y postes</div>
+    </a>
+    <a href="@Url.Action("GenerarComprobante", "Clientes")" class="rp-card c6">
+        <div class="ico">🧾</div>
+        <div class="t" data-i18n="reportes.generar">Generar comprobante</div>
+        <div class="s">Descargá el comprobante</div>
+    </a>
+</div>

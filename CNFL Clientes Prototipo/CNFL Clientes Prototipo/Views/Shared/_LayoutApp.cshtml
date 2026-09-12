@@ -72,8 +72,20 @@
                     </div>
                 </div>
 
+                <!-- IDIOMA -->
                 <div class="cnfl-settings-section-label" data-i18n="settings.language">Idioma</div>
                 <div class="cnfl-lang-grid" id="cnflLangGrid"></div>
+
+                <!-- TAMAÑO DE TEXTO -->
+                <div class="cnfl-settings-section-label" data-i18n="settings.textSize">Tamaño de texto</div>
+                <div class="cnfl-zoom-grid" id="cnflZoomGrid">
+                    <button type="button" class="cnfl-zoom-btn" data-zoom="small" title="Pequeño">−</button>
+                    <div class="cnfl-zoom-indicator">
+                        <div class="bar"><div class="fill" id="cnflZoomFill" style="width: 66%;"></div></div>
+                        <div class="lbl" id="cnflZoomLbl">Normal</div>
+                    </div>
+                    <button type="button" class="cnfl-zoom-btn" data-zoom="large" title="Grande">+</button>
+                </div>
 
                 <div class="cnfl-settings-sep"></div>
 
@@ -145,24 +157,40 @@
                         </span>
                         <span class="tab-label" data-i18n="nav.home">Inicio</span>
                     </a>
+
+                    <a href="@Url.Action("Index", "Tramites")" class="tab-item @(controller == "Tramites" ? "active" : "")">
+                        <span class="tab-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="9" y1="13" x2="15" y2="13" />
+                                <line x1="9" y1="17" x2="13" y2="17" />
+                            </svg>
+                        </span>
+                        <span class="tab-label" data-i18n="nav.tramites">Trámites</span>
+                    </a>
+
                     <a href="@Url.Action("MisFacturas", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MisFacturas" ? "active" : "")">
                         <span class="tab-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
                         </span>
                         <span class="tab-label" data-i18n="nav.bills">Facturas</span>
                     </a>
+
                     <a href="@Url.Action("Reportes", "Clientes")" class="tab-item @(controller == "Clientes" && action == "Reportes" ? "active" : "")">
                         <span class="tab-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
                         </span>
                         <span class="tab-label" data-i18n="nav.reports">Reportes</span>
                     </a>
+
                     <a href="@Url.Action("Tienda", "Clientes")" class="tab-item @(controller == "Clientes" && (action == "Tienda" || action == "DetalleProducto") ? "active" : "")">
                         <span class="tab-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
                         </span>
                         <span class="tab-label" data-i18n="nav.products">Productos y Servicios</span>
                     </a>
+
                     <a href="@Url.Action("MiPerfil", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MiPerfil" ? "active" : "")">
                         <span class="tab-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>

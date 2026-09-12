@@ -7,6 +7,9 @@ namespace CNFL_Clientes_Prototipo.Data
     {
         public CNFLDbContext() : base("name=CNFLDbContext")
         {
+            // 🔥 IMPORTANTE: Desactiva el cache inicializador para que EF
+            // siempre regenere el modelo cuando cambia
+            Database.SetInitializer<CNFLDbContext>(null);
         }
 
         public DbSet<Usuario> Usuarios { get; set; }
@@ -38,9 +41,43 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Tramite>().ToTable("Tramites");
             modelBuilder.Entity<Suscripcion>().ToTable("Suscripciones");
             modelBuilder.Entity<Pago>().ToTable("Pagos");
-            modelBuilder.Entity<ActividadEconomica>().ToTable("ActividadesEconomicas");   // 👈 FIX
+            modelBuilder.Entity<ActividadEconomica>().ToTable("ActividadesEconomicas");
 
-            // ===== Relaciones =====
+            // ============================================================
+            // Mapeo EXPLÍCITO de cada propiedad de Tramite
+            // Esto evita que EF6 invente columnas como NISE_NiseId
+            // ============================================================
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.TramiteId).HasColumnName("TramiteId");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.Tipo).HasColumnName("Tipo");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.Categoria).HasColumnName("Categoria");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.Estado).HasColumnName("Estado");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.FechaSolicitud).HasColumnName("FechaSolicitud");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.FechaActualizacion).HasColumnName("FechaActualizacion");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.Descripcion).HasColumnName("Descripcion");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.NumeroReferencia).HasColumnName("NumeroReferencia");
+            modelBuilder.Entity<Tramite>()
+                .Property(t => t.DatosFormulario).HasColumnName("DatosFormulario");
+
+            // Relación explícita Tramite -> Usuario
+            modelBuilder.Entity<Tramite>()
+                .HasRequired(t => t.Usuario)
+                .WithMany(u => u.Tramites)
+                .HasForeignKey(t => t.UsuarioId)
+                .WillCascadeOnDelete(false);
+
+            // ============================================================
+            // Relaciones
+            // ============================================================
 
             // Usuario -> UsuarioRoles
             modelBuilder.Entity<Usuario>()
@@ -90,19 +127,11 @@ namespace CNFL_Clientes_Prototipo.Data
                 .WithRequired(n => n.Usuario)
                 .HasForeignKey(n => n.UsuarioId);
 
-            // Usuario -> Tramites
-            modelBuilder.Entity<Usuario>()
-                .HasMany(u => u.Tramites)
-                .WithRequired(t => t.Usuario)
-                .HasForeignKey(t => t.UsuarioId);
-
             // Usuario -> Suscripciones
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Suscripciones)
                 .WithRequired(s => s.Usuario)
                 .HasForeignKey(s => s.UsuarioId);
-
-            // ===== NUEVAS: PAGOS =====
 
             // Factura -> Pagos
             modelBuilder.Entity<Factura>()

@@ -142,8 +142,8 @@
 <div class="cb-hero">
     <div class="bot">🤖</div>
     <div>
-        <h1>Chatbot CNFL</h1>
-        <p>Asistente virtual · En línea</p>
+        <h1 data-i18n="chat.title">Chatbot CNFL</h1>
+        <p data-i18n="chat.sub">Asistente virtual · En línea</p>
     </div>
 </div>
 
@@ -161,7 +161,7 @@
 </div>
 
 <div class="cb-input-row">
-    <input type="text" id="msgInput" class="cb-input" placeholder="Escribí tu mensaje..." onkeypress="if(event.key==='Enter') enviar()" />
+    <input type="text" id="msgInput" class="cb-input" data-i18n-placeholder="chat.placeholder" placeholder="Escribí tu mensaje..." onkeypress="if(event.key==='Enter') enviar()" />
     <button type="button" class="cb-send" onclick="enviar()">➤</button>
 </div>
 
@@ -188,18 +188,14 @@
             var t = texto.toLowerCase();
             for (var key in respuestas) {
                 if (key === 'default') continue;
-                if (t.indexOf(key.replace('¿', '').replace('?', '')) !== -1) {
-                    return respuestas[key];
-                }
+                if (t.indexOf(key.replace('¿', '').replace('?', '')) !== -1) return respuestas[key];
             }
             return respuestas['default'];
         }
 
         function preguntar(texto) {
             agregarMensaje(texto, 'user');
-            setTimeout(function () {
-                agregarMensaje(buscarRespuesta(texto), 'bot');
-            }, 500);
+            setTimeout(function () { agregarMensaje(buscarRespuesta(texto), 'bot'); }, 500);
         }
 
         function enviar() {
