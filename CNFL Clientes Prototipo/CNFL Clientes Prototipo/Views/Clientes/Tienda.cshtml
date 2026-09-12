@@ -1,32 +1,141 @@
 ﻿@{
     ViewBag.Title = "Tienda";
     Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    var banners = ViewBag.Banners as List<CNFL_Clientes_Prototipo.Models.BannerDto>
+                  ?? new List<CNFL_Clientes_Prototipo.Models.BannerDto>();
 }
 
 @section Styles {
     <style>
-        .ti-hero {
-            background: linear-gradient(135deg, #2f8f3e, #4ac265);
+        /* ═══ CARRUSEL ═══ */
+        .tn-carousel {
+            position: relative;
             border-radius: 20px;
-            padding: 18px 18px;
-            color: #fff;
-            box-shadow: 0 10px 24px -12px rgba(47,143,62,.45);
+            overflow: hidden;
             margin-top: 8px;
+            box-shadow: 0 10px 24px -12px rgba(16,20,60,.4);
         }
 
-            .ti-hero h1 {
-                margin: 0;
-                font-size: 19px;
-                font-weight: 800;
-                letter-spacing: -.02em;
+        .tn-track {
+            display: flex;
+            transition: transform .4s ease;
+            touch-action: pan-y;
+        }
+
+        .tn-slide {
+            flex: 0 0 100%;
+            min-height: 140px;
+            padding: 20px 18px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+            .tn-slide::after {
+                content: "";
+                position: absolute;
+                right: -50px;
+                top: -50px;
+                width: 160px;
+                height: 160px;
+                background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
             }
 
-            .ti-hero p {
-                margin: 4px 0 0;
-                font-size: 12px;
-                opacity: .9;
-                line-height: 1.4;
+            .tn-slide .ico {
+                font-size: 28px;
+                margin-bottom: 2px;
             }
+
+            .tn-slide .t {
+                font-size: 17px;
+                font-weight: 800;
+                letter-spacing: -.01em;
+            }
+
+            .tn-slide .s {
+                font-size: 12px;
+                opacity: .88;
+                line-height: 1.4;
+                max-width: 85%;
+            }
+
+        .tn-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            z-index: 2;
+        }
+
+            .tn-dots span {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: rgba(255,255,255,.45);
+                transition: .2s;
+            }
+
+                .tn-dots span.active {
+                    background: #fff;
+                    width: 18px;
+                    border-radius: 4px;
+                }
+
+        /* ═══ SCROLL DE CATEGORÍAS ═══ */
+        .tn-catscroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 14px 2px 4px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+            .tn-catscroll::-webkit-scrollbar {
+                display: none;
+            }
+
+        .tn-chip {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f4f6fb;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            font-family: inherit;
+            font-size: 11.5px;
+            font-weight: 800;
+            padding: 8px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: .15s;
+            text-decoration: none;
+        }
+
+            .tn-chip.active {
+                background: #2f8f3e;
+                color: #fff;
+                border-color: #2f8f3e;
+            }
+
+            .tn-chip:hover {
+                text-decoration: none;
+            }
+
+        /* ═══ SECCIONES ═══ */
+        .tn-section {
+            scroll-margin-top: 70px;
+        }
 
         .ti-section-title {
             font-size: 13px;
@@ -148,84 +257,290 @@
             .ti-card.c12 .ico {
                 background: #eef0ff;
             }
+
+            .ti-card.c13 .ico {
+                background: #fdecea;
+            }
+
+            .ti-card.c14 .ico {
+                background: #e9f7ec;
+            }
+
+            .ti-card.c15 .ico {
+                background: #fef3e0;
+            }
+
+            .ti-card.c16 .ico {
+                background: #eaf6fa;
+            }
     </style>
 }
 
-<div class="ti-hero">
-    <h1 data-i18n="productos.title">🛒 Productos y Servicios</h1>
-    <p data-i18n="productos.sub">Explorá nuestra tienda y servicios</p>
+<!-- ═══════════════ CARRUSEL ═══════════════ -->
+@if (banners.Count > 0)
+{
+    <div class="tn-carousel" id="tnCarousel">
+        <div class="tn-track" id="tnTrack">
+            @foreach (var b in banners)
+            {
+                <div class="tn-slide"
+                     style="background:linear-gradient(135deg, @b.ColorInicio, @b.ColorFin);"
+                     onclick="location.href='@Url.Action("DetalleProducto", "Clientes", new { id = b.CategoriaId })'">
+                    <div class="ico">@b.Icono</div>
+                    <div class="t">@b.Titulo</div>
+                    <div class="s">@b.Subtitulo</div>
+                </div>
+            }
+        </div>
+        <div class="tn-dots" id="tnDots"></div>
+    </div>
+}
+
+<!-- ═══════════════ SCROLL DE CATEGORÍAS ═══════════════ -->
+<div class="tn-catscroll" id="tnCatScroll">
+    <a href="#sec-hogar360" class="tn-chip">🏡 Hogar 360</a>
+    <a href="#sec-productos" class="tn-chip">🔌 Productos</a>
+    <a href="#sec-servicios" class="tn-chip">🛠️ Servicios</a>
+    <a href="#sec-conectividad" class="tn-chip">📶 5G y Videovigilancia</a>
+    <a href="#sec-complementarios" class="tn-chip">🧩 Complementarios</a>
+    <a href="#sec-marketplace" class="tn-chip">🔁 Marketplace</a>
 </div>
 
-<!-- PRODUCTOS -->
-<div class="ti-section-title">
-    🔌 Productos <span class="cnt">4</span>
-</div>
-<div class="ti-grid">
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "supresores" })" class="ti-card c1">
-        <div class="ico">🔌</div>
-        <div class="t">Supresores y Bases</div>
-        <div class="s">Protección eléctrica</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "cargadores" })" class="ti-card c2">
-        <div class="ico">🔋</div>
-        <div class="t">Cargadores Semirápidos</div>
-        <div class="s">Vehículos eléctricos</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "bienes" })" class="ti-card c3">
-        <div class="ico">🏢</div>
-        <div class="t">Bienes Inmuebles</div>
-        <div class="s">Locales y propiedades</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "tienda" })" class="ti-card c4">
-        <div class="ico">🛍️</div>
-        <div class="t">Tienda CNFL</div>
-        <div class="s">Productos del hogar</div>
-    </a>
+<!-- ═══════════════ HOGAR 360 ═══════════════ -->
+<div class="tn-section" id="sec-hogar360">
+    <div class="ti-section-title">
+        🏡 Servicios Hogar 360 <span class="cnt">3</span>
+    </div>
+    <div class="ti-grid">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "supresores" })" class="ti-card c1">
+            <div class="ico">🔌</div>
+            <div class="t">Supresores y Bases</div>
+            <div class="s">Protección eléctrica</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "cargadores" })" class="ti-card c2">
+            <div class="ico">🔋</div>
+            <div class="t">Cargadores Semirápidos</div>
+            <div class="s">Vehículos eléctricos</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "soluciones-energeticas" })" class="ti-card c3">
+            <div class="ico">🔧</div>
+            <div class="t">Soluciones Energéticas</div>
+            <div class="s">Diagnóstico a medida</div>
+        </a>
+    </div>
 </div>
 
-<!-- SERVICIOS -->
-<div class="ti-section-title">
-    🛠️ Servicios <span class="cnt">8</span>
+<!-- ═══════════════ PRODUCTOS ═══════════════ -->
+<div class="tn-section" id="sec-productos">
+    <div class="ti-section-title">
+        🛍️ Productos <span class="cnt">2</span>
+    </div>
+    <div class="ti-grid">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "bienes" })" class="ti-card c4">
+            <div class="ico">🏢</div>
+            <div class="t">Bienes Inmuebles</div>
+            <div class="s">Locales y propiedades</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "tienda" })" class="ti-card c5">
+            <div class="ico">🛍️</div>
+            <div class="t">Tienda CNFL</div>
+            <div class="s">Productos del hogar</div>
+        </a>
+    </div>
 </div>
-<div class="ti-grid">
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "internet" })" class="ti-card c5">
-        <div class="ico">📡</div>
-        <div class="t">Internet Fijo 5G</div>
-        <div class="s">Viví la velocidad</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "seguro-hogar" })" class="ti-card c6">
-        <div class="ico">🏠</div>
-        <div class="t">Seguro de Hogar</div>
-        <div class="s">Contra incendio y rayo</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "asiste" })" class="ti-card c7">
-        <div class="ico">🛟</div>
-        <div class="t">CNFL Te Asiste</div>
-        <div class="s">Asistencias y seguros</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "sri" })" class="ti-card c8">
-        <div class="ico">⚡</div>
-        <div class="t">Ingeniería Eléctrica</div>
-        <div class="s">Soluciones SIE</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "ambientales" })" class="ti-card c9">
-        <div class="ico">🌱</div>
-        <div class="t">Servicios Ambientales</div>
-        <div class="s">Sostenibilidad</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "calibracion" })" class="ti-card c10">
-        <div class="ico">🔬</div>
-        <div class="t">Calibración</div>
-        <div class="s">Equipos certificados</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "anonos" })" class="ti-card c11">
-        <div class="ico">🔧</div>
-        <div class="t">Taller Anonos</div>
-        <div class="s">Reparación especializada</div>
-    </a>
-    <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "reparacion" })" class="ti-card c12">
-        <div class="ico">🛠️</div>
-        <div class="t">Reparación y Mant.</div>
-        <div class="s">Servicio técnico</div>
-    </a>
+
+<!-- ═══════════════ SERVICIOS ═══════════════ -->
+<div class="tn-section" id="sec-servicios">
+    <div class="ti-section-title">
+        🛠️ Servicios <span class="cnt">6</span>
+    </div>
+    <div class="ti-grid">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "seguro-hogar" })" class="ti-card c6">
+            <div class="ico">🏠</div>
+            <div class="t">Seguro de Hogar</div>
+            <div class="s">Contra incendio y rayo</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "asiste" })" class="ti-card c7">
+            <div class="ico">🛟</div>
+            <div class="t">CNFL Te Asiste</div>
+            <div class="s">Asistencias y seguros</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "sri" })" class="ti-card c8">
+            <div class="ico">⚡</div>
+            <div class="t">Ingeniería Eléctrica</div>
+            <div class="s">Soluciones SIE</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "movilidad" })" class="ti-card c9">
+            <div class="ico">🚗</div>
+            <div class="t">Movilidad Eléctrica</div>
+            <div class="s">Vehículos y carga</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "alquileres" })" class="ti-card c10">
+            <div class="ico">🔑</div>
+            <div class="t">Alquileres</div>
+            <div class="s">Espacios de la CNFL</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "reparacion" })" class="ti-card c11">
+            <div class="ico">🛠️</div>
+            <div class="t">Reparación y Mant.</div>
+            <div class="s">Servicio técnico</div>
+        </a>
+    </div>
 </div>
+
+<!-- ═══════════════ 5G Y VIDEOVIGILANCIA ═══════════════ -->
+<div class="tn-section" id="sec-conectividad">
+    <div class="ti-section-title">
+        📶 Conectividad y Seguridad <span class="cnt">2</span>
+    </div>
+    <div class="ti-grid">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "internet" })" class="ti-card c12">
+            <div class="ico">📡</div>
+            <div class="t">Internet Fijo 5G</div>
+            <div class="s">Viví la velocidad</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "videovigilancia" })" class="ti-card c13">
+            <div class="ico">🎥</div>
+            <div class="t">Videovigilancia</div>
+            <div class="s">Seguridad hogar o negocio</div>
+        </a>
+    </div>
+</div>
+
+<!-- ═══════════════ COMPLEMENTARIOS ═══════════════ -->
+<div class="tn-section" id="sec-complementarios">
+    <div class="ti-section-title">
+        🧩 Complementarios <span class="cnt">3</span>
+    </div>
+    <div class="ti-grid">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "ambientales" })" class="ti-card c14">
+            <div class="ico">🌱</div>
+            <div class="t">Servicios Ambientales</div>
+            <div class="s">Sostenibilidad</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "calibracion" })" class="ti-card c15">
+            <div class="ico">🔬</div>
+            <div class="t">Calibración</div>
+            <div class="s">Equipos certificados</div>
+        </a>
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "anonos" })" class="ti-card c16">
+            <div class="ico">🔧</div>
+            <div class="t">Taller Anonos</div>
+            <div class="s">Reparación especializada</div>
+        </a>
+    </div>
+</div>
+
+<!-- ═══════════════ MARKETPLACE / SUSCRIPCIONES ═══════════════ -->
+<div class="tn-section" id="sec-marketplace" style="margin-bottom:24px;">
+    <div class="ti-section-title">
+        🔁 Marketplace y Suscripciones <span class="cnt">2</span>
+    </div>
+    <div class="ti-grid">
+        <a href="@Url.Action("DetalleProducto", "Clientes", new { id = "marketplace" })" class="ti-card c1">
+            <div class="ico">🔁</div>
+            <div class="t">Marketplace</div>
+            <div class="s">Comprá y vendé entre clientes</div>
+        </a>
+        <a href="@Url.Action("MisSuscripciones", "Clientes")" class="ti-card c2">
+            <div class="ico">📦</div>
+            <div class="t">Mis Suscripciones</div>
+            <div class="s">Servicios activos e inactivos</div>
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var track = document.getElementById('tnTrack');
+            var dotsWrap = document.getElementById('tnDots');
+            var catScroll = document.getElementById('tnCatScroll');
+
+            // ═══ CARRUSEL ═══
+            if (track) {
+                var slides = track.children.length;
+                var idx = 0;
+                var timer;
+
+                for (var i = 0; i < slides; i++) {
+                    var d = document.createElement('span');
+                    if (i === 0) d.classList.add('active');
+                    dotsWrap.appendChild(d);
+                }
+
+                var goTo = function (i) {
+                    idx = (i + slides) % slides;
+                    track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+                    Array.prototype.forEach.call(dotsWrap.children, function (dot, di) {
+                        dot.classList.toggle('active', di === idx);
+                    });
+                };
+
+                var auto = function () {
+                    timer = setInterval(function () { goTo(idx + 1); }, 4500);
+                };
+                var resetAuto = function () {
+                    clearInterval(timer);
+                    auto();
+                };
+
+                var startX = 0;
+                track.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+                track.addEventListener('touchend', function (e) {
+                    var diff = e.changedTouches[0].clientX - startX;
+                    if (diff > 40) goTo(idx - 1);
+                    else if (diff < -40) goTo(idx + 1);
+                    resetAuto();
+                });
+
+                auto();
+            }
+
+            // ═══ SCROLL DE CATEGORÍAS ═══
+            var appContent = document.querySelector('.app-content');
+            var chips = document.querySelectorAll('#tnCatScroll .tn-chip');
+            var sections = document.querySelectorAll('.tn-section');
+
+            // Click en chip → salto suave DENTRO de .app-content
+            chips.forEach(function (chip) {
+                chip.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    var targetId = chip.getAttribute('href').substring(1);
+                    var target = document.getElementById(targetId);
+                    if (target && appContent) {
+                        var offset = target.offsetTop - 70;
+                        appContent.scrollTo({ top: offset, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Centrar chip horizontalmente SIN afectar scroll vertical
+            function centerChip(chip) {
+                if (!catScroll || !chip) return;
+                var target = chip.offsetLeft - (catScroll.clientWidth / 2) + (chip.offsetWidth / 2);
+                catScroll.scrollTo({ left: target, behavior: 'smooth' });
+            }
+
+            // IntersectionObserver usando .app-content como root
+            if ('IntersectionObserver' in window && appContent) {
+                var obs = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            chips.forEach(function (c) { c.classList.remove('active'); });
+                            var match = document.querySelector('#tnCatScroll a[href="#' + entry.target.id + '"]');
+                            if (match) {
+                                match.classList.add('active');
+                                centerChip(match);
+                            }
+                        }
+                    });
+                }, {
+                    root: appContent,
+                    rootMargin: '-90px 0px -70% 0px'
+                });
+                sections.forEach(function (s) { obs.observe(s); });
+            }
+        })();
+    </script>
+}

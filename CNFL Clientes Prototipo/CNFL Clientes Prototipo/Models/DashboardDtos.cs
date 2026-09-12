@@ -59,4 +59,15 @@ namespace CNFL_Clientes_Prototipo.Models
         public string nombre { get; set; }
         public int visitas { get; set; }
     }
+
+    // Para el carrusel de Productos y Servicios
+    public class BannerDto
+    {
+        public string Titulo { get; set; }
+        public string Subtitulo { get; set; }
+        public string Icono { get; set; }
+        public string CategoriaId { get; set; }
+        public string ColorInicio { get; set; }
+        public string ColorFin { get; set; }
+    }
 }

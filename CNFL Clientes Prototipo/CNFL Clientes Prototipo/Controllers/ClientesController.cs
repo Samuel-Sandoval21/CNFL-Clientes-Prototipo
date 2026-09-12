@@ -380,26 +380,26 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             // Gráfico 3: Actividad semanal (DTO público)
             var actividadSemana = new List<ActividadSemanalDto>
-    {
-        new ActividadSemanalDto { dia = "Lun", facturas = 12, reportes = 3, tramites = 1, perfil = 2 },
-        new ActividadSemanalDto { dia = "Mar", facturas = 8,  reportes = 5, tramites = 2, perfil = 1 },
-        new ActividadSemanalDto { dia = "Mié", facturas = 15, reportes = 2, tramites = 4, perfil = 3 },
-        new ActividadSemanalDto { dia = "Jue", facturas = 6,  reportes = 8, tramites = 1, perfil = 2 },
-        new ActividadSemanalDto { dia = "Vie", facturas = 18, reportes = 1, tramites = 3, perfil = 4 },
-        new ActividadSemanalDto { dia = "Sáb", facturas = 4,  reportes = 2, tramites = 0, perfil = 1 },
-        new ActividadSemanalDto { dia = "Dom", facturas = 2,  reportes = 1, tramites = 0, perfil = 1 }
-    };
+            {
+                new ActividadSemanalDto { dia = "Lun", facturas = 12, reportes = 3, tramites = 1, perfil = 2 },
+                new ActividadSemanalDto { dia = "Mar", facturas = 8,  reportes = 5, tramites = 2, perfil = 1 },
+                new ActividadSemanalDto { dia = "Mié", facturas = 15, reportes = 2, tramites = 4, perfil = 3 },
+                new ActividadSemanalDto { dia = "Jue", facturas = 6,  reportes = 8, tramites = 1, perfil = 2 },
+                new ActividadSemanalDto { dia = "Vie", facturas = 18, reportes = 1, tramites = 3, perfil = 4 },
+                new ActividadSemanalDto { dia = "Sáb", facturas = 4,  reportes = 2, tramites = 0, perfil = 1 },
+                new ActividadSemanalDto { dia = "Dom", facturas = 2,  reportes = 1, tramites = 0, perfil = 1 }
+            };
 
             // Gráfico 4: Secciones top (DTO público)
             var seccionesTop = new List<SeccionTopDto>
-    {
-        new SeccionTopDto { nombre = "Facturas",  visitas = 65 },
-        new SeccionTopDto { nombre = "Reportes",  visitas = 42 },
-        new SeccionTopDto { nombre = "Trámites",  visitas = 28 },
-        new SeccionTopDto { nombre = "Perfil",    visitas = 20 },
-        new SeccionTopDto { nombre = "Productos", visitas = 15 },
-        new SeccionTopDto { nombre = "Chatbot",   visitas = 8 }
-    };
+            {
+                new SeccionTopDto { nombre = "Facturas",  visitas = 65 },
+                new SeccionTopDto { nombre = "Reportes",  visitas = 42 },
+                new SeccionTopDto { nombre = "Trámites",  visitas = 28 },
+                new SeccionTopDto { nombre = "Perfil",    visitas = 20 },
+                new SeccionTopDto { nombre = "Productos", visitas = 15 },
+                new SeccionTopDto { nombre = "Chatbot",   visitas = 8 }
+            };
 
             // ViewBags
             ViewBag.Nombre = usuario.Nombre;
@@ -421,6 +421,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             return View();
         }
+
         // ============================================================
         // REPORTES Y TIENDA
         // ============================================================
@@ -442,6 +443,41 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuarioId == null)
                 return RedirectToAction("Login", "Cuenta");
 
+            var banners = new List<BannerDto>
+            {
+                new BannerDto {
+                    Titulo = "Servicios Hogar 360",
+                    Subtitulo = "Eficiencia energética, domótica, acometidas y más",
+                    Icono = "🏡", CategoriaId = "hogar360",
+                    ColorInicio = "#0033A0", ColorFin = "#2a4fd6"
+                },
+                new BannerDto {
+                    Titulo = "Internet Fijo 5G",
+                    Subtitulo = "Navegación fluida, streaming y gaming sin límites",
+                    Icono = "📶", CategoriaId = "internet",
+                    ColorInicio = "#1E23E6", ColorFin = "#64B9CD"
+                },
+                new BannerDto {
+                    Titulo = "Seguro de Hogar",
+                    Subtitulo = "Protegé tu vivienda contra incendio y otros riesgos",
+                    Icono = "🛡️", CategoriaId = "seguro-hogar",
+                    ColorInicio = "#0033A0", ColorFin = "#64B95A"
+                },
+                new BannerDto {
+                    Titulo = "Tienda CNFL",
+                    Subtitulo = "Electrodomésticos, tecnología y línea blanca a crédito",
+                    Icono = "🛒", CategoriaId = "tienda",
+                    ColorInicio = "#FF692D", ColorFin = "#F5A623"
+                },
+                new BannerDto {
+                    Titulo = "CNFL Te Asiste",
+                    Subtitulo = "Asistencias para el hogar cuando más las necesitás",
+                    Icono = "🤝", CategoriaId = "asiste",
+                    ColorInicio = "#64B95A", ColorFin = "#0033A0"
+                }
+            };
+
+            ViewBag.Banners = banners;
             return View();
         }
 
@@ -470,7 +506,13 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 { "ambientales", "Servicios Ambientales" },
                 { "calibracion", "Calibración" },
                 { "anonos", "Taller Anonos" },
-                { "reparacion", "Reparación y Mantenimiento" }
+                { "reparacion", "Reparación y Mantenimiento" },
+                { "hogar360", "Servicios Hogar 360" },
+                { "videovigilancia", "Videovigilancia" },
+                { "movilidad", "Movilidad Eléctrica" },
+                { "alquileres", "Alquileres" },
+                { "soluciones-energeticas", "Soluciones Energéticas Integrales" },
+                { "marketplace", "Marketplace" }
             };
 
             var subtitulos = new Dictionary<string, string>
@@ -486,7 +528,13 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 { "ambientales", "Sostenibilidad y control" },
                 { "calibracion", "Equipos certificados" },
                 { "anonos", "Reparación especializada" },
-                { "reparacion", "Servicio técnico" }
+                { "reparacion", "Servicio técnico" },
+                { "hogar360", "Domótica, acometidas y eficiencia energética" },
+                { "videovigilancia", "Seguridad para tu hogar o negocio" },
+                { "movilidad", "Vehículos y estaciones de carga eléctrica" },
+                { "alquileres", "Espacios en alquiler de la CNFL" },
+                { "soluciones-energeticas", "Diagnóstico y diseño energético a medida" },
+                { "marketplace", "Comprá y vendé entre clientes CNFL" }
             };
 
             ViewBag.Titulo = titulos.ContainsKey(id) ? titulos[id] : "Producto";
