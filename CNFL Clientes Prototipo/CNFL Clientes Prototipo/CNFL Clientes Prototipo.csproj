@@ -198,8 +198,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ActividadEconomica.cs" />
+    <Compile Include="Models\ActividadUsuario.cs" />
     <Compile Include="Models\Averia.cs" />
     <Compile Include="Models\DashboardDtos.cs" />
+    <Compile Include="Models\DescargaUsuario.cs" />
     <Compile Include="Models\Factura.cs" />
     <Compile Include="Models\NISE.cs" />
     <Compile Include="Models\Notificacion.cs" />

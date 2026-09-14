@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CNFL_Clientes_Prototipo.Models
 {
     // ═══════════════════════════════════════════════════════════
-    // DTOs del DASHBOARD (Inicio)
+    // DTOs del DASHBOARD (solo proyecciones de consulta, NO tablas)
     // ═══════════════════════════════════════════════════════════
 
     public class AveriaResumenDto
@@ -34,10 +35,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public string Tipo { get; set; }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // DTOs para los GRÁFICOS del Dashboard
-    // ═══════════════════════════════════════════════════════════
-
     public class DistribucionNiseDto
     {
         public string label { get; set; }
@@ -67,10 +64,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public int visitas { get; set; }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // DTOs de la TIENDA
-    // ═══════════════════════════════════════════════════════════
-
     public class BannerDto
     {
         public string Titulo { get; set; }
@@ -80,4 +73,18 @@ namespace CNFL_Clientes_Prototipo.Models
         public string ColorInicio { get; set; }
         public string ColorFin { get; set; }
     }
+
+    /// <summary>DTO con las métricas de uso agregadas del cliente.</summary>
+    public class MetricasUsoDto
+    {
+        public int TotalSesiones { get; set; }
+        public int TiempoTotalMinutos { get; set; }
+        public int PromedioMinutosPorDia { get; set; }
+        public string SeccionMasVisitada { get; set; }
+        public int TotalDescargas { get; set; }
+        public int DescargasPDF { get; set; }
+        public int DescargasExcel { get; set; }
+    }
+
+    // ProductoTiendaDto vive en PagoDtos.cs — no lo dupliques acá.
 }

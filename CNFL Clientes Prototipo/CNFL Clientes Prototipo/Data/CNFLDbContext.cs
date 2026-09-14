@@ -27,6 +27,9 @@ namespace CNFL_Clientes_Prototipo.Data
         public DbSet<OrdenCompra> OrdenesCompra { get; set; }
         public DbSet<MetodoPago> MetodosPago { get; set; }
 
+        public DbSet<ActividadUsuario> ActividadUsuario { get; set; }
+        public DbSet<DescargaUsuario> DescargasUsuario { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -49,104 +52,102 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<OrdenCompra>().ToTable("OrdenesCompra");
             modelBuilder.Entity<MetodoPago>().ToTable("MetodosPago");
 
-            // Mapeo explícito Tramite
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.TramiteId).HasColumnName("TramiteId");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.UsuarioId).HasColumnName("UsuarioId");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.Tipo).HasColumnName("Tipo");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.Categoria).HasColumnName("Categoria");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.Estado).HasColumnName("Estado");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.FechaSolicitud).HasColumnName("FechaSolicitud");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.FechaActualizacion).HasColumnName("FechaActualizacion");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.Descripcion).HasColumnName("Descripcion");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.NumeroReferencia).HasColumnName("NumeroReferencia");
-            modelBuilder.Entity<Tramite>()
-                .Property(t => t.DatosFormulario).HasColumnName("DatosFormulario");
+            modelBuilder.Entity<ActividadUsuario>().ToTable("ActividadUsuario");
+            modelBuilder.Entity<DescargaUsuario>().ToTable("DescargasUsuario");
 
-            // Mapeo explícito CarritoItem
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.CarritoItemId).HasColumnName("CarritoItemId");
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.UsuarioId).HasColumnName("UsuarioId");
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.ProductoId).HasColumnName("ProductoId");
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.Nombre).HasColumnName("Nombre");
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.Descripcion).HasColumnName("Descripcion");
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.Precio).HasColumnName("Precio");
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.Cantidad).HasColumnName("Cantidad");
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.Imagen).HasColumnName("Imagen");
-            modelBuilder.Entity<CarritoItem>()
-                .Property(c => c.FechaAgregado).HasColumnName("FechaAgregado");
+            // ═══════════════════════════════════════════════════════
+            // Claves primarias (Fluent API)
+            // ═══════════════════════════════════════════════════════
+            modelBuilder.Entity<Tramite>()
+                .HasKey(t => t.TramiteId);
 
-            // Mapeo explícito OrdenCompra
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.OrdenId).HasColumnName("OrdenId");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.NumeroOrden).HasColumnName("NumeroOrden");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.UsuarioId).HasColumnName("UsuarioId");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.Subtotal).HasColumnName("Subtotal");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.Impuesto).HasColumnName("Impuesto");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.Total).HasColumnName("Total");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.Metodo).HasColumnName("Metodo");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.Estado).HasColumnName("Estado");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.ReferenciaPago).HasColumnName("ReferenciaPago");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.FechaCreacion).HasColumnName("FechaCreacion");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.FechaConfirmacion).HasColumnName("FechaConfirmacion");
-            modelBuilder.Entity<OrdenCompra>()
-                .Property(o => o.Detalle).HasColumnName("Detalle");
+            modelBuilder.Entity<CarritoItem>()
+                .HasKey(c => c.CarritoItemId);
 
-            // Mapeo explícito MetodoPago
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.MetodoPagoId).HasColumnName("MetodoPagoId");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.UsuarioId).HasColumnName("UsuarioId");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.Tipo).HasColumnName("Tipo");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.Alias).HasColumnName("Alias");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.Ultimos4).HasColumnName("Ultimos4");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.Titular).HasColumnName("Titular");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.FechaVencimiento).HasColumnName("FechaVencimiento");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.Banco).HasColumnName("Banco");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.CuentaIBAN).HasColumnName("CuentaIBAN");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.Predeterminado).HasColumnName("Predeterminado");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.Activo).HasColumnName("Activo");
-            modelBuilder.Entity<MetodoPago>()
-                .Property(m => m.FechaRegistro).HasColumnName("FechaRegistro");
+            modelBuilder.Entity<OrdenCompra>()
+                .HasKey(o => o.OrdenId);
 
-            // ============================================================
+            modelBuilder.Entity<MetodoPago>()
+                .HasKey(m => m.MetodoPagoId);
+
+            // ⭐ Claves primarias de las tablas nuevas
+            modelBuilder.Entity<ActividadUsuario>()
+                .HasKey(a => a.ActividadId);
+
+            modelBuilder.Entity<DescargaUsuario>()
+                .HasKey(d => d.DescargaId);
+
+            // ═══════════════════════════════════════════════════════
+            // Mapeo de columnas
+            // ═══════════════════════════════════════════════════════
+            modelBuilder.Entity<Tramite>().Property(t => t.TramiteId).HasColumnName("TramiteId");
+            modelBuilder.Entity<Tramite>().Property(t => t.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<Tramite>().Property(t => t.Tipo).HasColumnName("Tipo");
+            modelBuilder.Entity<Tramite>().Property(t => t.Categoria).HasColumnName("Categoria");
+            modelBuilder.Entity<Tramite>().Property(t => t.Estado).HasColumnName("Estado");
+            modelBuilder.Entity<Tramite>().Property(t => t.FechaSolicitud).HasColumnName("FechaSolicitud");
+            modelBuilder.Entity<Tramite>().Property(t => t.FechaActualizacion).HasColumnName("FechaActualizacion");
+            modelBuilder.Entity<Tramite>().Property(t => t.Descripcion).HasColumnName("Descripcion");
+            modelBuilder.Entity<Tramite>().Property(t => t.NumeroReferencia).HasColumnName("NumeroReferencia");
+            modelBuilder.Entity<Tramite>().Property(t => t.DatosFormulario).HasColumnName("DatosFormulario");
+
+            modelBuilder.Entity<CarritoItem>().Property(c => c.CarritoItemId).HasColumnName("CarritoItemId");
+            modelBuilder.Entity<CarritoItem>().Property(c => c.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<CarritoItem>().Property(c => c.ProductoId).HasColumnName("ProductoId");
+            modelBuilder.Entity<CarritoItem>().Property(c => c.Nombre).HasColumnName("Nombre");
+            modelBuilder.Entity<CarritoItem>().Property(c => c.Descripcion).HasColumnName("Descripcion");
+            modelBuilder.Entity<CarritoItem>().Property(c => c.Precio).HasColumnName("Precio");
+            modelBuilder.Entity<CarritoItem>().Property(c => c.Cantidad).HasColumnName("Cantidad");
+            modelBuilder.Entity<CarritoItem>().Property(c => c.Imagen).HasColumnName("Imagen");
+            modelBuilder.Entity<CarritoItem>().Property(c => c.FechaAgregado).HasColumnName("FechaAgregado");
+
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.OrdenId).HasColumnName("OrdenId");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.NumeroOrden).HasColumnName("NumeroOrden");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.Subtotal).HasColumnName("Subtotal");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.Impuesto).HasColumnName("Impuesto");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.Total).HasColumnName("Total");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.Metodo).HasColumnName("Metodo");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.Estado).HasColumnName("Estado");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.ReferenciaPago).HasColumnName("ReferenciaPago");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.FechaCreacion).HasColumnName("FechaCreacion");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.FechaConfirmacion).HasColumnName("FechaConfirmacion");
+            modelBuilder.Entity<OrdenCompra>().Property(o => o.Detalle).HasColumnName("Detalle");
+
+            modelBuilder.Entity<MetodoPago>().Property(m => m.MetodoPagoId).HasColumnName("MetodoPagoId");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.Tipo).HasColumnName("Tipo");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.Alias).HasColumnName("Alias");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.Ultimos4).HasColumnName("Ultimos4");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.Titular).HasColumnName("Titular");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.FechaVencimiento).HasColumnName("FechaVencimiento");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.Banco).HasColumnName("Banco");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.CuentaIBAN).HasColumnName("CuentaIBAN");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.Predeterminado).HasColumnName("Predeterminado");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.Activo).HasColumnName("Activo");
+            modelBuilder.Entity<MetodoPago>().Property(m => m.FechaRegistro).HasColumnName("FechaRegistro");
+
+            // ⭐ Mapeo de columnas de ActividadUsuario
+            modelBuilder.Entity<ActividadUsuario>().Property(a => a.ActividadId).HasColumnName("ActividadId");
+            modelBuilder.Entity<ActividadUsuario>().Property(a => a.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<ActividadUsuario>().Property(a => a.Seccion).HasColumnName("Seccion");
+            modelBuilder.Entity<ActividadUsuario>().Property(a => a.Accion).HasColumnName("Accion");
+            modelBuilder.Entity<ActividadUsuario>().Property(a => a.Detalle).HasColumnName("Detalle");
+            modelBuilder.Entity<ActividadUsuario>().Property(a => a.DuracionSegundos).HasColumnName("DuracionSegundos");
+            modelBuilder.Entity<ActividadUsuario>().Property(a => a.Fecha).HasColumnName("Fecha");
+
+            // ⭐ Mapeo de columnas de DescargaUsuario
+            modelBuilder.Entity<DescargaUsuario>().Property(d => d.DescargaId).HasColumnName("DescargaId");
+            modelBuilder.Entity<DescargaUsuario>().Property(d => d.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<DescargaUsuario>().Property(d => d.Nombre).HasColumnName("Nombre");
+            modelBuilder.Entity<DescargaUsuario>().Property(d => d.Tipo).HasColumnName("Tipo");
+            modelBuilder.Entity<DescargaUsuario>().Property(d => d.Seccion).HasColumnName("Seccion");
+            modelBuilder.Entity<DescargaUsuario>().Property(d => d.TamanoKB).HasColumnName("TamanoKB");
+            modelBuilder.Entity<DescargaUsuario>().Property(d => d.Fecha).HasColumnName("Fecha");
+
+            // ═══════════════════════════════════════════════════════
             // Relaciones
-            // ============================================================
-
+            // ═══════════════════════════════════════════════════════
             modelBuilder.Entity<Tramite>()
                 .HasRequired(t => t.Usuario)
                 .WithMany(u => u.Tramites)
@@ -225,6 +226,18 @@ namespace CNFL_Clientes_Prototipo.Data
                 .HasMany(u => u.Pagos)
                 .WithRequired(p => p.Usuario)
                 .HasForeignKey(p => p.UsuarioId);
+
+            modelBuilder.Entity<ActividadUsuario>()
+                .HasRequired(a => a.Usuario)
+                .WithMany()
+                .HasForeignKey(a => a.UsuarioId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<DescargaUsuario>()
+                .HasRequired(d => d.Usuario)
+                .WithMany()
+                .HasForeignKey(d => d.UsuarioId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

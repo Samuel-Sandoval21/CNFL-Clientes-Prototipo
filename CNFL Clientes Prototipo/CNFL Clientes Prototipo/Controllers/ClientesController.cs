@@ -310,6 +310,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
             if (usuario == null)
                 return HttpNotFound();
 
+            // ─── NISEs y facturas ───
             var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
             var niseIds = nises.Select(n => n.NiseId).ToList();
 
@@ -323,6 +324,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var facturaActual = facturasPendientes.FirstOrDefault();
             var totalPendiente = facturasPendientes.Sum(f => (decimal?)f.Monto) ?? 0m;
 
+            // ─── Averías activas ───
             var averiasActivas = _db.Averias
                 .Where(a => a.UsuarioId == usuarioId
                          && a.Estado != "Problema resuelto"
@@ -337,6 +339,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
+            // ─── Trámites activos ───
             var tramitesActivos = _db.Tramites
                 .Where(t => t.UsuarioId == usuarioId && t.Estado != "Resuelto")
                 .OrderByDescending(t => t.FechaSolicitud)
@@ -352,6 +355,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
+            // ─── Notificaciones ───
             var notificaciones = _db.Notificaciones
                 .Where(n => n.UsuarioId == usuarioId && !n.Leida)
                 .OrderByDescending(n => n.Fecha)
@@ -366,6 +370,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
+            // ═══════════════════════════════════════════════════════════
+            // GRÁFICOS
+            // ═══════════════════════════════════════════════════════════
             var distribucionNise = new List<DistribucionNiseDto>();
             var coloresNise = new[] { "#1E23E6", "#FF692D", "#64B95A", "#64B9CD", "#F5A623" };
             int colorIdx = 0;
@@ -394,27 +401,71 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            var actividadSemana = new List<ActividadSemanalDto>
+            // ─── Actividad semanal REAL desde BD ───
+            var hace7dias = DateTime.Now.AddDays(-7);
+            var actividadReal = _db.ActividadUsuario
+                .Where(a => a.UsuarioId == usuarioId && a.Fecha >= hace7dias)
+                .ToList();
+
+            var diasSemana = new[] { "Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb" };
+            var actividadSemana = new List<ActividadSemanalDto>();
+            for (int i = 6; i >= 0; i--)
             {
-                new ActividadSemanalDto { dia = "Lun", facturas = 12, reportes = 3, tramites = 1, perfil = 2 },
-                new ActividadSemanalDto { dia = "Mar", facturas = 8,  reportes = 5, tramites = 2, perfil = 1 },
-                new ActividadSemanalDto { dia = "Mié", facturas = 15, reportes = 2, tramites = 4, perfil = 3 },
-                new ActividadSemanalDto { dia = "Jue", facturas = 6,  reportes = 8, tramites = 1, perfil = 2 },
-                new ActividadSemanalDto { dia = "Vie", facturas = 18, reportes = 1, tramites = 3, perfil = 4 },
-                new ActividadSemanalDto { dia = "Sáb", facturas = 4,  reportes = 2, tramites = 0, perfil = 1 },
-                new ActividadSemanalDto { dia = "Dom", facturas = 2,  reportes = 1, tramites = 0, perfil = 1 }
+                var dia = DateTime.Now.AddDays(-i).Date;
+                var delDia = actividadReal.Where(a => a.Fecha.Date == dia).ToList();
+                actividadSemana.Add(new ActividadSemanalDto
+                {
+                    dia = diasSemana[(int)dia.DayOfWeek],
+                    facturas = delDia.Count(a => a.Seccion == "Facturas"),
+                    reportes = delDia.Count(a => a.Seccion == "Reportes"),
+                    tramites = delDia.Count(a => a.Seccion == "Trámites"),
+                    perfil = delDia.Count(a => a.Seccion == "Perfil" || a.Seccion == "Dashboard")
+                });
+            }
+
+            // ─── Secciones más visitadas REALES ───
+            var seccionesTop = actividadReal
+                .GroupBy(a => a.Seccion)
+                .Select(g => new SeccionTopDto { nombre = g.Key, visitas = g.Count() })
+                .OrderByDescending(s => s.visitas)
+                .Take(6)
+                .ToList();
+
+            if (seccionesTop.Count == 0)
+                seccionesTop.Add(new SeccionTopDto { nombre = "Sin actividad aún", visitas = 0 });
+
+            // ═══════════════════════════════════════════════════════════
+            // MÉTRICAS DE USO
+            // ═══════════════════════════════════════════════════════════
+            var tiempoTotalSegundos = actividadReal
+                .Where(a => a.DuracionSegundos.HasValue)
+                .Sum(a => a.DuracionSegundos.Value);
+
+            var seccionTop = actividadReal
+                .GroupBy(a => a.Seccion)
+                .Select(g => new { Seccion = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .FirstOrDefault();
+
+            var descargas = _db.DescargasUsuario
+                .Where(d => d.UsuarioId == usuarioId)
+                .OrderByDescending(d => d.Fecha)
+                .ToList();
+
+            var metricas = new MetricasUsoDto
+            {
+                TotalSesiones = actividadReal.Count,
+                TiempoTotalMinutos = tiempoTotalSegundos / 60,
+                PromedioMinutosPorDia = tiempoTotalSegundos > 0 ? (tiempoTotalSegundos / 60) / 7 : 0,
+                SeccionMasVisitada = seccionTop != null ? seccionTop.Seccion : "Sin datos",
+                TotalDescargas = descargas.Count,
+                DescargasPDF = descargas.Count(d => d.Tipo == "PDF"),
+                DescargasExcel = descargas.Count(d => d.Tipo == "Excel")
             };
 
-            var seccionesTop = new List<SeccionTopDto>
-            {
-                new SeccionTopDto { nombre = "Facturas",  visitas = 65 },
-                new SeccionTopDto { nombre = "Reportes",  visitas = 42 },
-                new SeccionTopDto { nombre = "Trámites",  visitas = 28 },
-                new SeccionTopDto { nombre = "Perfil",    visitas = 20 },
-                new SeccionTopDto { nombre = "Productos", visitas = 15 },
-                new SeccionTopDto { nombre = "Chatbot",   visitas = 8 }
-            };
-
+            // ═══════════════════════════════════════════════════════════
+            // ViewBags
+            // ═══════════════════════════════════════════════════════════
             ViewBag.Nombre = usuario.Nombre;
             ViewBag.TotalNISEs = nises.Count;
             ViewBag.TotalFacturasPendientes = facturasPendientes.Count;
@@ -431,6 +482,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
             ViewBag.ConsumoJson = Newtonsoft.Json.JsonConvert.SerializeObject(consumoMensual);
             ViewBag.ActividadJson = Newtonsoft.Json.JsonConvert.SerializeObject(actividadSemana);
             ViewBag.SeccionesJson = Newtonsoft.Json.JsonConvert.SerializeObject(seccionesTop);
+
+            ViewBag.Metricas = metricas;
+            ViewBag.Descargas = descargas;
 
             return View();
         }
