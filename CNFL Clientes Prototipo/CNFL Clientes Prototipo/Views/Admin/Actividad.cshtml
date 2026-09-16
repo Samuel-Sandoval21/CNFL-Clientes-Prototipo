@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "Actividad de uso";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var desde = ViewBag.Desde as string ?? "";
+    var hasta = ViewBag.Hasta as string ?? "";
+    var actividad = ViewBag.Actividad as List<CNFL_Clientes_Prototipo.Models.ActividadUsuario>
+                    ?? new List<CNFL_Clientes_Prototipo.Models.ActividadUsuario>();
+    var totalActividad = (int)(ViewBag.TotalActividad ?? 0);
+}
+
+<div class="admin-header">
+    <div>
+        <h1>Actividad de uso</h1>
+        <div class="sub">@totalActividad registro(s) en el período seleccionado</div>
+    </div>
+</div>
+
+<form method="get" action="@Url.Action("Actividad", "Admin")" class="admin-search">
+    <input type="date" name="desde" value="@desde" />
+    <input type="date" name="hasta" value="@hasta" />
+    <button type="submit" class="admin-btn primary">Aplicar</button>
+    <a href="@Url.Action("Actividad", "Admin")" class="admin-btn">Reiniciar</a>
+</form>
+
+<div class="admin-grid cols-2">
+    <div class="admin-card">
+        <h3>📊 Actividad por sección</h3>
+        <div class="sub">Top de secciones más usadas</div>
+        <div class="chart-box">
+            <canvas id="chartSeccion"></canvas>
+        </div>
+    </div>
+
+    <div class="admin-card">
+        <h3>📈 Actividad últimos 7 días</h3>
+        <div class="sub">Registros por día</div>
+        <div class="chart-box">
+            <canvas id="chartDia"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="admin-card" style="padding:0; overflow:hidden;">
+    <div style="overflow-x:auto; max-height:520px; overflow-y:auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Sección</th>
+                    <th>Acción</th>
+                    <th>Detalle</th>
+                    <th>Duración</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (actividad.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding:40px; color:var(--muted);">
+                            Sin actividad en el período seleccionado.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var a in actividad)
+                    {
+                        <tr>
+                            <td>
+                                @if (a.Usuario != null)
+                                {
+                                    <span style="font-weight:700;">@a.Usuario.Nombre @a.Usuario.Apellidos</span>
+                                }
+                            </td>
+                            <td style="font-weight:700;">@a.Seccion</td>
+                            <td>@a.Accion</td>
+                            <td style="font-size:12px; color:var(--muted); max-width:280px;">
+                                @a.Detalle
+                            </td>
+                            <td style="font-size:12px; color:var(--muted); font-weight:700;">
+                                @(a.DuracionSegundos.HasValue ? a.DuracionSegundos.Value + "s" : "—")
+                            </td>
+                            <td style="font-size:12px; color:var(--muted); font-weight:700;">
+                                @a.Fecha.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        var porSeccion = @Html.Raw(ViewBag.PorSeccionJson ?? "[]");
+        var porDia = @Html.Raw(ViewBag.PorDiaJson ?? "{\"labels\":[],\"data\":[]}");
+
+        if (porSeccion.length > 0) {
+            new Chart(document.getElementById('chartSeccion'), {
+                type: 'doughnut',
+                data: {
+                    labels: porSeccion.map(function (s) { return s.Seccion; }),
+                    datasets: [{
+                        data: porSeccion.map(function (s) { return s.Count; }),
+                        backgroundColor: ['#1E23E6', '#64B95A', '#FF692D', '#F5A623', '#64B9CD', '#E5484D', '#001482'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { position: 'right', labels: { font: { size: 11, weight: '700' }, boxWidth: 12 } }
+                    }
+                }
+            });
+        }
+
+        if (porDia.labels && porDia.labels.length > 0) {
+            new Chart(document.getElementById('chartDia'), {
+                type: 'line',
+                data: {
+                    labels: porDia.labels,
+                    datasets: [{
+                        label: 'Registros',
+                        data: porDia.data,
+                        borderColor: '#1E23E6',
+                        backgroundColor: 'rgba(30,35,230,.1)',
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 2.5,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 11 } } },
+                        x: { ticks: { font: { size: 11, weight: '700' } } }
+                    }
+                }
+            });
+        }
+    </script>
+}

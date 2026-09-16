@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CNFL_Clientes_Prototipo.Models
 {
     public class NISE
     {
+        [Key]
         public int NiseId { get; set; }
+
         public int UsuarioId { get; set; }
         public string NumeroNise { get; set; }
         public string Direccion { get; set; }
@@ -13,10 +17,10 @@ namespace CNFL_Clientes_Prototipo.Models
         public string Distrito { get; set; }
         public string TipoServicio { get; set; }
 
+        // Navegación
         public virtual Usuario Usuario { get; set; }
         public virtual ICollection<Factura> Facturas { get; set; }
         public virtual ICollection<Averia> Averias { get; set; }
         public virtual ICollection<Suspension> Suspensiones { get; set; }
-        public virtual ICollection<Tramite> Tramites { get; set; }
     }
 }

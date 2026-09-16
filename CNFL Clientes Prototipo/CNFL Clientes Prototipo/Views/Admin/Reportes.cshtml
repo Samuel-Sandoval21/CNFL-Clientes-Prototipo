@@ -1,51 +1,139 @@
 ﻿@{
-    ViewBag.Title = "Reportes";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    ViewBag.Title = "Actividad";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var desde = ViewBag.Desde as string ?? "";
+    var hasta = ViewBag.Hasta as string ?? "";
+    var actividad = ViewBag.Actividad as List<CNFL_Clientes_Prototipo.Models.ActividadUsuario>
+                    ?? new List<CNFL_Clientes_Prototipo.Models.ActividadUsuario>();
+    var totalActividad = (int)(ViewBag.TotalActividad ?? 0);
 }
 
-<link rel="stylesheet" href="~/Content/admin/reportes.css" />
+<div class="appbar">
+    <a href="@Url.Action("Dashboard", "Admin")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Actividad</div>
+    <div style="width:40px;"></div>
+</div>
 
-<div class="admin-reportes">
-    <div class="page-header">
-        <h1>Reportes</h1>
-        <p>Genera reportes y estadísticas del sistema.</p>
-    </div>
+<h1 class="h-name" style="font-size:24px;">Actividad de uso</h1>
+<p class="h-greet" style="margin-top:6px; line-height:1.5;">
+    @totalActividad registro(s) en el período
+</p>
 
-    <div class="reportes-grid">
-        <div class="reporte-card">
-            <div class="reporte-icon">📊</div>
-            <h3>Reporte de Averías</h3>
-            <p>Genera un reporte detallado de todas las averías registradas.</p>
-            <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "averias" })" class="btn-generar" target="_blank">Generar PDF</a>
-        </div>
+<form method="get" action="@Url.Action("Actividad", "Admin")" class="admin-search" style="margin-top:14px;">
+    <input type="date" name="desde" value="@desde" />
+    <input type="date" name="hasta" value="@hasta" />
+    <button type="submit" class="admin-btn primary">Aplicar</button>
+</form>
 
-        <div class="reporte-card">
-            <div class="reporte-icon">👥</div>
-            <h3>Reporte de Clientes</h3>
-            <p>Genera un reporte de todos los clientes registrados.</p>
-            <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "clientes" })" class="btn-generar" target="_blank">Generar PDF</a>
-        </div>
-
-        <div class="reporte-card">
-            <div class="reporte-icon">📈</div>
-            <h3>Estadísticas Generales</h3>
-            <p>Genera un reporte con estadísticas de uso y rendimiento.</p>
-            <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "estadisticas" })" class="btn-generar" target="_blank">Generar PDF</a>
-        </div>
-
-        <div class="reporte-card">
-            <div class="reporte-icon">⚡</div>
-            <h3>Reporte de Consumo</h3>
-            <p>Genera un reporte de consumo eléctrico por cliente.</p>
-            <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "consumo" })" class="btn-generar" target="_blank">Generar PDF</a>
-        </div>
-    </div>
-
-    <div class="admin-note-box">
-        <p>💡 Los reportes se generan en formato PDF con los datos más recientes del sistema.</p>
+<div class="admin-card">
+    <h3>📊 Por sección</h3>
+    <div class="sub">Top secciones más usadas</div>
+    <div class="admin-chart">
+        <canvas id="chartSeccion"></canvas>
     </div>
 </div>
 
+<div class="admin-card">
+    <h3>📈 Últimos 7 días</h3>
+    <div class="sub">Registros por día</div>
+    <div class="admin-chart">
+        <canvas id="chartDia"></canvas>
+    </div>
+</div>
+
+<div class="eyebrow">📋 Últimos registros</div>
+
+<div class="admin-list">
+    @if (actividad.Count == 0)
+    {
+        <div class="admin-card" style="text-align:center; padding:34px 18px;">
+            <div style="font-size:40px;">⏱️</div>
+            <p style="font-weight:800; font-size:14px; margin-top:10px;">Sin actividad</p>
+        </div>
+    }
+    else
+    {
+        foreach (var a in actividad.Take(30))
+        {
+            <div class="admin-list-item">
+                <div class="ic" style="background:#eef0ff; color:var(--blue);">📌</div>
+                <div class="tx">
+                    <div class="t">@(a.Seccion ?? "Sin sección")</div>
+                    <div class="s">
+                        @if (a.Usuario != null)
+                        {
+                            <text>@a.Usuario.Nombre @a.Usuario.Apellidos · </text>
+                        }
+                        @a.Accion
+                    </div>
+                    <div class="s" style="font-size:10.5px; margin-top:3px;">
+                        @a.Fecha.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
 @section Scripts {
-    <script src="~/Scripts/admin/reportes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        var porSeccion = @Html.Raw(ViewBag.PorSeccionJson ?? "[]");
+        var porDia = @Html.Raw(ViewBag.PorDiaJson ?? "{\"labels\":[],\"data\":[]}");
+
+        if (porSeccion.length > 0) {
+            new Chart(document.getElementById('chartSeccion'), {
+                type: 'doughnut',
+                data: {
+                    labels: porSeccion.map(function (s) { return s.Seccion; }),
+                    datasets: [{
+                        data: porSeccion.map(function (s) { return s.Count; }),
+                        backgroundColor: ['#1E23E6', '#64B95A', '#FF692D', '#F5A623', '#64B9CD', '#E5484D', '#001482'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10, weight: '700' }, boxWidth: 10, padding: 8 } }
+                    }
+                }
+            });
+        }
+
+        if (porDia.labels && porDia.labels.length > 0) {
+            new Chart(document.getElementById('chartDia'), {
+                type: 'line',
+                data: {
+                    labels: porDia.labels,
+                    datasets: [{
+                        data: porDia.data,
+                        borderColor: '#1E23E6',
+                        backgroundColor: 'rgba(30,35,230,.1)',
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 2.5,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10, weight: '700' } } }
+                    }
+                }
+            });
+        }
+    </script>
 }

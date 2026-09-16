@@ -1,69 +1,102 @@
-﻿@model List<CNFL_Clientes_Prototipo.Models.Usuario>
-
+﻿@model List<CNFL_Clientes_Prototipo.Models.ClienteAdminDto>
 @{
     ViewBag.Title = "Clientes";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var clientes = Model ?? new List<CNFL_Clientes_Prototipo.Models.ClienteAdminDto>();
+    var busqueda = ViewBag.Busqueda as string ?? "";
+    var rolFiltro = ViewBag.RolFiltro as string ?? "Cliente";
 }
 
-<link rel="stylesheet" href="~/Content/admin/clientes.css" />
-
-<div class="admin-clientes">
-    <div class="page-header">
-        <h1>Gestión de Clientes</h1>
-        <p>Lista completa de clientes registrados en la plataforma.</p>
-    </div>
-
-    <div class="filtros-container">
-        <div class="filtros">
-            <input type="text" id="buscadorClientes" class="form-control-sm" placeholder="🔍 Buscar por nombre, cédula o correo..." />
-            <button class="btn-limpiar" id="btnLimpiarBusqueda">Limpiar</button>
-        </div>
-    </div>
-
-    <div class="table-responsive">
-        <table class="admin-table" id="tablaClientes">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Apellidos</th>
-                    <th>Cédula</th>
-                    <th>Correo</th>
-                    <th>Teléfono</th>
-                    <th>Fecha Registro</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var usuario in Model)
-                    {
-                        <tr>
-                            <td>@usuario.UsuarioId</td>
-                            <td>@usuario.Nombre</td>
-                            <td>@usuario.Apellidos</td>
-                            <td>@usuario.Cedula</td>
-                            <td>@usuario.Correo</td>
-                            <td>@usuario.Telefono</td>
-                            <td>@usuario.FechaRegistro.ToString("dd/MM/yyyy")</td>
-                            <td>
-                                <a href="@Url.Action("DetalleCliente", "Admin", new { id = usuario.UsuarioId })" class="btn-ver btn-ver-cliente" data-id="@usuario.UsuarioId">Ver</a>
-                            </td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="8" class="empty-message">No hay clientes registrados.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+<div class="appbar">
+    <a href="@Url.Action("Dashboard", "Admin")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Clientes</div>
+    <button type="button" class="icon-btn" onclick="abrirConfigAdmin();" title="Configuración">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+    </button>
 </div>
 
-@section Scripts {
-    <script src="~/Scripts/admin/clientes.js"></script>
-}
+<h1 class="h-name" style="font-size:24px;">Gestión de clientes</h1>
+<p class="h-greet" style="margin-top:6px; line-height:1.5;">
+    @clientes.Count cliente(s) registrado(s)
+</p>
+
+<form method="get" action="@Url.Action("Clientes", "Admin")" class="admin-search" style="margin-top:14px;">
+    <input type="text" name="q" value="@busqueda" placeholder="Buscar..." style="width:100%;" />
+    <select name="rol">
+        <option value="Cliente" @(rolFiltro == "Cliente" ? "selected" : "")>Clientes</option>
+        <option value="Admin" @(rolFiltro == "Admin" ? "selected" : "")>Admins</option>
+        <option value="" @(rolFiltro == "" ? "selected" : "")>Todos</option>
+    </select>
+    <button type="submit" class="admin-btn primary">Buscar</button>
+    @if (!string.IsNullOrWhiteSpace(busqueda) || rolFiltro != "Cliente")
+    {
+        <a href="@Url.Action("Clientes", "Admin")" class="admin-btn">Limpiar</a>
+    }
+</form>
+
+<div class="admin-list" style="margin-top:8px;">
+    @if (clientes.Count == 0)
+    {
+        <div class="admin-card" style="text-align:center; padding:34px 18px;">
+            <div style="font-size:40px;">🔍</div>
+            <p style="font-weight:800; font-size:14px; margin-top:10px;">Sin resultados</p>
+            <p style="font-size:12px; color:var(--muted); margin-top:6px;">Probá con otro término de búsqueda.</p>
+        </div>
+    }
+    else
+    {
+        foreach (var c in clientes)
+        {
+            var nombreCompleto = (c.Nombre + " " + c.Apellidos).Trim();
+
+            var iniciales = "U";
+            if (!string.IsNullOrWhiteSpace(c.Nombre) && !string.IsNullOrWhiteSpace(c.Apellidos))
+            {
+                iniciales = (c.Nombre.Substring(0, 1) + c.Apellidos.Substring(0, 1)).ToUpper();
+            }
+            else if (!string.IsNullOrWhiteSpace(c.Nombre))
+            {
+                iniciales = c.Nombre.Substring(0, 1).ToUpper();
+            }
+
+            <a href="@Url.Action("DetalleCliente", "Admin", new { id = c.UsuarioId })" class="admin-list-item">
+                <div class="ic" style="background:#eef0ff; color:var(--blue); font-weight:800; font-size:13px;">
+                    @iniciales
+                </div>
+                <div class="tx">
+                    <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                        <div class="t">@nombreCompleto</div>
+                        @if (c.Activo)
+                        {
+                            <span class="chip ok" style="font-size:10px;"><span class="d"></span>Activo</span>
+                        }
+                        else
+                        {
+                            <span class="chip err" style="font-size:10px;"><span class="d"></span>Inactivo</span>
+                        }
+                    </div>
+                    <div class="s">@c.Cedula · @c.Correo</div>
+                    <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+                        <span class="chip info" style="font-size:10px;"><span class="d"></span>@c.TotalNISEs NISEs</span>
+                        @if (c.MontoPendiente > 0)
+                        {
+                            <span class="chip warn" style="font-size:10px;"><span class="d"></span>₡@c.MontoPendiente.ToString("N0")</span>
+                        }
+                        @if (c.AveriasActivas > 0)
+                        {
+                            <span class="chip err" style="font-size:10px;"><span class="d"></span>@c.AveriasActivas averías</span>
+                        }
+                    </div>
+                </div>
+            </a>
+        }
+    }
+</div>

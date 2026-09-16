@@ -1,90 +1,289 @@
-﻿@model CNFL_Clientes_Prototipo.Models.ReportesViewModel
+﻿@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
-@{
-    ViewBag.Title = "Dashboard Admin";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    var nombreAdmin = ViewBag.NombreAdmin as string ?? "Admin";
+    var totalUsuarios = (int)(ViewBag.TotalUsuarios ?? 0);
+    var totalClientes = (int)(ViewBag.TotalClientes ?? 0);
+    var totalNISEs = (int)(ViewBag.TotalNISEs ?? 0);
+    var facturasPendientes = (int)(ViewBag.FacturasPendientes ?? 0);
+    var montoPendiente = (decimal)(ViewBag.MontoPendiente ?? 0m);
+    var averiasAbiertas = (int)(ViewBag.AveriasAbiertas ?? 0);
+    var averiasResueltas = (int)(ViewBag.AveriasResueltas ?? 0);
+    var tasaResolucion = (double)(ViewBag.TasaResolucion ?? 0.0);
+    var tramitesAbiertos = (int)(ViewBag.TramitesAbiertos ?? 0);
+    var tiempoPromedio = (double)(ViewBag.TiempoPromedio ?? 0.0);
+    var ingresosMes = (decimal)(ViewBag.IngresosMes ?? 0m);
+
+    var iniciales = "A";
+    if (!string.IsNullOrWhiteSpace(nombreAdmin))
+    {
+        var partes = nombreAdmin.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (partes.Length >= 2)
+        {
+            iniciales = (partes[0].Substring(0, 1) + partes[1].Substring(0, 1)).ToUpper();
+        }
+        else if (partes.Length == 1)
+        {
+            iniciales = partes[0].Substring(0, 1).ToUpper();
+        }
+    }
 }
 
-<link rel="stylesheet" href="~/Content/admin/dashboard.css" />
-
-<div class="admin-dashboard">
-    <div class="page-header">
-        <h1>Panel de Administración</h1>
-        <p>Bienvenido, @Session["Nombre"]</p>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-number">@Model.TotalAverias</div>
-            <div class="stat-label">Total Averías</div>
+<!-- ═══════════ HEADER HERO ═══════════ -->
+<div class="admin-header-hero">
+    <div class="admin-user-row">
+        <div class="admin-avatar">@iniciales</div>
+        <div class="info">
+            <div class="nm">@nombreAdmin</div>
+            <div class="rl">Administrador</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-number">@Model.TasaResolucion%</div>
-            <div class="stat-label">Tasa de Resolución</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">@Model.TiempoPromedioResolucion</div>
-            <div class="stat-label">Tiempo Promedio</div>
+        <div class="admin-header-actions">
+            <button type="button" class="admin-header-btn" onclick="abrirConfigAdmin();" title="Configuración">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+            </button>
         </div>
     </div>
+    <h1>Panel de control</h1>
+    <div class="sub">Resumen general del sistema</div>
+</div>
 
-    <div class="admin-section">
-        <div class="section-header">
-            <h3>Averías Recientes</h3>
-            <a href="@Url.Action("Averias", "Admin")" class="btn-ver-todas">Ver todas →</a>
+<!-- ═══════════ MÉTRICAS PRINCIPALES ═══════════ -->
+<div class="admin-stats">
+    <div class="admin-stat">
+        <div class="row1">
+            <div class="ico" style="background:#eef0ff;">👥</div>
+            <span class="tag info">+@totalClientes</span>
         </div>
-
-        @if (Model.AveriasRecientes != null && Model.AveriasRecientes.Any())
-        {
-            <div class="averias-lista">
-                @foreach (var averia in Model.AveriasRecientes.Take(5))
-                {
-                    <div class="averia-item">
-                        <div class="averia-info">
-                            <strong>#@averia.AveriaId</strong>
-                            <span>@averia.Tipo</span>
-                            <span class="averia-fecha">@averia.FechaReporte.ToString("dd/MM/yyyy HH:mm")</span>
-                        </div>
-                        <span class="estado-badge @averia.Estado.Replace(" ", "-").ToLower()">@averia.Estado</span>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <p class="empty-message">No hay averías recientes.</p>
-        }
+        <div class="k">Clientes</div>
+        <div class="v">@totalClientes <small>de @totalUsuarios</small></div>
     </div>
 
-    <div class="admin-section">
-        <div class="section-header">
-            <h3>Clientes Registrados</h3>
-            <a href="@Url.Action("Clientes", "Admin")" class="btn-ver-todas">Ver todos →</a>
+    <div class="admin-stat">
+        <div class="row1">
+            <div class="ico" style="background:#eef6ff;">🔌</div>
         </div>
+        <div class="k">NISEs activos</div>
+        <div class="v">@totalNISEs</div>
+    </div>
 
-        @if (ViewBag.ClientesRecientes != null && ((List<CNFL_Clientes_Prototipo.Models.Usuario>)ViewBag.ClientesRecientes).Any())
-        {
-            <div class="clientes-lista">
-                @foreach (var cliente in (List<CNFL_Clientes_Prototipo.Models.Usuario>)ViewBag.ClientesRecientes)
-                {
-                    <div class="cliente-item">
-                        <div class="cliente-info">
-                            <strong>@cliente.Nombre @cliente.Apellidos</strong>
-                            <span>@cliente.Cedula</span>
-                            <span class="cliente-correo">@cliente.Correo</span>
-                        </div>
-                        <a href="@Url.Action("DetalleCliente", "Admin", new { id = cliente.UsuarioId })" class="btn-ver">Ver</a>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <p class="empty-message">No hay clientes registrados.</p>
-        }
+    <div class="admin-stat">
+        <div class="row1">
+            <div class="ico" style="background:#fff3ec;">💰</div>
+            @if (facturasPendientes > 0)
+            {
+                <span class="tag down">@facturasPendientes</span>
+            }
+        </div>
+        <div class="k">Monto pendiente</div>
+        <div class="v">₡@montoPendiente.ToString("N0")</div>
+    </div>
+
+    <div class="admin-stat">
+        <div class="row1">
+            <div class="ico" style="background:#e9f7ec;">📈</div>
+            <span class="tag up">mes</span>
+        </div>
+        <div class="k">Ingresos del mes</div>
+        <div class="v">₡@ingresosMes.ToString("N0")</div>
     </div>
 </div>
 
+<!-- ═══════════ MÉTRICAS SECUNDARIAS ═══════════ -->
+<div class="admin-stats">
+    <div class="admin-stat">
+        <div class="row1">
+            <div class="ico" style="background:#fdeaea;">⚡</div>
+        </div>
+        <div class="k">Averías abiertas</div>
+        <div class="v">@averiasAbiertas</div>
+    </div>
+
+    <div class="admin-stat">
+        <div class="row1">
+            <div class="ico" style="background:#e9f7ec;">✓</div>
+        </div>
+        <div class="k">Averías resueltas</div>
+        <div class="v">@averiasResueltas</div>
+    </div>
+
+    <div class="admin-stat">
+        <div class="row1">
+            <div class="ico" style="background:#f3f0ff;">📋</div>
+        </div>
+        <div class="k">Trámites abiertos</div>
+        <div class="v">@tramitesAbiertos</div>
+    </div>
+
+    <div class="admin-stat">
+        <div class="row1">
+            <div class="ico" style="background:#fef3e0;">⏱️</div>
+        </div>
+        <div class="k">Tiempo prom.</div>
+        <div class="v">@tiempoPromedio <small>días</small></div>
+    </div>
+</div>
+
+<!-- ═══════════ GRÁFICOS ═══════════ -->
+<div class="admin-card">
+    <h3>📊 Averías por estado</h3>
+    <div class="sub">Distribución actual</div>
+    <div class="admin-chart">
+        <canvas id="chartAveriasEstado"></canvas>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>📈 Averías últimos 7 días</h3>
+    <div class="sub">Reportes diarios</div>
+    <div class="admin-chart">
+        <canvas id="chartAveriasDia"></canvas>
+    </div>
+</div>
+
+<!-- ═══════════ TASA DE RESOLUCIÓN ═══════════ -->
+<div class="admin-card">
+    <h3>🎯 Tasa de resolución</h3>
+    <div class="sub">Averías resueltas vs. totales</div>
+
+    <div style="height:12px; background:#eef0f7; border-radius:999px; overflow:hidden; margin-top:12px;">
+        <div style="height:100%; width:@tasaResolucion%; background:linear-gradient(90deg, #64B95A, #4a9a57); border-radius:999px;"></div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+        <div>
+            <div style="font-size:11px; color:var(--muted); font-weight:700;">Resueltas</div>
+            <div style="font-size:20px; font-weight:800; color:var(--green);">@averiasResueltas</div>
+        </div>
+        <div style="text-align:center;">
+            <div style="font-size:11px; color:var(--muted); font-weight:700;">Tasa</div>
+            <div style="font-size:20px; font-weight:800; color:var(--blue);">@tasaResolucion%</div>
+        </div>
+        <div style="text-align:right;">
+            <div style="font-size:11px; color:var(--muted); font-weight:700;">Abiertas</div>
+            <div style="font-size:20px; font-weight:800; color:var(--red);">@averiasAbiertas</div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════ ACCESOS RÁPIDOS ═══════════ -->
+<div class="eyebrow">⚡ Accesos rápidos</div>
+
+<div class="admin-list">
+    <a href="@Url.Action("Clientes", "Admin")" class="admin-list-item">
+        <div class="ic" style="background:#eef0ff; color:var(--blue);">👥</div>
+        <div class="tx">
+            <div class="t">Gestionar clientes</div>
+            <div class="s">Ver, editar y activar cuentas</div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c3c8d4" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+    </a>
+
+    <a href="@Url.Action("Averias", "Admin")" class="admin-list-item">
+        <div class="ic" style="background:#fdeaea; color:var(--red);">⚡</div>
+        <div class="tx">
+            <div class="t">Averías pendientes</div>
+            <div class="s">@averiasAbiertas abiertas · @averiasResueltas resueltas</div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c3c8d4" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+    </a>
+
+    <a href="@Url.Action("Reportes", "Admin")" class="admin-list-item">
+        <div class="ic" style="background:#e9f7ec; color:var(--green);">📊</div>
+        <div class="tx">
+            <div class="t">Reportes completos</div>
+            <div class="s">Exportar PDF y Excel</div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c3c8d4" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+    </a>
+
+    <a href="@Url.Action("Actividad", "Admin")" class="admin-list-item">
+        <div class="ic" style="background:#f3f0ff; color:#8b5cf6;">⏱️</div>
+        <div class="tx">
+            <div class="t">Actividad de uso</div>
+            <div class="s">Ver uso de la app por cliente</div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c3c8d4" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+    </a>
+</div>
+
 @section Scripts {
-    <script src="~/Scripts/admin/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        var dataEstado = @Html.Raw(ViewBag.AveriasEstadoJson ?? "[]");
+
+        if (dataEstado && dataEstado.length > 0 && document.getElementById('chartAveriasEstado')) {
+            var labelsEstado = dataEstado.map(function (d) { return d.Estado || 'Sin estado'; });
+            var valoresEstado = dataEstado.map(function (d) { return d.Count; });
+
+            var colores = {
+                'Ingresado': '#64B9CD',
+                'En revisión': '#F5A623',
+                'Operador en camino': '#FF692D',
+                'Resuelto': '#64B95A',
+                'Problema resuelto': '#4a9a57'
+            };
+            var bgColors = labelsEstado.map(function (l) { return colores[l] || '#1E23E6'; });
+
+            new Chart(document.getElementById('chartAveriasEstado'), {
+                type: 'doughnut',
+                data: {
+                    labels: labelsEstado,
+                    datasets: [{
+                        data: valoresEstado,
+                        backgroundColor: bgColors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 10, weight: '700' }, boxWidth: 10, padding: 8 }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        var dataDia = @Html.Raw(ViewBag.AveriasDiaJson ?? "{\"labels\":[],\"data\":[]}");
+
+        if (dataDia && dataDia.labels && document.getElementById('chartAveriasDia')) {
+            new Chart(document.getElementById('chartAveriasDia'), {
+                type: 'line',
+                data: {
+                    labels: dataDia.labels,
+                    datasets: [{
+                        label: 'Averías',
+                        data: dataDia.data,
+                        borderColor: '#1E23E6',
+                        backgroundColor: 'rgba(30,35,230,.1)',
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#1E23E6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10, weight: '700' } } }
+                    }
+                }
+            });
+        }
+    </script>
 }

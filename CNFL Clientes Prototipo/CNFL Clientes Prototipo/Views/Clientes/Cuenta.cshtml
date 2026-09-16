@@ -1,0 +1,485 @@
+﻿@model CNFL_Clientes_Prototipo.Models.Usuario
+@{
+    ViewBag.Title = "Mi Cuenta";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    var usuario = Model;
+    var nombreCompleto = (usuario.Nombre + " " + usuario.Apellidos).Trim();
+
+    var iniciales = "U";
+    if (!string.IsNullOrWhiteSpace(usuario.Nombre) && !string.IsNullOrWhiteSpace(usuario.Apellidos))
+    {
+        iniciales = (usuario.Nombre.Substring(0, 1) + usuario.Apellidos.Substring(0, 1)).ToUpper();
+    }
+    else if (!string.IsNullOrWhiteSpace(usuario.Nombre))
+    {
+        iniciales = usuario.Nombre.Substring(0, 1).ToUpper();
+    }
+
+    var tieneFoto = !string.IsNullOrWhiteSpace(usuario.FotoPerfil);
+
+    var provincias = ViewBag.Provincias as List<string> ?? new List<string>();
+    var actividades = ViewBag.ActividadesEconomicas
+                        as List<CNFL_Clientes_Prototipo.Models.ActividadEconomicaDto>
+                        ?? new List<CNFL_Clientes_Prototipo.Models.ActividadEconomicaDto>();
+
+    var provinciaPrevia = usuario.Provincia ?? "";
+    var cantonPrevio = usuario.Canton ?? "";
+    var distritoPrevio = usuario.Distrito ?? "";
+    var actividadActualId = ViewBag.ActividadActualId as int?;
+}
+
+<!-- ═══════════ APPBAR ═══════════ -->
+<div class="appbar">
+    <a href="@Url.Action("Dashboard", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Mi Cuenta</div>
+    <button type="button" class="icon-btn" onclick="abrirConfig();" title="Configuración">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+    </button>
+</div>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="aviso ok">@TempData["Mensaje"]</div>
+}
+
+@using (Html.BeginForm("GuardarCuenta", "Clientes", FormMethod.Post,
+    new { id = "formCuenta", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <!-- ═══════════ HEADER CON AVATAR ═══════════ -->
+    <div class="acct-head" style="flex-direction:column; align-items:center; text-align:center; padding:26px 20px;">
+        <div style="position:relative; margin-bottom:14px;">
+            <div id="avatarPreview" class="avatar"
+                 style="width:88px; height:88px; border-radius:28px; font-size:32px; background:rgba(255,255,255,.18); @(tieneFoto ? "background-image:url(" + usuario.FotoPerfil + "); background-size:cover; background-position:center; color:transparent;" : "")">
+                @iniciales
+            </div>
+            <label for="fotoInput"
+                   style="position:absolute; bottom:-6px; right:-6px; width:34px; height:34px; border-radius:12px; background:var(--orange); display:grid; place-items:center; cursor:pointer; box-shadow:0 4px 12px rgba(255,105,45,.5); border:3px solid var(--navy);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                </svg>
+            </label>
+            <input type="file" id="fotoInput" name="FotoPerfil" accept="image/*" style="display:none;" />
+        </div>
+
+        <div class="nm" style="font-size:20px;">@nombreCompleto</div>
+        <div class="em" style="font-size:12px; opacity:.85; margin-top:4px;">
+            @usuario.Cedula · @usuario.Correo
+        </div>
+    </div>
+
+    <!-- ═══════════ DATOS PERSONALES ═══════════ -->
+    <div class="eyebrow">👤 Datos personales</div>
+
+    <div class="reg-card">
+        <div class="reg-field">
+            <label for="NombreCompleto">Nombre completo</label>
+            <input type="text"
+                   id="NombreCompleto"
+                   name="NombreCompleto"
+                   value="@nombreCompleto"
+                   placeholder="Ej: Juan Pérez Mora"
+                   required />
+        </div>
+
+        <div class="reg-field">
+            <label for="Cedula">Cédula</label>
+            <input type="text"
+                   id="Cedula"
+                   value="@usuario.Cedula"
+                   readonly
+                   style="background:#f7f8fc; color:var(--muted); cursor:not-allowed;" />
+            <small class="hint">La cédula no se puede modificar. Contactá a soporte si hay un error.</small>
+        </div>
+    </div>
+
+    <!-- ═══════════ CONTACTO ═══════════ -->
+    <div class="eyebrow">📞 Contacto</div>
+
+    <div class="reg-card">
+        <div class="reg-field">
+            <label for="Correo">Correo principal</label>
+            <input type="email"
+                   id="Correo"
+                   name="Correo"
+                   value="@usuario.Correo"
+                   placeholder="tucorreo@dominio.com"
+                   required />
+        </div>
+
+        <div class="reg-field">
+            <label for="CorreoSecundario">Correo secundario</label>
+            <input type="email"
+                   id="CorreoSecundario"
+                   name="CorreoSecundario"
+                   value="@usuario.CorreoSecundario"
+                   placeholder="Opcional" />
+        </div>
+
+        <div class="reg-field">
+            <label for="Telefono">Teléfono principal</label>
+            <input type="tel"
+                   id="Telefono"
+                   name="Telefono"
+                   value="@usuario.Telefono"
+                   placeholder="Ej: 8888-8888"
+                   required />
+        </div>
+
+        <div class="reg-field">
+            <label for="TelefonoSecundario">Teléfono secundario</label>
+            <input type="tel"
+                   id="TelefonoSecundario"
+                   name="TelefonoSecundario"
+                   value="@usuario.TelefonoSecundario"
+                   placeholder="Opcional" />
+        </div>
+    </div>
+
+    <!-- ═══════════ UBICACIÓN ═══════════ -->
+    <div class="eyebrow">📍 Ubicación</div>
+
+    <div class="reg-card">
+        <div class="reg-field">
+            <label for="Provincia">Provincia</label>
+            <select id="Provincia" name="Provincia" onchange="onProvinciaChange(this);">
+                <option value="">— Seleccioná una provincia —</option>
+                @foreach (var p in provincias)
+                {
+                    <option value="@p" @(p == provinciaPrevia ? "selected" : "")>@p</option>
+                }
+            </select>
+        </div>
+
+        <div class="reg-field">
+            <label for="Canton">Cantón</label>
+            <select id="Canton" name="Canton" onchange="onCantonChange(this);">
+                <option value="">— Primero elegí la provincia —</option>
+            </select>
+        </div>
+
+        <div class="reg-field">
+            <label for="Distrito">Distrito</label>
+            <select id="Distrito" name="Distrito">
+                <option value="">— Primero elegí el cantón —</option>
+            </select>
+        </div>
+
+        <div class="reg-field">
+            <label for="DireccionExacta">Dirección exacta</label>
+            <input type="text"
+                   id="DireccionExacta"
+                   name="DireccionExacta"
+                   value="@usuario.DireccionExacta"
+                   placeholder="Ej: 200m norte de la iglesia, casa azul" />
+        </div>
+    </div>
+
+    <!-- ═══════════ FACTURA ELECTRÓNICA ═══════════ -->
+    <div class="eyebrow">🧾 Facturación electrónica</div>
+
+    <div class="reg-card">
+        <label class="reg-check" for="chkFactura">
+            <input type="checkbox"
+                   id="chkFactura"
+                   name="FacturaElectronica"
+                   value="true"
+                   @(usuario.FacturaElectronica ? "checked" : "")
+                   onchange="toggleFactura(this);" />
+            <span class="txt">
+                <span class="t">Quiero recibir factura electrónica</span>
+                <span class="s">Si marcás esta casilla, elegí tu actividad económica abajo.</span>
+            </span>
+        </label>
+
+        <div class="reg-actividad" id="actividadWrap"
+             style="display:@(usuario.FacturaElectronica ? "block" : "none");">
+            <div class="reg-field">
+                <label for="buscadorActividad">Actividad económica</label>
+                <input type="text"
+                       id="buscadorActividad"
+                       placeholder="Buscá por código o nombre (ej: 4711, comercio)"
+                       autocomplete="off"
+                       onfocus="mostrarActividades();"
+                       oninput="filtrarActividades();" />
+                <small class="hint">Escribí al menos 3 letras o el código para filtrar.</small>
+
+                <div id="listaActividades"
+                     style="margin-top:8px; max-height:220px; overflow-y:auto; border:1px solid var(--line); border-radius:12px; background:#fff; display:none;">
+                    @foreach (var item in actividades)
+                    {
+                        var idStr = item.Id.ToString();
+                        var textStr = item.Codigo + " - " + item.Nombre;
+                        var seleccionada = (actividadActualId.HasValue && actividadActualId.Value == item.Id);
+                        <div class="actividad-item"
+                             data-value="@idStr"
+                             data-text="@textStr.ToLower()"
+                             style="padding:10px 14px; border-bottom:1px solid var(--line); cursor:pointer; font-size:13px; @(seleccionada ? "background:#eef0ff;" : "")"
+                             onclick="seleccionarActividad('@idStr', '@Html.Raw(textStr.Replace("'", "\\'"))');">
+                            @textStr
+                        </div>
+                    }
+                </div>
+
+                <div id="actividadSeleccionada"
+                     style="display:@(actividadActualId.HasValue ? "block" : "none"); margin-top:8px; padding:10px 14px; background:#eef0ff; border-radius:12px; font-size:12.5px; font-weight:800; color:var(--blue);">
+                    ✓ <span id="actividadTexto">
+                        @{
+                            var actActual = actividades.FirstOrDefault(a => a.Id == actividadActualId);
+                            if (actActual != null)
+                            {
+                                @(actActual.Codigo + " - " + actActual.Nombre)
+                            }
+                        }
+                    </span>
+                </div>
+
+                <input type="hidden" id="ActividadEconomicaId" name="ActividadEconomicaId"
+                       value="@(actividadActualId.HasValue ? actividadActualId.Value.ToString() : "")" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ SEGURIDAD ═══════════ -->
+    <div class="eyebrow">🔒 Seguridad</div>
+
+    <div class="rows">
+        <a href="@Url.Action("RecuperarClave", "Cuenta")" class="row-item">
+            <div class="ic" style="background:#eef0ff;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                    <rect x="4" y="10" width="16" height="10" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                </svg>
+            </div>
+            <div class="tx">
+                <div class="t">Cambiar contraseña</div>
+                <div class="s">Actualizá tu clave de acceso</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m9 6 6 6-6 6" />
+            </svg>
+        </a>
+
+        <div class="row-item" style="cursor:default;">
+            <div class="ic" style="background:#e9f7ec;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                    <path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z" />
+                    <path d="m9 12 2 2 4-4" />
+                </svg>
+            </div>
+            <div class="tx">
+                <div class="t">Datos protegidos</div>
+                <div class="s">Cifrado extremo a extremo · biometría</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ BOTONES ═══════════ -->
+    <div style="margin-top:22px; margin-bottom:24px; display:flex; flex-direction:column; gap:10px;">
+        <button type="submit" class="reg-btn" style="padding:17px;">
+            💾 Guardar cambios
+        </button>
+
+        <a href="@Url.Action("Logout", "Cuenta")"
+           class="reg-btn"
+           style="display:block; text-align:center; text-decoration:none; background:#fff; color:var(--red); border:1.5px solid #f6cfd0; box-shadow:none; padding:15px;">
+            Cerrar sesión
+        </a>
+    </div>
+}
+
+@section Scripts {
+    <script>
+    (function () {
+        // ═══════════ Preview foto de perfil ═══════════
+        var input = document.getElementById('fotoInput');
+        var preview = document.getElementById('avatarPreview');
+
+        if (input && preview) {
+            input.addEventListener('change', function (e) {
+                var file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                if (!file.type.match(/^image\//)) {
+                    alert('Solo se permiten archivos de imagen.');
+                    return;
+                }
+                if (file.size > 4 * 1024 * 1024) {
+                    alert('La imagen es muy grande. Máximo 4 MB.');
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function (ev) {
+                    preview.innerHTML = '';
+                    preview.style.backgroundImage = 'url(' + ev.target.result + ')';
+                    preview.style.backgroundSize = 'cover';
+                    preview.style.backgroundPosition = 'center';
+                    preview.style.color = 'transparent';
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        var chkFactura = document.getElementById('chkFactura');
+        var wrap = document.getElementById('actividadWrap');
+
+        function aplicarFactura() {
+            if (!wrap || !chkFactura) return;
+            wrap.style.display = chkFactura.checked ? 'block' : 'none';
+        }
+        aplicarFactura();
+    })();
+
+    function toggleFactura(chk) {
+        var wrap = document.getElementById('actividadWrap');
+        if (wrap) wrap.style.display = chk.checked ? 'block' : 'none';
+    }
+
+    // ═══════════ Cascada Provincia → Cantón → Distrito ═══════════
+    var urlCantones = '@Url.Action("GetCantones", "Clientes")';
+    var urlDistritos = '@Url.Action("GetDistritos", "Clientes")';
+
+    function onProvinciaChange(sel) {
+        var selCanton = document.getElementById('Canton');
+        var selDistrito = document.getElementById('Distrito');
+        if (!selCanton || !selDistrito) return;
+
+        selCanton.innerHTML = '<option value="">Cargando...</option>';
+        selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
+        if (!sel.value) {
+            selCanton.innerHTML = '<option value="">— Primero elegí la provincia —</option>';
+            return;
+        }
+        fetch(urlCantones + '?provincia=' + encodeURIComponent(sel.value))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                var html = '<option value="">— Seleccioná cantón —</option>';
+                data.forEach(function (c) {
+                    html += '<option value="' + c + '">' + c + '</option>';
+                });
+                selCanton.innerHTML = html;
+            });
+    }
+
+    function onCantonChange(sel) {
+        var selProv = document.getElementById('Provincia');
+        var selDistrito = document.getElementById('Distrito');
+        if (!selProv || !selDistrito) return;
+
+        selDistrito.innerHTML = '<option value="">Cargando...</option>';
+        if (!sel.value || !selProv.value) {
+            selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
+            return;
+        }
+        fetch(urlDistritos + '?provincia=' + encodeURIComponent(selProv.value) + '&canton=' + encodeURIComponent(sel.value))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                var html = '<option value="">— Seleccioná distrito —</option>';
+                data.forEach(function (d) {
+                    html += '<option value="' + d + '">' + d + '</option>';
+                });
+                selDistrito.innerHTML = html;
+            });
+    }
+
+    // ═══════════ Buscador de actividades ═══════════
+    function mostrarActividades() {
+        var lista = document.getElementById('listaActividades');
+        if (lista) lista.style.display = 'block';
+        filtrarActividades();
+    }
+
+    function filtrarActividades() {
+        var buscador = document.getElementById('buscadorActividad');
+        var lista = document.getElementById('listaActividades');
+        if (!buscador || !lista) return;
+
+        var q = buscador.value.toLowerCase().trim();
+        var visibles = 0;
+        var items = lista.querySelectorAll('.actividad-item');
+        for (var i = 0; i < items.length; i++) {
+            var it = items[i];
+            var txt = it.getAttribute('data-text') || '';
+            if (!q || txt.indexOf(q) >= 0) {
+                it.style.display = 'block';
+                visibles++;
+            } else {
+                it.style.display = 'none';
+            }
+        }
+        lista.style.display = visibles > 0 ? 'block' : 'none';
+    }
+
+    function seleccionarActividad(id, texto) {
+        var hidden = document.getElementById('ActividadEconomicaId');
+        var textoEl = document.getElementById('actividadTexto');
+        var seleccionada = document.getElementById('actividadSeleccionada');
+        var lista = document.getElementById('listaActividades');
+        var buscador = document.getElementById('buscadorActividad');
+        if (!hidden || !textoEl || !seleccionada || !lista || !buscador) return;
+
+        hidden.value = id;
+        textoEl.textContent = texto;
+        seleccionada.style.display = 'block';
+        lista.style.display = 'none';
+        buscador.value = texto;
+    }
+
+    document.addEventListener('click', function (e) {
+        var buscador = document.getElementById('buscadorActividad');
+        var lista = document.getElementById('listaActividades');
+        if (!buscador || !lista) return;
+        var target = e.target;
+        if (!target) return;
+        if (!buscador.contains(target) && !lista.contains(target)) {
+            lista.style.display = 'none';
+        }
+    });
+
+    // ═══════════ Cargar cantones/distritos si ya hay valores previos ═══════════
+    (function () {
+        var prov = document.getElementById('Provincia');
+        var cant = document.getElementById('Canton');
+        var dist = document.getElementById('Distrito');
+
+        var provinciaPrevia = '@Html.Raw(provinciaPrevia.Replace("'", "\\'"))';
+        var cantonPrevio = '@Html.Raw(cantonPrevio.Replace("'", "\\'"))';
+        var distritoPrevio = '@Html.Raw(distritoPrevio.Replace("'", "\\'"))';
+
+        if (prov && prov.value) {
+            fetch(urlCantones + '?provincia=' + encodeURIComponent(prov.value))
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var html = '<option value="">— Seleccioná cantón —</option>';
+                    data.forEach(function (c) {
+                        html += '<option value="' + c + '"' + (c === cantonPrevio ? ' selected' : '') + '>' + c + '</option>';
+                    });
+                    cant.innerHTML = html;
+
+                    if (cantonPrevio) {
+                        fetch(urlDistritos + '?provincia=' + encodeURIComponent(prov.value) + '&canton=' + encodeURIComponent(cantonPrevio))
+                            .then(function (r) { return r.json(); })
+                            .then(function (data2) {
+                                var html2 = '<option value="">— Seleccioná distrito —</option>';
+                                data2.forEach(function (d) {
+                                    html2 += '<option value="' + d + '"' + (d === distritoPrevio ? ' selected' : '') + '>' + d + '</option>';
+                                });
+                                dist.innerHTML = html2;
+                            });
+                    }
+                });
+        }
+    })();
+    </script>
+}

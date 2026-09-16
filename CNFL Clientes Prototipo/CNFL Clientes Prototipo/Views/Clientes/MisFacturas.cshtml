@@ -1,8 +1,7 @@
 ﻿@model List<CNFL_Clientes_Prototipo.Models.Factura>
-
 @{
     ViewBag.Title = "Mis Facturas";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 
     var facturas = Model ?? new List<CNFL_Clientes_Prototipo.Models.Factura>();
     var pendientes = facturas.Where(f => !f.Pagada).ToList();
@@ -10,471 +9,148 @@
     var totalPendiente = pendientes.Sum(f => (decimal?)f.Monto) ?? 0m;
 }
 
-@section Styles {
-    <style>
-        .mf-hero {
-            background: linear-gradient(135deg, var(--blue), #2a4fd6);
-            border-radius: 22px;
-            padding: 22px 20px;
-            color: #fff;
-            box-shadow: 0 12px 30px -12px rgba(16,20,60,.45);
-            margin-top: 8px;
-        }
+<!-- ═══════════ APPBAR ═══════════ -->
+<div class="appbar">
+    <a href="@Url.Action("Dashboard", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Mis Facturas</div>
+    <div style="width:40px;"></div>
+</div>
 
-            .mf-hero h1 {
-                margin: 0;
-                font-size: 20px;
-                font-weight: 800;
-                letter-spacing: -.02em;
-            }
+<!-- ═══════════ HEADER AZUL ═══════════ -->
+<div class="bill" style="margin-top:8px;">
+    <div class="lbl">💡 Mis Facturas</div>
+    <div class="due" style="font-size:13px; margin-top:6px; opacity:.9;">
+        Gestioná tus pagos pendientes e historial
+    </div>
+    <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.2);">
+        <div class="lbl" style="font-size:11px;">TOTAL PENDIENTE</div>
+        <div class="amt" style="font-size:32px;">₡@totalPendiente.ToString("N0")</div>
+        <div class="due">@pendientes.Count factura(s) por pagar</div>
+    </div>
+</div>
 
-            .mf-hero .sub {
-                font-size: 12.5px;
-                opacity: .85;
-                margin-top: 4px;
-            }
+<!-- ═══════════ MÉTRICAS ═══════════ -->
+<div class="eyebrow">Resumen</div>
 
-            .mf-hero .monto-total {
-                margin-top: 16px;
-                padding-top: 16px;
-                border-top: 1px solid rgba(255,255,255,.2);
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-end;
-            }
-
-                .mf-hero .monto-total .lbl {
-                    font-size: 11px;
-                    font-weight: 800;
-                    letter-spacing: .5px;
-                    opacity: .8;
-                }
-
-                .mf-hero .monto-total .val {
-                    font-size: 26px;
-                    font-weight: 800;
-                    margin-top: 2px;
-                }
-
-                .mf-hero .monto-total .cnt {
-                    font-size: 12px;
-                    opacity: .85;
-                    text-align: right;
-                }
-
-        .mf-kpis {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .mf-kpi {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 10px 12px;
-            box-shadow: var(--shadow-sm);
-        }
-
-            .mf-kpi .lbl {
-                font-size: 10px;
-                font-weight: 800;
-                color: var(--muted);
-                letter-spacing: .3px;
-            }
-
-            .mf-kpi .val {
-                font-size: 15px;
-                font-weight: 800;
-                color: var(--ink);
-                margin-top: 3px;
-            }
-
-                .mf-kpi .val.danger {
-                    color: #d33;
-                }
-
-                .mf-kpi .val.ok {
-                    color: #2f8f3e;
-                }
-
-        .mf-title {
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--ink);
-            margin: 22px 0 10px;
-            letter-spacing: -.01em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-            .mf-title .cnt {
-                background: #eef0ff;
-                color: var(--blue);
-                font-size: 11px;
-                font-weight: 800;
-                padding: 2px 8px;
-                border-radius: 999px;
-            }
-
-                .mf-title .cnt.warn {
-                    background: #fef3e0;
-                    color: #b9791a;
-                }
-
-                .mf-title .cnt.ok {
-                    background: #e9f7ec;
-                    color: #2f8f3e;
-                }
-
-        .mf-card {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 10px;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
-            transition: transform .15s, box-shadow .2s;
-        }
-
-            .mf-card:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 10px 22px -10px rgba(16,20,60,.2);
-            }
-
-            .mf-card.pendiente {
-                border-left: 4px solid #f08020;
-            }
-
-            .mf-card.vencida {
-                border-left: 4px solid #d33;
-                background: linear-gradient(135deg, #fff, #fff8f7);
-            }
-
-            .mf-card.pagada {
-                border-left: 4px solid #2f8f3e;
-                opacity: .92;
-            }
-
-            .mf-card .top {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 12px;
-            }
-
-            .mf-card .nise {
-                background: #eef0ff;
-                color: var(--blue);
-                font-size: 10.5px;
-                font-weight: 800;
-                padding: 4px 10px;
-                border-radius: 999px;
-                letter-spacing: .3px;
-            }
-
-                .mf-card .nise.vencida {
-                    background: #fdecea;
-                    color: #d33;
-                }
-
-            .mf-card .badge-estado {
-                font-size: 10.5px;
-                font-weight: 800;
-                padding: 5px 10px;
-                border-radius: 999px;
-            }
-
-                .mf-card .badge-estado.pendiente {
-                    background: #fef3e0;
-                    color: #b9791a;
-                }
-
-                .mf-card .badge-estado.vencida {
-                    background: #fdecea;
-                    color: #d33;
-                }
-
-                .mf-card .badge-estado.pagada {
-                    background: #e9f7ec;
-                    color: #2f8f3e;
-                }
-
-            .mf-card .monto {
-                font-size: 24px;
-                font-weight: 800;
-                color: var(--ink);
-                letter-spacing: -.02em;
-            }
-
-            .mf-card .fecha {
-                font-size: 12px;
-                color: var(--muted);
-                margin-top: 6px;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-            }
-
-                .mf-card .fecha.vencida {
-                    color: #d33;
-                    font-weight: 700;
-                }
-
-                .mf-card .fecha.pagada {
-                    color: #2f8f3e;
-                }
-
-            .mf-card .num-factura {
-                font-size: 11px;
-                color: var(--muted);
-                margin-top: 4px;
-            }
-
-            .mf-card .actions {
-                margin-top: 14px;
-                display: flex;
-                gap: 8px;
-            }
-
-            .mf-card .btn-pagar {
-                flex: 1;
-                background: linear-gradient(135deg, #f08020, #ff9a3d);
-                color: #fff;
-                border: 0;
-                font-family: inherit;
-                font-weight: 800;
-                font-size: 13.5px;
-                padding: 12px;
-                border-radius: 12px;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 6px;
-                transition: transform .12s;
-                box-shadow: 0 4px 12px -4px rgba(240,128,32,.5);
-            }
-
-                .mf-card .btn-pagar:hover {
-                    transform: scale(1.02);
-                }
-
-                .mf-card .btn-pagar:active {
-                    transform: scale(.97);
-                }
-
-        .mf-empty {
-            background: #fff;
-            border: 1px dashed var(--line);
-            border-radius: 18px;
-            padding: 40px 20px;
-            text-align: center;
-            margin-top: 16px;
-        }
-
-            .mf-empty .e {
-                font-size: 48px;
-                margin-bottom: 12px;
-            }
-
-            .mf-empty .t {
-                font-size: 15px;
-                font-weight: 800;
-                color: var(--ink);
-                margin-bottom: 6px;
-            }
-
-            .mf-empty .s {
-                font-size: 13px;
-                color: var(--muted);
-                line-height: 1.5;
-            }
-
-        .mf-collapse {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            margin-top: 10px;
-        }
-
-        .mf-collapse-header {
-            padding: 14px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-size: 13.5px;
-            font-weight: 800;
-            color: var(--ink);
-            user-select: none;
-        }
-
-            .mf-collapse-header .arrow {
-                transition: transform .2s;
-                font-size: 12px;
-                color: var(--muted);
-            }
-
-        .mf-collapse.open .mf-collapse-header .arrow {
-            transform: rotate(180deg);
-        }
-
-        .mf-collapse-body {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height .3s ease;
-        }
-
-        .mf-collapse.open .mf-collapse-body {
-            max-height: 2000px;
-        }
-
-        .mf-collapse-body .mf-card {
-            margin: 0 12px 10px;
-            border-radius: 14px;
-        }
-    </style>
-}
-
-<div class="mf-hero">
-    <h1 data-i18n="facturas.title">💡 Mis Facturas</h1>
-    <div class="sub" data-i18n="facturas.sub">Gestioná tus pagos pendientes e historial</div>
-
-    <div class="monto-total">
-        <div>
-            <div class="lbl" data-i18n="facturas.totalPendiente">TOTAL PENDIENTE</div>
-            <div class="val">₡@totalPendiente.ToString("N0")</div>
+<div class="card">
+    <div class="mgrid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="mcell" style="text-align:center;">
+            <div class="k">Pendientes</div>
+            <div class="v" style="color:var(--orange);">@pendientes.Count</div>
         </div>
-        <div class="cnt">
-            @pendientes.Count<br><span data-i18n="facturas.porPagar">por pagar</span>
+        <div class="mcell" style="text-align:center;">
+            <div class="k">Pagadas</div>
+            <div class="v" style="color:var(--green);">@pagadas.Count</div>
+        </div>
+        <div class="mcell" style="text-align:center;">
+            <div class="k">Total</div>
+            <div class="v">@facturas.Count</div>
         </div>
     </div>
 </div>
 
-<div class="mf-kpis">
-    <div class="mf-kpi">
-        <div class="lbl" data-i18n="facturas.kpi.pendientes">PENDIENTES</div>
-        <div class="val @(pendientes.Count > 0 ? "danger" : "ok")">@pendientes.Count</div>
-    </div>
-    <div class="mf-kpi">
-        <div class="lbl" data-i18n="facturas.kpi.pagadas">PAGADAS</div>
-        <div class="val ok">@pagadas.Count</div>
-    </div>
-    <div class="mf-kpi">
-        <div class="lbl" data-i18n="facturas.kpi.total">TOTAL</div>
-        <div class="val">@facturas.Count</div>
-    </div>
-</div>
-
+<!-- ═══════════ FACTURAS PENDIENTES ═══════════ -->
 @if (pendientes.Any())
 {
-    <div class="mf-title">
-        <span data-i18n="facturas.pendientes.title">Pendientes de pago</span>
-        <span class="cnt warn">@pendientes.Count</span>
-    </div>
+    <div class="eyebrow">💰 Pendientes de pago</div>
 
-    foreach (var f in pendientes.OrderBy(f => f.FechaVencimiento))
-    {
-        var vencida = f.FechaVencimiento < DateTime.Now;
-        var cardClass = vencida ? "vencida" : "pendiente";
-        var niseNum = f.NISE != null ? f.NISE.NumeroNise : "N/A";
-
-        <div class="mf-card @cardClass">
-            <div class="top">
-                <div class="nise @(vencida ? "vencida" : "")">🔌 NISE @niseNum</div>
-                <div class="badge-estado @cardClass">
-                    @(vencida ? "Vencida" : "Por pagar")
+    <div class="rows">
+        @foreach (var f in pendientes)
+        {
+            <div class="row-item">
+                <div class="ic" style="background:#fff3ec;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6M9 13h6M9 17h4" />
+                    </svg>
                 </div>
+                <div class="tx">
+                    <div class="t">₡@f.Monto.ToString("N0")</div>
+                    <div class="s">@f.NumeroFactura · Vence @f.FechaVencimiento.ToString("dd/MM/yyyy")</div>
+                </div>
+                <span class="pill st-prev"><span class="dot"></span>Pendiente</span>
             </div>
-
-            <div class="monto">₡@f.Monto.ToString("N0")</div>
-
-            <div class="fecha @(vencida ? "vencida" : "")">
-                @(vencida ? "⚠️ Venció el " : "📅 Vence el ")
-                @f.FechaVencimiento.ToString("dd 'de' MMMM", new System.Globalization.CultureInfo("es-CR"))
-            </div>
-
-            <div class="num-factura">Factura @f.NumeroFactura</div>
-
-            <div class="actions">
-                <button type="button" class="btn-pagar"
-                        onclick="pagarFactura(@f.FacturaId, '@f.NumeroFactura', @f.Monto)">
-                    💳 <span data-i18n="facturas.pagar">Pagar ahora</span>
-                </button>
-            </div>
-        </div>
-    }
+        }
+    </div>
 }
 else
 {
-    <div class="mf-empty" style="margin-top: 22px;">
-        <div class="e">🎉</div>
-        <div class="t" data-i18n="facturas.todoAlDia">¡Todo al día!</div>
-        <div class="s" data-i18n="facturas.todoAlDia.sub">No tenés facturas pendientes de pago. Gracias por tu puntualidad.</div>
+    <div class="card" style="text-align:center; padding:34px 18px; margin-top:14px;">
+        <div style="font-size:48px; line-height:1;">🎉</div>
+        <p style="font-weight:800; font-size:16px; margin-top:12px; color:var(--ink);">¡Todo al día!</p>
+        <p style="font-size:12.5px; color:var(--muted); margin-top:6px; line-height:1.5;">
+            No tenés facturas pendientes de pago. Gracias por tu puntualidad.
+        </p>
     </div>
 }
+
+<!-- ═══════════ HISTORIAL DE PAGOS ═══════════ -->
+<div class="eyebrow" style="display:flex; align-items:center; gap:8px;">
+    <span>Historial de pagos</span>
+    @if (pagadas.Any())
+    {
+        <span class="pill st-normal" style="font-size:10px;">
+            <span class="dot"></span>@pagadas.Count
+        </span>
+    }
+</div>
 
 @if (pagadas.Any())
 {
-    <div class="mf-title">
-        <span data-i18n="facturas.historial.title">Historial de pagos</span>
-        <span class="cnt ok">@pagadas.Count</span>
-    </div>
-
-    <div class="mf-collapse" id="collapseHistorial">
-        <div class="mf-collapse-header" onclick="toggleCollapse()">
-            <span>📄 Ver facturas pagadas (@pagadas.Count)</span>
-            <span class="arrow">▼</span>
-        </div>
-        <div class="mf-collapse-body">
-            @foreach (var f in pagadas.OrderByDescending(f => f.FechaEmision))
-            {
-                var niseNum = f.NISE != null ? f.NISE.NumeroNise : "N/A";
-                <div class="mf-card pagada">
-                    <div class="top">
-                        <div class="nise">🔌 NISE @niseNum</div>
-                        <div class="badge-estado pagada">✓ <span data-i18n="facturas.pagada.badge">Pagada</span></div>
-                    </div>
-                    <div class="monto">₡@f.Monto.ToString("N0")</div>
-                    <div class="fecha pagada">
-                        ✅ @f.FechaVencimiento.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-CR"))
-                    </div>
-                    <div class="num-factura">Factura @f.NumeroFactura</div>
+    <div class="card" style="padding:0; overflow:hidden;">
+        <details>
+            <summary style="list-style:none; padding:16px; cursor:pointer; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--line);">
+                <div style="width:32px; height:32px; border-radius:10px; background:#e9f7ec; display:grid; place-items:center; flex:none;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6M9 13h6M9 17h4" />
+                    </svg>
                 </div>
-            }
-        </div>
+                <div style="flex:1; font-weight:800; font-size:13.5px; color:var(--ink);">
+                    Ver facturas pagadas (@pagadas.Count)
+                </div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
+            </summary>
+
+            <div style="padding:16px;">
+                @foreach (var f in pagadas)
+                {
+                    <div style="border-left:3px solid var(--green); padding:12px 14px; margin-bottom:10px; background:#fafbfe; border-radius:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            @if (f.NISE != null)
+                            {
+                                <span style="font-size:11px; font-weight:800; color:var(--blue); background:#eef0ff; padding:4px 10px; border-radius:999px;">
+                                    NISE @f.NISE.NumeroNise
+                                </span>
+                            }
+                            <span class="pill st-normal" style="font-size:10px;">
+                                <span class="dot"></span>Pagada
+                            </span>
+                        </div>
+                        <div style="font-size:22px; font-weight:800; color:var(--ink); margin:6px 0;">
+                            ₡@f.Monto.ToString("N0")
+                        </div>
+                        <div style="font-size:11.5px; color:var(--green); font-weight:700;">
+                            ✅ @f.FechaVencimiento.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-CR"))
+                        </div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;">
+                            Factura @f.NumeroFactura
+                        </div>
+                    </div>
+                }
+            </div>
+        </details>
     </div>
 }
-
-@section Scripts {
-    <script>
-        function toggleCollapse() {
-            var el = document.getElementById('collapseHistorial');
-            if (el) el.classList.toggle('open');
-        }
-
-        function pagarFactura(facturaId, numeroFactura, monto) {
-            if (!confirm('¿Confirmás el pago de la factura ' + numeroFactura + ' por ₡' + monto.toLocaleString('es-CR') + '?')) return;
-
-            fetch('@Url.Action("PagarFactura", "Clientes")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'facturaId=' + facturaId
-            })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.success) { alert('✅ ' + data.message); location.reload(); }
-                else { alert('❌ ' + data.message); }
-            })
-            .catch(function () { alert('Error al procesar el pago.'); });
-        }
-    </script>
+else
+{
+    <div class="card" style="text-align:center; padding:24px 18px;">
+        <p style="font-size:12.5px; color:var(--muted);">Sin facturas pagadas todavía.</p>
+    </div>
 }

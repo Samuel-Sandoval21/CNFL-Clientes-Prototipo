@@ -2,276 +2,140 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>CNFL - @ViewBag.Title</title>
-    <link rel="stylesheet" href="~/Content/site.css" />
-    <link rel="stylesheet" href="~/Content/cliente/app.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1E23E6" />
+    <title>@ViewBag.Title · CNFL</title>
+
+    @Html.Partial("_EstilosBase")
     @RenderSection("Styles", required: false)
-    <link rel="icon" type="image/x-icon" href="~/images/favicon.ico" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="app-notch"></div>
+    @{
+        var accionActual = ViewContext.RouteData.Values["action"].ToString();
+        var controllerActual = ViewContext.RouteData.Values["controller"].ToString();
 
-        <div class="app-statusbar">
-            <span id="clock">9:41</span>
-            <span class="r">
+        // ¿Está logueado?
+        var logueado = Session["UsuarioId"] != null;
+
+        // Tabs activos según acción (varias vistas pertenecen a la misma "pestaña")
+        var tabInicio = accionActual == "Dashboard";
+        var tabServicios = accionActual == "MisServicios" || accionActual == "ConsultaMedidor"
+                        || accionActual == "HistoricalConsumo" || accionActual == "MapaGIS"
+                        || accionActual == "Calculadora";
+        var tabReportar = accionActual == "Reportes" || accionActual == "EstadoAveria"
+                        || accionActual == "HistoricalReportes";
+        var tabTramites = accionActual == "Tramites";
+        var tabCuenta = accionActual == "Cuenta" || accionActual == "MisFacturas"
+                        || accionActual == "MisNotificaciones" || accionActual == "ProductosServicios"
+                        || accionActual == "Tienda" || accionActual == "DetalleProducto";
+    }
+
+    <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-statusbar">
+            <span id="horaActual">--:--</span>
+            <span class="right">
                 <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#0E1116" /><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#0E1116" /><rect x="9" y="2" width="3" height="10" rx="1" fill="#0E1116" /><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#0E1116" opacity=".3" /></svg>
                 <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.5 2.5 12.7 3.5 14.3 5.1L15.7 3.6C13.7 1.6 11 .5 8 .5S2.3 1.6.3 3.6l1.4 1.5C3.3 3.5 5.5 2.5 8 2.5Z" fill="#0E1116" /><path d="M8 6.5c1.1 0 2.1.4 2.8 1.2l1.4-1.5C11.1 5.1 9.6 4.5 8 4.5s-3.1.6-4.2 1.7l1.4 1.5C5.9 6.9 6.9 6.5 8 6.5Z" fill="#0E1116" /><circle cx="8" cy="10" r="1.6" fill="#0E1116" /></svg>
                 <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="#0E1116" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" /><rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" /></svg>
             </span>
         </div>
 
-        @{
-            var estaLogueado = Session["UsuarioId"] != null;
-            var nombreUsuario = Session["Nombre"] as string ?? "";
-            var cedulaUsuario = Session["Cedula"] as string ?? "";
-            var inicialUsuario = !string.IsNullOrEmpty(nombreUsuario) ? nombreUsuario.Substring(0, 1).ToUpper() : "U";
-        }
-        <header class="app-header">
-            <div class="brand">
-                <img src="~/images/logo-cnfl.png" alt="CNFL" style="height:38px; width:auto;" />
+        <div class="phone-body">
+            <div class="app-body with-tabbar">
+                @RenderBody()
             </div>
-            <div class="actions">
-                @if (estaLogueado)
-                {
-                    <div class="icon-btn" onclick="location.href='@Url.Action("MisNotificaciones", "Clientes")'">
-                        <span class="badge">3</span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
-                    </div>
-                    <div class="icon-btn" onclick="cnflToggleSettings(event)" title="Ajustes">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3" />
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                        </svg>
-                    </div>
-                    <div class="icon-btn" onclick="location.href='@Url.Action("MiPerfil", "Clientes")'">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                    </div>
-                }
-                else
-                {
-                    <div class="icon-btn" onclick="location.href='@Url.Action("MiPerfil", "Clientes")'">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                    </div>
-                }
-            </div>
-        </header>
+        </div>
 
-        @if (estaLogueado)
-        {
-            <div class="cnfl-settings-overlay" id="cnflSettingsOverlay"></div>
-            <div class="cnfl-settings-menu" id="cnflSettingsMenu" role="menu" aria-label="Ajustes">
-                <div class="cnfl-settings-user">
-                    <div class="avatar">@inicialUsuario</div>
-                    <div class="info">
-                        <div class="name">@nombreUsuario</div>
-                        <div class="id">@cedulaUsuario</div>
-                    </div>
-                </div>
-
-                <!-- IDIOMA -->
-                <div class="cnfl-settings-section-label" data-i18n="settings.language">Idioma</div>
-                <div class="cnfl-lang-grid" id="cnflLangGrid"></div>
-
-                <!-- TAMAÑO DE TEXTO -->
-                <div class="cnfl-settings-section-label" data-i18n="settings.textSize">Tamaño de texto</div>
-                <div class="cnfl-zoom-grid" id="cnflZoomGrid">
-                    <button type="button" class="cnfl-zoom-btn" data-zoom="small" title="Pequeño">−</button>
-                    <div class="cnfl-zoom-indicator">
-                        <div class="bar"><div class="fill" id="cnflZoomFill" style="width: 66%;"></div></div>
-                        <div class="lbl" id="cnflZoomLbl">Normal</div>
-                    </div>
-                    <button type="button" class="cnfl-zoom-btn" data-zoom="large" title="Grande">+</button>
-                </div>
-
-                <div class="cnfl-settings-sep"></div>
-
-                <!-- 🛒 CARRITO -->
-                <a class="cnfl-settings-item" href="@Url.Action("Index", "Carrito")" style="position:relative;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                    <span>Mi carrito</span>
-                    <span id="cnflCartBadge" style="display:none; margin-left:auto; background:var(--orange); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px;">0</span>
-                </a>
-
-                <a class="cnfl-settings-item" href="@Url.Action("MisCompras", "Pagos")">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                        <line x1="16" y1="13" x2="8" y2="13" />
-                        <line x1="16" y1="17" x2="8" y2="17" />
-                    </svg>
-                    <span>Mis compras</span>
-                </a>
-
-                <div class="cnfl-settings-sep"></div>
-
-                <a class="cnfl-settings-item" href="@Url.Action("MiPerfil", "Clientes")">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                    <span data-i18n="settings.myProfile">Mi Perfil</span>
-                </a>
-                <a class="cnfl-settings-item" href="@Url.Action("MisNotificaciones", "Clientes")">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
-                    <span data-i18n="settings.myNotifications">Mis Notificaciones</span>
-                </a>
-
-                <div class="cnfl-settings-sep"></div>
-
-                <button type="button" class="cnfl-settings-item danger" onclick="cnflLogout()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-                    <span data-i18n="settings.logout">Cerrar sesión</span>
-                </button>
-            </div>
-        }
-
-        <main class="app-content" role="main">
-            @RenderBody()
-        </main>
-
-        @{
-            var rol = Session["Rol"] as string ?? "";
-            var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-            var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
-        }
-
-        @if (estaLogueado)
-        {
-            if (rol == "Admin")
+        <!-- ═══════════ BOTTOM NAV ═══════════ -->
+        <nav class="app-tabbar">
+            @if (!logueado)
             {
-                <nav class="app-tabbar">
-                    <a href="@Url.Action("Dashboard", "Admin")" class="tab-item @(controller == "Admin" && action == "Dashboard" ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.dashboard">Dashboard</span>
-                    </a>
-                    <a href="@Url.Action("Clientes", "Admin")" class="tab-item @(controller == "Admin" && action == "Clientes" ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.clients">Clientes</span>
-                    </a>
-                    <a href="@Url.Action("Averias", "Admin")" class="tab-item @(controller == "Admin" && action == "Averias" ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.faults">Averías</span>
-                    </a>
-                    <a href="@Url.Action("CerrarSesion", "Cuenta")" class="tab-item">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.logout">Salir</span>
-                    </a>
-                </nav>
+                <!-- SIN LOGIN: solo Inicio y Cuenta -->
+                <a href="@Url.Action("Index", "Home")"
+                   class="app-tab @(accionActual == "Index" && controllerActual == "Home" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
+                    </svg>
+                    <span>Inicio</span>
+                </a>
+
+                <a href="@Url.Action("Login", "Cuenta")"
+                   class="app-tab @(accionActual == "Login" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                    </svg>
+                    <span>Cuenta</span>
+                </a>
             }
             else
             {
-                <nav class="app-tabbar">
-                    <a href="@Url.Action("Dashboard", "Clientes")" class="tab-item @(controller == "Clientes" && action == "Dashboard" ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.home">Inicio</span>
-                    </a>
+                <!-- CON LOGIN: 5 tabs -->
+                <a href="@Url.Action("Dashboard", "Clientes")"
+                   class="app-tab @(tabInicio ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
+                    </svg>
+                    <span>Inicio</span>
+                </a>
 
-                    <a href="@Url.Action("Index", "Tramites")" class="tab-item @(controller == "Tramites" ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="9" y1="13" x2="15" y2="13" />
-                                <line x1="9" y1="17" x2="13" y2="17" />
-                            </svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.tramites">Trámites</span>
-                    </a>
+                <a href="@Url.Action("MisServicios", "Clientes")"
+                   class="app-tab @(tabServicios ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21V9l6-6v18M9 13h6" />
+                        <path d="M3 21h18" />
+                    </svg>
+                    <span>Servicios</span>
+                </a>
 
-                    <a href="@Url.Action("MisFacturas", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MisFacturas" ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.bills">Facturas</span>
-                    </a>
+                <a href="@Url.Action("Reportes", "Clientes")"
+                   class="app-tab center @(tabReportar ? "active" : "")">
+                    <div class="fab">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+                        </svg>
+                    </div>
+                    <span>Reportar</span>
+                </a>
 
-                    <a href="@Url.Action("Reportes", "Clientes")" class="tab-item @(controller == "Clientes" && action == "Reportes" ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.reports">Reportes</span>
-                    </a>
+                <a href="@Url.Action("Tramites", "Clientes")"
+                   class="app-tab @(tabTramites ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6M9 13h6M9 17h4" />
+                    </svg>
+                    <span>Trámites</span>
+                </a>
 
-                    <a href="@Url.Action("Tienda", "Clientes")" class="tab-item @(controller == "Clientes" && (action == "Tienda" || action == "DetalleProducto") ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.products">Productos y Servicios</span>
-                    </a>
-
-                    <a href="@Url.Action("MiPerfil", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MiPerfil" ? "active" : "")">
-                        <span class="tab-icon">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                        </span>
-                        <span class="tab-label" data-i18n="nav.profile">Perfil</span>
-                    </a>
-                </nav>
+                <a href="@Url.Action("Cuenta", "Clientes")"
+                   class="app-tab @(tabCuenta ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                    </svg>
+                    <span>Cuenta</span>
+                </a>
             }
-        }
-        else
-        {
-            <nav class="app-tabbar">
-                <a href="@Url.Action("Index", "Home")" class="tab-item @(controller == "Home" && action == "Index" ? "active" : "")">
-                    <span class="tab-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-                    </span>
-                    <span class="tab-label" data-i18n="nav.home">Inicio</span>
-                </a>
-                <a href="@Url.Action("MiPerfil", "Clientes")" class="tab-item @(controller == "Clientes" && action == "MiPerfil" ? "active" : "")">
-                    <span class="tab-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                    </span>
-                    <span class="tab-label" data-i18n="nav.profile">Perfil</span>
-                </a>
-            </nav>
-        }
+        </nav>
     </div>
 
     <script>
-        window.CNFL_LOGOUT_URL = '@Url.Action("CerrarSesion", "Cuenta")';
-
-        setInterval(function () {
-            var d = new Date();
-            var h = String(d.getHours()).padStart(2, '0');
-            var m = String(d.getMinutes()).padStart(2, '0');
-            var clock = document.getElementById('clock');
-            if (clock) clock.textContent = h + ':' + m;
-        }, 10000);
-
-        // Cargar contador del carrito
-        (function cargarBadgeCarrito() {
-            if (typeof fetch === 'undefined') return;
-            fetch('@Url.Action("Count", "Carrito")')
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    var badge = document.getElementById('cnflCartBadge');
-                    if (badge && data.totalItems > 0) {
-                        badge.textContent = data.totalItems;
-                        badge.style.display = 'inline-block';
-                    }
-                })
-                .catch(function () { });
+        (function () {
+            function actualizarHora() {
+                var el = document.getElementById('horaActual');
+                if (!el) return;
+                var d = new Date();
+                var h = d.getHours();
+                var m = d.getMinutes();
+                el.textContent = h + ':' + (m < 10 ? '0' + m : m);
+            }
+            actualizarHora();
+            setInterval(actualizarHora, 30000);
         })();
     </script>
 
-    <script src="~/Scripts/cliente/app.js"></script>
-    <script src="~/Scripts/site.js"></script>
     @RenderSection("Scripts", required: false)
-
 </body>
 </html>

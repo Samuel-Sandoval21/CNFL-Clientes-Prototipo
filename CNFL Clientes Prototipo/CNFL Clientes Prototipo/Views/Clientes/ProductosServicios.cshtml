@@ -1,0 +1,444 @@
+﻿@{
+    ViewBag.Title = "Productos y Servicios";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- ═══════════ APPBAR ═══════════ -->
+<div class="appbar">
+    <div class="brand">
+        <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
+             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
+    </div>
+    <div class="actions">
+        <button type="button" class="icon-btn" onclick="abrirConfig();" title="Configuración">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+        </button>
+        <a href="@Url.Action("Tienda", "Clientes")" class="icon-btn" title="Carrito">
+            <span class="badge" id="badgeCarrito">0</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+                <circle cx="9" cy="20" r="1.6" />
+                <circle cx="18" cy="20" r="1.6" />
+                <path d="M2 3h3l2.5 12.5a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 2-1.5L22 7H6" />
+            </svg>
+        </a>
+    </div>
+</div>
+
+<h1 class="h-name" style="font-size:26px;">Productos y Servicios</h1>
+<p class="h-greet" style="margin-top:6px; line-height:1.5;">
+    Servicios, marketplace, subscripciones y mucho más.
+</p>
+
+<!-- ═══════════ TABS ═══════════ -->
+<div class="chart-tabs" style="margin-top:16px;">
+    <button type="button" class="chart-tab active" data-tab="servicios">🏠 Servicios</button>
+    <button type="button" class="chart-tab" data-tab="marketplace">🛍️ Marketplace</button>
+    <button type="button" class="chart-tab" data-tab="subscripciones">🛡️ Subscripciones</button>
+    <button type="button" class="chart-tab" data-tab="historial">📚 Historial</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECCIÓN 1: SERVICIOS
+     ═══════════════════════════════════════════ -->
+<div id="tab-servicios" class="tab-panel">
+
+    <div class="hero-card" style="margin-top:22px;">
+        <p class="greet">🏠 HOGAR 360°</p>
+        <h1>Todo para tu hogar,<br>en un solo lugar</h1>
+        <p class="sub">Solicitá visita técnica, recibí cotización y cargá el costo a tu factura eléctrica.</p>
+    </div>
+
+    <div class="eyebrow" style="margin-top:22px;">Servicios disponibles</div>
+
+    <div class="rows">
+        <div class="row-item" onclick="abrirServicio('Eficiencia energética', '💡', 'Diagnóstico y optimización del consumo');">
+            <div class="ic" style="background:#e9f7ec; font-size:20px; display:grid; place-items:center;">💡</div>
+            <div class="tx">
+                <div class="t">Eficiencia energética</div>
+                <div class="s">Diagnóstico y optimización del consumo</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+
+        <div class="row-item" onclick="abrirServicio('Alarmas', '🚨', 'Monitoreo y respuesta inmediata');">
+            <div class="ic" style="background:#fdeaea; font-size:20px; display:grid; place-items:center;">🚨</div>
+            <div class="tx">
+                <div class="t">Alarmas</div>
+                <div class="s">Monitoreo y respuesta inmediata</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+
+        <div class="row-item" onclick="abrirServicio('Cargadores eléctricos', '🔌', 'Instalación certificada para VE');">
+            <div class="ic" style="background:#eef6ff; font-size:20px; display:grid; place-items:center;">🔌</div>
+            <div class="tx">
+                <div class="t">Cargadores eléctricos</div>
+                <div class="s">Instalación certificada para VE</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+
+        <div class="row-item" onclick="abrirServicio('Domótica', '🏠', 'Automatización inteligente del hogar');">
+            <div class="ic" style="background:#f3f0ff; font-size:20px; display:grid; place-items:center;">🏠</div>
+            <div class="tx">
+                <div class="t">Domótica</div>
+                <div class="s">Automatización inteligente del hogar</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+
+        <div class="row-item" onclick="abrirServicio('Mantenimiento de barras', '⚙️', 'Revisión preventiva y correctiva');">
+            <div class="ic" style="background:#fef3e0; font-size:20px; display:grid; place-items:center;">⚙️</div>
+            <div class="tx">
+                <div class="t">Mantenimiento de barras</div>
+                <div class="s">Revisión preventiva y correctiva</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+
+        <div class="row-item" onclick="abrirServicio('Venta e instalación', '🛠️', 'Equipos y puesta en marcha');">
+            <div class="ic" style="background:#eef0ff; font-size:20px; display:grid; place-items:center;">🛠️</div>
+            <div class="tx">
+                <div class="t">Venta e instalación</div>
+                <div class="s">Equipos y puesta en marcha</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+
+        <div class="row-item" onclick="abrirServicio('Consumo verde y DERs', '🌱', 'Energías renovables distribuidas');">
+            <div class="ic" style="background:#e9f7ec; font-size:20px; display:grid; place-items:center;">🌱</div>
+            <div class="tx">
+                <div class="t">Consumo verde y DERs</div>
+                <div class="s">Energías renovables distribuidas</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-cta"
+            style="width:100%; padding:16px; margin-top:16px; font-size:14.5px;"
+            onclick="abrirServicio('Visita y cotización', '📅', 'Un especialista te visitará sin costo');">
+        📅 Solicitar visita técnica
+    </button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECCIÓN 2: MARKETPLACE
+     ═══════════════════════════════════════════ -->
+<div id="tab-marketplace" class="tab-panel" style="display:none;">
+
+    <div class="hero-card" style="margin-top:22px; background:linear-gradient(135deg, #FF692D, #ff8a4c);">
+        <p class="greet">🛍️ MARKETPLACE</p>
+        <h1>Comprá lo que<br>necesitás</h1>
+        <p class="sub">Línea blanca, tecnología, A/C y más. Todo cargado a tu factura.</p>
+    </div>
+
+    <div class="eyebrow" style="margin-top:22px;">Categorías</div>
+
+    <div class="cat-scroll" style="display:flex; gap:12px; overflow-x:auto; padding:4px 0 8px;">
+        <div class="cat" onclick="filtrarCategoria('Línea Blanca');" style="flex:none; width:78px; text-align:center; cursor:pointer;">
+            <div style="width:60px; height:60px; border-radius:18px; background:#fff; box-shadow:var(--shadow-sm); border:1px solid var(--line); display:grid; place-items:center; margin:0 auto; font-size:26px;">🧊</div>
+            <div style="font-size:11px; font-weight:700; margin-top:6px;">Línea Blanca</div>
+        </div>
+        <div class="cat" onclick="filtrarCategoria('Tecnología');" style="flex:none; width:78px; text-align:center; cursor:pointer;">
+            <div style="width:60px; height:60px; border-radius:18px; background:#fff; box-shadow:var(--shadow-sm); border:1px solid var(--line); display:grid; place-items:center; margin:0 auto; font-size:26px;">💻</div>
+            <div style="font-size:11px; font-weight:700; margin-top:6px;">Tecnología</div>
+        </div>
+        <div class="cat" onclick="filtrarCategoria('Entretenimiento');" style="flex:none; width:78px; text-align:center; cursor:pointer;">
+            <div style="width:60px; height:60px; border-radius:18px; background:#fff; box-shadow:var(--shadow-sm); border:1px solid var(--line); display:grid; place-items:center; margin:0 auto; font-size:26px;">📺</div>
+            <div style="font-size:11px; font-weight:700; margin-top:6px;">Entreten.</div>
+        </div>
+        <div class="cat" onclick="filtrarCategoria('A/C');" style="flex:none; width:78px; text-align:center; cursor:pointer;">
+            <div style="width:60px; height:60px; border-radius:18px; background:#fff; box-shadow:var(--shadow-sm); border:1px solid var(--line); display:grid; place-items:center; margin:0 auto; font-size:26px;">❄️</div>
+            <div style="font-size:11px; font-weight:700; margin-top:6px;">A/C</div>
+        </div>
+        <div class="cat" onclick="filtrarCategoria('Electrodomésticos');" style="flex:none; width:78px; text-align:center; cursor:pointer;">
+            <div style="width:60px; height:60px; border-radius:18px; background:#fff; box-shadow:var(--shadow-sm); border:1px solid var(--line); display:grid; place-items:center; margin:0 auto; font-size:26px;">🔌</div>
+            <div style="font-size:11px; font-weight:700; margin-top:6px;">Electrodom.</div>
+        </div>
+        <div class="cat" onclick="filtrarCategoria('Audio');" style="flex:none; width:78px; text-align:center; cursor:pointer;">
+            <div style="width:60px; height:60px; border-radius:18px; background:#fff; box-shadow:var(--shadow-sm); border:1px solid var(--line); display:grid; place-items:center; margin:0 auto; font-size:26px;">🔊</div>
+            <div style="font-size:11px; font-weight:700; margin-top:6px;">Audio</div>
+        </div>
+        <div class="cat" onclick="filtrarCategoria('Herramientas');" style="flex:none; width:78px; text-align:center; cursor:pointer;">
+            <div style="width:60px; height:60px; border-radius:18px; background:#fff; box-shadow:var(--shadow-sm); border:1px solid var(--line); display:grid; place-items:center; margin:0 auto; font-size:26px;">🔧</div>
+            <div style="font-size:11px; font-weight:700; margin-top:6px;">Herramientas</div>
+        </div>
+    </div>
+
+    <div class="eyebrow" id="categoriaTitulo">Productos destacados</div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:13px;" id="gridProductos"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECCIÓN 3: SUBSCRIPCIONES
+     ═══════════════════════════════════════════ -->
+<div id="tab-subscripciones" class="tab-panel" style="display:none;">
+    <div class="hero-card" style="margin-top:22px; background:linear-gradient(135deg, #64B95A, #4a9a57);">
+        <p class="greet">🛡️ CNFL TE ASISTE</p>
+        <h1>Protegé lo que<br>más querés</h1>
+        <p class="sub">Seguros, asistencia y videovigilancia con cobertura 24/7.</p>
+    </div>
+
+    <div class="eyebrow" style="margin-top:22px;">Subscripciones disponibles</div>
+
+    <div class="rows">
+        <div class="row-item" onclick="abrirSubscripcion('Seguros de Hogar e Incendio');">
+            <div class="ic" style="background:#fdeaea; font-size:20px; display:grid; place-items:center;">🏠</div>
+            <div class="tx">
+                <div class="t">Seguros de Hogar e Incendio</div>
+                <div class="s">Cobertura contra daños e imprevistos</div>
+            </div>
+            <span class="pill st-normal" style="font-size:10px;"><span class="dot"></span>Activa</span>
+        </div>
+
+        <div class="row-item" onclick="abrirSubscripcion('Asistencia');">
+            <div class="ic" style="background:#eef0ff; font-size:20px; display:grid; place-items:center;">🚑</div>
+            <div class="tx">
+                <div class="t">Asistencia</div>
+                <div class="s">Servicios de emergencia 24/7</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+
+        <div class="row-item" onclick="abrirSubscripcion('Videovigilancia');">
+            <div class="ic" style="background:#f3f0ff; font-size:20px; display:grid; place-items:center;">📹</div>
+            <div class="tx">
+                <div class="t">Videovigilancia</div>
+                <div class="s">Cámaras con monitoreo 24/7</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECCIÓN 4: HISTORIAL
+     ═══════════════════════════════════════════ -->
+<div id="tab-historial" class="tab-panel" style="display:none;">
+    <div class="hero-card" style="margin-top:22px; background:linear-gradient(135deg, #001482, #1E23E6);">
+        <p class="greet">📚 MI HISTORIAL</p>
+        <h1>Todo lo que<br>tenés con CNFL</h1>
+        <p class="sub">Subscripciones, servicios, compras y créditos abiertos.</p>
+    </div>
+
+    <div class="eyebrow" style="margin-top:22px;">Resumen general</div>
+
+    <div class="rows">
+        <a href="@Url.Action("MisCompras", "Clientes")" class="row-item">
+            <div class="ic" style="background:#eef0ff; font-size:18px; display:grid; place-items:center;">📦</div>
+            <div class="tx">
+                <div class="t">Mis compras</div>
+                <div class="s">Historial completo de pedidos</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </a>
+
+        <a href="@Url.Action("MetodosPago", "Clientes")" class="row-item">
+            <div class="ic" style="background:#e9f7ec; font-size:18px; display:grid; place-items:center;">💳</div>
+            <div class="tx">
+                <div class="t">Métodos de pago</div>
+                <div class="s">Tarjetas, SINPE e IBAN</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+        </a>
+    </div>
+</div>
+
+<!-- ═══════════ MODAL SERVICIO ═══════════ -->
+<div id="modalServicio"
+     style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.55); z-index:200; align-items:flex-end; justify-content:center;">
+    <div style="width:100%; max-width:430px; max-height:88vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:22px 20px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
+        <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:0 auto 18px;"></div>
+
+        <h3 id="modalServicioTitulo" style="font-size:17px; font-weight:800; margin:0 0 6px; color:var(--ink);">Servicio</h3>
+        <p id="modalServicioSub" style="font-size:12.5px; color:var(--muted); margin:0 0 20px; line-height:1.5;">
+            Solicitá una visita y cotización. Un asesor te contactará.
+        </p>
+
+        <div class="reg-card" style="margin-bottom:14px;">
+            <div class="reg-field">
+                <label>Descripción del servicio *</label>
+                <textarea id="servDescripcion" placeholder="Contanos qué necesitás..." required
+                          style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; min-height:90px; resize:vertical; outline:none;"></textarea>
+            </div>
+
+            <div class="reg-field">
+                <label>NISE asociado (opcional)</label>
+                <input type="text" id="servNise" placeholder="Ej: NISE-002" />
+            </div>
+
+            <div class="reg-field">
+                <label>Teléfono de contacto</label>
+                <input type="tel" id="servTelefono" placeholder="Ej: 8888-8888" />
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button type="button" class="reg-btn" onclick="cerrarServicio();"
+                    style="background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;">
+                Cancelar
+            </button>
+            <button type="button" class="reg-btn" onclick="enviarServicio();">
+                Solicitar visita
+            </button>
+        </div>
+
+        <div id="servEstado" style="display:none; margin-top:14px; padding:12px 14px; background:#e9f7ec; border-radius:12px; font-size:12.5px; font-weight:800; color:#2f8f3e; text-align:center;">
+            ✓ Solicitud enviada
+        </div>
+    </div>
+</div>
+
+<script>
+        // ═══════════ Tabs ═══════════
+        var tabsBtns = document.querySelectorAll('.chart-tab[data-tab]');
+        for (var i = 0; i < tabsBtns.length; i++) {
+            tabsBtns[i].addEventListener('click', function () {
+                var id = this.getAttribute('data-tab');
+                for (var j = 0; j < tabsBtns.length; j++) tabsBtns[j].classList.remove('active');
+                this.classList.add('active');
+                var panels = document.querySelectorAll('.tab-panel');
+                for (var k = 0; k < panels.length; k++) panels[k].style.display = 'none';
+                var panel = document.getElementById('tab-' + id);
+                if (panel) panel.style.display = 'block';
+            });
+        }
+
+        // ═══════════ Productos ═══════════
+        var productos = [
+            { cat: 'Línea Blanca', nombre: 'Refrigeradora Samsung 350L', precio: 425000, emoji: '🧊' },
+            { cat: 'Línea Blanca', nombre: 'Lavadora LG 18kg', precio: 349000, emoji: '🧺' },
+            { cat: 'Tecnología', nombre: 'Laptop HP Ryzen 5', precio: 489000, emoji: '💻' },
+            { cat: 'Tecnología', nombre: 'Tablet Lenovo 10"', precio: 189000, emoji: '📱' },
+            { cat: 'Entretenimiento', nombre: 'Smart TV 55" 4K', precio: 389000, emoji: '📺' },
+            { cat: 'Entretenimiento', nombre: 'Barra de sonido JBL', precio: 145000, emoji: '🔊' },
+            { cat: 'A/C', nombre: 'Aire acondicionado Inverter 12.000 BTU', precio: 289000, emoji: '❄️' },
+            { cat: 'A/C', nombre: 'Ventilador de torre', precio: 48000, emoji: '🌀' },
+            { cat: 'Electrodomésticos', nombre: 'Microondas 1.2 pies', precio: 89000, emoji: '🍲' },
+            { cat: 'Electrodomésticos', nombre: 'Cafetera Oster', precio: 42000, emoji: '☕' },
+            { cat: 'Audio', nombre: 'Audífonos Sony WH', precio: 135000, emoji: '🎧' },
+            { cat: 'Audio', nombre: 'Parlante Bluetooth', precio: 56000, emoji: '🔊' },
+            { cat: 'Herramientas', nombre: 'Taladro inalámbrico', precio: 78000, emoji: '🔧' },
+            { cat: 'Herramientas', nombre: 'Multímetro digital', precio: 24000, emoji: '📏' }
+        ];
+
+        function renderProductos(categoria) {
+            var cont = document.getElementById('gridProductos');
+            var titulo = document.getElementById('categoriaTitulo');
+            if (!cont) return;
+
+            var filtrados = categoria
+                ? productos.filter(function (p) { return p.cat === categoria; })
+                : productos;
+
+            titulo.textContent = categoria ? categoria : 'Productos destacados';
+
+            cont.innerHTML = '';
+            filtrados.forEach(function (p) {
+                var div = document.createElement('div');
+                div.style.cssText = 'background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:var(--shadow-sm);';
+                div.innerHTML =
+                    '<div style="height:96px; display:grid; place-items:center; font-size:34px; background:#eef6ff;">' + p.emoji + '</div>' +
+                    '<div style="padding:11px 12px 13px;">' +
+                        '<div style="font-size:12.5px; font-weight:700; line-height:1.25; height:32px; overflow:hidden;">' + p.nombre + '</div>' +
+                        '<div style="font-weight:800; font-size:15px; margin-top:6px;">₡' + p.precio.toLocaleString('es-CR') + '</div>' +
+                        '<button type="button" onclick="agregarAlCarrito(\'' + p.nombre.replace(/'/g, "\\'") + '\', ' + p.precio + ', \'' + p.emoji + '\')" style="margin-top:9px; width:100%; background:var(--orange); color:#fff; border:0; font-family:inherit; font-weight:800; font-size:11.5px; padding:9px; border-radius:11px; cursor:pointer;">🛒 Agregar al carrito</button>' +
+                    '</div>';
+                cont.appendChild(div);
+            });
+        }
+
+        function filtrarCategoria(cat) { renderProductos(cat); }
+
+        function agregarAlCarrito(nombre, precio, emoji) {
+            var STORAGE_KEY = 'cnfl_carrito';
+            var carrito = [];
+            try { carrito = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { carrito = []; }
+
+            var existente = null;
+            for (var i = 0; i < carrito.length; i++) {
+                if (carrito[i].nombre === nombre) { existente = carrito[i]; break; }
+            }
+
+            if (existente) {
+                existente.cantidad = (existente.cantidad || 1) + 1;
+            } else {
+                carrito.push({ nombre: nombre, precio: precio, cantidad: 1, emoji: emoji || '📦' });
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(carrito));
+
+            var total = carrito.reduce(function (s, it) { return s + (it.cantidad || 1); }, 0);
+            var badges = document.querySelectorAll('.badge');
+            for (var k = 0; k < badges.length; k++) badges[k].textContent = total;
+
+            mostrarToast('✓ ' + nombre + ' agregado al carrito');
+        }
+
+        function mostrarToast(mensaje) {
+            var toast = document.createElement('div');
+            toast.style.cssText = 'position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:#0E1116; color:#fff; padding:12px 18px; border-radius:14px; font-size:12.5px; font-weight:700; z-index:500; box-shadow:0 10px 24px rgba(0,0,0,.3); transition:.3s; max-width:340px; text-align:center; opacity:0;';
+            toast.textContent = mensaje;
+            document.body.appendChild(toast);
+            setTimeout(function () { toast.style.transform = 'translateX(-50%) translateY(0)'; toast.style.opacity = '1'; }, 50);
+            setTimeout(function () {
+                toast.style.opacity = '0';
+                setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+            }, 2200);
+        }
+
+        renderProductos(null);
+
+        // ═══════════ Modal Servicio ═══════════
+        var servicioActual = '';
+
+        function abrirServicio(nombre, emoji, subtitulo) {
+            servicioActual = nombre;
+            document.getElementById('modalServicioTitulo').textContent = (emoji || '') + ' ' + nombre;
+            document.getElementById('modalServicioSub').textContent = subtitulo || 'Solicitá una visita y cotización.';
+            document.getElementById('servDescripcion').value = '';
+            document.getElementById('servNise').value = '';
+            document.getElementById('servEstado').style.display = 'none';
+            document.getElementById('modalServicio').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarServicio() {
+            document.getElementById('modalServicio').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modalServicio').addEventListener('click', function (e) {
+            if (e.target === this) cerrarServicio();
+        });
+
+        function enviarServicio() {
+            var desc = document.getElementById('servDescripcion').value.trim();
+            if (!desc) { alert('Escribí una descripción.'); return; }
+
+            document.getElementById('servEstado').style.display = 'block';
+            document.getElementById('servEstado').textContent = '✓ Solicitud de ' + servicioActual + ' enviada';
+
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                try {
+                    new Notification('CNFL · Servicio solicitado', {
+                        body: servicioActual + ' · un asesor te contactará',
+                        icon: '/Content/img/logo-cnfl.png'
+                    });
+                } catch (e) { }
+            } else if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            setTimeout(cerrarServicio, 2200);
+        }
+
+        function abrirSubscripcion(nombre) {
+            alert('Solicitud de subscripción: ' + nombre + '\n\nSe cargará automáticamente a tu factura.');
+        }
+</script>

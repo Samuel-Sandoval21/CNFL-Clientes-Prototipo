@@ -1,3 +1,859 @@
-﻿@{
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
-}
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#001482" />
+    <title>@ViewBag.Title · CNFL Admin</title>
+
+    @Html.Partial("_EstilosBase")
+    @RenderSection("Styles", required: false)
+
+    <style>
+        /* ═══════════════════════════════════════════
+           ADMIN MOBILE
+           ═══════════════════════════════════════════ */
+        body {
+            background: #dfe2ec;
+        }
+
+        .admin-app-body {
+            padding: 14px 16px 100px;
+        }
+
+        /* Header azul premium */
+        .admin-header-hero {
+            background: linear-gradient(135deg, #001482 0%, #1E23E6 100%);
+            border-radius: 22px;
+            padding: 22px 20px;
+            color: #fff;
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 16px 32px -16px rgba(0,16,90,.55);
+        }
+
+            .admin-header-hero::after {
+                content: "";
+                position: absolute;
+                right: -60px;
+                top: -60px;
+                width: 180px;
+                height: 180px;
+                background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+            }
+
+        .admin-user-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .admin-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(255,255,255,.18);
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .admin-user-row .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .admin-user-row .nm {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -.01em;
+        }
+
+        .admin-user-row .rl {
+            font-size: 11.5px;
+            opacity: .85;
+            margin-top: 2px;
+        }
+
+        /* Botones de acción en el header */
+        .admin-header-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            position: relative;
+            z-index: 3;
+        }
+
+        .admin-header-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.15);
+            border: 1px solid rgba(255,255,255,.2);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: #fff;
+            transition: .15s;
+        }
+
+            .admin-header-btn:hover {
+                background: rgba(255,255,255,.25);
+            }
+
+            .admin-header-btn svg {
+                width: 20px;
+                height: 20px;
+            }
+
+        .admin-header-hero h1 {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 14px 0 0;
+            letter-spacing: -.02em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .admin-header-hero .sub {
+            font-size: 12.5px;
+            opacity: .9;
+            margin-top: 6px;
+            line-height: 1.5;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Grid de métricas */
+        .admin-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .admin-stat {
+            background: #fff;
+            border-radius: 16px;
+            padding: 14px;
+            border: 1px solid var(--line);
+            box-shadow: 0 4px 14px rgba(16,20,40,.06);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+            .admin-stat .row1 {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .admin-stat .ico {
+                width: 36px;
+                height: 36px;
+                border-radius: 11px;
+                display: grid;
+                place-items: center;
+                font-size: 18px;
+                flex-shrink: 0;
+            }
+
+            .admin-stat .tag {
+                font-size: 10px;
+                font-weight: 800;
+                padding: 3px 8px;
+                border-radius: 999px;
+            }
+
+                .admin-stat .tag.up {
+                    background: #e9f7ec;
+                    color: #2f8f3e;
+                }
+
+                .admin-stat .tag.down {
+                    background: #fdeaea;
+                    color: #c93a3f;
+                }
+
+                .admin-stat .tag.info {
+                    background: #eef0ff;
+                    color: var(--blue);
+                }
+
+                .admin-stat .tag.muted {
+                    background: #eef0f7;
+                    color: var(--muted);
+                }
+
+            .admin-stat .k {
+                font-size: 11px;
+                color: var(--muted);
+                font-weight: 700;
+                letter-spacing: .02em;
+            }
+
+            .admin-stat .v {
+                font-size: 22px;
+                font-weight: 800;
+                color: var(--ink);
+                letter-spacing: -.02em;
+                line-height: 1;
+            }
+
+                .admin-stat .v small {
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: var(--muted);
+                    margin-left: 4px;
+                }
+
+        /* Cards grandes */
+        .admin-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 16px;
+            border: 1px solid var(--line);
+            box-shadow: 0 4px 14px rgba(16,20,40,.06);
+            margin-bottom: 14px;
+        }
+
+            .admin-card h3 {
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--ink);
+                margin: 0 0 4px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .admin-card .sub {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-bottom: 14px;
+            }
+
+        .admin-chart {
+            height: 200px;
+            position: relative;
+        }
+
+        /* Search */
+        .admin-search {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+            .admin-search input,
+            .admin-search select {
+                padding: 11px 14px;
+                border: 1.5px solid var(--line);
+                border-radius: 12px;
+                font-family: inherit;
+                font-size: 13.5px;
+                outline: none;
+                background: #fff;
+                flex: 1;
+                min-width: 120px;
+            }
+
+                .admin-search input:focus,
+                .admin-search select:focus {
+                    border-color: var(--blue);
+                    box-shadow: 0 0 0 3px rgba(30,35,230,.1);
+                }
+
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 11px 16px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1.5px solid var(--line);
+            color: var(--ink);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: none;
+            transition: .15s;
+        }
+
+            .admin-btn:hover {
+                border-color: var(--blue);
+                color: var(--blue);
+            }
+
+            .admin-btn.primary {
+                background: var(--blue);
+                color: #fff;
+                border-color: var(--blue);
+                box-shadow: 0 6px 16px -8px rgba(30,35,230,.6);
+            }
+
+                .admin-btn.primary:hover {
+                    background: #0d1b9e;
+                    color: #fff;
+                }
+
+        /* Lista mobile */
+        .admin-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .admin-list-item {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 4px 14px rgba(16,20,40,.04);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: .15s;
+        }
+
+            .admin-list-item:active {
+                transform: scale(.99);
+            }
+
+            .admin-list-item .ic {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: grid;
+                place-items: center;
+                font-size: 20px;
+                flex-shrink: 0;
+            }
+
+            .admin-list-item .tx {
+                flex: 1;
+                min-width: 0;
+            }
+
+                .admin-list-item .tx .t {
+                    font-size: 13.5px;
+                    font-weight: 800;
+                    color: var(--ink);
+                    line-height: 1.3;
+                }
+
+                .admin-list-item .tx .s {
+                    font-size: 11.5px;
+                    color: var(--muted);
+                    margin-top: 2px;
+                }
+
+        /* Chips */
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 4px 9px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+            .chip .d {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+            }
+
+            .chip.ok {
+                background: #e9f7ec;
+                color: #2f8f3e;
+            }
+
+                .chip.ok .d {
+                    background: var(--green);
+                }
+
+            .chip.warn {
+                background: #fef3e0;
+                color: #b9791a;
+            }
+
+                .chip.warn .d {
+                    background: var(--amber);
+                }
+
+            .chip.err {
+                background: #fdeaea;
+                color: #c93a3f;
+            }
+
+                .chip.err .d {
+                    background: var(--red);
+                }
+
+            .chip.info {
+                background: #eef0ff;
+                color: var(--blue);
+            }
+
+                .chip.info .d {
+                    background: var(--blue);
+                }
+
+            .chip.muted {
+                background: #eef0f7;
+                color: var(--muted);
+            }
+
+                .chip.muted .d {
+                    background: var(--muted);
+                }
+
+        /* Bottom nav admin — 6 tabs */
+        .admin-tabbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            background: rgba(255,255,255,.98);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 10px;
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0,0,0,.06);
+            box-sizing: border-box;
+        }
+
+        .admin-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: #9aa1b0;
+            font-size: 9px;
+            font-weight: 700;
+            text-decoration: none;
+            background: none;
+            border: 0;
+            font-family: inherit;
+            cursor: pointer;
+            transition: color .15s;
+            padding-bottom: 10px;
+            min-width: 0;
+        }
+
+            .admin-tab svg {
+                width: 20px;
+                height: 20px;
+            }
+
+            .admin-tab.active {
+                color: var(--blue);
+            }
+
+            .admin-tab span {
+                font-size: 9px;
+                line-height: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+            }
+    </style>
+</head>
+<body>
+
+    @{
+        var accionActual = ViewContext.RouteData.Values["action"].ToString();
+        var nombreAdmin = Session["Nombre"] as string ?? "Admin";
+
+        var iniciales = "A";
+        if (!string.IsNullOrWhiteSpace(nombreAdmin))
+        {
+            var partes = nombreAdmin.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (partes.Length >= 2)
+            {
+                iniciales = (partes[0].Substring(0, 1) + partes[1].Substring(0, 1)).ToUpper();
+            }
+            else if (partes.Length == 1)
+            {
+                iniciales = partes[0].Substring(0, 1).ToUpper();
+            }
+        }
+
+        var tabDashboard = accionActual == "Dashboard";
+        var tabClientes = accionActual == "Clientes" || accionActual == "DetalleCliente";
+        var tabAverias = accionActual == "Averias" || accionActual == "DetalleAveria";
+        var tabTramites = accionActual == "Tramites" || accionActual == "DetalleTramite";
+        var tabReportes = accionActual == "Reportes" || accionActual == "Actividad";
+    }
+
+    <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-statusbar">
+            <span id="horaActual">--:--</span>
+            <span class="right">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#0E1116" /><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#0E1116" /><rect x="9" y="2" width="3" height="10" rx="1" fill="#0E1116" /><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#0E1116" opacity=".3" /></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.5 2.5 12.7 3.5 14.3 5.1L15.7 3.6C13.7 1.6 11 .5 8 .5S2.3 1.6.3 3.6l1.4 1.5C3.3 3.5 5.5 2.5 8 2.5Z" fill="#0E1116" /><path d="M8 6.5c1.1 0 2.1.4 2.8 1.2l1.4-1.5C11.1 5.1 9.6 4.5 8 4.5s-3.1.6-4.2 1.7l1.4 1.5C5.9 6.9 6.9 6.5 8 6.5Z" fill="#0E1116" /><circle cx="8" cy="10" r="1.6" fill="#0E1116" /></svg>
+                <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="#0E1116" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" /><rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" /></svg>
+            </span>
+        </div>
+
+        <div class="phone-body">
+            <div class="admin-app-body">
+                @RenderBody()
+            </div>
+        </div>
+
+        <!-- ═══════════ BOTTOM NAV ADMIN (6 tabs) ═══════════ -->
+        <nav class="admin-tabbar">
+            <a href="@Url.Action("Dashboard", "Admin")"
+               class="admin-tab @(tabDashboard ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="9" rx="1.5" />
+                    <rect x="14" y="3" width="7" height="5" rx="1.5" />
+                    <rect x="14" y="12" width="7" height="9" rx="1.5" />
+                    <rect x="3" y="16" width="7" height="5" rx="1.5" />
+                </svg>
+                <span>Inicio</span>
+            </a>
+
+            <a href="@Url.Action("Clientes", "Admin")"
+               class="admin-tab @(tabClientes ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="8" r="3.5" />
+                    <path d="M2 21c0-3.5 3-6 7-6s7 2.5 7 6" />
+                    <circle cx="17" cy="8" r="3" />
+                </svg>
+                <span>Clientes</span>
+            </a>
+
+            <a href="@Url.Action("Averias", "Admin")"
+               class="admin-tab @(tabAverias ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+                </svg>
+                <span>Averías</span>
+            </a>
+
+            <a href="@Url.Action("Tramites", "Admin")"
+               class="admin-tab @(tabTramites ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <path d="M14 2v6h6M9 13h6M9 17h4" />
+                </svg>
+                <span>Trámites</span>
+            </a>
+
+            <a href="@Url.Action("Reportes", "Admin")"
+               class="admin-tab @(tabReportes ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3v18h18" />
+                    <path d="M7 14l4-4 4 4 5-5" />
+                </svg>
+                <span>Reportes</span>
+            </a>
+
+            <!-- Cerrar sesión como tab -->
+            <button type="button" class="admin-tab" onclick="confirmarCerrarSesion();"
+                    style="background:none; border:0; font-family:inherit; cursor:pointer;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <path d="M16 17l5-5-5-5M21 12H9" />
+                </svg>
+                <span style="color:var(--red);">Salir</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ═══════════ MODAL CONFIGURACIÓN ADMIN ═══════════ -->
+    <div id="modalConfigAdmin"
+         style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.55); z-index:300; align-items:flex-end; justify-content:center; padding:0;">
+
+        <div id="modalConfigAdminContent"
+             style="width:100%; max-width:430px; max-height:88vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:22px 20px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
+
+            <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:0 auto 18px;"></div>
+
+            <h3 style="font-size:17px; font-weight:800; margin:0 0 4px; color:var(--ink);">⚙️ Configuración</h3>
+            <p style="font-size:12.5px; color:var(--muted); margin:0 0 20px; line-height:1.5;">
+                Ajustes del panel administrador.
+            </p>
+
+            <!-- Accesos rápidos admin -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;">
+                <a href="@Url.Action("Dashboard", "Admin")"
+                   style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
+                    <div style="width:40px; height:40px; border-radius:12px; background:#eef0ff; display:grid; place-items:center; font-size:18px;">📊</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800; color:var(--ink);">Dashboard</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Panel general</div>
+                    </div>
+                </a>
+
+                <a href="@Url.Action("Actividad", "Admin")"
+                   style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
+                    <div style="width:40px; height:40px; border-radius:12px; background:#f3f0ff; display:grid; place-items:center; font-size:18px;">⏱️</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800; color:var(--ink);">Actividad</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Uso de la app</div>
+                    </div>
+                </a>
+
+                <a href="@Url.Action("Reportes", "Admin")"
+                   style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
+                    <div style="width:40px; height:40px; border-radius:12px; background:#e9f7ec; display:grid; place-items:center; font-size:18px;">📈</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800; color:var(--ink);">Reportes</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;">PDF y Excel</div>
+                    </div>
+                </a>
+
+                <a href="@Url.Action("Configuracion", "Admin")"
+                   style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
+                    <div style="width:40px; height:40px; border-radius:12px; background:#fef3e0; display:grid; place-items:center; font-size:18px;">🔧</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800; color:var(--ink);">Sistema</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Info técnica</div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Zoom -->
+            <div style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div>
+                        <div style="font-size:13.5px; font-weight:800; color:var(--ink);">🔍 Zoom del panel</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Ajustá el tamaño del texto</div>
+                    </div>
+                    <span id="zoomLabelAdmin" style="font-size:13px; font-weight:800; color:var(--blue);">100%</span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" onclick="cambiarZoomAdmin(-10);" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:16px; color:var(--ink); cursor:pointer;">A−</button>
+                    <button type="button" onclick="resetZoomAdmin();" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:12px; color:var(--muted); cursor:pointer;">100%</button>
+                    <button type="button" onclick="cambiarZoomAdmin(10);" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:16px; color:var(--ink); cursor:pointer;">A+</button>
+                </div>
+            </div>
+
+            <!-- Modo oscuro -->
+            <div style="background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:14px;">
+                <div class="admin-list-item" style="border:0; border-radius:0; box-shadow:none;" onclick="toggleModoOscuroAdmin();">
+                    <div class="ic" style="background:#f3f0ff; font-size:18px;">🌙</div>
+                    <div class="tx">
+                        <div class="t">Modo oscuro</div>
+                        <div class="s">Cambiar tema del panel</div>
+                    </div>
+                    <span id="modoOscuroEstadoAdmin" style="font-size:11px; font-weight:800; color:var(--muted);">OFF</span>
+                </div>
+            </div>
+
+            <!-- Notificaciones push -->
+            <div style="background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:14px;">
+                <div class="admin-list-item" style="border:0; border-radius:0; box-shadow:none;" onclick="activarNotificacionesAdmin();">
+                    <div class="ic" style="background:#fef3e0; font-size:18px;">🔔</div>
+                    <div class="tx">
+                        <div class="t">Notificaciones push</div>
+                        <div class="s" id="pushEstadoAdmin">Activar alertas</div>
+                    </div>
+                    <span id="pushEstadoIconoAdmin" style="font-size:11px; font-weight:800; color:var(--muted);">OFF</span>
+                </div>
+            </div>
+
+            <!-- Cerrar sesión -->
+            <div style="background:#fff; border:1px solid #f6cfd0; border-radius:16px; overflow:hidden; margin-bottom:14px;">
+                <div class="admin-list-item" style="border:0; border-radius:0; box-shadow:none;" onclick="confirmarCerrarSesion();">
+                    <div class="ic" style="background:#fdeaea; font-size:18px;">🚪</div>
+                    <div class="tx">
+                        <div class="t" style="color:var(--red);">Cerrar sesión</div>
+                        <div class="s">Salir de la cuenta de administrador</div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+                </div>
+            </div>
+
+            <button type="button" onclick="cerrarConfigAdmin();" class="admin-btn primary"
+                    style="width:100%; padding:14px; background:#f5f6fa; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════ SUB-MODAL CONFIRMACIÓN CERRAR SESIÓN ═══════════ -->
+    <div id="modalConfirmLogout"
+         style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.7); z-index:400; align-items:center; justify-content:center; padding:20px;">
+        <div style="width:100%; max-width:340px; background:#fff; border-radius:20px; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,.4); text-align:center;">
+            <div style="width:64px; height:64px; border-radius:20px; background:#fdeaea; display:grid; place-items:center; margin:0 auto 16px; font-size:28px;">
+                🚪
+            </div>
+
+            <h3 style="font-size:17px; font-weight:800; margin:0 0 8px; color:var(--ink);">
+                ¿Cerrar sesión?
+            </h3>
+            <p style="font-size:13px; color:var(--muted); margin:0 0 22px; line-height:1.5;">
+                Vas a salir del panel de administrador. ¿Estás seguro?
+            </p>
+
+            <div style="display:flex; gap:10px;">
+                <button type="button" onclick="cerrarModalLogout();"
+                        style="flex:1; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:14px; font-family:inherit; font-weight:800; font-size:14px; color:var(--ink); cursor:pointer;">
+                    Cancelar
+                </button>
+                <a href="@Url.Action("Logout", "Cuenta")"
+                   style="flex:1; padding:14px; background:var(--red); border:1.5px solid var(--red); border-radius:14px; font-family:inherit; font-weight:800; font-size:14px; color:#fff; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                    Sí, cerrar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+                // ═══════════ Hora ═══════════
+                (function () {
+                    function actualizarHora() {
+                        var el = document.getElementById('horaActual');
+                        if (!el) return;
+                        var d = new Date();
+                        var h = d.getHours();
+                        var m = d.getMinutes();
+                        el.textContent = h + ':' + (m < 10 ? '0' + m : m);
+                    }
+                    actualizarHora();
+                    setInterval(actualizarHora, 30000);
+                })();
+
+                // ═══════════ Modal Configuración Admin ═══════════
+                function abrirConfigAdmin() {
+                    var modal = document.getElementById('modalConfigAdmin');
+                    if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+                }
+                function cerrarConfigAdmin() {
+                    var modal = document.getElementById('modalConfigAdmin');
+                    if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
+                }
+                var modalConfigAdmin = document.getElementById('modalConfigAdmin');
+                if (modalConfigAdmin) {
+                    modalConfigAdmin.addEventListener('click', function (e) { if (e.target === this) cerrarConfigAdmin(); });
+                }
+
+                // ═══════════ Zoom Admin ═══════════
+                var ZOOM_KEY_ADMIN = 'cnfl_zoom_admin';
+                var zoomActualAdmin = parseInt(localStorage.getItem(ZOOM_KEY_ADMIN) || '100', 10);
+
+                function aplicarZoomAdmin(z) {
+                    if (z < 70) z = 70;
+                    if (z > 140) z = 140;
+                    zoomActualAdmin = z;
+                    localStorage.setItem(ZOOM_KEY_ADMIN, z);
+                    var phone = document.querySelector('.phone');
+                    if (phone) phone.style.zoom = (z / 100).toString();
+                    var lbl = document.getElementById('zoomLabelAdmin');
+                    if (lbl) lbl.textContent = z + '%';
+                }
+                function cambiarZoomAdmin(delta) { aplicarZoomAdmin(zoomActualAdmin + delta); }
+                function resetZoomAdmin() { aplicarZoomAdmin(100); }
+                aplicarZoomAdmin(zoomActualAdmin);
+
+                // ═══════════ Modo oscuro Admin ═══════════
+                var MODO_KEY_ADMIN = 'cnfl_dark_admin';
+                var modoOscuroAdmin = localStorage.getItem(MODO_KEY_ADMIN) === '1';
+
+                function aplicarModoAdmin() {
+                    var lbl = document.getElementById('modoOscuroEstadoAdmin');
+                    if (lbl) lbl.textContent = modoOscuroAdmin ? 'ON' : 'OFF';
+                    if (modoOscuroAdmin) {
+                        document.documentElement.style.filter = 'invert(0.92) hue-rotate(180deg)';
+                        var imgs = document.querySelectorAll('img');
+                        for (var i = 0; i < imgs.length; i++) imgs[i].style.filter = 'invert(1) hue-rotate(180deg)';
+                    } else {
+                        document.documentElement.style.filter = '';
+                        var imgs2 = document.querySelectorAll('img');
+                        for (var j = 0; j < imgs2.length; j++) imgs2[j].style.filter = '';
+                    }
+                }
+                function toggleModoOscuroAdmin() {
+                    modoOscuroAdmin = !modoOscuroAdmin;
+                    localStorage.setItem(MODO_KEY_ADMIN, modoOscuroAdmin ? '1' : '0');
+                    aplicarModoAdmin();
+                }
+                aplicarModoAdmin();
+
+                // ═══════════ Notificaciones push Admin ═══════════
+                function activarNotificacionesAdmin() {
+                    if (typeof Notification === 'undefined') {
+                        alert('Tu navegador no soporta notificaciones.');
+                        return;
+                    }
+
+                    if (Notification.permission === 'granted') {
+                        alert('Las notificaciones ya están activadas.');
+                        return;
+                    }
+
+                    Notification.requestPermission().then(function (permiso) {
+                        var lbl = document.getElementById('pushEstadoAdmin');
+                        var icono = document.getElementById('pushEstadoIconoAdmin');
+                        if (permiso === 'granted') {
+                            if (lbl) lbl.textContent = 'Notificaciones activadas';
+                            if (icono) { icono.textContent = 'ON'; icono.style.color = 'var(--green)'; }
+                            try {
+                                new Notification('CNFL Admin · Notificaciones activas', {
+                                    body: 'Recibirás alertas de averías y trámites.',
+                                    icon: '/Content/img/logo-cnfl.png'
+                                });
+                            } catch (e) { }
+                        } else {
+                            if (lbl) lbl.textContent = 'Activar alertas';
+                            if (icono) { icono.textContent = 'OFF'; icono.style.color = 'var(--muted)'; }
+                            alert('No se activaron las notificaciones.');
+                        }
+                    });
+                }
+
+                (function () {
+                    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                        var lbl = document.getElementById('pushEstadoAdmin');
+                        var icono = document.getElementById('pushEstadoIconoAdmin');
+                        if (lbl) lbl.textContent = 'Notificaciones activadas';
+                        if (icono) { icono.textContent = 'ON'; icono.style.color = 'var(--green)'; }
+                    }
+                })();
+
+                // ═══════════ Confirmar cerrar sesión ═══════════
+                function confirmarCerrarSesion() {
+                    var modal = document.getElementById('modalConfirmLogout');
+                    if (modal) modal.style.display = 'flex';
+                }
+                function cerrarModalLogout() {
+                    var modal = document.getElementById('modalConfirmLogout');
+                    if (modal) modal.style.display = 'none';
+                }
+                var modalLogout = document.getElementById('modalConfirmLogout');
+                if (modalLogout) {
+                    modalLogout.addEventListener('click', function (e) { if (e.target === this) cerrarModalLogout(); });
+                }
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,325 @@
+﻿@{
+    ViewBag.Title = "Trámites";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    var tramitesActivos = ViewBag.TramitesActivos as List<CNFL_Clientes_Prototipo.Models.Tramite>
+                          ?? new List<CNFL_Clientes_Prototipo.Models.Tramite>();
+    var catalogo = ViewBag.Catalogo as string[] ?? new string[0];
+
+    // Íconos por tipo de trámite (según palabra clave)
+    string IconoPorNombre(string nombre)
+    {
+        var n = (nombre ?? "").ToLower();
+        if (n.Contains("voltaje") || n.Contains("red")) return "⚡";
+        if (n.Contains("nombre") || n.Contains("traspaso")) return "📋";
+        if (n.Contains("desconexión") || n.Contains("reconexión")) return "🔌";
+        if (n.Contains("tarifa")) return "💰";
+        if (n.Contains("daño")) return "⚠️";
+        if (n.Contains("transformador")) return "⚙️";
+        if (n.Contains("medidor") || n.Contains("medición")) return "📊";
+        if (n.Contains("alumbrado")) return "💡";
+        if (n.Contains("carga") || n.Contains("eventos")) return "🎉";
+        if (n.Contains("diseño")) return "📐";
+        if (n.Contains("inmueble")) return "🏠";
+        return "📄";
+    }
+
+    // Estado → clase CSS
+    string ClaseEstado(string estado)
+    {
+        var e = (estado ?? "").ToLower();
+        if (e.Contains("resuelto") || e.Contains("finalizado")) return "st-normal";
+        if (e.Contains("proceso")) return "st-prev";
+        return "st-inc";
+    }
+}
+
+<!-- ═══════════ APPBAR ═══════════ -->
+<div class="appbar">
+    <div class="brand">
+        <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
+             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
+    </div>
+    <div class="actions">
+        <a href="@Url.Action("Alertas", "Clientes")" class="icon-btn">
+            <span class="badge">3</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+        </a>
+    </div>
+</div>
+
+<h1 class="h-name" style="font-size:26px;">Trámites</h1>
+<p class="h-greet" style="margin-top:6px; line-height:1.5;">
+    Solicitá servicios y consultá el estado de tus gestiones.
+</p>
+
+<!-- ═══════════ MIS TRÁMITES ACTIVOS ═══════════ -->
+@if (tramitesActivos.Any())
+{
+    <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>📌 Mis trámites activos</span>
+        <span class="pill st-prev" style="font-size:10px;">
+            <span class="dot"></span>@tramitesActivos.Count
+        </span>
+    </div>
+
+    <div class="rows">
+        @foreach (var t in tramitesActivos)
+        {
+            <div class="row-item" style="cursor:default; align-items:flex-start;">
+                <div class="ic" style="background:#eef0ff;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6M9 13h6M9 17h4" />
+                    </svg>
+                </div>
+                <div class="tx" style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                        <div class="t">@t.Tipo</div>
+                        <span class="pill @ClaseEstado(t.Estado)" style="font-size:10px;">
+                            <span class="dot"></span>@t.Estado
+                        </span>
+                    </div>
+                    <div class="s">@t.NumeroReferencia · @t.FechaSolicitud.ToString("dd/MM/yyyy")</div>
+
+                    <!-- Tracker de estados -->
+                    <div class="track" style="margin-top:14px;">
+                        <div class="step done">
+                            <div class="cir">✓</div>
+                            <div class="lb">Iniciado</div>
+                        </div>
+                        <div class="step @(t.Estado == "En Proceso" ? "now" : (t.Estado == "Resuelto" ? "done" : ""))">
+                            <div class="cir">2</div>
+                            <div class="lb">En Proceso</div>
+                        </div>
+                        <div class="step @(t.Estado == "Resuelto" ? "done" : "")">
+                            <div class="cir">3</div>
+                            <div class="lb">Resuelto</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="card" style="text-align:center; padding:26px 18px; margin-top:14px;">
+        <div style="font-size:42px; line-height:1;">📋</div>
+        <p style="font-weight:800; font-size:14px; margin-top:10px; color:var(--ink);">Sin trámites activos</p>
+        <p style="font-size:12px; color:var(--muted); margin-top:6px; line-height:1.5;">
+            Elegí uno del catálogo de abajo para iniciar.
+        </p>
+    </div>
+}
+
+<!-- ═══════════ CATÁLOGO ═══════════ -->
+<div class="eyebrow">📚 Catálogo de trámites</div>
+
+<p style="font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:14px;">
+    Tocá cualquier trámite para completar el formulario. Un agente lo procesará y te notificaremos cuando cambie de estado.
+</p>
+
+<div class="rows">
+    @foreach (var nombre in catalogo)
+    {
+        <div class="row-item" onclick="abrirFormulario('@Html.Raw(nombre.Replace("'", "\\'"))');" style="cursor:pointer;">
+            <div class="ic" style="background:#eef0ff; font-size:18px; display:grid; place-items:center;">
+                @IconoPorNombre(nombre)
+            </div>
+            <div class="tx">
+                <div class="t">@nombre</div>
+                <div class="s">Tocá para solicitar</div>
+            </div>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m9 6 6 6-6 6" />
+            </svg>
+        </div>
+    }
+</div>
+
+<!-- ═══════════ MODAL DE FORMULARIO ═══════════ -->
+<div id="modalFormulario"
+     style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.55); z-index:200; align-items:flex-end; justify-content:center; padding:0;">
+
+    <div id="modalContent"
+         style="width:100%; max-width:430px; max-height:88vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:22px 20px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
+
+        <!-- Handle visual -->
+        <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:0 auto 18px;"></div>
+
+        <h3 id="modalTitulo" style="font-size:17px; font-weight:800; margin:0 0 6px; color:var(--ink);">
+            Trámite
+        </h3>
+        <p style="font-size:12.5px; color:var(--muted); margin:0 0 20px; line-height:1.5;">
+            Completá los datos para iniciar tu solicitud.
+        </p>
+
+        <div class="reg-card" style="margin-bottom:14px;">
+            <div class="reg-field">
+                <label>Descripción del trámite *</label>
+                <textarea id="formDescripcion"
+                          placeholder="Describí brevemente tu solicitud..."
+                          required
+                          style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; min-height:90px; resize:vertical; outline:none;"></textarea>
+            </div>
+
+            <div class="reg-field">
+                <label>NISE asociado (opcional)</label>
+                <input type="text" id="formNise" placeholder="Ej: NISE-002" />
+            </div>
+
+            <div class="reg-field">
+                <label>Teléfono de contacto</label>
+                <input type="tel" id="formTelefono" placeholder="Ej: 8888-8888" value="@(Session["Nombre"])" />
+            </div>
+
+            <label class="reg-check" for="chkNotif" style="margin-top:14px;">
+                <input type="checkbox" id="chkNotif" checked />
+                <span class="txt">
+                    <span class="t">Notificarme por push y correo</span>
+                    <span class="s">Te avisamos cuando cambie el estado.</span>
+                </span>
+            </label>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:14px;">
+            <button type="button" onclick="cerrarFormulario();"
+                    class="reg-btn"
+                    style="background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;">
+                Cancelar
+            </button>
+            <button type="button" onclick="enviarFormulario();"
+                    class="reg-btn">
+                Enviar solicitud
+            </button>
+        </div>
+
+        <div id="formEstado" style="display:none; margin-top:14px; padding:12px 14px; background:#e9f7ec; border-radius:12px; font-size:12.5px; font-weight:800; color:#2f8f3e; text-align:center;">
+            ✓ Solicitud enviada correctamente
+        </div>
+    </div>
+</div>
+
+<script>
+        // ═══════════ Estado ═══════════
+        var tramiteActual = '';
+
+        // ═══════════ Abrir / Cerrar modal ═══════════
+        function abrirFormulario(nombre) {
+            tramiteActual = nombre;
+            document.getElementById('modalTitulo').textContent = nombre;
+            document.getElementById('formDescripcion').value = '';
+            document.getElementById('formNise').value = '';
+            document.getElementById('formEstado').style.display = 'none';
+
+            var modal = document.getElementById('modalFormulario');
+            modal.style.display = 'flex';
+
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarFormulario() {
+            document.getElementById('modalFormulario').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Cerrar al tocar fuera del contenido
+        document.getElementById('modalFormulario').addEventListener('click', function (e) {
+            if (e.target === this) cerrarFormulario();
+        });
+
+        // ═══════════ Enviar formulario ═══════════
+        function enviarFormulario() {
+            var descripcion = document.getElementById('formDescripcion').value.trim();
+            if (!descripcion) {
+                alert('Escribí una descripción del trámite.');
+                return;
+            }
+
+            var nise = document.getElementById('formNise').value.trim();
+            var telefono = document.getElementById('formTelefono').value.trim();
+            var notificar = document.getElementById('chkNotif').checked;
+
+            // Simular envío
+            var token = document.querySelector('input[name="__RequestVerificationToken"]');
+            var tokenValue = token ? token.value : '';
+
+            var formData = new FormData();
+            formData.append('tipo', tramiteActual);
+            formData.append('descripcion', descripcion);
+            formData.append('nise', nise);
+            formData.append('telefono', telefono);
+            formData.append('__RequestVerificationToken', tokenValue);
+
+            fetch('/Clientes/CrearTramite', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                document.getElementById('formEstado').style.display = 'block';
+                document.getElementById('formEstado').textContent = data.success
+                    ? '✓ Solicitud #' + (data.id || '') + ' enviada correctamente'
+                    : '✗ ' + (data.message || 'Error al enviar');
+
+                // Notificación push si está activada
+                if (notificar) {
+                    mostrarNotificacion(
+                        'CNFL · Trámite iniciado',
+                        tramiteActual + ' · en proceso',
+                        notificar
+                    );
+                }
+
+                setTimeout(function () {
+                    cerrarFormulario();
+                    // Recargar la página para ver el trámite en la lista
+                    if (data.success) window.location.reload();
+                }, 2200);
+            })
+            .catch(function () {
+                document.getElementById('formEstado').style.display = 'block';
+                document.getElementById('formEstado').style.background = '#fdeaea';
+                document.getElementById('formEstado').style.color = '#c93a3f';
+                document.getElementById('formEstado').textContent = '✗ Error de conexión';
+            });
+        }
+
+        // ═══════════ Notificación push + sonido ═══════════
+        function mostrarNotificacion(titulo, cuerpo, enviarCorreo) {
+            // Beep
+            try {
+                var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.3);
+            } catch (e) { }
+
+            // Notif nativa
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                try {
+                    var notif = new Notification(titulo, {
+                        body: cuerpo,
+                        icon: '/Content/img/logo-cnfl.png',
+                        tag: 'cnfl-tramite-' + Date.now()
+                    });
+                    notif.onclick = function () { window.focus(); notif.close(); };
+                } catch (e) { }
+            } else if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+</script>

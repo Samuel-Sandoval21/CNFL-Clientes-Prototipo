@@ -1,1901 +1,248 @@
 ﻿@{
     ViewBag.Title = "Inicio";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 
     var facturaActual = ViewBag.FacturaActual as CNFL_Clientes_Prototipo.Models.Factura;
+    var tramites = (ViewBag.TramitesActivos as List<CNFL_Clientes_Prototipo.Models.TramiteResumenDto>) ?? new List<CNFL_Clientes_Prototipo.Models.TramiteResumenDto>();
 
-    var averias = (ViewBag.AveriasActivas as List<CNFL_Clientes_Prototipo.Models.AveriaResumenDto>)
-                  ?? new List<CNFL_Clientes_Prototipo.Models.AveriaResumenDto>();
-    var tramites = (ViewBag.TramitesActivos as List<CNFL_Clientes_Prototipo.Models.TramiteResumenDto>)
-                   ?? new List<CNFL_Clientes_Prototipo.Models.TramiteResumenDto>();
-    var notifs = (ViewBag.Notificaciones as List<CNFL_Clientes_Prototipo.Models.NotificacionResumenDto>)
-                 ?? new List<CNFL_Clientes_Prototipo.Models.NotificacionResumenDto>();
-
-    var metricas = ViewBag.Metricas as CNFL_Clientes_Prototipo.Models.MetricasUsoDto
-                   ?? new CNFL_Clientes_Prototipo.Models.MetricasUsoDto();
-    var descargas = ViewBag.Descargas as List<CNFL_Clientes_Prototipo.Models.DescargaUsuario>
-                    ?? new List<CNFL_Clientes_Prototipo.Models.DescargaUsuario>();
-
-    var nombre = ViewBag.Nombre as string ?? "Usuario";
-    var inicial = string.IsNullOrEmpty(nombre) ? "U" : nombre.Substring(0, 1).ToUpper();
+    var nombre = Session["Nombre"] as string ?? "Cliente";
+    var primerNombre = nombre.Split(' ').FirstOrDefault() ?? nombre;
 
     var hora = DateTime.Now.Hour;
-    var saludo = hora < 12 ? "Buenos días" : (hora < 19 ? "Buenas tardes" : "Buenas noches");
-    var saludoKey = hora < 12 ? "db.greet.morning" : (hora < 19 ? "db.greet.afternoon" : "db.greet.evening");
-    var fechaLarga = DateTime.Now.ToString("dddd d 'de' MMMM", new System.Globalization.CultureInfo("es-CR"));
-
-    int averiasCount = averias.Count;
-    int tramitesCount = tramites.Count;
-
-    var montoPendiente = ((decimal)ViewBag.MontoPendiente);
-    var totalNISEs = (int)ViewBag.TotalNISEs;
-    var totalFacturasPendientes = (int)ViewBag.TotalFacturasPendientes;
-    var facturaActualMonto = facturaActual != null ? facturaActual.Monto.ToString("N0") : "0";
-    var facturaActualVence = facturaActual != null ? facturaActual.FechaVencimiento.ToString("dd/MM/yyyy") : "-";
-
-    var distribucionJson = ViewBag.DistribucionJson as string ?? "[]";
-    var consumoJson = ViewBag.ConsumoJson as string ?? "[]";
-    var actividadJson = ViewBag.ActividadJson as string ?? "[]";
-    var seccionesJson = ViewBag.SeccionesJson as string ?? "[]";
-
-    var descargasRecientes = descargas.Take(5).ToList();
-    var descargasFacturas = descargas.Where(d => d.Seccion == "Factura").Take(5).ToList();
+    var saludo = hora < 12 ? "Buenos días," : (hora < 19 ? "Buenas tardes," : "Buenas noches,");
 }
 
-@section Styles {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <style>
-        /* ═══════════════ HERO ═══════════════ */
-        .db-hero {
-            background: linear-gradient(135deg, #0d1b6b 0%, var(--blue) 55%, #3b6ce0 100%);
-            border-radius: 24px;
-            padding: 24px 20px 20px;
-            color: #fff;
-            margin-top: 8px;
-            box-shadow: 0 20px 40px -18px rgba(16,20,60,.55);
-            position: relative;
-            overflow: hidden;
-        }
-
-            .db-hero::before {
-                content: "";
-                position: absolute;
-                left: -80px;
-                bottom: -80px;
-                width: 240px;
-                height: 240px;
-                background: radial-gradient(circle, rgba(255,255,255,.14), transparent 70%);
-            }
-
-            .db-hero::after {
-                content: "";
-                position: absolute;
-                right: -60px;
-                top: -60px;
-                width: 200px;
-                height: 200px;
-                background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
-            }
-
-        .db-hero-top {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .db-avatar {
-            width: 54px;
-            height: 54px;
-            border-radius: 18px;
-            background: rgba(255,255,255,.22);
-            border: 1.5px solid rgba(255,255,255,.35);
-            display: grid;
-            place-items: center;
-            font-size: 24px;
-            font-weight: 800;
-            backdrop-filter: blur(6px);
-            flex-shrink: 0;
-            box-shadow: 0 8px 20px -8px rgba(0,0,0,.4);
-        }
-
-        .db-hero-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-            .db-hero-info .greet {
-                font-size: 12.5px;
-                opacity: .9;
-                font-weight: 600;
-            }
-
-            .db-hero-info h1 {
-                margin: 3px 0 0;
-                font-size: 21px;
-                font-weight: 800;
-                letter-spacing: -.02em;
-                line-height: 1.15;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .db-hero-info .fecha {
-                font-size: 11.5px;
-                opacity: .8;
-                margin-top: 3px;
-                text-transform: capitalize;
-            }
-
-        .db-export {
-            position: absolute;
-            top: 18px;
-            right: 18px;
-            background: rgba(255,255,255,.22);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,.38);
-            color: #fff;
-            font-family: inherit;
-            font-weight: 800;
-            font-size: 11px;
-            padding: 9px 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            z-index: 5;
-            transition: .15s;
-        }
-
-            .db-export:hover {
-                background: rgba(255,255,255,.32);
-                transform: translateY(-1px);
-            }
-
-        .db-hero-sub {
-            font-size: 12.5px;
-            opacity: .9;
-            margin-top: 16px;
-            line-height: 1.5;
-            position: relative;
-            z-index: 2;
-        }
-
-        .db-kpis {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 18px;
-            padding-top: 18px;
-            border-top: 1px solid rgba(255,255,255,.18);
-            position: relative;
-            z-index: 2;
-        }
-
-        .db-kpi {
-            text-align: center;
-        }
-
-            .db-kpi .v {
-                font-size: 24px;
-                font-weight: 800;
-                letter-spacing: -.02em;
-            }
-
-            .db-kpi .l {
-                font-size: 9.5px;
-                opacity: .8;
-                font-weight: 800;
-                letter-spacing: .06em;
-                margin-top: 3px;
-            }
-
-        /* ═══════════════ TÍTULOS ═══════════════ */
-        .db-title {
-            font-size: 14.5px;
-            font-weight: 800;
-            color: var(--ink);
-            margin: 24px 0 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            letter-spacing: -.01em;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-            .db-title .lnk {
-                font-size: 11.5px;
-                font-weight: 800;
-                color: var(--blue);
-                text-decoration: none;
-            }
-
-                .db-title .lnk:hover {
-                    text-decoration: underline;
-                }
-
-            .db-title .actions {
-                display: flex;
-                gap: 6px;
-            }
-
-            .db-title .btn-exp {
-                background: #f4f6fb;
-                color: var(--ink);
-                border: 0;
-                font-family: inherit;
-                font-weight: 800;
-                font-size: 10.5px;
-                padding: 6px 11px;
-                border-radius: 999px;
-                cursor: pointer;
-                transition: .15s;
-            }
-
-                .db-title .btn-exp:hover {
-                    background: #e5e9f5;
-                }
-
-                .db-title .btn-exp.pdf {
-                    color: #c93a3f;
-                    background: #fdeaea;
-                }
-
-                    .db-title .btn-exp.pdf:hover {
-                        background: #fcd4d4;
-                    }
-
-                .db-title .btn-exp.excel {
-                    color: #2f8f3e;
-                    background: #e9f7ec;
-                }
-
-                    .db-title .btn-exp.excel:hover {
-                        background: #d2f0d9;
-                    }
-
-        /* ═══════════════ FACTURA ═══════════════ */
-        .db-bill {
-            background: linear-gradient(135deg, var(--navy), var(--blue));
-            border-radius: 22px;
-            padding: 22px;
-            color: #fff;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 14px 30px -14px rgba(0,20,130,.65);
-        }
-
-            .db-bill::after {
-                content: "";
-                position: absolute;
-                right: -50px;
-                top: -50px;
-                width: 180px;
-                height: 180px;
-                background: radial-gradient(circle, rgba(255,255,255,.14), transparent 70%);
-            }
-
-            .db-bill .lbl {
-                font-size: 10.5px;
-                font-weight: 800;
-                opacity: .85;
-                letter-spacing: .08em;
-            }
-
-            .db-bill .amt {
-                font-size: 32px;
-                font-weight: 800;
-                margin: 8px 0 4px;
-                letter-spacing: -.02em;
-            }
-
-            .db-bill .due {
-                font-size: 12px;
-                opacity: .88;
-            }
-
-            .db-bill .nise {
-                font-size: 11.5px;
-                opacity: .78;
-                margin-top: 3px;
-            }
-
-            .db-bill .row {
-                display: flex;
-                gap: 8px;
-                margin-top: 18px;
-                position: relative;
-                z-index: 2;
-            }
-
-            .db-bill .btn-pay {
-                flex: 1;
-                background: var(--orange);
-                color: #fff;
-                border: 0;
-                font-family: inherit;
-                font-weight: 800;
-                font-size: 13px;
-                padding: 13px;
-                border-radius: 12px;
-                cursor: pointer;
-                transition: transform .12s;
-                box-shadow: 0 8px 18px -8px rgba(255,105,45,.8);
-            }
-
-                .db-bill .btn-pay:active {
-                    transform: scale(.97);
-                }
-
-            .db-bill .btn-detail {
-                flex: 1;
-                background: rgba(255,255,255,.16);
-                color: #fff;
-                border: 1px solid rgba(255,255,255,.28);
-                font-family: inherit;
-                font-weight: 800;
-                font-size: 13px;
-                padding: 13px;
-                border-radius: 12px;
-                cursor: pointer;
-                text-decoration: none;
-                text-align: center;
-                transition: .15s;
-            }
-
-                .db-bill .btn-detail:hover {
-                    background: rgba(255,255,255,.26);
-                    color: #fff;
-                    text-decoration: none;
-                }
-
-            .db-bill .btn-pdf {
-                background: rgba(255,255,255,.16);
-                border: 1px solid rgba(255,255,255,.28);
-                color: #fff;
-                width: 46px;
-                border-radius: 12px;
-                cursor: pointer;
-                display: grid;
-                place-items: center;
-                font-size: 16px;
-                transition: .15s;
-            }
-
-                .db-bill .btn-pdf:hover {
-                    background: rgba(255,255,255,.26);
-                }
-
-        /* ═══════════════ TARJETAS DE MÉTRICAS ═══════════════ */
-        .db-metrics {
-            background: linear-gradient(135deg, #eef2ff 0%, #f7f5ff 100%);
-            border-radius: 22px;
-            padding: 18px;
-            margin-top: 8px;
-            border: 1px solid #dde4ff;
-            position: relative;
-            overflow: hidden;
-        }
-
-            .db-metrics::after {
-                content: "⏱️";
-                position: absolute;
-                right: 16px;
-                top: 12px;
-                font-size: 46px;
-                opacity: .08;
-            }
-
-            .db-metrics h3 {
-                margin: 0 0 14px;
-                font-size: 13.5px;
-                font-weight: 800;
-                color: #3a3fb8;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                position: relative;
-                z-index: 2;
-            }
-
-                .db-metrics h3 .live {
-                    font-size: 9px;
-                    background: #d43a3a;
-                    color: #fff;
-                    padding: 2px 7px;
-                    border-radius: 999px;
-                    font-weight: 800;
-                    letter-spacing: .06em;
-                    animation: pulse 1.6s infinite;
-                }
-
-        @@keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: .5;
-            }
-        }
-
-        .db-metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .db-metric {
-            background: #fff;
-            border-radius: 16px;
-            padding: 14px;
-            box-shadow: 0 3px 12px rgba(58,63,184,.08);
-            border: 1px solid rgba(58,63,184,.08);
-            position: relative;
-            overflow: hidden;
-        }
-
-            .db-metric .ico {
-                position: absolute;
-                right: 12px;
-                top: 12px;
-                font-size: 20px;
-                opacity: .65;
-            }
-
-            .db-metric .lbl {
-                font-size: 10px;
-                font-weight: 800;
-                color: #8a8fc4;
-                letter-spacing: .06em;
-            }
-
-            .db-metric .val {
-                font-size: 22px;
-                font-weight: 800;
-                color: #3a3fb8;
-                margin-top: 6px;
-                letter-spacing: -.02em;
-            }
-
-                .db-metric .val small {
-                    font-size: 12px;
-                    opacity: .7;
-                    font-weight: 700;
-                }
-
-            .db-metric .sub {
-                font-size: 11px;
-                color: #8a8fc4;
-                margin-top: 4px;
-                font-weight: 600;
-            }
-
-            .db-metric .bar {
-                height: 5px;
-                background: #eef2ff;
-                border-radius: 999px;
-                margin-top: 8px;
-                overflow: hidden;
-            }
-
-                .db-metric .bar > i {
-                    display: block;
-                    height: 100%;
-                    background: linear-gradient(90deg, #3a3fb8, #6b7dff);
-                    border-radius: 999px;
-                    transition: width .6s ease;
-                }
-
-        /* ═══════════════ DESCARGAS ═══════════════ */
-        .db-downloads {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            padding: 6px 16px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .db-download-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--line);
-        }
-
-            .db-download-item:last-child {
-                border-bottom: 0;
-            }
-
-            .db-download-item .ico {
-                width: 42px;
-                height: 42px;
-                border-radius: 12px;
-                display: grid;
-                place-items: center;
-                font-size: 19px;
-                flex-shrink: 0;
-            }
-
-                .db-download-item .ico.pdf {
-                    background: #fdeaea;
-                    color: #c93a3f;
-                }
-
-                .db-download-item .ico.excel {
-                    background: #e9f7ec;
-                    color: #2f8f3e;
-                }
-
-                .db-download-item .ico.other {
-                    background: #eef2ff;
-                    color: #3a3fb8;
-                }
-
-            .db-download-item .body {
-                flex: 1;
-                min-width: 0;
-            }
-
-            .db-download-item .t {
-                font-size: 12.5px;
-                font-weight: 800;
-                color: var(--ink);
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .db-download-item .s {
-                font-size: 11px;
-                color: var(--muted);
-                margin-top: 3px;
-            }
-
-            .db-download-item .action {
-                background: #f4f6fb;
-                color: var(--blue);
-                border: 0;
-                font-family: inherit;
-                font-weight: 800;
-                font-size: 10.5px;
-                padding: 7px 12px;
-                border-radius: 10px;
-                cursor: pointer;
-                transition: .15s;
-                white-space: nowrap;
-            }
-
-                .db-download-item .action:hover {
-                    background: #e5e9f5;
-                }
-
-        /* ═══════════════ GRÁFICOS ═══════════════ */
-        .db-chart-card {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            padding: 16px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 10px;
-        }
-
-        .db-chart-wrap {
-            position: relative;
-            height: 200px;
-        }
-
-            .db-chart-wrap.doughnut {
-                height: 200px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-                .db-chart-wrap.doughnut canvas {
-                    max-height: 200px;
-                }
-
-        .db-chart-tabs {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-
-        .db-chart-tab {
-            background: #f4f6fb;
-            color: var(--muted);
-            border: 0;
-            font-family: inherit;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 6px 12px;
-            border-radius: 999px;
-            cursor: pointer;
-            transition: .15s;
-        }
-
-            .db-chart-tab.active {
-                background: var(--blue);
-                color: #fff;
-            }
-
-        .db-doughnut-legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-            justify-content: center;
-        }
-
-            .db-doughnut-legend .lg {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                font-size: 10.5px;
-                font-weight: 700;
-                color: var(--ink);
-                padding: 4px 10px;
-                border-radius: 999px;
-                background: #f7f8fc;
-            }
-
-                .db-doughnut-legend .lg .dot {
-                    width: 10px;
-                    height: 10px;
-                    border-radius: 3px;
-                }
-
-        /* ═══════════════ KPIs MINI ═══════════════ */
-        .db-kpi-mini {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-            .db-kpi-mini .k {
-                background: #fff;
-                border: 1px solid var(--line);
-                border-radius: 16px;
-                padding: 16px 10px;
-                box-shadow: var(--shadow-sm);
-                text-align: center;
-                transition: transform .12s;
-            }
-
-                .db-kpi-mini .k:hover {
-                    transform: translateY(-2px);
-                }
-
-                .db-kpi-mini .k .v {
-                    font-size: 22px;
-                    font-weight: 800;
-                    color: var(--ink);
-                    letter-spacing: -.02em;
-                }
-
-                    .db-kpi-mini .k .v.ok {
-                        color: #2f8f3e;
-                    }
-
-                    .db-kpi-mini .k .v.warn {
-                        color: #b9791a;
-                    }
-
-                    .db-kpi-mini .k .v.danger {
-                        color: #d33;
-                    }
-
-                .db-kpi-mini .k .l {
-                    font-size: 9.5px;
-                    font-weight: 800;
-                    color: var(--muted);
-                    letter-spacing: .06em;
-                    margin-top: 5px;
-                }
-
-        /* ═══════════════ FILAS ═══════════════ */
-        .db-rows {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .db-row {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 13px 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: inherit;
-            transition: transform .12s, box-shadow .12s;
-        }
-
-            .db-row:hover {
-                transform: translateX(3px);
-                box-shadow: 0 6px 18px -8px rgba(0,0,0,.1);
-                text-decoration: none;
-                color: inherit;
-            }
-
-            .db-row .ico {
-                width: 38px;
-                height: 38px;
-                border-radius: 11px;
-                display: grid;
-                place-items: center;
-                font-size: 18px;
-                flex-shrink: 0;
-            }
-
-            .db-row .body {
-                flex: 1;
-                min-width: 0;
-            }
-
-            .db-row .t {
-                font-size: 12.5px;
-                font-weight: 800;
-                color: var(--ink);
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .db-row .s {
-                font-size: 11px;
-                color: var(--muted);
-                margin-top: 3px;
-            }
-
-            .db-row .badge {
-                font-size: 10px;
-                font-weight: 800;
-                padding: 4px 9px;
-                border-radius: 999px;
-                white-space: nowrap;
-            }
-
-                .db-row .badge.pend {
-                    background: #fef3e0;
-                    color: #b9791a;
-                }
-
-                .db-row .badge.ok {
-                    background: #e9f7ec;
-                    color: #2f8f3e;
-                }
-
-                .db-row .badge.ing {
-                    background: #eef0ff;
-                    color: var(--blue);
-                }
-
-        /* ═══════════════ NOTIFICACIONES ═══════════════ */
-        .db-notif {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 13px 15px;
-            display: flex;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-            .db-notif .ic {
-                width: 34px;
-                height: 34px;
-                border-radius: 11px;
-                display: grid;
-                place-items: center;
-                font-size: 16px;
-                flex-shrink: 0;
-                background: linear-gradient(135deg, #eef0ff, #e3e7ff);
-            }
-
-            .db-notif .body {
-                flex: 1;
-            }
-
-            .db-notif .t {
-                font-size: 12.5px;
-                font-weight: 800;
-                color: var(--ink);
-            }
-
-            .db-notif .s {
-                font-size: 11px;
-                color: var(--muted);
-                margin-top: 3px;
-                line-height: 1.4;
-            }
-
-        /* ═══════════════ EMPTY ═══════════════ */
-        .db-empty {
-            background: #fff;
-            border: 1px dashed var(--line);
-            border-radius: 18px;
-            padding: 26px 20px;
-            text-align: center;
-        }
-
-            .db-empty .e {
-                font-size: 34px;
-                margin-bottom: 8px;
-            }
-
-            .db-empty .t {
-                font-size: 13px;
-                font-weight: 800;
-                color: var(--ink);
-            }
-
-            .db-empty .s {
-                font-size: 11.5px;
-                color: var(--muted);
-                margin-top: 4px;
-            }
-
-        /* ═══════════════ TOAST ═══════════════ */
-        .db-toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #0E1116;
-            color: #fff;
-            padding: 12px 18px;
-            border-radius: 14px;
-            font-size: 12.5px;
-            font-weight: 700;
-            opacity: 0;
-            pointer-events: none;
-            transition: .3s;
-            z-index: 9999;
-            white-space: nowrap;
-            box-shadow: 0 10px 24px rgba(0,0,0,.3);
-        }
-
-            .db-toast.show {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-    </style>
-}
-
-<!-- ═══════════════ HERO ═══════════════ -->
-<div class="db-hero">
-    <button type="button" class="db-export" onclick="exportarTodoPDF()">📄 Exportar PDF</button>
-    <div class="db-hero-top">
-        <div class="db-avatar">@inicial</div>
-        <div class="db-hero-info">
-            <div class="greet"><span data-i18n="@saludoKey">@saludo</span>,</div>
-            <h1>@nombre</h1>
-            <div class="fecha">📅 @fechaLarga</div>
-        </div>
+<!-- ═══════════ APPBAR ═══════════ -->
+<div class="appbar">
+    <div class="brand">
+        <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
+             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
     </div>
-    <div class="db-hero-sub" data-i18n="db.subtitle">
-        Bienvenido a tu centro de control. Gestioná tu servicio eléctrico desde tu celular.
-    </div>
-
-    <div class="db-kpis">
-        <div class="db-kpi">
-            <div class="v">@ViewBag.TotalNISEs</div>
-            <div class="l" data-i18n="db.kpi.nises">NISEs</div>
-        </div>
-        <div class="db-kpi">
-            <div class="v">@ViewBag.TotalFacturasPendientes</div>
-            <div class="l" data-i18n="db.kpi.bills">FACTURAS</div>
-        </div>
-        <div class="db-kpi">
-            <div class="v">@(averiasCount + tramitesCount)</div>
-            <div class="l" data-i18n="db.kpi.inProgress">EN PROCESO</div>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════════ MI ACTIVIDAD EN LA APP ═══════════════ -->
-<div class="db-title">
-    <span>⏱️ Mi actividad en la app · Últimos 7 días</span>
     <div class="actions">
-        <button type="button" class="btn-exp excel" onclick="exportarActividadExcel()">📊 Excel</button>
-    </div>
-</div>
-<div class="db-metrics">
-    <h3>Resumen de uso <span class="live">EN VIVO</span></h3>
-    <div class="db-metrics-grid">
-        <div class="db-metric">
-            <div class="ico">⏱️</div>
-            <div class="lbl">TIEMPO TOTAL</div>
-            <div class="val">@metricas.TiempoTotalMinutos <small>min</small></div>
-            <div class="sub">@metricas.PromedioMinutosPorDia min/día promedio</div>
-            <div class="bar"><i style="width:@(Math.Min(100, metricas.PromedioMinutosPorDia * 10))%"></i></div>
-        </div>
-        <div class="db-metric">
-            <div class="ico">📱</div>
-            <div class="lbl">SESIONES</div>
-            <div class="val">@metricas.TotalSesiones</div>
-            <div class="sub">Interacciones registradas</div>
-            <div class="bar"><i style="width:@(Math.Min(100, metricas.TotalSesiones * 5))%"></i></div>
-        </div>
-        <div class="db-metric">
-            <div class="ico">⭐</div>
-            <div class="lbl">SECCIÓN FAVORITA</div>
-            <div class="val" style="font-size:16px;">@metricas.SeccionMasVisitada</div>
-            <div class="sub">Donde más tiempo pasás</div>
-        </div>
-        <div class="db-metric">
-            <div class="ico">📥</div>
-            <div class="lbl">DESCARGAS</div>
-            <div class="val">@metricas.TotalDescargas</div>
-            <div class="sub">@metricas.DescargasPDF PDF · @metricas.DescargasExcel Excel</div>
-            <div class="bar"><i style="width:@(Math.Min(100, metricas.TotalDescargas * 10))%"></i></div>
-        </div>
+        <button type="button" class="icon-btn" onclick="abrirConfig();" title="Configuración">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+        </button>
+
+        <a href="@Url.Action("Alertas", "Clientes")" class="icon-btn">
+            <span class="badge">3</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+        </a>
+
+        <a href="@Url.Action("Cuenta", "Clientes")" class="icon-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+            </svg>
+        </a>
     </div>
 </div>
 
-<!-- ═══════════════ FACTURA ACTUAL ═══════════════ -->
+<!-- ═══════════ SALUDO ═══════════ -->
+<p class="h-greet">@saludo</p>
+<h1 class="h-name">@primerNombre</h1>
+
+<!-- ═══════════ HERO CARD ═══════════ -->
+<div class="hero-card" style="margin-top:14px;">
+    <p class="greet">Bienvenido a CNFL</p>
+    <h1>Tu energía,<br>en una sola app.</h1>
+    <p class="sub">Gestioná tus servicios, reportá averías y pagá tus facturas desde un solo lugar.</p>
+</div>
+
+<!-- ═══════════ FACTURAS PENDIENTES ═══════════ -->
+<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+    <span>💰 Facturas pendientes</span>
+    <a href="@Url.Action("MisFacturas", "Clientes")"
+       style="font-size:11px; color:var(--blue); font-weight:800; text-decoration:none;">
+        Ver todas →
+    </a>
+</div>
+
 @if (facturaActual != null)
 {
-    <div class="db-title">
-        <span data-i18n="db.currentBill">Factura actual</span>
-        <a href="@Url.Action("MisFacturas", "Clientes")" class="lnk" data-i18n="db.seeAll">Ver todas →</a>
-    </div>
-    <div class="db-bill">
-        <div class="lbl" data-i18n="db.pendingBill">FACTURA PENDIENTE</div>
-        <div class="amt">₡@facturaActual.Monto.ToString("N0")</div>
-        <div class="due"><span data-i18n="db.dueOn">📅 Vence el</span> @facturaActual.FechaVencimiento.ToString("dd 'de' MMMM", new System.Globalization.CultureInfo("es-CR"))</div>
-        @if (facturaActual.NISE != null)
-        {
-            <div class="nise"><span data-i18n="db.niseLabel">🔌 NISE</span> @facturaActual.NISE.NumeroNise · @facturaActual.NumeroFactura</div>
-        }
+    <div class="bill">
+        <div class="lbl">
+            FACTURA PENDIENTE
+            @if (facturaActual.NISE != null)
+            {
+                <text>· NISE @facturaActual.NISE.NumeroNise</text>
+            }
+        </div>
+        <div class="amt">₡ @facturaActual.Monto.ToString("N0")</div>
+        <div class="due">
+            📅 Vence el @facturaActual.FechaVencimiento.ToString("dd 'de' MMMM", new System.Globalization.CultureInfo("es-CR"))
+            · @facturaActual.NumeroFactura
+        </div>
         <div class="row">
-            <button type="button" class="btn-pay" data-i18n="db.payNow" onclick="pagarFactura(@facturaActual.FacturaId, '@facturaActual.NumeroFactura', @facturaActual.Monto)">💳 Pagar ahora</button>
-            <a href="@Url.Action("MisFacturas", "Clientes")" class="btn-detail" data-i18n="db.viewDetail">Ver detalle</a>
-            <button type="button" class="btn-pdf" onclick="descargarFacturaPDF(@facturaActual.FacturaId)" title="Descargar PDF">📄</button>
+            <a href="@Url.Action("MisFacturas", "Clientes")" class="btn btn-ghost" style="text-decoration:none;">Ver detalle</a>
+            <a href="@Url.Action("MisFacturas", "Clientes")" class="btn btn-cta" style="text-decoration:none;">Pagar ahora</a>
         </div>
     </div>
 }
 else
 {
-    <div class="db-title" data-i18n="db.currentBill">Factura actual</div>
-    <div class="db-empty">
-        <div class="e">🎉</div>
-        <div class="t" data-i18n="db.allCaughtUp">¡Todo al día!</div>
-        <div class="s" data-i18n="db.noPendingBills">No tenés facturas pendientes de pago.</div>
+    <div class="card" style="text-align:center; padding:26px 18px;">
+        <div style="font-size:44px; line-height:1;">🎉</div>
+        <p style="font-weight:800; font-size:15px; margin-top:12px; color:var(--ink);">¡Todo al día!</p>
+        <p style="font-size:12.5px; color:var(--muted); margin-top:6px;">No tenés facturas pendientes de pago.</p>
+        <a href="@Url.Action("MisFacturas", "Clientes")"
+           style="display:inline-block; margin-top:14px; font-size:12.5px; font-weight:800; color:var(--blue); text-decoration:none;">
+            Ver historial de facturas →
+        </a>
     </div>
 }
 
-<!-- ═══════════════ RESUMEN DEL MES ═══════════════ -->
-<div class="db-title">
-    <span data-i18n="db.monthSummary">Resumen del mes</span>
-    <div class="actions">
-        <button type="button" class="btn-exp pdf" onclick="exportarResumenPDF()">📄 PDF</button>
-        <button type="button" class="btn-exp excel" onclick="exportarResumenExcel()">📊 Excel</button>
-    </div>
-</div>
-<div class="db-kpi-mini">
-    <div class="k">
-        <div class="v @(averiasCount > 0 ? "warn" : "ok")">@averiasCount</div>
-        <div class="l" data-i18n="db.faults">AVERÍAS</div>
-    </div>
-    <div class="k">
-        <div class="v @(tramitesCount > 0 ? "warn" : "ok")">@tramitesCount</div>
-        <div class="l" data-i18n="db.procedures">TRÁMITES</div>
-    </div>
-    <div class="k">
-        <div class="v">₡@montoPendiente.ToString("N0")</div>
-        <div class="l" data-i18n="db.pending">PENDIENTE</div>
-    </div>
-</div>
-
-<!-- ═══════════════ GRÁFICO 1: DONA ═══════════════ -->
-<div class="db-title">
-    <span data-i18n="db.consumptionByNise">Consumo por NISE</span>
-    <div class="actions">
-        <button type="button" class="btn-exp excel" onclick="exportarDonaExcel()">📊 Excel</button>
-    </div>
-</div>
-<div class="db-chart-card">
-    <div class="db-chart-wrap doughnut">
-        <canvas id="chartDona"></canvas>
-    </div>
-    <div class="db-doughnut-legend" id="legendDona"></div>
-</div>
-
-<!-- ═══════════════ GRÁFICO 2: LÍNEA ═══════════════ -->
-<div class="db-title">
-    <span data-i18n="db.consumptionEvolution">Evolución de consumo</span>
-    <div class="actions">
-        <button type="button" class="btn-exp excel" onclick="exportarConsumoExcel()">📊 Excel</button>
-    </div>
-</div>
-<div class="db-chart-card">
-    <div class="db-chart-tabs">
-        <button class="db-chart-tab active" data-i18n="db.amountTab" onclick="cambiarConsumo('monto', this)">Monto ₡</button>
-        <button class="db-chart-tab" data-i18n="db.kwhTab" onclick="cambiarConsumo('kwh', this)">Consumo kWh</button>
-    </div>
-    <div class="db-chart-wrap">
-        <canvas id="chartConsumo"></canvas>
-    </div>
-</div>
-
-<!-- ═══════════════ GRÁFICO 3: BARRAS APILADAS ═══════════════ -->
-<div class="db-title">
-    <span data-i18n="db.myActivity">Mi actividad en la app</span>
-    <div class="actions">
-        <button type="button" class="btn-exp excel" onclick="exportarActividadExcel()">📊 Excel</button>
-    </div>
-</div>
-<div class="db-chart-card">
-    <div class="db-chart-wrap">
-        <canvas id="chartActividad"></canvas>
-    </div>
-    <div class="db-doughnut-legend" style="justify-content:flex-start;">
-        <div class="lg"><span class="dot" style="background:#1E23E6;"></span><span data-i18n="db.legend.bills">Facturas</span></div>
-        <div class="lg"><span class="dot" style="background:#FF692D;"></span><span data-i18n="db.legend.reports">Reportes</span></div>
-        <div class="lg"><span class="dot" style="background:#64B95A;"></span><span data-i18n="db.legend.procedures">Trámites</span></div>
-        <div class="lg"><span class="dot" style="background:#64B9CD;"></span><span data-i18n="db.legend.profile">Perfil</span></div>
-    </div>
-</div>
-
-<!-- ═══════════════ GRÁFICO 4: BARRAS HORIZONTALES ═══════════════ -->
-<div class="db-title">
-    <span data-i18n="db.topSections">Secciones más visitadas</span>
-    <div class="actions">
-        <button type="button" class="btn-exp excel" onclick="exportarSeccionesExcel()">📊 Excel</button>
-    </div>
-</div>
-<div class="db-chart-card">
-    <div class="db-chart-wrap" style="height: 220px;">
-        <canvas id="chartSecciones"></canvas>
-    </div>
-</div>
-
-<!-- ═══════════════ MIS DESCARGAS RECIENTES ═══════════════ -->
-<div class="db-title">
-    <span>📥 Mis descargas recientes</span>
-</div>
-@if (descargasRecientes.Any())
-{
-    <div class="db-downloads">
-        @foreach (var d in descargasRecientes)
-        {
-            var icoClass = d.Tipo == "PDF" ? "pdf" : (d.Tipo == "Excel" ? "excel" : "other");
-            var icoGlyph = d.Tipo == "PDF" ? "📄" : (d.Tipo == "Excel" ? "📊" : "📎");
-            <div class="db-download-item">
-                <div class="ico @icoClass">@icoGlyph</div>
-                <div class="body">
-                    <div class="t">@d.Nombre</div>
-                    <div class="s">
-                        @d.Seccion · @d.Fecha.ToString("dd/MM/yyyy HH:mm")
-                        @if (d.TamanoKB.HasValue && d.TamanoKB > 0)
-                        {
-                            <text> · @d.TamanoKB KB</text>
-                        }
-                    </div>
-                </div>
-                <button type="button" class="action" onclick="redescargar('@d.Nombre', '@d.Tipo')">Volver a descargar</button>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <div class="db-downloads">
-        <div class="db-empty" style="border: 0; padding: 24px;">
-            <div class="e">📥</div>
-            <div class="t">Sin descargas todavía</div>
-            <div class="s">Acá van a aparecer tus facturas, reportes y resúmenes exportados.</div>
-        </div>
-    </div>
-}
-
-<!-- ═══════════════ FACTURAS DESCARGADAS ═══════════════ -->
-@if (descargasFacturas.Any())
-{
-    <div class="db-title">
-        <span>📄 Facturas descargadas</span>
-    </div>
-    <div class="db-downloads">
-        @foreach (var d in descargasFacturas)
-        {
-            <div class="db-download-item">
-                <div class="ico pdf">📄</div>
-                <div class="body">
-                    <div class="t">@d.Nombre</div>
-                    <div class="s">@d.Fecha.ToString("dd/MM/yyyy HH:mm")</div>
-                </div>
-                <button type="button" class="action" onclick="redescargar('@d.Nombre', '@d.Tipo')">Descargar</button>
-            </div>
-        }
-    </div>
-}
-
-<!-- ═══════════════ AVERÍAS ACTIVAS ═══════════════ -->
-@if (averias.Any())
-{
-    <div class="db-title">
-        <span data-i18n="db.faultsTracking">Averías en seguimiento</span>
-        <a href="@Url.Action("HistorialReportes", "Clientes")" class="lnk" data-i18n="db.viewAll">Ver todas →</a>
-    </div>
-    <div class="db-rows">
-        @foreach (var a in averias)
-        {
-            <a href="@Url.Action("EstadoAveria", "Clientes", new { id = a.AveriaId })" class="db-row">
-                <div class="ico" style="background:#fef3e0;">⚡</div>
-                <div class="body">
-                    <div class="t">#@a.AveriaId · @a.Tipo</div>
-                    <div class="s">@a.FechaReporte.ToString("dd/MM/yyyy HH:mm")</div>
-                </div>
-                <div class="badge pend">@a.Estado</div>
-            </a>
-        }
-    </div>
-}
-
-<!-- ═══════════════ TRÁMITES ACTIVOS ═══════════════ -->
+<!-- ═══════════ TRÁMITES EN PROCESO ═══════════ -->
 @if (tramites.Any())
 {
-    <div class="db-title">
-        <span data-i18n="db.proceduresInProgress">Trámites en proceso</span>
-        <a href="@Url.Action("MisTramites", "Tramites")" class="lnk" data-i18n="db.viewAllM">Ver todos →</a>
+    <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Trámites en proceso</span>
+        <a href="@Url.Action("Tramites", "Clientes")"
+           style="font-size:11px; color:var(--blue); font-weight:800; text-decoration:none;">
+            Ver todos →
+        </a>
     </div>
-    <div class="db-rows">
+
+    <div class="rows">
         @foreach (var t in tramites)
         {
-            <div class="db-row">
-                <div class="ico" style="background:#eef0ff;">📋</div>
-                <div class="body">
+            <div class="row-item">
+                <div class="ic" style="background:#eef0ff;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6M9 13h6M9 17h4" />
+                    </svg>
+                </div>
+                <div class="tx">
                     <div class="t">@t.Tipo</div>
                     <div class="s">@t.NumeroReferencia · @t.FechaSolicitud.ToString("dd/MM/yyyy")</div>
                 </div>
-                <div class="badge ing">@t.Estado</div>
+                <span class="pill st-normal"><span class="dot"></span>@t.Estado</span>
             </div>
         }
     </div>
 }
 
-<!-- ═══════════════ NOTIFICACIONES ═══════════════ -->
-@if (notifs.Any())
-{
-    <div class="db-title">
-        <span data-i18n="db.recentNotifications">Notificaciones recientes</span>
-        <a href="@Url.Action("MisNotificaciones", "Clientes")" class="lnk" data-i18n="db.viewAll">Ver todas →</a>
-    </div>
-    foreach (var n in notifs)
-    {
-        <div class="db-notif">
-            <div class="ic">🔔</div>
-            <div class="body">
-                <div class="t">@n.Titulo</div>
-                <div class="s">@n.Mensaje</div>
-            </div>
-        </div>
-    }
-}
+<!-- ═══════════ GRÁFICA DE CONSUMO ═══════════ -->
+<div class="eyebrow">Consumo kWh · NISE 4021</div>
 
-<div class="db-toast" id="dbToast"></div>
+<div class="chart-card" style="margin-top:0;">
+    <div class="bar-chart" id="barChart">
+        <div class="bar" data-6m="40" data-31d="55" data-lecturas="30"><span>Mar</span></div>
+        <div class="bar" data-6m="62" data-31d="35" data-lecturas="70"><span>Abr</span></div>
+        <div class="bar" data-6m="48" data-31d="80" data-lecturas="45"><span>May</span></div>
+        <div class="bar" data-6m="75" data-31d="42" data-lecturas="60"><span>Jun</span></div>
+        <div class="bar" data-6m="55" data-31d="90" data-lecturas="38"><span>Jul</span></div>
+        <div class="bar hi" data-6m="95" data-31d="65" data-lecturas="85"><span>Ago</span></div>
+    </div>
+
+    <div class="chart-tabs">
+        <button type="button" class="chart-tab active" data-mode="6m">Últimos 6 meses</button>
+        <button type="button" class="chart-tab" data-mode="31d">31 días</button>
+        <button type="button" class="chart-tab" data-mode="lecturas">Lecturas</button>
+    </div>
+</div>
+
+<!-- ═══════════ RESUMEN DEL MES ═══════════ -->
+<div class="eyebrow">Resumen del mes</div>
+
+<div class="card">
+    <div class="mgrid">
+        <div class="mcell">
+            <div class="k">Consumo actual</div>
+            <div class="v">312 <small>kWh</small></div>
+        </div>
+        <div class="mcell">
+            <div class="k">Mes anterior</div>
+            <div class="v">287 <small>kWh</small></div>
+        </div>
+        <div class="mcell">
+            <div class="k">Promedio diario</div>
+            <div class="v">10.4 <small>kWh</small></div>
+        </div>
+        <div class="mcell">
+            <div class="k">Próxima lectura</div>
+            <div class="v">15 <small>set</small></div>
+        </div>
+    </div>
+    <div class="social">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M20 6 9 17l-5-5" />
+        </svg>
+        <span>12% menos que el mes anterior · ¡buen ahorro!</span>
+    </div>
+</div>
+
+<!-- ═══════════ CONTÁCTANOS ═══════════ -->
+<h2 class="section-h">Contactános</h2>
+
+<div class="contact-list">
+    <a href="tel:8000CNFL" class="contact-item">
+        <div class="ico" style="background:#e8f3ff;color:#1E23E6;">📞</div>
+        <div class="body">
+            <div class="t">Centro de atención</div>
+            <div class="s">8000-CNFL (2635)</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+
+    <a href="mailto:info@cnfl.go.cr" class="contact-item">
+        <div class="ico" style="background:#fff3ec;color:#FF692D;">✉️</div>
+        <div class="body">
+            <div class="t">Correo electrónico</div>
+            <div class="s">info@cnfl.go.cr</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+
+    <a href="https://www.cnfl.go.cr" target="_blank" class="contact-item">
+        <div class="ico" style="background:#e8f7ec;color:#64B95A;">🌐</div>
+        <div class="body">
+            <div class="t">Sitio web</div>
+            <div class="s">www.cnfl.go.cr</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+
+    <a href="#" class="contact-item">
+        <div class="ico" style="background:#f0f0ff;color:#1E23E6;">📍</div>
+        <div class="body">
+            <div class="t">Oficinas centrales</div>
+            <div class="s">San José, Costa Rica</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+</div>
 
 @section Scripts {
     <script>
-        // ═══════════════════════════════════════════════════════════
-        // DATOS DESDE EL CONTROLLER
-        // ═══════════════════════════════════════════════════════════
-        var datosRazor = {
-            distribucionData:   @Html.Raw(distribucionJson),
-            consumoData:        @Html.Raw(consumoJson),
-            actividadData:      @Html.Raw(actividadJson),
-            seccionesData:      @Html.Raw(seccionesJson),
-            nombreUsuario:      "@Html.Raw(nombre)",
-            averiasCount:       @averiasCount,
-            tramitesCount:      @tramitesCount,
-            totalNISEs:         @totalNISEs,
-            totalFacturas:      @totalFacturasPendientes,
-            montoPendiente:     @montoPendiente.ToString("0"),
-            facturaMonto:       "@facturaActualMonto",
-            facturaVence:       "@facturaActualVence"
-        };
+            (function () {
+                var tabs = document.querySelectorAll('.chart-tab');
+                var bars = document.querySelectorAll('#barChart .bar');
 
-        var distribucionData = datosRazor.distribucionData;
-        var consumoData      = datosRazor.consumoData;
-        var actividadData    = datosRazor.actividadData;
-        var seccionesData    = datosRazor.seccionesData;
-        var nombreUsuario    = datosRazor.nombreUsuario;
-
-        var chartDona, chartConsumo, chartActividad, chartSecciones;
-        var consumoModo = 'monto';
-
-        // ═══════════════════════════════════════════════════════════
-        // TOAST
-        // ═══════════════════════════════════════════════════════════
-        function showToast(msg) {
-            var el = document.getElementById('dbToast');
-            el.textContent = msg;
-            el.classList.add('show');
-            setTimeout(function () { el.classList.remove('show'); }, 2500);
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // REGISTRAR DESCARGA (backend)
-        // ═══════════════════════════════════════════════════════════
-        function registrarDescarga(nombre, tipo, seccion, tamanoKB) {
-            fetch('@Url.Action("RegistrarDescarga", "Clientes")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'nombre=' + encodeURIComponent(nombre) +
-                      '&tipo=' + encodeURIComponent(tipo) +
-                      '&seccion=' + encodeURIComponent(seccion) +
-                      '&tamanoKB=' + (tamanoKB || 0)
-            }).catch(function () { /* silencioso */ });
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // REDESCARGAR (botón de la lista)
-        // ═══════════════════════════════════════════════════════════
-        function redescargar(nombre, tipo) {
-            var mensaje = '¿Volver a generar "' + nombre + '" (' + tipo + ')?';
-            if (confirm(mensaje)) {
-                if (tipo === 'PDF') {
-                    if (nombre.indexOf('Factura') >= 0) { descargarFacturaPDF(0); }
-                    else if (nombre.indexOf('Resumen') >= 0) { exportarResumenPDF(); }
-                    else { exportarTodoPDF(); }
-                } else if (tipo === 'Excel') {
-                    if (nombre.indexOf('Consumo') >= 0) { exportarDonaExcel(); }
-                    else if (nombre.indexOf('Evolucion') >= 0) { exportarConsumoExcel(); }
-                    else if (nombre.indexOf('Secciones') >= 0) { exportarSeccionesExcel(); }
-                    else if (nombre.indexOf('Actividad') >= 0) { exportarActividadExcel(); }
-                    else { exportarResumenExcel(); }
-                }
-                showToast('📥 Regenerando "' + nombre + '"...');
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // GRÁFICO 1: DONA
-        // ═══════════════════════════════════════════════════════════
-        function initDona() {
-            var canvas = document.getElementById('chartDona');
-            if (!canvas) return;
-            var ctx = canvas.getContext('2d');
-            var labels = distribucionData.map(function (d) { return 'NISE ' + d.label; });
-            var values = distribucionData.map(function (d) { return d.value; });
-            var colors = distribucionData.map(function (d) { return d.color; });
-
-            if (values.length === 0) {
-                canvas.parentElement.innerHTML =
-                    '<div style="text-align:center; padding:40px 0; color:#727A86; font-size:12px;">Sin NISEs registrados</div>';
-                return;
-            }
-
-            chartDona = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: colors,
-                        borderColor: '#fff',
-                        borderWidth: 3,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '65%',
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0E1116',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            padding: 12,
-                            cornerRadius: 10,
-                            callbacks: {
-                                label: function (context) {
-                                    var total = context.dataset.data.reduce(function (a, b) { return a + b; }, 0);
-                                    var pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
-                                    return context.label + ': ₡' + context.parsed.toLocaleString('es-CR') + ' (' + pct + '%)';
-                                }
-                            }
-                        }
+                function aplicarModo(modo) {
+                    for (var i = 0; i < bars.length; i++) {
+                        var bar = bars[i];
+                        var v = parseInt(bar.getAttribute('data-' + modo), 10);
+                        if (isNaN(v)) v = 0;
+                        bar.style.height = v + '%';
                     }
                 }
-            });
 
-            var legendHtml = '';
-            var total = values.reduce(function (a, b) { return a + b; }, 0);
-            distribucionData.forEach(function (d) {
-                var pct = total > 0 ? ((d.value / total) * 100).toFixed(0) : 0;
-                legendHtml += '<div class="lg"><span class="dot" style="background:' + d.color + '"></span>NISE ' + d.label + ' · ' + pct + '%</div>';
-            });
-            document.getElementById('legendDona').innerHTML = legendHtml;
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // GRÁFICO 2: LÍNEA
-        // ═══════════════════════════════════════════════════════════
-        function initConsumo() {
-            var canvas = document.getElementById('chartConsumo');
-            if (!canvas) return;
-            var ctx = canvas.getContext('2d');
-
-            if (consumoData.length === 0) {
-                canvas.parentElement.innerHTML =
-                    '<div style="text-align:center; padding:40px 0; color:#727A86; font-size:12px;">Sin datos de consumo</div>';
-                return;
-            }
-
-            var gradient = ctx.createLinearGradient(0, 0, 0, 220);
-            gradient.addColorStop(0, 'rgba(30, 35, 230, 0.35)');
-            gradient.addColorStop(1, 'rgba(30, 35, 230, 0.02)');
-
-            chartConsumo = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: consumoData.map(function (d) { return d.mes; }),
-                    datasets: [{
-                        label: 'Monto',
-                        data: consumoData.map(function (d) { return d.monto; }),
-                        borderColor: '#1E23E6',
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#1E23E6',
-                        pointBorderWidth: 3,
-                        pointRadius: 5,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: '#1E23E6',
-                        pointHoverBorderColor: '#fff',
-                        pointHoverBorderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { intersect: false, mode: 'index' },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0E1116',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            padding: 12,
-                            cornerRadius: 10,
-                            displayColors: false,
-                            callbacks: {
-                                label: function (context) {
-                                    if (consumoModo === 'monto') {
-                                        return '₡' + context.parsed.y.toLocaleString('es-CR');
-                                    }
-                                    return context.parsed.y + ' kWh';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#EDEFF3', drawBorder: false },
-                            ticks: {
-                                color: '#727A86',
-                                font: { size: 10, weight: '600' },
-                                callback: function (v) {
-                                    if (consumoModo === 'monto') return '₡' + (v / 1000) + 'k';
-                                    return v;
-                                }
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#727A86', font: { size: 11, weight: '700' } }
-                        }
-                    }
+                for (var i = 0; i < tabs.length; i++) {
+                    tabs[i].addEventListener('click', function () {
+                        for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('active');
+                        this.classList.add('active');
+                        aplicarModo(this.getAttribute('data-mode'));
+                    });
                 }
-            });
-        }
 
-        function cambiarConsumo(modo, btn) {
-            consumoModo = modo;
-            document.querySelectorAll('.db-chart-tab').forEach(function (b) {
-                b.classList.remove('active');
-            });
-            btn.classList.add('active');
-
-            var valores = modo === 'monto'
-                ? consumoData.map(function (d) { return d.monto; })
-                : consumoData.map(function (d) { return d.kwh; });
-
-            chartConsumo.data.datasets[0].data = valores;
-            chartConsumo.data.datasets[0].label = modo === 'monto' ? 'Monto' : 'Consumo';
-            chartConsumo.update();
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // GRÁFICO 3: BARRAS APILADAS
-        // ═══════════════════════════════════════════════════════════
-        function initActividad() {
-            var canvas = document.getElementById('chartActividad');
-            if (!canvas) return;
-            var ctx = canvas.getContext('2d');
-            var dias = actividadData.map(function (d) { return d.dia; });
-
-            chartActividad = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: dias,
-                    datasets: [
-                        { label: 'Facturas', data: actividadData.map(function (d) { return d.facturas; }), backgroundColor: '#1E23E6', borderRadius: 6, borderSkipped: false },
-                        { label: 'Reportes', data: actividadData.map(function (d) { return d.reportes; }), backgroundColor: '#FF692D', borderRadius: 6, borderSkipped: false },
-                        { label: 'Trámites', data: actividadData.map(function (d) { return d.tramites; }), backgroundColor: '#64B95A', borderRadius: 6, borderSkipped: false },
-                        { label: 'Perfil',   data: actividadData.map(function (d) { return d.perfil; }),   backgroundColor: '#64B9CD', borderRadius: 6, borderSkipped: false }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { intersect: false, mode: 'index' },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0E1116',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            padding: 12,
-                            cornerRadius: 10,
-                            callbacks: {
-                                label: function (context) {
-                                    return context.dataset.label + ': ' + context.parsed.y + ' visitas';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { stacked: true, grid: { display: false }, ticks: { color: '#727A86', font: { size: 11, weight: '700' } } },
-                        y: { stacked: true, beginAtZero: true, grid: { color: '#EDEFF3', drawBorder: false }, ticks: { color: '#727A86', font: { size: 10, weight: '600' } } }
-                    }
-                }
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // GRÁFICO 4: BARRAS HORIZONTALES
-        // ═══════════════════════════════════════════════════════════
-        function initSecciones() {
-            var canvas = document.getElementById('chartSecciones');
-            if (!canvas) return;
-            var ctx = canvas.getContext('2d');
-            var labels = seccionesData.map(function (d) { return d.nombre; });
-            var values = seccionesData.map(function (d) { return d.visitas; });
-
-            chartSecciones = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Visitas',
-                        data: values,
-                        backgroundColor: ['#1E23E6', '#FF692D', '#64B95A', '#64B9CD', '#F5A623', '#727A86'],
-                        borderRadius: 8,
-                        borderSkipped: false,
-                        barThickness: 22
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0E1116',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            padding: 12,
-                            cornerRadius: 10,
-                            displayColors: false,
-                            callbacks: {
-                                label: function (context) {
-                                    return context.parsed.x + ' visitas';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { beginAtZero: true, grid: { color: '#EDEFF3', drawBorder: false }, ticks: { color: '#727A86', font: { size: 10, weight: '600' } } },
-                        y: { grid: { display: false }, ticks: { color: '#0E1116', font: { size: 11, weight: '700' } } }
-                    }
-                }
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // PAGAR FACTURA
-        // ═══════════════════════════════════════════════════════════
-        function pagarFactura(id, num, monto) {
-            if (!confirm('¿Confirmás el pago de la factura ' + num + ' por ₡' + monto.toLocaleString('es-CR') + '?')) return;
-            fetch('@Url.Action("PagarFactura", "Clientes")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'facturaId=' + id
-            })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.success) { alert('✅ ' + data.message); location.reload(); }
-                else { alert('❌ ' + data.message); }
-            })
-            .catch(function () { alert('Error al procesar el pago.'); });
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // EXPORTAR A EXCEL (XLSX)
-        // ═══════════════════════════════════════════════════════════
-        function descargarExcel(nombreHoja, datos, nombreArchivo) {
-            if (typeof XLSX === 'undefined') {
-                showToast('❌ Librería Excel no cargada');
-                return;
-            }
-            var wb = XLSX.utils.book_new();
-            var ws = XLSX.utils.json_to_sheet(datos);
-            XLSX.utils.book_append_sheet(wb, ws, nombreHoja);
-            var nombreFinal = nombreArchivo + '_' + new Date().toISOString().slice(0, 10) + '.xlsx';
-            XLSX.writeFile(wb, nombreFinal);
-
-            registrarDescarga(nombreFinal, 'Excel', nombreHoja, 0);
-
-            showToast('📊 Excel descargado');
-        }
-
-        function exportarResumenExcel() {
-            var datos = [
-                { Concepto: 'Averías activas', Valor: datosRazor.averiasCount },
-                { Concepto: 'Trámites en proceso', Valor: datosRazor.tramitesCount },
-                { Concepto: 'Monto pendiente (₡)', Valor: datosRazor.montoPendiente },
-                { Concepto: 'NISEs activos', Valor: datosRazor.totalNISEs },
-                { Concepto: 'Facturas pendientes', Valor: datosRazor.totalFacturas },
-                { Concepto: 'Fecha de exportación', Valor: new Date().toLocaleString('es-CR') }
-            ];
-            descargarExcel('Resumen', datos, 'CNFL_Resumen');
-        }
-
-        function exportarDonaExcel() {
-            if (distribucionData.length === 0) { showToast('⚠️ Sin datos para exportar'); return; }
-            var total = distribucionData.reduce(function (a, b) { return a + b.value; }, 0);
-            var datos = distribucionData.map(function (d) {
-                return {
-                    NISE: d.label,
-                    'Monto (₡)': d.value,
-                    'Porcentaje (%)': total > 0 ? ((d.value / total) * 100).toFixed(1) : 0
-                };
-            });
-            descargarExcel('Consumo por NISE', datos, 'CNFL_Consumo_NISE');
-        }
-
-        function exportarConsumoExcel() {
-            if (consumoData.length === 0) { showToast('⚠️ Sin datos para exportar'); return; }
-            var datos = consumoData.map(function (d) {
-                return {
-                    Mes: d.mes,
-                    'Monto (₡)': d.monto,
-                    'Consumo (kWh)': d.kwh
-                };
-            });
-            descargarExcel('Evolución de consumo', datos, 'CNFL_Evolucion_Consumo');
-        }
-
-        function exportarActividadExcel() {
-            if (actividadData.length === 0) { showToast('⚠️ Sin datos para exportar'); return; }
-            var datos = actividadData.map(function (d) {
-                return {
-                    Día: d.dia,
-                    Facturas: d.facturas,
-                    Reportes: d.reportes,
-                    Trámites: d.tramites,
-                    Perfil: d.perfil,
-                    'Total visitas': d.facturas + d.reportes + d.tramites + d.perfil
-                };
-            });
-            descargarExcel('Actividad semanal', datos, 'CNFL_Actividad_Semanal');
-        }
-
-        function exportarSeccionesExcel() {
-            if (seccionesData.length === 0) { showToast('⚠️ Sin datos para exportar'); return; }
-            var datos = seccionesData.map(function (d) {
-                return {
-                    Sección: d.nombre,
-                    'Visitas totales': d.visitas
-                };
-            });
-            descargarExcel('Secciones top', datos, 'CNFL_Secciones_Top');
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // EXPORTAR A PDF (jsPDF)
-        // ═══════════════════════════════════════════════════════════
-        function nuevoPDF() {
-            if (typeof window.jspdf === 'undefined' && typeof jsPDF === 'undefined') {
-                showToast('❌ Librería PDF no cargada');
-                return null;
-            }
-            var JsPDF = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : jsPDF;
-            return new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-        }
-
-        function encabezadoPDF(doc, titulo) {
-            doc.setFillColor(30, 35, 230);
-            doc.rect(0, 0, 210, 28, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(16);
-            doc.setFont(undefined, 'bold');
-            doc.text('CNFL · ' + titulo, 14, 13);
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            doc.text('Usuario: ' + nombreUsuario + '  ·  ' + new Date().toLocaleString('es-CR'), 14, 21);
-            doc.setTextColor(0, 0, 0);
-        }
-
-        function exportarResumenPDF() {
-            var doc = nuevoPDF();
-            if (!doc) return;
-            encabezadoPDF(doc, 'Resumen del mes');
-
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'bold');
-            doc.text('Resumen general', 14, 42);
-            doc.setDrawColor(230, 230, 235);
-            doc.line(14, 45, 196, 45);
-
-            var filas = [
-                ['Averías activas', String(datosRazor.averiasCount)],
-                ['Trámites en proceso', String(datosRazor.tramitesCount)],
-                ['Monto pendiente', '₡' + Number(datosRazor.montoPendiente).toLocaleString('es-CR')],
-                ['NISEs activos', String(datosRazor.totalNISEs)],
-                ['Facturas pendientes', String(datosRazor.totalFacturas)]
-            ];
-
-            doc.setFontSize(10);
-            var y = 54;
-            filas.forEach(function (f) {
-                doc.setFont(undefined, 'normal');
-                doc.text(f[0], 16, y);
-                doc.setFont(undefined, 'bold');
-                doc.text(f[1], 196, y, { align: 'right' });
-                y += 9;
-            });
-
-            y += 4;
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'bold');
-            doc.text('Consumo por NISE', 14, y);
-            y += 4;
-            doc.line(14, y, 196, y);
-            y += 8;
-
-            if (distribucionData.length === 0) {
-                doc.setFont(undefined, 'normal');
-                doc.setFontSize(10);
-                doc.text('Sin NISEs registrados.', 16, y);
-                y += 9;
-            } else {
-                var totalDona = distribucionData.reduce(function (a, b) { return a + b.value; }, 0);
-                doc.setFontSize(10);
-                distribucionData.forEach(function (d) {
-                    var pct = totalDona > 0 ? ((d.value / totalDona) * 100).toFixed(1) : 0;
-                    doc.setFont(undefined, 'normal');
-                    doc.text('NISE ' + d.label + '  (' + pct + '%)', 16, y);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('₡' + d.value.toLocaleString('es-CR'), 196, y, { align: 'right' });
-                    y += 8;
-                });
-            }
-
-            if (y > 250) { doc.addPage(); y = 20; }
-
-            y += 6;
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'bold');
-            doc.text('Evolución de consumo (últimos meses)', 14, y);
-            y += 4;
-            doc.line(14, y, 196, y);
-            y += 8;
-
-            if (consumoData.length === 0) {
-                doc.setFont(undefined, 'normal');
-                doc.setFontSize(10);
-                doc.text('Sin datos de consumo.', 16, y);
-            } else {
-                doc.setFontSize(10);
-                consumoData.forEach(function (d) {
-                    if (y > 270) { doc.addPage(); y = 20; }
-                    doc.setFont(undefined, 'normal');
-                    doc.text(String(d.mes), 16, y);
-                    doc.text(String(d.kwh) + ' kWh', 110, y);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('₡' + d.monto.toLocaleString('es-CR'), 196, y, { align: 'right' });
-                    y += 8;
-                });
-            }
-
-            var nombreFinal = 'CNFL_Resumen_' + new Date().toISOString().slice(0, 10) + '.pdf';
-            doc.save(nombreFinal);
-            registrarDescarga(nombreFinal, 'PDF', 'Resumen', 0);
-            showToast('📄 PDF generado');
-        }
-
-        function exportarTodoPDF() {
-            var doc = nuevoPDF();
-            if (!doc) return;
-            encabezadoPDF(doc, 'Dashboard completo');
-
-            var y = 42;
-
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Indicadores', 14, y); y += 5;
-            doc.setDrawColor(230, 230, 235);
-            doc.line(14, y, 196, y); y += 9;
-            doc.setFontSize(10);
-            var kpis = [
-                ['NISEs activos', String(datosRazor.totalNISEs)],
-                ['Facturas pendientes', String(datosRazor.totalFacturas)],
-                ['En proceso (averías + trámites)', String(datosRazor.averiasCount + datosRazor.tramitesCount)],
-                ['Monto pendiente', '₡' + Number(datosRazor.montoPendiente).toLocaleString('es-CR')]
-            ];
-            kpis.forEach(function (k) {
-                doc.setFont(undefined, 'normal');
-                doc.text(k[0], 16, y);
-                doc.setFont(undefined, 'bold');
-                doc.text(k[1], 196, y, { align: 'right' });
-                y += 8;
-            });
-
-            y += 4;
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Consumo por NISE', 14, y); y += 5;
-            doc.line(14, y, 196, y); y += 9;
-            doc.setFontSize(10);
-            if (distribucionData.length === 0) {
-                doc.setFont(undefined, 'normal');
-                doc.text('Sin NISEs registrados.', 16, y); y += 8;
-            } else {
-                var tD = distribucionData.reduce(function (a, b) { return a + b.value; }, 0);
-                distribucionData.forEach(function (d) {
-                    var pct = tD > 0 ? ((d.value / tD) * 100).toFixed(1) : 0;
-                    doc.setFont(undefined, 'normal');
-                    doc.text('NISE ' + d.label + ' (' + pct + '%)', 16, y);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('₡' + d.value.toLocaleString('es-CR'), 196, y, { align: 'right' });
-                    y += 8;
-                });
-            }
-
-            if (y > 240) { doc.addPage(); y = 20; }
-            y += 4;
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Evolución de consumo', 14, y); y += 5;
-            doc.line(14, y, 196, y); y += 9;
-            doc.setFontSize(10);
-            if (consumoData.length === 0) {
-                doc.setFont(undefined, 'normal');
-                doc.text('Sin datos de consumo.', 16, y); y += 8;
-            } else {
-                consumoData.forEach(function (d) {
-                    if (y > 270) { doc.addPage(); y = 20; }
-                    doc.setFont(undefined, 'normal');
-                    doc.text(String(d.mes), 16, y);
-                    doc.text(String(d.kwh) + ' kWh', 110, y);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('₡' + d.monto.toLocaleString('es-CR'), 196, y, { align: 'right' });
-                    y += 8;
-                });
-            }
-
-            if (y > 240) { doc.addPage(); y = 20; }
-            y += 4;
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Actividad semanal', 14, y); y += 5;
-            doc.line(14, y, 196, y); y += 9;
-            doc.setFontSize(9);
-            if (actividadData.length === 0) {
-                doc.setFont(undefined, 'normal');
-                doc.text('Sin actividad registrada.', 16, y); y += 8;
-            } else {
-                doc.setFont(undefined, 'bold');
-                doc.text('Día', 16, y);
-                doc.text('Fact.', 70, y);
-                doc.text('Rep.', 95, y);
-                doc.text('Trám.', 120, y);
-                doc.text('Perfil', 150, y);
-                doc.text('Total', 180, y);
-                y += 7;
-                doc.setFont(undefined, 'normal');
-                actividadData.forEach(function (d) {
-                    if (y > 270) { doc.addPage(); y = 20; }
-                    var total = (d.facturas || 0) + (d.reportes || 0) + (d.tramites || 0) + (d.perfil || 0);
-                    doc.text(String(d.dia), 16, y);
-                    doc.text(String(d.facturas || 0), 70, y);
-                    doc.text(String(d.reportes || 0), 95, y);
-                    doc.text(String(d.tramites || 0), 120, y);
-                    doc.text(String(d.perfil || 0), 150, y);
-                    doc.setFont(undefined, 'bold');
-                    doc.text(String(total), 180, y);
-                    doc.setFont(undefined, 'normal');
-                    y += 7;
-                });
-            }
-
-            if (y > 240) { doc.addPage(); y = 20; }
-            y += 4;
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Secciones más visitadas', 14, y); y += 5;
-            doc.line(14, y, 196, y); y += 9;
-            doc.setFontSize(10);
-            if (seccionesData.length === 0) {
-                doc.setFont(undefined, 'normal');
-                doc.text('Sin datos de secciones.', 16, y); y += 8;
-            } else {
-                seccionesData.forEach(function (d) {
-                    if (y > 270) { doc.addPage(); y = 20; }
-                    doc.setFont(undefined, 'normal');
-                    doc.text(String(d.nombre), 16, y);
-                    doc.setFont(undefined, 'bold');
-                    doc.text(String(d.visitas) + ' visitas', 196, y, { align: 'right' });
-                    y += 8;
-                });
-            }
-
-            var nombreFinal = 'CNFL_Dashboard_' + new Date().toISOString().slice(0, 10) + '.pdf';
-            doc.save(nombreFinal);
-            registrarDescarga(nombreFinal, 'PDF', 'Dashboard', 0);
-            showToast('📄 PDF completo generado');
-        }
-
-        function descargarFacturaPDF(facturaId) {
-            var doc = nuevoPDF();
-            if (!doc) return;
-            encabezadoPDF(doc, 'Factura #' + facturaId);
-            doc.setFontSize(11);
-            doc.setFont(undefined, 'normal');
-            doc.text('Comprobante generado desde el Dashboard.', 14, 50);
-            doc.text('Monto: ₡' + datosRazor.facturaMonto, 14, 60);
-            doc.text('Vencimiento: ' + datosRazor.facturaVence, 14, 70);
-            var nombreFinal = 'CNFL_Factura_' + facturaId + '.pdf';
-            doc.save(nombreFinal);
-            registrarDescarga(nombreFinal, 'PDF', 'Factura', 0);
-            showToast('📄 PDF de factura generado');
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // INIT
-        // ═══════════════════════════════════════════════════════════
-        document.addEventListener('DOMContentLoaded', function () {
-            if (typeof Chart !== 'undefined') {
-                initDona();
-                initConsumo();
-                initActividad();
-                initSecciones();
-            }
-        });
+                aplicarModo('6m');
+            })();
     </script>
 }

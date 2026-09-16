@@ -1,80 +1,67 @@
 ﻿@{
-    ViewBag.Title = "Iniciar Sesión";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
-}
+    ViewBag.Title = "Iniciar sesión";
+    Layout = "~/Views/Shared/_LayoutPublico.cshtml";
 
-@section Styles {
-    <style>
-        .toggle-password {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            display: grid;
-            place-items: center;
-            color: #aab0be;
-            flex-shrink: 0;
-            transition: color .2s ease;
-        }
-
-            .toggle-password:hover {
-                color: #1E23E6 !important;
-            }
-
-            .toggle-password svg {
-                width: 20px;
-                height: 20px;
-            }
-    </style>
+    var bioCedula = Request.QueryString["bio"] ?? "";
 }
 
 <div class="login-wrap">
+
+    <!-- Logo CNFL -->
+    <div style="text-align:center; margin-bottom:18px;">
+        <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
+             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';"
+             style="height:52px; width:auto; display:inline-block;" />
+    </div>
+
     <div style="text-align:center;">
-        <div style="font-size:48px; margin-bottom:8px;">⚡</div>
-        <div class="login-h" style="margin-top:0;">Tu energía,<br>en una sola app.</div>
-        <div class="login-p">Ingresa con las credenciales de tu Agencia Virtual.</div>
+        <div class="login-h">Tu energía,<br />en una sola app.</div>
+        <div class="login-p">Ingresá con las credenciales de tu Agencia Virtual.</div>
     </div>
 
     @if (TempData["Mensaje"] != null)
     {
-        <div style="background:#E8F5E9; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #A5D6A7;">
-            <span style="color:#2E7D32; font-weight:700;">✅ @TempData["Mensaje"]</span>
-        </div>
+        <div class="aviso ok" style="margin-top:16px;">@TempData["Mensaje"]</div>
     }
 
     @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
     {
-        <div style="background:#FFEBEE; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #FFCDD2;">
-            <span style="color:#D32F2F; font-weight:700;">❌ @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage</span>
+        <div class="aviso err" style="margin-top:16px;">
+            @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage
         </div>
     }
 
-    @using (Html.BeginForm("Login", "Cuenta", FormMethod.Post))
+    @using (Html.BeginForm("Login", "Cuenta", FormMethod.Post, new { id = "formLogin" }))
     {
         @Html.AntiForgeryToken()
 
-        <div class="field">
-            <label>USUARIO O CÉDULA</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <circle cx="9" cy="12" r="2.5" />
-                    <path d="M14 10h4M14 14h4" />
-                </svg>
-                <input type="text" name="UserName" placeholder="Usuario o cédula" autocomplete="off" />
-            </div>
+        <div class="reg-field" style="margin-top:16px;">
+            <label>Cédula o usuario</label>
+            <input type="text"
+                   name="UserName"
+                   id="userNameLogin"
+                   value="@bioCedula"
+                   placeholder="Ej: 2-0874-0716 o tu usuario"
+                   autocomplete="username"
+                   required
+                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
         </div>
 
-        <div class="field">
-            <label>CONTRASEÑA</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="4" y="10" width="16" height="10" rx="2" />
-                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-                </svg>
-                <input type="password" name="Contraseña" id="passLogin" placeholder="••••••••" autocomplete="off" />
-                <button type="button" class="toggle-password" data-target="passLogin" title="Mostrar/ocultar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="reg-field">
+            <label>Contraseña</label>
+            <div style="position:relative;">
+                <input type="password"
+                       name="Contraseña"
+                       id="passLogin"
+                       placeholder="Tu contraseña"
+                       autocomplete="current-password"
+                       required
+                       style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+                <button type="button"
+                        onclick="togglePass('passLogin', this);"
+                        title="Mostrar/ocultar"
+                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                         <circle cx="12" cy="12" r="3" />
                     </svg>
@@ -82,47 +69,166 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-cta btn-block" style="margin-top:20px;">Ingresar</button>
+        <button type="submit"
+                style="margin-top:22px;background:var(--orange);color:#fff;padding:15px 20px;border-radius:14px;border:0;font-family:inherit;font-weight:800;font-size:15px;width:100%;cursor:pointer;box-shadow:0 8px 18px -6px rgba(255,105,45,.7);">
+            Ingresar
+        </button>
     }
 
     <div style="margin-top:14px; text-align:center;">
-        <a href="@Url.Action("RecuperarClave", "Cuenta")" style="color:var(--blue); font-weight:700; font-size:13px;">¿Olvidó su clave?</a>
+        <a href="@Url.Action("RecuperarClave", "Cuenta")"
+           style="color:var(--blue); font-weight:700; font-size:13px; text-decoration:none;">
+            ¿Olvidaste tu clave?
+        </a>
     </div>
 
-    <div class="bio">
-        <div class="face" onclick="alert('🔐 Face ID simulado')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
-                <path d="M9 10v1M15 10v1M12 10v3l-1 1M9 15c1.5 1 4.5 1 6 0" />
-            </svg>
+    <!-- ═══════════ FACE ID + HUELLA ═══════════ -->
+    <div style="margin-top:28px; display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="display:flex; gap:16px; justify-content:center;">
+
+            <!-- Face ID -->
+            <button type="button"
+                    onclick="loginBiometrico('face')"
+                    title="Ingresar con Face ID"
+                    style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--navy));border:0;display:grid;place-items:center;cursor:pointer;color:#fff;box-shadow:0 12px 24px -8px rgba(30,35,230,.6);">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+                    <path d="M9 10v1M15 10v1M12 10v3l-1 1M9 15c1.5 1 4.5 1 6 0" />
+                </svg>
+            </button>
+
+            <!-- Huella -->
+            <button type="button"
+                    onclick="loginBiometrico('huella')"
+                    title="Ingresar con huella dactilar"
+                    style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--navy));border:0;display:grid;place-items:center;cursor:pointer;color:#fff;box-shadow:0 12px 24px -8px rgba(30,35,230,.6);">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <path d="M12 11v3a5 5 0 0 0 5 5M7 11a5 5 0 0 1 10 0v4" />
+                    <path d="M9 11v3a3 3 0 0 0 3 3M12 11v2" />
+                    <path d="M6 11a6 6 0 0 1 12 0" />
+                    <path d="M4 12a8 8 0 0 1 16 0v2a6 6 0 0 1-6 6" />
+                </svg>
+            </button>
+
         </div>
-        <small>Ingresar con Face ID / Huella</small>
+        <small style="font-size:12px;color:var(--muted);font-weight:700;">
+            Ingresar con Face ID o huella digital
+        </small>
     </div>
 
     <div class="login-foot">
-        <span>¿Aún no tienes cuenta?</span> <a href="@Url.Action("Registro", "Cuenta")">Regístrate con tu cédula</a><br>
+        <span>¿Aún no tenés cuenta?</span>
+        <a href="@Url.Action("Registro", "Cuenta")">Registrate con tu cédula</a><br />
         <span style="opacity:.7;">Consentimiento informado · Política de privacidad</span>
     </div>
 </div>
 
-@section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script>
-        $(function () {
-            // Toggle mostrar/ocultar contraseña
-            $('.toggle-password').on('click', function () {
-                var targetId = $(this).data('target');
-                var $input = $('#' + targetId);
-                var esPassword = $input.attr('type') === 'password';
+<!-- Overlay verificación biométrica -->
+<div id="bioOverlay"
+     style="position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:9999;">
+    <div style="background:#fff;border-radius:24px;padding:32px 28px;width:90%;max-width:320px;text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.4);">
+        <div style="width:64px;height:64px;border-radius:50%;border:4px solid #eef0ff;border-top-color:#1E23E6;margin:0 auto 18px;animation:spin 1s linear infinite;"></div>
+        <div style="font-size:15px;font-weight:800;color:#0E1116;">Verificando identidad...</div>
+        <div style="font-size:12px;color:#727A86;margin-top:4px;">Usando datos biométricos guardados</div>
+        <div style="height:6px;background:#eef0ff;border-radius:999px;margin-top:18px;overflow:hidden;">
+            <div id="bioProgressBar" style="height:100%;width:0;background:linear-gradient(90deg,#1E23E6,#3b6ce0);border-radius:999px;transition:width .3s ease;"></div>
+        </div>
+    </div>
+</div>
 
-                if (esPassword) {
-                    $input.attr('type', 'text');
-                    $(this).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>');
-                } else {
-                    $input.attr('type', 'password');
-                    $(this).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>');
+<style>
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<script>
+    // ═════════ Toggle mostrar/ocultar contraseña ═════════
+    function togglePass(id, btn) {
+        var input = document.getElementById(id);
+        if (!input) return;
+        var esPassword = input.getAttribute('type') === 'password';
+        input.setAttribute('type', esPassword ? 'text' : 'password');
+        btn.innerHTML = esPassword
+            ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+            : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    }
+
+    // ═════════ Biometría ═════════
+    var usuarioBiometrico = null;
+    var bioCedulaPendiente = '@Html.Raw(bioCedula)';
+
+    try {
+        var guardado = localStorage.getItem('cnfl_bio_user');
+        if (guardado) usuarioBiometrico = JSON.parse(guardado);
+    } catch (e) { /* silencioso */ }
+
+    if (bioCedulaPendiente && (!usuarioBiometrico || usuarioBiometrico.cedula !== bioCedulaPendiente)) {
+        fetch('@Url.Action("GetUsuarioPorCedula", "Cuenta")?cedula=' + encodeURIComponent(bioCedulaPendiente))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.success) {
+                    usuarioBiometrico = {
+                        usuarioId: data.usuarioId,
+                        cedula: bioCedulaPendiente,
+                        token: data.token
+                    };
+                    localStorage.setItem('cnfl_bio_user', JSON.stringify(usuarioBiometrico));
                 }
-            });
-        });
-    </script>
-}
+            })
+            .catch(function () { /* silencioso */ });
+    }
+
+    function loginBiometrico(tipo) {
+        if (!usuarioBiometrico || !usuarioBiometrico.usuarioId) {
+            if (confirm('No hay un usuario biométrico registrado en este dispositivo.\n\n¿Querés iniciar sesión con tu cédula y contraseña?')) {
+                var inputUser = document.getElementById('userNameLogin');
+                if (inputUser) inputUser.focus();
+            }
+            return;
+        }
+
+        var overlay = document.getElementById('bioOverlay');
+        var barra = document.getElementById('bioProgressBar');
+        if (!overlay || !barra) return;
+
+        overlay.style.display = 'flex';
+        barra.style.width = '0';
+
+        var pasos = 0;
+        var intervalo = setInterval(function () {
+            pasos += 20;
+            barra.style.width = pasos + '%';
+
+            if (pasos >= 100) {
+                clearInterval(intervalo);
+
+                var formData = new URLSearchParams();
+                formData.append('usuarioId', usuarioBiometrico.usuarioId);
+                formData.append('token', usuarioBiometrico.token);
+                formData.append('tipo', tipo);
+
+                fetch('@Url.Action("LoginBiometrico", "Cuenta")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    overlay.style.display = 'none';
+                    if (data.success && data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        alert('❌ ' + (data.message || 'No se pudo autenticar con biometría.'));
+                    }
+                })
+                .catch(function () {
+                    overlay.style.display = 'none';
+                    alert('❌ Error de conexión al verificar biometría.');
+                });
+            }
+        }, 180);
+    }
+</script>

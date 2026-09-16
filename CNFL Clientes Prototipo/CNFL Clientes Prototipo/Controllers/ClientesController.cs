@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CNFL_Clientes_Prototipo.Data;
+using CNFL_Clientes_Prototipo.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
-using CNFL_Clientes_Prototipo.Models;
-using CNFL_Clientes_Prototipo.Data;
 
 namespace CNFL_Clientes_Prototipo.Controllers
 {
@@ -15,12 +16,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
         // PERFIL Y DATOS DEL USUARIO
         // ============================================================
 
-        // GET: Clientes/MiPerfil
         public ActionResult MiPerfil()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
             var usuario = _db.Usuarios
                 .Include("NISEs")
@@ -30,21 +29,14 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .Include("ActividadEconomica")
                 .FirstOrDefault(u => u.UsuarioId == usuarioId);
 
-            if (usuario == null)
-                return HttpNotFound();
+            if (usuario == null) return HttpNotFound();
 
-            var nises = _db.NISEs
-                .Where(n => n.UsuarioId == usuarioId)
-                .ToList();
-
+            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
             var niseIds = nises.Select(n => n.NiseId).ToList();
+
             var facturas = _db.Facturas
                 .Where(f => niseIds.Contains(f.NiseId))
                 .OrderByDescending(f => f.FechaEmision)
-                .ToList();
-
-            var suscripciones = _db.Suscripciones
-                .Where(s => s.UsuarioId == usuarioId && s.Activa)
                 .ToList();
 
             var pagos = _db.Pagos
@@ -62,62 +54,46 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .OrderByDescending(a => a.FechaReporte)
                 .ToList();
 
-            ViewBag.TotalNISEs = nises.Count;
-            ViewBag.TotalFacturasPendientes = facturas.Count(f => !f.Pagada);
-            ViewBag.MontoPendiente = facturas.Where(f => !f.Pagada).Sum(f => (decimal?)f.Monto) ?? 0m;
-            ViewBag.TotalSuscripciones = suscripciones.Count;
-            ViewBag.TotalAveriasActivas = averiasActivas.Count;
-            ViewBag.NotificacionesNoLeidas = _db.Notificaciones
-                .Count(n => n.UsuarioId == usuarioId && !n.Leida);
-
             ViewBag.NISEs = nises;
-            ViewBag.UltimasFacturas = facturas.Take(3).ToList();
-            ViewBag.Suscripciones = suscripciones;
-            ViewBag.UltimosPagos = pagos;
             ViewBag.AveriasActivas = averiasActivas;
+            ViewBag.UltimosPagos = pagos;
 
             return View(usuario);
         }
 
-        // GET: Clientes/EditarPerfil
         public ActionResult EditarPerfil()
         {
             return RedirectToAction("EditarDatos");
         }
 
-        // GET: Clientes/EditarDatos
         public ActionResult EditarDatos()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
             var usuario = _db.Usuarios
-                .Include("NISEs")
-                .Include("Averias")
-                .Include("Notificaciones")
-                .Include("Suscripciones")
                 .Include("ActividadEconomica")
                 .FirstOrDefault(u => u.UsuarioId == usuarioId);
 
-            if (usuario == null)
-                return HttpNotFound();
+            if (usuario == null) return HttpNotFound();
+
+            ViewBag.ActividadesEconomicas = new SelectList(
+                _db.ActividadesEconomicas.OrderBy(a => a.Codigo).ToList(),
+                "Id", "Nombre", usuario.ActividadEconomicaId);
 
             return View(usuario);
         }
 
-        // POST: Clientes/EditarDatos
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditarDatos(Usuario model, string NombreCompleto)
+        public ActionResult EditarDatos(Usuario model, string NombreCompleto,
+            bool FacturaElectronica = false, int? ActividadEconomicaId = null)
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
             var usuario = _db.Usuarios.Find(usuarioId);
-            if (usuario == null)
-                return HttpNotFound();
+            if (usuario == null) return HttpNotFound();
 
             if (!string.IsNullOrWhiteSpace(NombreCompleto))
             {
@@ -143,10 +119,13 @@ namespace CNFL_Clientes_Prototipo.Controllers
             usuario.CorreoSecundario = model.CorreoSecundario;
             usuario.Telefono = model.Telefono;
             usuario.TelefonoSecundario = model.TelefonoSecundario;
-            usuario.ActividadEconomicaId = model.ActividadEconomicaId;
+
+            usuario.FacturaElectronica = FacturaElectronica;
+            usuario.ActividadEconomicaId = (FacturaElectronica && ActividadEconomicaId.HasValue)
+                ? ActividadEconomicaId
+                : (int?)null;
 
             _db.SaveChanges();
-
             Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
 
             TempData["Mensaje"] = "Datos actualizados correctamente.";
@@ -157,16 +136,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
         // FACTURAS Y PAGOS
         // ============================================================
 
-        // GET: Clientes/MisFacturas
         public ActionResult MisFacturas()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            var usuario = _db.Usuarios.Find(usuarioId);
-            if (usuario == null)
-                return HttpNotFound();
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
             var nisesIds = _db.NISEs
                 .Where(n => n.UsuarioId == usuarioId)
@@ -182,28 +155,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View(facturas);
         }
 
-        // GET: Clientes/Pagos
         public ActionResult Pagos()
         {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            var nisesIds = _db.NISEs
-                .Where(n => n.UsuarioId == usuarioId)
-                .Select(n => n.NiseId)
-                .ToList();
-
-            var facturas = _db.Facturas
-                .Include("NISE")
-                .Where(f => nisesIds.Contains(f.NiseId))
-                .OrderByDescending(f => f.FechaEmision)
-                .ToList();
-
-            return View(facturas);
+            return RedirectToAction("MisFacturas");
         }
 
-        // POST: Clientes/PagarFactura
         [HttpPost]
         public JsonResult PagarFactura(int facturaId)
         {
@@ -217,10 +173,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 {
                     UsuarioId = _db.NISEs.Find(factura.NiseId).UsuarioId,
                     Titulo = "Pago realizado",
-                    Mensaje = $"Se ha realizado el pago de la factura {factura.NumeroFactura} por ₡{factura.Monto:N0}.",
+                    Mensaje = "Se ha realizado el pago de la factura " + factura.NumeroFactura + " por ₡" + factura.Monto.ToString("N0") + ".",
                     Fecha = DateTime.Now,
                     Leida = false,
-                    Tipo = "Factura"
+                    Tipo = "Pago",
+                    Estado = "Pagada"
                 };
                 _db.Notificaciones.Add(notificacion);
                 _db.SaveChanges();
@@ -231,15 +188,13 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // NOTIFICACIONES Y SUSCRIPCIONES
+        // NOTIFICACIONES
         // ============================================================
 
-        // GET: Clientes/MisNotificaciones
         public ActionResult MisNotificaciones()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
             var notificaciones = _db.Notificaciones
                 .Where(n => n.UsuarioId == usuarioId)
@@ -255,62 +210,18 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View(notificaciones);
         }
 
-        // GET: Clientes/MisSuscripciones
-        public ActionResult MisSuscripciones()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            var suscripciones = _db.Suscripciones
-                .Where(s => s.UsuarioId == usuarioId)
-                .ToList();
-
-            return View(suscripciones);
-        }
-
-        // POST: Clientes/SuscribirServicio
-        [HttpPost]
-        public JsonResult SuscribirServicio(string servicio, decimal? montoMensual)
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return Json(new { success = false, message = "Debe iniciar sesión." });
-
-            var suscripcion = new Suscripcion
-            {
-                UsuarioId = usuarioId.Value,
-                Servicio = servicio,
-                FechaInicio = DateTime.Now,
-                Activa = true,
-                MontoMensual = montoMensual
-            };
-
-            _db.Suscripciones.Add(suscripcion);
-            _db.SaveChanges();
-
-            return Json(new { success = true, message = "Suscripción activada correctamente." });
-        }
-
         // ============================================================
         // DASHBOARD
         // ============================================================
 
-        // GET: Clientes/Dashboard
         public ActionResult Dashboard()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
-            var usuario = _db.Usuarios
-                .Include("NISEs")
-                .FirstOrDefault(u => u.UsuarioId == usuarioId);
+            var usuario = _db.Usuarios.FirstOrDefault(u => u.UsuarioId == usuarioId);
+            if (usuario == null) return HttpNotFound();
 
-            if (usuario == null)
-                return HttpNotFound();
-
-            // ─── NISEs y facturas ───
             var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
             var niseIds = nises.Select(n => n.NiseId).ToList();
 
@@ -324,7 +235,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var facturaActual = facturasPendientes.FirstOrDefault();
             var totalPendiente = facturasPendientes.Sum(f => (decimal?)f.Monto) ?? 0m;
 
-            // ─── Averías activas ───
             var averiasActivas = _db.Averias
                 .Where(a => a.UsuarioId == usuarioId
                          && a.Estado != "Problema resuelto"
@@ -339,7 +249,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            // ─── Trámites activos ───
             var tramitesActivos = _db.Tramites
                 .Where(t => t.UsuarioId == usuarioId && t.Estado != "Resuelto")
                 .OrderByDescending(t => t.FechaSolicitud)
@@ -355,7 +264,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            // ─── Notificaciones ───
             var notificaciones = _db.Notificaciones
                 .Where(n => n.UsuarioId == usuarioId && !n.Leida)
                 .OrderByDescending(n => n.Fecha)
@@ -370,102 +278,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            // ═══════════════════════════════════════════════════════════
-            // GRÁFICOS
-            // ═══════════════════════════════════════════════════════════
-            var distribucionNise = new List<DistribucionNiseDto>();
-            var coloresNise = new[] { "#1E23E6", "#FF692D", "#64B95A", "#64B9CD", "#F5A623" };
-            int colorIdx = 0;
-            foreach (var nise in nises)
-            {
-                var montoNise = facturas.Where(f => f.NiseId == nise.NiseId).Sum(f => (decimal?)f.Monto) ?? 0m;
-                distribucionNise.Add(new DistribucionNiseDto
-                {
-                    label = nise.NumeroNise,
-                    value = montoNise,
-                    color = coloresNise[colorIdx % coloresNise.Length]
-                });
-                colorIdx++;
-            }
-
-            var meses = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
-            var consumoMensual = facturas
-                .OrderByDescending(f => f.FechaEmision)
-                .Take(6)
-                .OrderBy(f => f.FechaEmision)
-                .Select(f => new ConsumoMensualDto
-                {
-                    mes = meses[f.FechaEmision.Month - 1],
-                    monto = f.Monto,
-                    kwh = Math.Round((double)f.Monto / 78.0, 0)
-                })
-                .ToList();
-
-            // ─── Actividad semanal REAL desde BD ───
-            var hace7dias = DateTime.Now.AddDays(-7);
-            var actividadReal = _db.ActividadUsuario
-                .Where(a => a.UsuarioId == usuarioId && a.Fecha >= hace7dias)
-                .ToList();
-
-            var diasSemana = new[] { "Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb" };
-            var actividadSemana = new List<ActividadSemanalDto>();
-            for (int i = 6; i >= 0; i--)
-            {
-                var dia = DateTime.Now.AddDays(-i).Date;
-                var delDia = actividadReal.Where(a => a.Fecha.Date == dia).ToList();
-                actividadSemana.Add(new ActividadSemanalDto
-                {
-                    dia = diasSemana[(int)dia.DayOfWeek],
-                    facturas = delDia.Count(a => a.Seccion == "Facturas"),
-                    reportes = delDia.Count(a => a.Seccion == "Reportes"),
-                    tramites = delDia.Count(a => a.Seccion == "Trámites"),
-                    perfil = delDia.Count(a => a.Seccion == "Perfil" || a.Seccion == "Dashboard")
-                });
-            }
-
-            // ─── Secciones más visitadas REALES ───
-            var seccionesTop = actividadReal
-                .GroupBy(a => a.Seccion)
-                .Select(g => new SeccionTopDto { nombre = g.Key, visitas = g.Count() })
-                .OrderByDescending(s => s.visitas)
-                .Take(6)
-                .ToList();
-
-            if (seccionesTop.Count == 0)
-                seccionesTop.Add(new SeccionTopDto { nombre = "Sin actividad aún", visitas = 0 });
-
-            // ═══════════════════════════════════════════════════════════
-            // MÉTRICAS DE USO
-            // ═══════════════════════════════════════════════════════════
-            var tiempoTotalSegundos = actividadReal
-                .Where(a => a.DuracionSegundos.HasValue)
-                .Sum(a => a.DuracionSegundos.Value);
-
-            var seccionTop = actividadReal
-                .GroupBy(a => a.Seccion)
-                .Select(g => new { Seccion = g.Key, Count = g.Count() })
-                .OrderByDescending(x => x.Count)
-                .FirstOrDefault();
-
-            var descargas = _db.DescargasUsuario
-                .Where(d => d.UsuarioId == usuarioId)
-                .OrderByDescending(d => d.Fecha)
-                .ToList();
-
-            var metricas = new MetricasUsoDto
-            {
-                TotalSesiones = actividadReal.Count,
-                TiempoTotalMinutos = tiempoTotalSegundos / 60,
-                PromedioMinutosPorDia = tiempoTotalSegundos > 0 ? (tiempoTotalSegundos / 60) / 7 : 0,
-                SeccionMasVisitada = seccionTop != null ? seccionTop.Seccion : "Sin datos",
-                TotalDescargas = descargas.Count,
-                DescargasPDF = descargas.Count(d => d.Tipo == "PDF"),
-                DescargasExcel = descargas.Count(d => d.Tipo == "Excel")
-            };
-
-            // ═══════════════════════════════════════════════════════════
-            // ViewBags
-            // ═══════════════════════════════════════════════════════════
             ViewBag.Nombre = usuario.Nombre;
             ViewBag.TotalNISEs = nises.Count;
             ViewBag.TotalFacturasPendientes = facturasPendientes.Count;
@@ -478,397 +290,590 @@ namespace CNFL_Clientes_Prototipo.Controllers
             ViewBag.TramitesActivos = tramitesActivos;
             ViewBag.Notificaciones = notificaciones;
 
-            ViewBag.DistribucionJson = Newtonsoft.Json.JsonConvert.SerializeObject(distribucionNise);
-            ViewBag.ConsumoJson = Newtonsoft.Json.JsonConvert.SerializeObject(consumoMensual);
-            ViewBag.ActividadJson = Newtonsoft.Json.JsonConvert.SerializeObject(actividadSemana);
-            ViewBag.SeccionesJson = Newtonsoft.Json.JsonConvert.SerializeObject(seccionesTop);
-
-            ViewBag.Metricas = metricas;
-            ViewBag.Descargas = descargas;
-
             return View();
         }
 
         // ============================================================
-        // REPORTES Y TIENDA
+        // MIS SERVICIOS
         // ============================================================
 
-        // GET: Clientes/Reportes
-        public ActionResult Reportes()
+        public ActionResult MisServicios()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
+            ViewBag.NISEs = nises;
+
+            var facturasPorNise = new Dictionary<int, List<Factura>>();
+            foreach (var n in nises)
+            {
+                var facturas = _db.Facturas
+                    .Where(f => f.NiseId == n.NiseId)
+                    .OrderByDescending(f => f.FechaEmision)
+                    .ToList();
+                facturasPorNise[n.NiseId] = facturas;
+            }
+
+            ViewBag.FacturasPorNise = facturasPorNise;
+            return View();
+        }
+
+        // ============================================================
+        // HISTORIAL DE CONSUMO
+        // ============================================================
+
+        public ActionResult HistorialConsumo()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
+            var niseIds = nises.Select(n => n.NiseId).ToList();
+
+            var facturas = _db.Facturas
+                .Where(f => niseIds.Contains(f.NiseId))
+                .OrderByDescending(f => f.FechaEmision)
+                .Take(12)
+                .OrderBy(f => f.FechaEmision)
+                .ToList();
+
+            var meses = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
+            var historial = facturas.Select(f => new
+            {
+                mes = meses[f.FechaEmision.Month - 1] + " " + f.FechaEmision.Year.ToString().Substring(2),
+                kwh = Math.Round((double)f.Monto / 78.0, 0),
+                monto = f.Monto
+            }).ToList();
+
+            ViewBag.HistorialJson = Newtonsoft.Json.JsonConvert.SerializeObject(historial);
+            ViewBag.Promedio = historial.Any() ? Math.Round(historial.Average(h => h.kwh), 0) : 0;
+            ViewBag.Maximo = historial.Any() ? historial.Max(h => h.kwh) : 0;
+            ViewBag.Ultimo = historial.Any() ? historial.Last().kwh : 0;
+            return View();
+        }
+
+        // ============================================================
+        // CONSULTA AL MEDIDOR (AMI)
+        // ============================================================
+
+        public ActionResult ConsultaMedidor()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var nise = _db.NISEs.FirstOrDefault(n => n.UsuarioId == usuarioId);
+
+            ViewBag.UltimaFecha = DateTime.Now.AddHours(-3);
+            ViewBag.UltimaLectura = 742.0;
+            ViewBag.LecturaFacturada = 620.0;
+            ViewBag.ConsumoMes = 198.0;
+            ViewBag.CostoEstimado = 21300m;
+            ViewBag.PromedioMensual = 205.0;
+            ViewBag.VoltajeActual = 119.8;
+            ViewBag.NISEActual = nise;
+            return View();
+        }
+
+        // ============================================================
+        // MAPA GIS
+        // ============================================================
+
+        public ActionResult MapaGIS()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+            return View();
+        }
+
+        [HttpGet]
+        public JsonResult MapaGISData()
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
 
+            var averias = _db.Averias
+                .Where(a => a.Latitud != null && a.Longitud != null)
+                .OrderByDescending(a => a.FechaReporte)
+                .Take(50)
+                .Select(a => new
+                {
+                    id = a.AveriaId,
+                    tipo = a.Tipo ?? "Sin tipo",
+                    estado = a.Estado ?? "Ingresado",
+                    lat = a.Latitud,
+                    lng = a.Longitud,
+                    direccion = a.Direccion ?? "Sin dirección"
+                })
+                .ToList();
+
+            return Json(new { success = true, data = averias }, JsonRequestBehavior.AllowGet);
+        }
+
+        // ============================================================
+        // ALERTAS
+        // ============================================================
+
+        public ActionResult Alertas()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var alertas = _db.Notificaciones
+                .Where(n => n.UsuarioId == usuarioId)
+                .OrderByDescending(n => n.Fecha)
+                .Take(50)
+                .ToList();
+
+            ViewBag.Alertas = alertas;
             return View();
         }
 
-        // GET: Clientes/Tienda
+        // ============================================================
+        // PUSH · Registrar + enviar correo
+        // ============================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult NotificarPush(string titulo, string mensaje)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return Json(new { success = false, message = "Sesión expirada." });
+
+            if (string.IsNullOrWhiteSpace(titulo) || string.IsNullOrWhiteSpace(mensaje))
+                return Json(new { success = false, message = "Título y mensaje son obligatorios." });
+
+            try
+            {
+                var notif = new Notificacion
+                {
+                    UsuarioId = usuarioId.Value,
+                    Titulo = titulo,
+                    Mensaje = mensaje,
+                    Fecha = DateTime.Now,
+                    Leida = false,
+                    Tipo = "Push",
+                    Estado = "Enviada"
+                };
+                _db.Notificaciones.Add(notif);
+                _db.SaveChanges();
+
+                EnviarCorreoReal(usuarioId.Value, titulo, mensaje);
+
+                return Json(new { success = true, id = notif.NotificacionId });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // ============================================================
+        // CREAR TRÁMITE
+        // ============================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult CrearTramite(string tipo, string descripcion, string nise = null, string telefono = null)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null)
+                return Json(new { success = false, message = "Sesión expirada." });
+
+            if (string.IsNullOrWhiteSpace(tipo) || string.IsNullOrWhiteSpace(descripcion))
+                return Json(new { success = false, message = "Faltan datos obligatorios." });
+
+            try
+            {
+                var numeroRef = "TR-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+
+                var tramite = new Tramite
+                {
+                    UsuarioId = usuarioId.Value,
+                    Tipo = tipo,
+                    Categoria = "General",
+                    Estado = "Iniciado",
+                    FechaSolicitud = DateTime.Now,
+                    FechaActualizacion = DateTime.Now,
+                    Descripcion = descripcion,
+                    NumeroReferencia = numeroRef,
+                    DatosFormulario = "{\"nise\":\"" + (nise ?? "") + "\",\"telefono\":\"" + (telefono ?? "") + "\"}"
+                };
+
+                _db.Tramites.Add(tramite);
+                _db.SaveChanges();
+
+                var notif = new Notificacion
+                {
+                    UsuarioId = usuarioId.Value,
+                    Titulo = "Trámite iniciado",
+                    Mensaje = tipo + " · " + numeroRef + " · Estado: Iniciado",
+                    Fecha = DateTime.Now,
+                    Leida = false,
+                    Tipo = "Tramite",
+                    Estado = "Iniciado"
+                };
+                _db.Notificaciones.Add(notif);
+                _db.SaveChanges();
+
+                EnviarCorreoReal(usuarioId.Value,
+                    "Trámite iniciado · " + tipo,
+                    "Tu trámite <b>" + tipo + "</b> fue recibido con el número de referencia <b>" + numeroRef + "</b>. Te notificaremos cuando cambie de estado.");
+
+                return Json(new { success = true, id = numeroRef });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // ============================================================
+        // ENVÍO DE CORREO REAL (SMTP)
+        // ============================================================
+
+        private void EnviarCorreoReal(int usuarioId, string titulo, string mensaje)
+        {
+            var usuario = _db.Usuarios.Find(usuarioId);
+            if (usuario == null || string.IsNullOrWhiteSpace(usuario.Correo)) return;
+
+            try
+            {
+                var smtpHost = System.Configuration.ConfigurationManager.AppSettings["SmtpHost"] ?? "smtp.gmail.com";
+                var smtpPort = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SmtpPort"] ?? "587");
+                var smtpUser = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
+                var smtpPass = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
+                var smtpFrom = System.Configuration.ConfigurationManager.AppSettings["SmtpFrom"] ?? smtpUser;
+
+                if (string.IsNullOrWhiteSpace(smtpUser) || string.IsNullOrWhiteSpace(smtpPass))
+                    return;
+
+                using (var smtp = new System.Net.Mail.SmtpClient(smtpHost, smtpPort))
+                {
+                    smtp.EnableSsl = true;
+                    smtp.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
+
+                    var mail = new System.Net.Mail.MailMessage
+                    {
+                        From = new System.Net.Mail.MailAddress(smtpFrom, "CNFL"),
+                        Subject = "CNFL · " + titulo,
+                        IsBodyHtml = true,
+                        Body = @"
+                            <div style='font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; background: #f5f6fa; border-radius: 16px;'>
+                                <div style='text-align: center; margin-bottom: 20px;'>
+                                    <h1 style='color: #1E23E6; font-size: 22px; margin: 0;'>CNFL</h1>
+                                </div>
+                                <div style='background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 4px 14px rgba(16,20,40,.06);'>
+                                    <h2 style='color: #0E1116; font-size: 18px; margin: 0 0 12px;'>" + titulo + @"</h2>
+                                    <p style='color: #727A86; font-size: 14px; line-height: 1.5; margin: 0 0 20px;'>" + mensaje + @"</p>
+                                    <a href='http://localhost:44387/Clientes/Alertas'
+                                       style='display: inline-block; background: #FF692D; color: #fff; text-decoration: none; padding: 12px 22px; border-radius: 10px; font-weight: 700; font-size: 14px;'>
+                                        Ver en la app
+                                    </a>
+                                </div>
+                                <p style='color: #aab0be; font-size: 11px; text-align: center; margin-top: 18px; line-height: 1.5;'>
+                                    Este correo fue enviado automáticamente por CNFL.<br>
+                                    Si no solicitaste esta notificación, ignoralo.
+                                </p>
+                            </div>"
+                    };
+                    mail.To.Add(usuario.Correo);
+
+                    smtp.Send(mail);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error enviando correo: " + ex.Message);
+            }
+        }
+
+        // ============================================================
+        // TRÁMITES
+        // ============================================================
+
+        public ActionResult Tramites()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var activos = _db.Tramites
+                .Where(t => t.UsuarioId == usuarioId)
+                .OrderByDescending(t => t.FechaSolicitud)
+                .ToList();
+
+            var catalogo = new[]
+            {
+                "Cambio de conexión de voltaje",
+                "Cambio de nombre de abonado",
+                "Cambio de servicio provisional a definitivo",
+                "Desconexión y reconexión",
+                "Solicitud diseño de red eléctrica y DER",
+                "Ingreso a tarifa residencial horaria",
+                "Reclamo por daños con Responsabilidad Civil",
+                "Solicitud de conexión de transformador temporal",
+                "Solicitud de Servicio Nuevo Monofásico o Trifásico",
+                "Solicitud de Traslado de Medidor",
+                "Solicitud de Traspaso de Servicio Eléctrico",
+                "Solicitud de Suministro Eléctrico para Inmuebles",
+                "Solicitud de Suministro Eléctrico Especial",
+                "Solicitud de Alumbrado Público",
+                "Solicitud Servicio Especial de Carga Fija",
+                "Solicitud Servicio Especial Temporal para Eventos"
+            };
+
+            ViewBag.TramitesActivos = activos;
+            ViewBag.Catalogo = catalogo;
+            return View();
+        }
+
+        // ============================================================
+        // PRODUCTOS Y SERVICIOS
+        // ============================================================
+
+        public ActionResult ProductosServicios()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+            return View();
+        }
+
+        // ============================================================
+        // TIENDA / CARRITO
+        // ============================================================
+
         public ActionResult Tienda()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+            return View();
+        }
 
-            var banners = new List<BannerDto>
-            {
-                new BannerDto { Titulo = "Servicios Hogar 360", Subtitulo = "Eficiencia energética, domótica, acometidas y más", Icono = "🏡", CategoriaId = "hogar360", ColorInicio = "#0033A0", ColorFin = "#2a4fd6" },
-                new BannerDto { Titulo = "Internet Fijo 5G", Subtitulo = "Navegación fluida, streaming y gaming sin límites", Icono = "📶", CategoriaId = "internet", ColorInicio = "#1E23E6", ColorFin = "#64B9CD" },
-                new BannerDto { Titulo = "Seguro de Hogar", Subtitulo = "Protegé tu vivienda contra incendio y otros riesgos", Icono = "🛡️", CategoriaId = "seguro-hogar", ColorInicio = "#0033A0", ColorFin = "#64B95A" },
-                new BannerDto { Titulo = "Tienda CNFL", Subtitulo = "Electrodomésticos, tecnología y línea blanca a crédito", Icono = "🛒", CategoriaId = "tienda", ColorInicio = "#FF692D", ColorFin = "#F5A623" },
-                new BannerDto { Titulo = "CNFL Te Asiste", Subtitulo = "Asistencias para el hogar cuando más las necesitás", Icono = "🤝", CategoriaId = "asiste", ColorInicio = "#64B95A", ColorFin = "#0033A0" }
-            };
-
-            ViewBag.Banners = banners;
+        public ActionResult DetalleProducto(int id = 0)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+            ViewBag.ProductoId = id;
             return View();
         }
 
         // ============================================================
-        // GET: Clientes/DetalleProducto?id=tienda
-        // ⭐ AHORA CARGA LOS PRODUCTOS DESDE TiendaController
+        // MIS COMPRAS
         // ============================================================
-        public ActionResult DetalleProducto(string id)
+
+        public ActionResult MisCompras()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            if (string.IsNullOrWhiteSpace(id))
-                return RedirectToAction("Tienda");
-
-            ViewBag.CategoriaId = id;
-
-            var titulos = new Dictionary<string, string>
-            {
-                { "tienda", "Tienda CNFL" },
-                { "supresores", "Supresores y Bases" },
-                { "cargadores", "Cargadores Semirápidos" },
-                { "bienes", "Bienes Inmuebles CNFL" },
-                { "asiste", "CNFL Te Asiste" },
-                { "internet", "Internet Fijo 5G" },
-                { "seguro-hogar", "Seguro de Hogar" },
-                { "sri", "Ingeniería Eléctrica (SIE)" },
-                { "ambientales", "Servicios Ambientales" },
-                { "calibracion", "Calibración" },
-                { "anonos", "Taller Anonos" },
-                { "reparacion", "Reparación y Mantenimiento" },
-                { "hogar360", "Servicios Hogar 360" },
-                { "videovigilancia", "Videovigilancia" },
-                { "movilidad", "Movilidad Eléctrica" },
-                { "alquileres", "Alquileres" },
-                { "soluciones-energeticas", "Soluciones Energéticas Integrales" },
-                { "marketplace", "Marketplace" }
-            };
-
-            var subtitulos = new Dictionary<string, string>
-            {
-                { "tienda", "Comprá productos del hogar" },
-                { "supresores", "Protección en cada partido" },
-                { "cargadores", "Energía lista para cada jugada" },
-                { "bienes", "Locales y propiedades" },
-                { "asiste", "Asistencias y seguros" },
-                { "internet", "Viví la velocidad" },
-                { "seguro-hogar", "Contra incendio y rayo" },
-                { "sri", "Soluciones profesionales" },
-                { "ambientales", "Sostenibilidad y control" },
-                { "calibracion", "Equipos certificados" },
-                { "anonos", "Reparación especializada" },
-                { "reparacion", "Servicio técnico" },
-                { "hogar360", "Domótica, acometidas y eficiencia energética" },
-                { "videovigilancia", "Seguridad para tu hogar o negocio" },
-                { "movilidad", "Vehículos y estaciones de carga eléctrica" },
-                { "alquileres", "Espacios en alquiler de la CNFL" },
-                { "soluciones-energeticas", "Diagnóstico y diseño energético a medida" },
-                { "marketplace", "Comprá y vendé entre clientes CNFL" }
-            };
-
-            ViewBag.Titulo = titulos.ContainsKey(id) ? titulos[id] : "Producto";
-            ViewBag.Subtitulo = subtitulos.ContainsKey(id) ? subtitulos[id] : "";
-
-            // ⭐ CLAVE: Cargar el catálogo de productos de esa categoría
-            ViewBag.Productos = TiendaController.GetCatalogo(id);
-
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
             return View();
         }
 
         // ============================================================
-        // REPORTES DE AVERÍAS — FLUJO COMPLETO
+        // MÉTODOS DE PAGO
         // ============================================================
 
-        // GET: Clientes/TiposReportes
-        public ActionResult TiposReportes()
+        public ActionResult MetodosPago()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
             return View();
         }
 
-        // GET: Clientes/TiposReportesDetalle
-        public ActionResult TiposReportesDetalle(string tipo)
+        // ============================================================
+        // REPORTES
+        // ============================================================
+
+        public ActionResult Reportes()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            ViewBag.Tipo = string.IsNullOrWhiteSpace(tipo) ? "Avería" : tipo;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
             return View();
         }
 
-        // GET: Clientes/ReportarAveria
-        public ActionResult ReportarAveria(string tipo)
+        public ActionResult EstadoAveria(int id = 0)
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
-            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
-            ViewBag.NISEs = new SelectList(nises, "NiseId", "NumeroNise");
-            ViewBag.Tipo = tipo ?? "";
+            var averia = _db.Averias.FirstOrDefault(a => a.AveriaId == id && a.UsuarioId == usuarioId);
+
+            ViewBag.AveriaId = id;
+            ViewBag.Averia = averia;
             return View();
         }
 
-        // POST: Clientes/ReportarAveria
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ReportarAveria(Averia averia)
+        public ActionResult HistorialReportes()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            if (ModelState.IsValid)
-            {
-                averia.UsuarioId = usuarioId.Value;
-                averia.FechaReporte = DateTime.Now;
-                averia.Estado = "Ingresado";
-                _db.Averias.Add(averia);
-                _db.SaveChanges();
-
-                var notificacion = new Notificacion
-                {
-                    UsuarioId = usuarioId.Value,
-                    Titulo = "Avería reportada",
-                    Mensaje = $"Su reporte de avería #{averia.AveriaId} ha sido ingresado correctamente.",
-                    Fecha = DateTime.Now,
-                    Leida = false,
-                    Tipo = "Averia"
-                };
-                _db.Notificaciones.Add(notificacion);
-                _db.SaveChanges();
-
-                ViewBag.Mensaje = "Avería reportada exitosamente. Número de seguimiento: #" + averia.AveriaId;
-            }
-
-            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
-            ViewBag.NISEs = new SelectList(nises, "NiseId", "NumeroNise");
-            return View(averia);
-        }
-
-        // GET: Clientes/EstadoAveria/5
-        public ActionResult EstadoAveria(int id)
-        {
-            var averia = _db.Averias
-                .Include("NISE")
-                .FirstOrDefault(a => a.AveriaId == id);
-
-            if (averia == null)
-                return HttpNotFound();
-
-            return View(averia);
-        }
-
-        // GET: Clientes/ConsultarAveria
-        public ActionResult ConsultarAveria()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            return View();
-        }
-
-        // GET: Clientes/GenerarComprobante
-        public ActionResult GenerarComprobante()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            return View();
-        }
-
-        // GET: Clientes/MapaAverias
-        public ActionResult MapaAverias()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            return View();
-        }
-
-        // GET: Clientes/MapaAveriasData
-        [HttpGet]
-        public JsonResult MapaAveriasData()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return Json(new { success = false, message = "No autenticado." }, JsonRequestBehavior.AllowGet);
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
             var averias = _db.Averias
-                .Include("NISE")
-                .Where(a => a.Latitud != null && a.Longitud != null)
+                .Where(a => a.UsuarioId == usuarioId)
                 .OrderByDescending(a => a.FechaReporte)
                 .Take(50)
                 .ToList();
 
-            var data = averias.Select(a => new ReporteMapa
-            {
-                AveriaId = a.AveriaId,
-                Titulo = "Avería #" + a.AveriaId,
-                Tipo = a.Tipo ?? "Sin tipo",
-                Estado = a.Estado ?? "Ingresado",
-                Direccion = a.Direccion ?? "Sin dirección",
-                NiseNumero = a.NISE != null ? a.NISE.NumeroNise : "N/A",
-                Latitud = a.Latitud ?? 0,
-                Longitud = a.Longitud ?? 0,
-                FechaReporte = a.FechaReporte
-            }).ToList();
-
-            return Json(new { success = true, data = data }, JsonRequestBehavior.AllowGet);
-        }
-
-        // GET: Clientes/HistorialReportes
-        public ActionResult HistorialReportes()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            var averias = _db.Averias
-                .Include("NISE")
-                .Where(a => a.UsuarioId == usuarioId)
-                .OrderByDescending(a => a.FechaReporte)
-                .ToList();
-
-            return View(averias);
-        }
-
-        // ============================================================
-        // ALUMBRADO PÚBLICO
-        // ============================================================
-
-        // GET: Clientes/ReportarAlumbrado
-        public ActionResult ReportarAlumbrado()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            return View();
-        }
-
-        // POST: Clientes/ReportarAlumbrado
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ReportarAlumbrado(string NISE, string TipoProblema, string Direccion, string Descripcion)
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
-            if (string.IsNullOrWhiteSpace(Direccion) || string.IsNullOrWhiteSpace(TipoProblema))
-            {
-                ViewBag.Error = "Debe completar la dirección y el tipo de problema.";
-                return View();
-            }
-
-            var averia = new Averia
-            {
-                UsuarioId = usuarioId.Value,
-                Tipo = "Iluminación pública",
-                Descripcion = $"Tipo: {TipoProblema}. Dirección: {Direccion}. Detalle: {Descripcion}",
-                FechaReporte = DateTime.Now,
-                Estado = "Ingresado"
-            };
-
-            _db.Averias.Add(averia);
-            _db.SaveChanges();
-
-            var notificacion = new Notificacion
-            {
-                UsuarioId = usuarioId.Value,
-                Titulo = "Reporte de alumbrado enviado",
-                Mensaje = $"Su reporte de alumbrado #{averia.AveriaId} fue registrado. Gracias por su colaboración.",
-                Fecha = DateTime.Now,
-                Leida = false,
-                Tipo = "Averia"
-            };
-            _db.Notificaciones.Add(notificacion);
-            _db.SaveChanges();
-
-            ViewBag.Mensaje = "Reporte de alumbrado enviado correctamente. Número de seguimiento: #" + averia.AveriaId;
+            ViewBag.Averias = averias;
             return View();
         }
 
         // ============================================================
-        // CALCULADORA DE CONSUMO
+        // CALCULADORA
         // ============================================================
 
-        // GET: Clientes/Calculadora
         public ActionResult Calculadora()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
-
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
             return View();
         }
 
         // ============================================================
-        // CHATBOT
+        // CUENTA
         // ============================================================
 
-        // GET: Clientes/Chatbot
-        public ActionResult Chatbot()
+        public ActionResult Cuenta()
         {
             var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
-            return View();
-        }
+            var usuario = _db.Usuarios
+                .Include("ActividadEconomica")
+                .FirstOrDefault(u => u.UsuarioId == usuarioId);
 
-        // ============================================================
-        // HISTORIAL DE PAGOS
-        // ============================================================
+            if (usuario == null) return HttpNotFound();
 
-        // GET: Clientes/HistorialPagos
-        public ActionResult HistorialPagos()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return RedirectToAction("Login", "Cuenta");
+            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
 
-            var pagos = _db.Pagos
-                .Include("Factura")
-                .Include("Factura.NISE")
-                .Where(p => p.UsuarioId == usuarioId)
-                .OrderByDescending(p => p.FechaCreacion)
+            ViewBag.NISEs = nises;
+            ViewBag.Provincias = UbicacionCostaRica.Catalogo.Keys.ToList();
+            ViewBag.ActividadesEconomicas = _db.ActividadesEconomicas
+                .OrderBy(a => a.Codigo)
+                .Select(a => new ActividadEconomicaDto
+                {
+                    Id = a.Id,
+                    Codigo = a.Codigo,
+                    Nombre = a.Nombre
+                })
                 .ToList();
+            ViewBag.ActividadActualId = usuario.ActividadEconomicaId;
 
-            return View(pagos);
+            return View(usuario);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult GuardarCuenta(Usuario model, string NombreCompleto,
+            bool FacturaElectronica = false, int? ActividadEconomicaId = null,
+            HttpPostedFileBase FotoPerfil = null,
+            string Provincia = null, string Canton = null,
+            string Distrito = null, string DireccionExacta = null)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var usuario = _db.Usuarios.Find(usuarioId);
+            if (usuario == null) return HttpNotFound();
+
+            if (!string.IsNullOrWhiteSpace(NombreCompleto))
+            {
+                var partes = NombreCompleto.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (partes.Length >= 3)
+                {
+                    usuario.Apellidos = string.Join(" ", partes.Skip(partes.Length - 2));
+                    usuario.Nombre = string.Join(" ", partes.Take(partes.Length - 2));
+                }
+                else if (partes.Length == 2)
+                {
+                    usuario.Nombre = partes[0];
+                    usuario.Apellidos = partes[1];
+                }
+                else
+                {
+                    usuario.Nombre = NombreCompleto.Trim();
+                    usuario.Apellidos = "";
+                }
+            }
+
+            usuario.Correo = model.Correo;
+            usuario.Telefono = model.Telefono;
+            usuario.CorreoSecundario = model.CorreoSecundario;
+            usuario.TelefonoSecundario = model.TelefonoSecundario;
+
+            if (!string.IsNullOrWhiteSpace(Provincia)) usuario.Provincia = Provincia;
+            if (!string.IsNullOrWhiteSpace(Canton)) usuario.Canton = Canton;
+            if (!string.IsNullOrWhiteSpace(Distrito)) usuario.Distrito = Distrito;
+            if (!string.IsNullOrWhiteSpace(DireccionExacta)) usuario.DireccionExacta = DireccionExacta;
+
+            usuario.FacturaElectronica = FacturaElectronica;
+            usuario.ActividadEconomicaId = (FacturaElectronica && ActividadEconomicaId.HasValue)
+                ? ActividadEconomicaId
+                : (int?)null;
+
+            if (FotoPerfil != null && FotoPerfil.ContentLength > 0)
+            {
+                var tiposPermitidos = new[] { "image/jpeg", "image/png", "image/jpg", "image/webp" };
+                if (Array.IndexOf(tiposPermitidos, FotoPerfil.ContentType) >= 0)
+                {
+                    var extension = System.IO.Path.GetExtension(FotoPerfil.FileName).ToLower();
+                    var nombreArchivo = "perfil_" + usuario.UsuarioId + "_" + DateTime.Now.Ticks + extension;
+
+                    var carpeta = Server.MapPath("~/Content/uploads/perfiles/");
+                    if (!System.IO.Directory.Exists(carpeta))
+                        System.IO.Directory.CreateDirectory(carpeta);
+
+                    var rutaCompleta = System.IO.Path.Combine(carpeta, nombreArchivo);
+                    FotoPerfil.SaveAs(rutaCompleta);
+
+                    usuario.FotoPerfil = "/Content/uploads/perfiles/" + nombreArchivo;
+                }
+            }
+
+            _db.SaveChanges();
+            Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
+            Session["FotoPerfil"] = usuario.FotoPerfil;
+
+            TempData["Mensaje"] = "Datos actualizados correctamente.";
+            return RedirectToAction("Cuenta");
+        }
+
+        // ============================================================
+        // AJAX: Provincia → Cantón → Distrito
+        // ============================================================
+
+        [HttpGet]
+        public JsonResult GetCantones(string provincia)
+        {
+            if (string.IsNullOrWhiteSpace(provincia) ||
+                !UbicacionCostaRica.Catalogo.ContainsKey(provincia))
+                return Json(new string[0], JsonRequestBehavior.AllowGet);
+
+            var cantones = UbicacionCostaRica.Catalogo[provincia].Keys.ToList();
+            return Json(cantones, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetDistritos(string provincia, string canton)
+        {
+            if (string.IsNullOrWhiteSpace(provincia) ||
+                string.IsNullOrWhiteSpace(canton) ||
+                !UbicacionCostaRica.Catalogo.ContainsKey(provincia) ||
+                !UbicacionCostaRica.Catalogo[provincia].ContainsKey(canton))
+                return Json(new string[0], JsonRequestBehavior.AllowGet);
+
+            var distritos = UbicacionCostaRica.Catalogo[provincia][canton];
+            return Json(distritos, JsonRequestBehavior.AllowGet);
         }
 
         // ============================================================
         // DISPOSE
         // ============================================================
+
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-                _db.Dispose();
+            if (disposing) _db.Dispose();
             base.Dispose(disposing);
         }
     }

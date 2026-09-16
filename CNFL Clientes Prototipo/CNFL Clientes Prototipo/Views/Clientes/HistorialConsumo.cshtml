@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "Historial de consumo";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    var promedio = ViewBag.Promedio as double? ?? 0;
+    var maximo = ViewBag.Maximo as double? ?? 0;
+    var ultimo = ViewBag.Ultimo as double? ?? 0;
+    var historialJson = ViewBag.HistorialJson as string ?? "[]";
+}
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="appbar">
+    <a href="@Url.Action("MisServicios", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Historial de consumo</div>
+    <div style="width:40px;"></div>
+</div>
+
+<p class="h-greet" style="margin-top:4px; line-height:1.5;">
+    Revisá tu consumo de kWh y el costo en colones.
+</p>
+
+<!-- ═══════════ MÉTRICAS ═══════════ -->
+<div class="eyebrow">Resumen kWh / ₡</div>
+
+<div class="card">
+    <div class="mgrid">
+        <div class="mcell">
+            <div class="k">Promedio del año</div>
+            <div class="v">@promedio.ToString("N0") <small>kWh</small></div>
+        </div>
+        <div class="mcell">
+            <div class="k">Último mes</div>
+            <div class="v">@ultimo.ToString("N0") <small>kWh</small></div>
+        </div>
+        <div class="mcell">
+            <div class="k">Consumo máximo</div>
+            <div class="v">@maximo.ToString("N0") <small>kWh</small></div>
+        </div>
+        <div class="mcell">
+            <div class="k">Costo estimado</div>
+            <div class="v" style="color:var(--orange);">₡ @((ultimo * 78).ToString("N0"))</div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════ GRÁFICA ═══════════ -->
+<div class="eyebrow">Vista gráfica</div>
+
+<div class="chart-card" style="margin-top:0;">
+    <div class="bar-chart" id="barChart">
+        <div class="bar" data-6m="40" data-31d="55" data-lecturas="30"><span>Mar</span></div>
+        <div class="bar" data-6m="62" data-31d="35" data-lecturas="70"><span>Abr</span></div>
+        <div class="bar" data-6m="48" data-31d="80" data-lecturas="45"><span>May</span></div>
+        <div class="bar" data-6m="75" data-31d="42" data-lecturas="60"><span>Jun</span></div>
+        <div class="bar" data-6m="55" data-31d="90" data-lecturas="38"><span>Jul</span></div>
+        <div class="bar hi" data-6m="95" data-31d="65" data-lecturas="85"><span>Ago</span></div>
+    </div>
+
+    <div class="chart-tabs">
+        <button type="button" class="chart-tab active" data-mode="6m">Últimos 6 meses</button>
+        <button type="button" class="chart-tab" data-mode="31d">31 días</button>
+        <button type="button" class="chart-tab" data-mode="lecturas">Lecturas</button>
+    </div>
+</div>
+
+<!-- ═══════════ DETALLE MENSUAL ═══════════ -->
+<div class="eyebrow">Detalle mensual</div>
+
+<div class="rows" id="detalleMensual">
+    <!-- Se llena con JS desde el JSON del controller -->
+</div>
+
+<div id="vacio" class="card" style="text-align:center; padding:26px 18px; display:none;">
+    <div style="font-size:38px; line-height:1;">📊</div>
+    <p style="font-weight:800; font-size:13px; margin-top:12px; color:var(--ink);">Sin historial todavía</p>
+    <p style="font-size:11.5px; color:var(--muted); margin-top:6px; line-height:1.5;">
+        Cuando tengas facturas emitidas vas a ver aquí tu historial.
+    </p>
+</div>
+
+@section Scripts {
+    <script>
+    (function () {
+        // ═══════════ Gráfica dinámica ═══════════
+        var tabs = document.querySelectorAll('.chart-tab');
+        var bars = document.querySelectorAll('#barChart .bar');
+
+        function aplicarModo(modo) {
+            for (var i = 0; i < bars.length; i++) {
+                var bar = bars[i];
+                var v = parseInt(bar.getAttribute('data-' + modo), 10);
+                if (isNaN(v)) v = 0;
+                bar.style.height = v + '%';
+            }
+        }
+
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].addEventListener('click', function () {
+                for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('active');
+                this.classList.add('active');
+                aplicarModo(this.getAttribute('data-mode'));
+            });
+        }
+
+        aplicarModo('6m');
+
+        // ═══════════ Detalle mensual desde el JSON del controller ═══════════
+        var historial = @Html.Raw(historialJson);
+        var cont = document.getElementById('detalleMensual');
+        var vacio = document.getElementById('vacio');
+
+        if (!historial || historial.length === 0) {
+            vacio.style.display = 'block';
+        } else {
+            // Mostrar los últimos 6 en orden descendente
+            var ultimos = historial.slice(-6).reverse();
+
+            for (var k = 0; k < ultimos.length; k++) {
+                var h = ultimos[k];
+                var kwh = Math.round(h.kwh);
+                var monto = Math.round(h.monto);
+
+                var row = document.createElement('div');
+                row.className = 'row-item';
+
+                row.innerHTML =
+                    '<div class="ic" style="background:#eef0ff;">' +
+                        '<svg viewBox="0 0 24 24" fill="none" stroke="#1E23E6" stroke-width="2">' +
+                            '<path d="M3 3v18h18"/>' +
+                            '<path d="M7 14l4-4 4 4 5-5"/>' +
+                        '</svg>' +
+                    '</div>' +
+                    '<div class="tx">' +
+                        '<div class="t">' + h.mes + '</div>' +
+                        '<div class="s">' + kwh.toLocaleString('es-CR') + ' kWh · ₡ ' + monto.toLocaleString('es-CR') + '</div>' +
+                    '</div>' +
+                    '<span class="pill st-normal"><span class="dot"></span>' + kwh + ' kWh</span>';
+
+                cont.appendChild(row);
+            }
+        }
+    })();
+    </script>
+}

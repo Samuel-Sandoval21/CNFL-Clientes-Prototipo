@@ -1,40 +1,152 @@
 ﻿@{
-    ViewBag.Title = "App Móvil";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    ViewBag.Title = "Inicio";
+    Layout = "~/Views/Shared/_LayoutPublico.cshtml";
+
+    var logueado = Session["UsuarioId"] != null;
+    var nombre = Session["Nombre"] as string ?? "";
 }
 
-<link rel="stylesheet" href="~/Content/home-publico.css" />
+<!-- ═══════════════ HERO ═══════════════ -->
+<div class="hero-card">
+    @if (logueado && !string.IsNullOrWhiteSpace(nombre))
+    {
+        <p class="greet">¡Hola, @nombre!</p>
+        <h1>Bienvenido a CNFL</h1>
+        <p class="sub">Tu energía, en una sola app.</p>
+    }
+    else
+    {
+        <p class="greet">Buenas tardes,</p>
+        <h1>Bienvenido a CNFL</h1>
+        <p class="sub">Tu energía, en una sola app.</p>
+    }
+</div>
 
-<div class="public-home">
-    <div style="text-align:center;">
-        <img src="~/images/logo-cnfl.png" alt="CNFL" style="height:60px; width:auto; margin-bottom:16px;" />
+@if (!logueado)
+{
+    <!-- Botones de acceso cuando NO está logueado -->
+    <a href="@Url.Action("Login", "Cuenta")" class="reg-btn" style="display:block;text-align:center;text-decoration:none;background:var(--orange);box-shadow:0 8px 18px -8px rgba(255,105,45,.5);margin-top:14px;">
+        Iniciar sesión
+    </a>
 
-        <h1>Tu energía, en una sola app.</h1>
-        <p>Gestiona tu servicio eléctrico desde tu celular</p>
+    <a href="@Url.Action("Registro", "Cuenta")" class="reg-btn" style="display:block;text-align:center;text-decoration:none;background:#fff;color:var(--blue);border:1.5px solid var(--blue);box-shadow:none;margin-top:10px;">
+        Crear cuenta
+    </a>
+}
 
-        <div class="btn-container">
-            <a href="@Url.Action("Login", "Cuenta")" class="btn-cta-home">Iniciar Sesión</a>
-            <a href="@Url.Action("Registro", "Cuenta")" class="btn-ghost-home">Crear Cuenta</a>
+<!-- ═══════════════ GRÁFICA DE CONSUMO ═══════════════ -->
+<div class="chart-card">
+    <h3>📊 Consumo kWh · NISE 4021</h3>
+    <p class="chart-sub">Comparativo de consumo</p>
+
+    <div class="bar-chart" id="barChart">
+        <div class="bar" data-6m="40" data-31d="55" data-lecturas="30"><span>Mar</span></div>
+        <div class="bar" data-6m="62" data-31d="35" data-lecturas="70"><span>Abr</span></div>
+        <div class="bar" data-6m="48" data-31d="80" data-lecturas="45"><span>May</span></div>
+        <div class="bar" data-6m="75" data-31d="42" data-lecturas="60"><span>Jun</span></div>
+        <div class="bar" data-6m="55" data-31d="90" data-lecturas="38"><span>Jul</span></div>
+        <div class="bar hi" data-6m="95" data-31d="65" data-lecturas="85"><span>Ago</span></div>
+    </div>
+
+    <div class="chart-tabs">
+        <button type="button" class="chart-tab active" data-mode="6m">Últimos 6 meses</button>
+        <button type="button" class="chart-tab" data-mode="31d">31 días</button>
+        <button type="button" class="chart-tab" data-mode="lecturas">Lecturas</button>
+    </div>
+</div>
+
+<!-- ═══════════════ RESUMEN ═══════════════ -->
+<div class="chart-card">
+    <h3>⚡ Resumen del mes</h3>
+    <div class="meter-grid">
+        <div class="meter-cell">
+            <div class="k">Consumo actual</div>
+            <div class="v">312 <small>kWh</small></div>
         </div>
-
-        <div class="feature-grid">
-            <div class="feature-item">
-                <div class="icon">⚡</div>
-                <div class="label">Reporta Averías</div>
-            </div>
-            <div class="feature-item">
-                <div class="icon">💳</div>
-                <div class="label">Paga tus facturas</div>
-            </div>
-            <div class="feature-item">
-                <div class="icon">📊</div>
-                <div class="label">Consulta tu consumo</div>
-            </div>
+        <div class="meter-cell">
+            <div class="k">Mes anterior</div>
+            <div class="v">287 <small>kWh</small></div>
         </div>
-
-        <div class="footer-publico">
-            <p>Consentimiento informado · Política de privacidad</p>
-            <p>© 2026 CNFL - Todos los derechos reservados</p>
+        <div class="meter-cell">
+            <div class="k">Promedio diario</div>
+            <div class="v">10.4 <small>kWh</small></div>
+        </div>
+        <div class="meter-cell">
+            <div class="k">Próxima lectura</div>
+            <div class="v">15 <small>set</small></div>
         </div>
     </div>
 </div>
+
+<!-- ═══════════════ CONTÁCTENOS ═══════════════ -->
+<h2 class="section-h">Contactános</h2>
+
+<div class="contact-list">
+    <a href="tel:8000CNFL" class="contact-item">
+        <div class="ico" style="background:#e8f3ff;color:#1E23E6;">📞</div>
+        <div class="body">
+            <div class="t">Centro de atención</div>
+            <div class="s">8000-CNFL (2635)</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+
+    <a href="mailto:info@cnfl.go.cr" class="contact-item">
+        <div class="ico" style="background:#fff3ec;color:#FF692D;">✉️</div>
+        <div class="body">
+            <div class="t">Correo electrónico</div>
+            <div class="s">info@cnfl.go.cr</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+
+    <a href="https://www.cnfl.go.cr" target="_blank" class="contact-item">
+        <div class="ico" style="background:#e8f7ec;color:#64B95A;">🌐</div>
+        <div class="body">
+            <div class="t">Sitio web</div>
+            <div class="s">www.cnfl.go.cr</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+
+    <a href="#" class="contact-item">
+        <div class="ico" style="background:#f0f0ff;color:#1E23E6;">📍</div>
+        <div class="body">
+            <div class="t">Oficinas centrales</div>
+            <div class="s">San José, Costa Rica</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+</div>
+
+@section Scripts {
+    <script>
+    (function () {
+        var tabs = document.querySelectorAll('.chart-tab');
+        var bars = document.querySelectorAll('#barChart .bar');
+
+        function aplicarModo(modo) {
+            for (var i = 0; i < bars.length; i++) {
+                var bar = bars[i];
+                var v = parseInt(bar.getAttribute('data-' + modo), 10);
+                if (isNaN(v)) v = 0;
+                bar.style.height = v + '%';
+            }
+        }
+
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].addEventListener('click', function () {
+                for (var j = 0; j < tabs.length; j++) {
+                    tabs[j].classList.remove('active');
+                }
+                this.classList.add('active');
+                var modo = this.getAttribute('data-mode');
+                aplicarModo(modo);
+            });
+        }
+
+        // Estado inicial: Últimos 6 meses
+        aplicarModo('6m');
+    })();
+    </script>
+}

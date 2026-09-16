@@ -1,0 +1,422 @@
+﻿@{
+    ViewBag.Title = "Alertas";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    var alertas = ViewBag.Alertas as List<CNFL_Clientes_Prototipo.Models.Notificacion>
+                  ?? new List<CNFL_Clientes_Prototipo.Models.Notificacion>();
+}
+
+<!-- ═══════════ APPBAR ═══════════ -->
+<div class="appbar">
+    <a href="@Url.Action("Dashboard", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Alertas</div>
+    <button type="button" class="icon-btn" id="btnActivarPush" title="Notificaciones">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+        </svg>
+    </button>
+</div>
+
+<p class="h-greet" style="margin-top:4px; line-height:1.5;">
+    Notificaciones sobre tus servicios y eventos importantes.
+</p>
+
+<!-- ═══════════ BANNER PUSH ═══════════ -->
+<div id="pushBanner" class="card" style="margin-top:14px; display:none; background:#eef0ff; border:1px solid #d8ddf8;">
+    <div style="display:flex; gap:12px; align-items:center;">
+        <div style="width:40px; height:40px; border-radius:12px; background:#1E23E6; display:grid; place-items:center; flex:none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+        </div>
+        <div style="flex:1; min-width:0;">
+            <div style="font-size:13px; font-weight:800; color:var(--ink);">Activá las notificaciones</div>
+            <div style="font-size:11.5px; color:var(--muted); margin-top:2px; line-height:1.4;">
+                Te avisamos al instante cuando haya novedades.
+            </div>
+        </div>
+        <button type="button" id="btnPermitirPush"
+                style="background:var(--blue); color:#fff; border:0; font-family:inherit; font-weight:800; font-size:12px; padding:9px 14px; border-radius:10px; cursor:pointer;">
+            Activar
+        </button>
+    </div>
+</div>
+
+<!-- ═══════════ 1. AVERÍAS ═══════════ -->
+<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+    <span>⚡ Averías</span>
+    <span class="pill st-inc" style="font-size:10px;">
+        <span class="dot"></span>1 activa
+    </span>
+</div>
+
+<div class="rows">
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 6 })" class="alert-card b-red" style="text-decoration:none; color:inherit;">
+        <div class="ic" style="background:#fdeaea;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+            </svg>
+        </div>
+        <div class="tx" style="flex:1;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                <div class="t">#6 · Transformador dañado</div>
+                <span class="pill st-prev" style="font-size:10px;"><span class="dot"></span>En proceso</span>
+            </div>
+            <div class="s">Operador en camino · llegada estimada 4:30 pm</div>
+            <div class="s" style="margin-top:6px; font-weight:700; color:var(--blue); font-size:11px;">
+                11/09/2026 · 14:08
+            </div>
+        </div>
+    </a>
+
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 3 })" class="alert-card b-amber" style="text-decoration:none; color:inherit;">
+        <div class="ic" style="background:#fef3e0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+            </svg>
+        </div>
+        <div class="tx" style="flex:1;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                <div class="t">#3 · Sin energía</div>
+                <span class="pill st-prev" style="font-size:10px;"><span class="dot"></span>Reportada</span>
+            </div>
+            <div class="s">Reporte recibido · asignando operador</div>
+            <div class="s" style="margin-top:6px; font-weight:700; color:var(--blue); font-size:11px;">
+                11/09/2026 · 14:08
+            </div>
+        </div>
+    </a>
+
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 1 })" class="alert-card b-sky" style="text-decoration:none; color:inherit;">
+        <div class="ic" style="background:#e9f7ec;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                <path d="M20 6 9 17l-5-5" />
+            </svg>
+        </div>
+        <div class="tx" style="flex:1;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                <div class="t">#1 · Sin energía</div>
+                <span class="pill st-normal" style="font-size:10px;"><span class="dot"></span>Finalizada</span>
+            </div>
+            <div class="s">Resuelta exitosamente el 09/09/2026 a las 23:25</div>
+        </div>
+    </a>
+</div>
+
+<!-- ═══════════ 2. SUSPENSIONES PROGRAMADAS ═══════════ -->
+<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+    <span>🔧 Suspensiones programadas</span>
+    <span class="pill st-prev" style="font-size:10px;">
+        <span class="dot"></span>1 programada
+    </span>
+</div>
+
+<div class="rows">
+    <div class="alert-card b-amber">
+        <div class="ic" style="background:#fef3e0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <path d="M8 2v4M16 2v4M3 10h18" />
+            </svg>
+        </div>
+        <div class="tx" style="flex:1;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                <div class="t">Mantenimiento NISE-014</div>
+                <span class="pill st-prev" style="font-size:10px;"><span class="dot"></span>Programada</span>
+            </div>
+            <div class="s">Suspensión temporal del servicio</div>
+            <div class="s" style="margin-top:6px; font-weight:700; color:var(--amber); font-size:11px;">
+                📅 Mañana 8:00 am – 10:00 am
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════ 3. FACTURAS Y PAGOS ═══════════ -->
+<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+    <span>💰 Facturas y pagos</span>
+    <span class="pill st-inc" style="font-size:10px;">
+        <span class="dot"></span>1 por vencer
+    </span>
+</div>
+
+<div class="rows">
+    <a href="@Url.Action("MisFacturas", "Clientes")" class="alert-card b-orange" style="text-decoration:none; color:inherit;">
+        <div class="ic" style="background:#fff3ec;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6M9 13h6M9 17h4" />
+            </svg>
+        </div>
+        <div class="tx" style="flex:1;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                <div class="t">Factura por vencer</div>
+                <span class="pill st-prev" style="font-size:10px;"><span class="dot"></span>5 días</span>
+            </div>
+            <div class="s">₡18.450 · F-2026-002 · NISE-002</div>
+            <div class="s" style="margin-top:6px; font-weight:700; color:var(--orange); font-size:11px;">
+                ⚠️ Vence el 30/08/2026 · posible corte
+            </div>
+        </div>
+    </a>
+
+    <div class="alert-card b-red">
+        <div class="ic" style="background:#fdeaea;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+                <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+            </svg>
+        </div>
+        <div class="tx" style="flex:1;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                <div class="t">Medio de pago vencido</div>
+                <span class="pill st-inc" style="font-size:10px;"><span class="dot"></span>Urgente</span>
+            </div>
+            <div class="s">Tarjeta terminada en ****4521 · vencida 07/2026</div>
+            <div class="s" style="margin-top:6px; font-weight:700; color:var(--red); font-size:11px;">
+                Actualizá tu método de pago para evitar cortes
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════ 4. EVENTOS ═══════════ -->
+<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+    <span>📊 Eventos</span>
+    <span class="pill st-prev" style="font-size:10px;">
+        <span class="dot"></span>2 eventos
+    </span>
+</div>
+
+<div class="rows">
+    <div class="alert-card b-amber">
+        <div class="ic" style="background:#fef3e0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+        </div>
+        <div class="tx" style="flex:1;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                <div class="t">Voltaje fuera de rango</div>
+                <span class="pill st-prev" style="font-size:10px;"><span class="dot"></span>Advertencia</span>
+            </div>
+            <div class="s">NISE-002 registró 138V (rango normal: 110–127V)</div>
+            <div class="s" style="margin-top:6px; font-weight:700; color:var(--amber); font-size:11px;">
+                📅 11/09/2026 · 14:08
+            </div>
+        </div>
+    </div>
+
+    <div class="alert-card b-sky">
+        <div class="ic" style="background:#eef6ff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2">
+                <path d="M3 3v18h18" />
+                <path d="M7 14l4-4 4 4 5-5" />
+            </svg>
+        </div>
+        <div class="tx" style="flex:1;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                <div class="t">Consumo fuera de límite</div>
+                <span class="pill st-prev" style="font-size:10px;"><span class="dot"></span>Info</span>
+            </div>
+            <div class="s">Tu consumo subió 15% vs. el promedio mensual</div>
+            <div class="s" style="margin-top:6px; font-weight:700; color:var(--blue); font-size:11px;">
+                📅 10/09/2026 · 08:30
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════ CONFIGURACIÓN ═══════════ -->
+<div class="eyebrow">⚙️ Configuración de notificaciones</div>
+
+<div class="card">
+    <div style="display:flex; flex-direction:column; gap:14px;">
+        <label style="display:flex; align-items:center; justify-content:space-between; gap:12px; cursor:pointer;">
+            <div>
+                <div style="font-size:13px; font-weight:800; color:var(--ink);">Averías</div>
+                <div style="font-size:11px; color:var(--muted); margin-top:2px;">Reportada, en proceso, finalizada</div>
+            </div>
+            <input type="checkbox" checked style="width:22px; height:22px; accent-color:var(--blue); cursor:pointer;" />
+        </label>
+
+        <label style="display:flex; align-items:center; justify-content:space-between; gap:12px; cursor:pointer;">
+            <div>
+                <div style="font-size:13px; font-weight:800; color:var(--ink);">Suspensiones programadas</div>
+                <div style="font-size:11px; color:var(--muted); margin-top:2px;">Avisos con anticipación</div>
+            </div>
+            <input type="checkbox" checked style="width:22px; height:22px; accent-color:var(--blue); cursor:pointer;" />
+        </label>
+
+        <label style="display:flex; align-items:center; justify-content:space-between; gap:12px; cursor:pointer;">
+            <div>
+                <div style="font-size:13px; font-weight:800; color:var(--ink);">Facturas y pagos</div>
+                <div style="font-size:11px; color:var(--muted); margin-top:2px;">Vencimientos y medios de pago</div>
+            </div>
+            <input type="checkbox" checked style="width:22px; height:22px; accent-color:var(--blue); cursor:pointer;" />
+        </label>
+
+        <label style="display:flex; align-items:center; justify-content:space-between; gap:12px; cursor:pointer;">
+            <div>
+                <div style="font-size:13px; font-weight:800; color:var(--ink);">Eventos de voltaje / consumo</div>
+                <div style="font-size:11px; color:var(--muted); margin-top:2px;">Alertas técnicas de tu NISE</div>
+            </div>
+            <input type="checkbox" checked style="width:22px; height:22px; accent-color:var(--blue); cursor:pointer;" />
+        </label>
+    </div>
+</div>
+
+<!-- ═══════════ BOTÓN DE PRUEBA ═══════════ -->
+<div style="margin-top:14px;">
+    <button type="button" id="btnProbarPush" class="rec-btn" style="background:var(--navy);">
+        🔔 Probar notificación push
+    </button>
+</div>
+
+<script>
+        (function () {
+            // ═══════════ 1. Estado del permiso ═══════════
+            var permisoActual = (typeof Notification !== 'undefined') ? Notification.permission : 'unsupported';
+            var banner = document.getElementById('pushBanner');
+            var btnPermitir = document.getElementById('btnPermitirPush');
+            var btnActivar = document.getElementById('btnActivarPush');
+            var btnProbar = document.getElementById('btnProbarPush');
+
+            if (permisoActual === 'default' && banner) {
+                banner.style.display = 'block';
+            }
+
+            // ═══════════ 2. Pedir permiso ═══════════
+            function pedirPermiso() {
+                if (typeof Notification === 'undefined') {
+                    alert('Tu navegador no soporta notificaciones.');
+                    return;
+                }
+                Notification.requestPermission().then(function (permiso) {
+                    permisoActual = permiso;
+                    if (permiso === 'granted') {
+                        if (banner) banner.style.display = 'none';
+                        mostrarNotificacion(
+                            '¡Notificaciones activadas!',
+                            'Recibirás avisos de CNFL al instante.',
+                            false
+                        );
+                    } else {
+                        alert('No se activaron las notificaciones. Podés activarlas desde la configuración del navegador.');
+                    }
+                });
+            }
+
+            if (btnPermitir) btnPermitir.addEventListener('click', pedirPermiso);
+            if (btnActivar) btnActivar.addEventListener('click', pedirPermiso);
+
+            // ═══════════ 3. Mostrar notificación + sonido + (opcional) correo ═══════════
+            function mostrarNotificacion(titulo, cuerpo, enviarCorreo) {
+                // Beep
+                try {
+                    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    var osc = ctx.createOscillator();
+                    var gain = ctx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.1);
+
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.3);
+                } catch (e) { /* silencioso */ }
+
+                // Notificación nativa
+                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    try {
+                        var notif = new Notification(titulo, {
+                            body: cuerpo,
+                            icon: '/Content/img/logo-cnfl.png',
+                            badge: '/Content/img/logo-cnfl.png',
+                            tag: 'cnfl-' + Date.now()
+                        });
+
+                        notif.onclick = function () {
+                            window.focus();
+                            notif.close();
+                        };
+                    } catch (e) { /* silencioso */ }
+                }
+
+                // Enviar correo real vía AJAX
+                if (enviarCorreo) {
+                    var token = document.querySelector('input[name="__RequestVerificationToken"]');
+                    var tokenValue = token ? token.value : '';
+
+                    var formData = new FormData();
+                    formData.append('titulo', titulo);
+                    formData.append('mensaje', cuerpo);
+                    formData.append('__RequestVerificationToken', tokenValue);
+
+                    fetch('/Clientes/NotificarPush', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (!data.success) console.warn('No se pudo enviar correo:', data.message);
+                    })
+                    .catch(function (err) { console.warn('Error AJAX:', err); });
+                }
+            }
+
+            // ═══════════ 4. Probar manualmente (dispara correo) ═══════════
+            if (btnProbar) {
+                btnProbar.addEventListener('click', function () {
+                    if (Notification.permission !== 'granted') {
+                        pedirPermiso();
+                        return;
+                    }
+                    mostrarNotificacion(
+                        'CNFL · Prueba de notificación',
+                        'Esta es una prueba de notificación push + correo.',
+                        true
+                    );
+                });
+            }
+
+            // ═══════════ 5. Notificaciones automáticas cada 45s ═══════════
+            var eventos = [
+                { t: 'Avería #6 en proceso', c: 'Un operador está en camino al sitio reportado.' },
+                { t: 'Suspensión programada', c: 'NISE-014 · mañana 8:00 am – 10:00 am.' },
+                { t: 'Factura por vencer',    c: '₡18.450 · vence en 5 días · NISE-002.' },
+                { t: 'Evento de voltaje',     c: 'NISE-002 registró 138V · fuera de rango.' }
+            ];
+            var idx = 0;
+
+            setInterval(function () {
+                if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+                var ev = eventos[idx % eventos.length];
+                idx++;
+                mostrarNotificacion('CNFL · ' + ev.t, ev.c, false);
+            }, 45000);
+
+            // ═══════════ 6. Bienvenida ═══════════
+            if (permisoActual === 'granted') {
+                setTimeout(function () {
+                    mostrarNotificacion(
+                        'CNFL · Alertas activas',
+                        'Tenés 1 avería en seguimiento y 1 factura por vencer.',
+                        false
+                    );
+                }, 1500);
+            }
+        })();
+</script>

@@ -2,36 +2,118 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CNFL - @ViewBag.Title</title>
-    <link rel="stylesheet" href="~/Content/Site.css" />
-    <link rel="icon" type="image/x-icon" href="~/images/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1E23E6" />
+    <title>@ViewBag.Title · CNFL</title>
+
+    @Html.Partial("_EstilosBase")
+    @RenderSection("Styles", required: false)
 </head>
 <body>
 
-    <header class="header-publico">
-        <div class="header-container">
-            <img src="~/images/logo-cnfl.png" alt="CNFL" class="logo" />
-            <div class="header-links">
-                <a href="@Url.Action("Login", "Cuenta")" class="btn-login">Iniciar Sesión</a>
-                <a href="@Url.Action("Registro", "Cuenta")" class="btn-register">Registrarse</a>
+    @{
+        var accionActual = ViewContext.RouteData.Values["action"].ToString();
+        var logueado = Session["UsuarioId"] != null;
+    }
+
+    <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-statusbar">
+            <span id="horaActual">--:--</span>
+            <span class="right">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#0E1116" /><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#0E1116" /><rect x="9" y="2" width="3" height="10" rx="1" fill="#0E1116" /><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#0E1116" opacity=".3" /></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.5 2.5 12.7 3.5 14.3 5.1L15.7 3.6C13.7 1.6 11 .5 8 .5S2.3 1.6.3 3.6l1.4 1.5C3.3 3.5 5.5 2.5 8 2.5Z" fill="#0E1116" /><path d="M8 6.5c1.1 0 2.1.4 2.8 1.2l1.4-1.5C11.1 5.1 9.6 4.5 8 4.5s-3.1.6-4.2 1.7l1.4 1.5C5.9 6.9 6.9 6.5 8 6.5Z" fill="#0E1116" /><circle cx="8" cy="10" r="1.6" fill="#0E1116" /></svg>
+                <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="#0E1116" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" /><rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" /></svg>
+            </span>
+        </div>
+
+        <div class="phone-body">
+            <div class="app-body with-tabbar">
+                @RenderBody()
             </div>
         </div>
-    </header>
 
-    <main class="main-content" role="main">
-        <div class="container">
-            @RenderBody()
-        </div>
-    </main>
+        <nav class="app-tabbar">
+            @if (!logueado)
+            {
+                <a href="@Url.Action("Index", "Home")"
+                   class="app-tab @(accionActual == "Index" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
+                    </svg>
+                    <span>Inicio</span>
+                </a>
 
-    <footer class="footer">
-        <div class="container footer-container">
-            <p class="footer-text">CNFL · @DateTime.Now.Year · www.cnfl.go.cr</p>
-        </div>
-    </footer>
+                <a href="@Url.Action("Login", "Cuenta")"
+                   class="app-tab @(accionActual == "Login" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                    </svg>
+                    <span>Cuenta</span>
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("Dashboard", "Clientes")"
+                   class="app-tab @(accionActual == "Dashboard" ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
+                    </svg>
+                    <span>Inicio</span>
+                </a>
+
+                <a href="@Url.Action("Servicios", "Clientes")" class="app-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21V9l6-6v18M9 13h6" />
+                        <path d="M3 21h18" />
+                    </svg>
+                    <span>Servicios</span>
+                </a>
+
+                <a href="@Url.Action("Reportar", "Clientes")" class="app-tab center">
+                    <div class="fab">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+                        </svg>
+                    </div>
+                    <span>Reportar</span>
+                </a>
+
+                <a href="@Url.Action("Tramites", "Clientes")" class="app-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6M9 13h6M9 17h4" />
+                    </svg>
+                    <span>Trámites</span>
+                </a>
+
+                <a href="@Url.Action("Dashboard", "Clientes")" class="app-tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                    </svg>
+                    <span>Cuenta</span>
+                </a>
+            }
+        </nav>
+    </div>
+
+    <script>
+                (function () {
+                    function actualizarHora() {
+                        var el = document.getElementById('horaActual');
+                        if (!el) return;
+                        var d = new Date();
+                        var h = d.getHours();
+                        var m = d.getMinutes();
+                        el.textContent = h + ':' + (m < 10 ? '0' + m : m);
+                    }
+                    actualizarHora();
+                    setInterval(actualizarHora, 30000);
+                })();
+    </script>
 
     @RenderSection("Scripts", required: false)
-
 </body>
 </html>

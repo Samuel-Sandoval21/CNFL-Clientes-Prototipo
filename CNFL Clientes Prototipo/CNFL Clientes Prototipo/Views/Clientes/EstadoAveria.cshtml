@@ -1,53 +1,92 @@
-﻿@model CNFL_Clientes_Prototipo.Models.Averia
-
-@{
-    ViewBag.Title = "Estado de Avería";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+﻿@{
+    ViewBag.Title = "Estado de avería";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+    var averiaId = ViewBag.AveriaId as int? ?? 0;
+    var averia = ViewBag.Averia;
 }
 
-<div class="estado-averia">
-    <div class="page-header">
-        <h2>Estado de Avería #@Model.AveriaId</h2>
-        <a href="@Url.Action("Reportes", "Clientes")" class="btn-volver">← Volver</a>
+<div class="appbar">
+    <a href="@Url.Action("Reportes", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Avería #@averiaId</div>
+    <div style="width:40px;"></div>
+</div>
+
+<div class="bill" style="margin-top:8px;">
+    <div class="lbl">ESTADO ACTUAL</div>
+    <div class="amt" style="font-size:22px;">Operador en camino</div>
+    <div class="due">⏱️ Llegada estimada: 4:30 pm</div>
+</div>
+
+<div class="eyebrow">Seguimiento</div>
+
+<div class="card">
+    <div class="track">
+        <div class="step done">
+            <div class="cir">✓</div>
+            <div class="lb">Reportada</div>
+        </div>
+        <div class="step now">
+            <div class="cir">2</div>
+            <div class="lb">En proceso</div>
+        </div>
+        <div class="step">
+            <div class="cir">3</div>
+            <div class="lb">Finalizada</div>
+        </div>
     </div>
+    <p style="font-size:12px; color:var(--muted); margin-top:16px; text-align:center; line-height:1.5;">
+        Un operador está en camino al sitio reportado.
+    </p>
+</div>
 
-    <div class="estado-card">
-        <div class="estado-header">
-            <span class="estado-badge @Model.Estado.Replace(" ", "-").ToLower()">@Model.Estado</span>
-            <span class="estado-fecha">@Model.FechaReporte.ToString("dd/MM/yyyy HH:mm")</span>
+<div class="eyebrow">Datos del reporte</div>
+
+<div class="card">
+    <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; justify-content:space-between; gap:12px;">
+            <div style="font-size:12px; color:var(--muted); font-weight:700;">Tipo</div>
+            <div style="font-size:12.5px; font-weight:800; color:var(--ink); text-align:right;">Transformador dañado</div>
         </div>
-
-        <div class="estado-body">
-            <p><strong>Tipo:</strong> @Model.Tipo</p>
-            <p><strong>Descripción:</strong> @Model.Descripcion</p>
-            <p><strong>NISE:</strong> @Model.NiseId</p>
-            <p><strong>Última actualización:</strong> @(Model.FechaActualizacion?.ToString("dd/MM/yyyy HH:mm") ?? "Sin actualizar")</p>
+        <div style="display:flex; justify-content:space-between; gap:12px;">
+            <div style="font-size:12px; color:var(--muted); font-weight:700;">Fecha reporte</div>
+            <div style="font-size:12.5px; font-weight:800; color:var(--ink); text-align:right;">11/09/2026 14:08</div>
         </div>
-
-        <div class="estado-progreso">
-            <h4>Progreso del reporte</h4>
-            <div class="track">
-                <div class="step @(Model.Estado == "Ingresado" || Model.Estado == "En revisión" || Model.Estado == "Operador en camino" || Model.Estado == "Problema resuelto" ? "done" : "")">
-                    <div class="cir">1</div>
-                    <div class="lb">Ingresado</div>
-                </div>
-                <div class="step @(Model.Estado == "En revisión" || Model.Estado == "Operador en camino" || Model.Estado == "Problema resuelto" ? "done" : "") @(Model.Estado == "En revisión" ? "now" : "")">
-                    <div class="cir">2</div>
-                    <div class="lb">En revisión</div>
-                </div>
-                <div class="step @(Model.Estado == "Operador en camino" || Model.Estado == "Problema resuelto" ? "done" : "") @(Model.Estado == "Operador en camino" ? "now" : "")">
-                    <div class="cir">3</div>
-                    <div class="lb">Operador en camino</div>
-                </div>
-                <div class="step @(Model.Estado == "Problema resuelto" ? "done" : "") @(Model.Estado == "Problema resuelto" ? "now" : "")">
-                    <div class="cir">✓</div>
-                    <div class="lb">Resuelto</div>
-                </div>
-            </div>
+        <div style="display:flex; justify-content:space-between; gap:12px;">
+            <div style="font-size:12px; color:var(--muted); font-weight:700;">NISE afectado</div>
+            <div style="font-size:12.5px; font-weight:800; color:var(--ink); text-align:right;">NISE-002</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; gap:12px;">
+            <div style="font-size:12px; color:var(--muted); font-weight:700;">Ubicación</div>
+            <div style="font-size:12.5px; font-weight:800; color:var(--ink); text-align:right;">San Miguel, Sto. Domingo</div>
         </div>
     </div>
 </div>
 
-@section Styles {
-    <link rel="stylesheet" href="~/Content/cliente/estado-averia.css" />
-}
+<div class="eyebrow">Foto del sitio</div>
+
+<div class="card" style="padding:0; overflow:hidden;">
+    <div style="width:100%; height:180px; background:linear-gradient(135deg, #e8f3ff, #eef0ff); display:grid; place-items:center;">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5">
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <circle cx="9" cy="11" r="2" />
+            <path d="m21 15-5-5L5 21" />
+        </svg>
+    </div>
+</div>
+
+<div class="eyebrow">¿Necesitás ayuda?</div>
+
+<div class="contact-list">
+    <a href="tel:8000CNFL" class="contact-item">
+        <div class="ico" style="background:#e8f3ff;color:#1E23E6;">📞</div>
+        <div class="body">
+            <div class="t">Llamar al centro de atención</div>
+            <div class="s">8000-CNFL (2635)</div>
+        </div>
+        <span class="chev">›</span>
+    </a>
+</div>

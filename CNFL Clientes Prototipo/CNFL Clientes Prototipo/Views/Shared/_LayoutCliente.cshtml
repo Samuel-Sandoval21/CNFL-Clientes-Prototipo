@@ -1,3 +1,421 @@
-﻿@{
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
-}
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#1E23E6" />
+    <title>@ViewBag.Title · CNFL</title>
+
+    @Html.Partial("_EstilosBase")
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+
+    @{
+        var accionActual = ViewContext.RouteData.Values["action"].ToString();
+
+        var tabInicio = accionActual == "Dashboard"
+                     || accionActual == "MisFacturas"
+                     || accionActual == "MisNotificaciones"
+                     || accionActual == "Alertas";
+
+        var tabServicios = accionActual == "MisServicios"
+                        || accionActual == "HistorialConsumo"
+                        || accionActual == "ConsultaMedidor"
+                        || accionActual == "MapaGIS"
+                        || accionActual == "Calculadora"
+                        || accionActual == "Reportes"
+                        || accionActual == "EstadoAveria"
+                        || accionActual == "HistorialReportes";
+
+        var tabTramites = accionActual == "Tramites";
+
+        var tabProductos = accionActual == "ProductosServicios"
+                        || accionActual == "Tienda"
+                        || accionActual == "DetalleProducto"
+                        || accionActual == "MisCompras"
+                        || accionActual == "MetodosPago";
+
+        var tabCuenta = accionActual == "Cuenta"
+                     || accionActual == "MiPerfil"
+                     || accionActual == "EditarDatos";
+    }
+
+    <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-statusbar">
+            <span id="horaActual">--:--</span>
+            <span class="right">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#0E1116" /><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#0E1116" /><rect x="9" y="2" width="3" height="10" rx="1" fill="#0E1116" /><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#0E1116" opacity=".3" /></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.5 2.5 12.7 3.5 14.3 5.1L15.7 3.6C13.7 1.6 11 .5 8 .5S2.3 1.6.3 3.6l1.4 1.5C3.3 3.5 5.5 2.5 8 2.5Z" fill="#0E1116" /><path d="M8 6.5c1.1 0 2.1.4 2.8 1.2l1.4-1.5C11.1 5.1 9.6 4.5 8 4.5s-3.1.6-4.2 1.7l1.4 1.5C5.9 6.9 6.9 6.5 8 6.5Z" fill="#0E1116" /><circle cx="8" cy="10" r="1.6" fill="#0E1116" /></svg>
+                <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="#0E1116" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" /><rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" /></svg>
+            </span>
+        </div>
+
+        <div class="phone-body">
+            <div class="app-body with-tabbar">
+                @RenderBody()
+            </div>
+        </div>
+
+        <nav class="app-tabbar" style="justify-content:space-around;">
+            <a href="@Url.Action("Dashboard", "Clientes")"
+               class="app-tab @(tabInicio ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
+                </svg>
+                <span data-i18n="nav.inicio">Inicio</span>
+            </a>
+
+            <a href="@Url.Action("MisServicios", "Clientes")"
+               class="app-tab @(tabServicios ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21V9l6-6v18M9 13h6" />
+                    <path d="M3 21h18" />
+                </svg>
+                <span data-i18n="nav.servicios">Servicios</span>
+            </a>
+
+            <a href="@Url.Action("Tramites", "Clientes")"
+               class="app-tab @(tabTramites ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <path d="M14 2v6h6M9 13h6M9 17h4" />
+                </svg>
+                <span data-i18n="nav.tramites">Trámites</span>
+            </a>
+
+            <a href="@Url.Action("ProductosServicios", "Clientes")"
+               class="app-tab @(tabProductos ? "active" : "")"
+               title="Productos y Servicios">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                    <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                <span style="font-size:9px; line-height:1.1; text-align:center;">Productos<br>y Servicios</span>
+            </a>
+
+            <a href="@Url.Action("Cuenta", "Clientes")"
+               class="app-tab @(tabCuenta ? "active" : "")">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                </svg>
+                <span data-i18n="nav.cuenta">Cuenta</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- ═══════════ MODAL CONFIGURACIÓN ═══════════ -->
+    <div id="modalConfig"
+         style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.55); z-index:300; align-items:flex-end; justify-content:center; padding:0;">
+        <div id="modalConfigContent"
+             style="width:100%; max-width:430px; max-height:88vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:22px 20px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
+            <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:0 auto 18px;"></div>
+
+            <h3 style="font-size:17px; font-weight:800; margin:0 0 4px; color:var(--ink);">
+                <span data-i18n="config.titulo">⚙️ Configuración</span>
+            </h3>
+            <p style="font-size:12.5px; color:var(--muted); margin:0 0 20px; line-height:1.5;" data-i18n="config.sub">
+                Ajustes rápidos de tu cuenta y la app.
+            </p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;">
+                <a href="@Url.Action("ProductosServicios", "Clientes")"
+                   style="grid-column: span 2; background:linear-gradient(135deg, #1E23E6, #3b6ce0); color:#fff; border-radius:16px; padding:16px; text-decoration:none; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 8px 20px -8px rgba(30,35,230,.5);">
+                    <div>
+                        <div style="font-size:14px; font-weight:800;" data-i18n="config.productos">🛍️ Productos y Servicios</div>
+                        <div style="font-size:11.5px; opacity:.9; margin-top:2px;" data-i18n="config.productos.sub">Servicios, marketplace y subscripciones</div>
+                    </div>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="m9 6 6 6-6 6" /></svg>
+                </a>
+
+                <a href="@Url.Action("Tienda", "Clientes")" style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
+                    <div style="width:40px; height:40px; border-radius:12px; background:#fff3ec; display:grid; place-items:center; font-size:18px;">🛒</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800; color:var(--ink);" data-i18n="config.carrito">Carrito</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.carrito.sub">Ver productos</div>
+                    </div>
+                </a>
+
+                <a href="@Url.Action("MisCompras", "Clientes")" style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
+                    <div style="width:40px; height:40px; border-radius:12px; background:#eef0ff; display:grid; place-items:center; font-size:18px;">📦</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800; color:var(--ink);" data-i18n="config.compras">Mis compras</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.compras.sub">Historial y facturas</div>
+                    </div>
+                </a>
+
+                <a href="@Url.Action("Alertas", "Clientes")" style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
+                    <div style="width:40px; height:40px; border-radius:12px; background:#fef3e0; display:grid; place-items:center; font-size:18px;">🔔</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800; color:var(--ink);" data-i18n="config.alertas">Alertas</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.alertas.sub">Notificaciones</div>
+                    </div>
+                </a>
+
+                <a href="@Url.Action("MetodosPago", "Clientes")" style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
+                    <div style="width:40px; height:40px; border-radius:12px; background:#e9f7ec; display:grid; place-items:center; font-size:18px;">💳</div>
+                    <div>
+                        <div style="font-size:13px; font-weight:800; color:var(--ink);" data-i18n="config.metodos">Métodos de pago</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.metodos.sub">Tarjetas, SINPE, IBAN y Token</div>
+                    </div>
+                </a>
+            </div>
+
+            <div style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div>
+                        <div style="font-size:13.5px; font-weight:800; color:var(--ink);" data-i18n="config.zoom">🔍 Zoom de la app</div>
+                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.zoom.sub">Ajustá el tamaño del texto y secciones</div>
+                    </div>
+                    <span id="zoomLabel" style="font-size:13px; font-weight:800; color:var(--blue);">100%</span>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" onclick="cambiarZoom(-10);" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:16px; color:var(--ink); cursor:pointer;">A−</button>
+                    <button type="button" onclick="resetZoom();" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:12px; color:var(--muted); cursor:pointer;">100%</button>
+                    <button type="button" onclick="cambiarZoom(10);" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:16px; color:var(--ink); cursor:pointer;">A+</button>
+                </div>
+            </div>
+
+            <div style="background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:14px;">
+                <div class="row-item" style="border:0; border-bottom:1px solid var(--line); border-radius:0;" onclick="toggleModoOscuro();">
+                    <div class="ic" style="background:#f3f0ff; font-size:18px; display:grid; place-items:center;">🌙</div>
+                    <div class="tx">
+                        <div class="t" data-i18n="config.oscuro">Modo oscuro</div>
+                        <div class="s" data-i18n="config.oscuro.sub">Cambiar tema de la app</div>
+                    </div>
+                    <span id="modoOscuroEstado" style="font-size:11px; font-weight:800; color:var(--muted);">OFF</span>
+                </div>
+                <div class="row-item" style="border:0; border-radius:0;" onclick="abrirIdiomas();">
+                    <div class="ic" style="background:#e8f3ff; font-size:18px; display:grid; place-items:center;">🌐</div>
+                    <div class="tx">
+                        <div class="t" data-i18n="config.idioma">Idioma</div>
+                        <div class="s" id="idiomaActual">Español (Costa Rica)</div>
+                    </div>
+                    <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+                </div>
+            </div>
+
+            <button type="button" onclick="cerrarConfig();" class="reg-btn" style="background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;" data-i18n="config.cerrar">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- ═══════════ SUB-MODAL IDIOMAS ═══════════ -->
+    <div id="modalIdioma"
+         style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.7); z-index:400; align-items:center; justify-content:center; padding:20px;">
+        <div style="width:100%; max-width:340px; background:#fff; border-radius:20px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.4);">
+            <h3 style="font-size:16px; font-weight:800; margin:0 0 4px; color:var(--ink);" data-i18n="idioma.titulo">🌐 Idioma</h3>
+            <p style="font-size:12px; color:var(--muted); margin:0 0 16px;" data-i18n="idioma.sub">Elegí el idioma de la app.</p>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button type="button" onclick="cambiarIdioma('es');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
+                    <span>🇨🇷 Español</span><span style="font-size:11px; color:var(--muted);">CR</span>
+                </button>
+                <button type="button" onclick="cambiarIdioma('en');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
+                    <span>🇺🇸 English</span><span style="font-size:11px; color:var(--muted);">US</span>
+                </button>
+                <button type="button" onclick="cambiarIdioma('fr');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
+                    <span>🇫🇷 Français</span><span style="font-size:11px; color:var(--muted);">FR</span>
+                </button>
+                <button type="button" onclick="cambiarIdioma('pt');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
+                    <span>🇧🇷 Português</span><span style="font-size:11px; color:var(--muted);">BR</span>
+                </button>
+                <button type="button" onclick="cambiarIdioma('zh');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
+                    <span>🇨🇳 中文 (简体)</span><span style="font-size:11px; color:var(--muted);">中文</span>
+                </button>
+            </div>
+
+            <button type="button" onclick="cerrarIdiomas();" style="width:100%; margin-top:14px; padding:12px; background:transparent; border:0; color:var(--muted); font-family:inherit; font-weight:800; font-size:13px; cursor:pointer;" data-i18n="idioma.cancelar">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+                window.I18N = {
+                    es: {
+                        'nav.inicio': 'Inicio', 'nav.servicios': 'Servicios', 'nav.tramites': 'Trámites',
+                        'nav.productos': 'Productos', 'nav.cuenta': 'Cuenta',
+                        'config.titulo': '⚙️ Configuración', 'config.sub': 'Ajustes rápidos de tu cuenta y la app.',
+                        'config.productos': '🛍️ Productos y Servicios', 'config.productos.sub': 'Servicios, marketplace y subscripciones',
+                        'config.carrito': 'Carrito', 'config.carrito.sub': 'Ver productos',
+                        'config.compras': 'Mis compras', 'config.compras.sub': 'Historial y facturas',
+                        'config.alertas': 'Alertas', 'config.alertas.sub': 'Notificaciones',
+                        'config.metodos': 'Métodos de pago', 'config.metodos.sub': 'Tarjetas, SINPE, IBAN y Token',
+                        'config.zoom': '🔍 Zoom de la app', 'config.zoom.sub': 'Ajustá el tamaño del texto y secciones',
+                        'config.oscuro': 'Modo oscuro', 'config.oscuro.sub': 'Cambiar tema de la app',
+                        'config.idioma': 'Idioma', 'config.cerrar': 'Cerrar',
+                        'idioma.titulo': '🌐 Idioma', 'idioma.sub': 'Elegí el idioma de la app.', 'idioma.cancelar': 'Cancelar'
+                    },
+                    en: {
+                        'nav.inicio': 'Home', 'nav.servicios': 'Services', 'nav.tramites': 'Requests',
+                        'nav.productos': 'Products', 'nav.cuenta': 'Account',
+                        'config.titulo': '⚙️ Settings', 'config.sub': 'Quick settings for your account and the app.',
+                        'config.productos': '🛍️ Products and Services', 'config.productos.sub': 'Services, marketplace and subscriptions',
+                        'config.carrito': 'Cart', 'config.carrito.sub': 'View products',
+                        'config.compras': 'My purchases', 'config.compras.sub': 'History and bills',
+                        'config.alertas': 'Alerts', 'config.alertas.sub': 'Notifications',
+                        'config.metodos': 'Payment methods', 'config.metodos.sub': 'Cards, SINPE, IBAN and Token',
+                        'config.zoom': '🔍 App zoom', 'config.zoom.sub': 'Adjust text and section size',
+                        'config.oscuro': 'Dark mode', 'config.oscuro.sub': 'Change app theme',
+                        'config.idioma': 'Language', 'config.cerrar': 'Close',
+                        'idioma.titulo': '🌐 Language', 'idioma.sub': 'Choose the app language.', 'idioma.cancelar': 'Cancel'
+                    },
+                    fr: {
+                        'nav.inicio': 'Accueil', 'nav.servicios': 'Services', 'nav.tramites': 'Démarches',
+                        'nav.productos': 'Produits', 'nav.cuenta': 'Compte',
+                        'config.titulo': '⚙️ Paramètres', 'config.sub': 'Réglages rapides de votre compte.',
+                        'config.productos': '🛍️ Produits et Services', 'config.productos.sub': 'Services, marketplace et abonnements',
+                        'config.carrito': 'Panier', 'config.carrito.sub': 'Voir les produits',
+                        'config.compras': 'Mes achats', 'config.compras.sub': 'Historique et factures',
+                        'config.alertas': 'Alertes', 'config.alertas.sub': 'Notifications',
+                        'config.metodos': 'Moyens de paiement', 'config.metodos.sub': 'Cartes, SINPE, IBAN et Token',
+                        'config.zoom': '🔍 Zoom', 'config.zoom.sub': 'Ajuster la taille du texte',
+                        'config.oscuro': 'Mode sombre', 'config.oscuro.sub': 'Changer le thème',
+                        'config.idioma': 'Langue', 'config.cerrar': 'Fermer',
+                        'idioma.titulo': '🌐 Langue', 'idioma.sub': 'Choisissez la langue.', 'idioma.cancelar': 'Annuler'
+                    },
+                    pt: {
+                        'nav.inicio': 'Início', 'nav.servicios': 'Serviços', 'nav.tramites': 'Solicitações',
+                        'nav.productos': 'Produtos', 'nav.cuenta': 'Conta',
+                        'config.titulo': '⚙️ Configurações', 'config.sub': 'Ajustes rápidos da sua conta.',
+                        'config.productos': '🛍️ Produtos e Serviços', 'config.productos.sub': 'Serviços, marketplace e assinaturas',
+                        'config.carrito': 'Carrinho', 'config.carrito.sub': 'Ver produtos',
+                        'config.compras': 'Minhas compras', 'config.compras.sub': 'Histórico e faturas',
+                        'config.alertas': 'Alertas', 'config.alertas.sub': 'Notificações',
+                        'config.metodos': 'Métodos de pagamento', 'config.metodos.sub': 'Cartões, SINPE, IBAN e Token',
+                        'config.zoom': '🔍 Zoom', 'config.zoom.sub': 'Ajustar tamanho do texto',
+                        'config.oscuro': 'Modo escuro', 'config.oscuro.sub': 'Mudar tema do app',
+                        'config.idioma': 'Idioma', 'config.cerrar': 'Fechar',
+                        'idioma.titulo': '🌐 Idioma', 'idioma.sub': 'Escolha o idioma.', 'idioma.cancelar': 'Cancelar'
+                    },
+                    zh: {
+                        'nav.inicio': '首页', 'nav.servicios': '服务', 'nav.tramites': '手续',
+                        'nav.productos': '产品', 'nav.cuenta': '账户',
+                        'config.titulo': '⚙️ 设置', 'config.sub': '账户和应用的快捷设置。',
+                        'config.productos': '🛍️ 产品与服务', 'config.productos.sub': '服务、市场和订阅',
+                        'config.carrito': '购物车', 'config.carrito.sub': '查看产品',
+                        'config.compras': '我的购买', 'config.compras.sub': '历史和账单',
+                        'config.alertas': '提醒', 'config.alertas.sub': '通知',
+                        'config.metodos': '支付方式', 'config.metodos.sub': '银行卡、SINPE、IBAN 和 Token',
+                        'config.zoom': '🔍 缩放', 'config.zoom.sub': '调整文字大小',
+                        'config.oscuro': '深色模式', 'config.oscuro.sub': '切换主题',
+                        'config.idioma': '语言', 'config.cerrar': '关闭',
+                        'idioma.titulo': '🌐 语言', 'idioma.sub': '选择应用语言。', 'idioma.cancelar': '取消'
+                    }
+                };
+
+                window.t = function (key) {
+                    var lang = localStorage.getItem('cnfl_idioma') || 'es';
+                    return (window.I18N[lang] && window.I18N[lang][key]) || (window.I18N.es[key] || key);
+                };
+
+                window.aplicarIdioma = function () {
+                    var elementos = document.querySelectorAll('[data-i18n]');
+                    for (var i = 0; i < elementos.length; i++) {
+                        var key = elementos[i].getAttribute('data-i18n');
+                        elementos[i].textContent = window.t(key);
+                    }
+                };
+
+                (function () {
+                    function actualizarHora() {
+                        var el = document.getElementById('horaActual');
+                        if (!el) return;
+                        var d = new Date();
+                        var h = d.getHours();
+                        var m = d.getMinutes();
+                        el.textContent = h + ':' + (m < 10 ? '0' + m : m);
+                    }
+                    actualizarHora();
+                    setInterval(actualizarHora, 30000);
+                })();
+
+                function abrirConfig() {
+                    var modal = document.getElementById('modalConfig');
+                    if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+                }
+                function cerrarConfig() {
+                    var modal = document.getElementById('modalConfig');
+                    if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
+                }
+                var modalConfig = document.getElementById('modalConfig');
+                if (modalConfig) {
+                    modalConfig.addEventListener('click', function (e) { if (e.target === this) cerrarConfig(); });
+                }
+
+                var ZOOM_KEY = 'cnfl_zoom';
+                var zoomActual = parseInt(localStorage.getItem(ZOOM_KEY) || '100', 10);
+                function aplicarZoom(z) {
+                    if (z < 70) z = 70;
+                    if (z > 140) z = 140;
+                    zoomActual = z;
+                    localStorage.setItem(ZOOM_KEY, z);
+                    var phone = document.querySelector('.phone');
+                    if (phone) phone.style.zoom = (z / 100).toString();
+                    var lbl = document.getElementById('zoomLabel');
+                    if (lbl) lbl.textContent = z + '%';
+                }
+                function cambiarZoom(delta) { aplicarZoom(zoomActual + delta); }
+                function resetZoom() { aplicarZoom(100); }
+                aplicarZoom(zoomActual);
+
+                var MODO_KEY = 'cnfl_dark';
+                var modoOscuro = localStorage.getItem(MODO_KEY) === '1';
+                function aplicarModo() {
+                    var lbl = document.getElementById('modoOscuroEstado');
+                    if (lbl) lbl.textContent = modoOscuro ? 'ON' : 'OFF';
+                    if (modoOscuro) {
+                        document.documentElement.style.filter = 'invert(0.92) hue-rotate(180deg)';
+                        var imgs = document.querySelectorAll('img');
+                        for (var i = 0; i < imgs.length; i++) imgs[i].style.filter = 'invert(1) hue-rotate(180deg)';
+                    } else {
+                        document.documentElement.style.filter = '';
+                        var imgs2 = document.querySelectorAll('img');
+                        for (var j = 0; j < imgs2.length; j++) imgs2[j].style.filter = '';
+                    }
+                }
+                function toggleModoOscuro() {
+                    modoOscuro = !modoOscuro;
+                    localStorage.setItem(MODO_KEY, modoOscuro ? '1' : '0');
+                    aplicarModo();
+                }
+                aplicarModo();
+
+                function abrirIdiomas() {
+                    var m = document.getElementById('modalIdioma');
+                    if (m) m.style.display = 'flex';
+                }
+                function cerrarIdiomas() {
+                    var m = document.getElementById('modalIdioma');
+                    if (m) m.style.display = 'none';
+                }
+                function cambiarIdioma(codigo) {
+                    localStorage.setItem('cnfl_idioma', codigo);
+                    window.aplicarIdioma();
+                    var nombres = { es: 'Español (Costa Rica)', en: 'English (US)', fr: 'Français', pt: 'Português (BR)', zh: '中文 (简体)' };
+                    var el = document.getElementById('idiomaActual');
+                    if (el) el.textContent = nombres[codigo] || nombres.es;
+                    cerrarIdiomas();
+                }
+
+                (function () {
+                    var lang = localStorage.getItem('cnfl_idioma') || 'es';
+                    var nombres = { es: 'Español (Costa Rica)', en: 'English (US)', fr: 'Français', pt: 'Português (BR)', zh: '中文 (简体)' };
+                    var el = document.getElementById('idiomaActual');
+                    if (el) el.textContent = nombres[lang] || nombres.es;
+                    window.aplicarIdioma();
+                })();
+
+                (function () {
+                    try {
+                        var items = JSON.parse(localStorage.getItem('cnfl_carrito') || '[]');
+                        var total = items.reduce(function (s, i) { return s + (i.cantidad || 1); }, 0);
+                        var badges = document.querySelectorAll('.badge');
+                        for (var i = 0; i < badges.length; i++) badges[i].textContent = total;
+                    } catch (e) { }
+                })();
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

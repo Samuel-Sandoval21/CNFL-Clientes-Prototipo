@@ -1,0 +1,102 @@
+﻿@{
+    ViewBag.Title = "Mis compras";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<div class="appbar">
+    <a href="@Url.Action("ProductosServicios", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">📦 Mis compras</div>
+    <div style="width:40px;"></div>
+</div>
+
+<h1 class="h-name" style="font-size:26px;">Mis compras</h1>
+<p class="h-greet" style="margin-top:6px; line-height:1.5;">
+    Historial completo de tus pedidos en CNFL.
+</p>
+
+<div id="comprasVacio" class="card" style="text-align:center; padding:34px 18px; margin-top:14px;">
+    <div style="font-size:52px; line-height:1;">📦</div>
+    <p style="font-weight:800; font-size:15px; margin-top:12px; color:var(--ink);">Sin compras todavía</p>
+    <p style="font-size:12.5px; color:var(--muted); margin-top:6px; line-height:1.5;">
+        Explorá el marketplace y empezá a comprar.
+    </p>
+    <a href="@Url.Action("ProductosServicios", "Clientes")" class="reg-btn"
+       style="display:inline-block; margin-top:16px; text-decoration:none; padding:12px 22px; width:auto;">
+        Ver productos →
+    </a>
+</div>
+
+<div id="listaCompras" class="rows" style="margin-top:14px;"></div>
+
+<div style="margin-top:22px; display:flex; flex-direction:column; gap:10px;">
+    <a href="@Url.Action("MetodosPago", "Clientes")" class="row-item" style="text-decoration:none; color:inherit;">
+        <div class="ic" style="background:#e9f7ec; font-size:18px; display:grid; place-items:center;">💳</div>
+        <div class="tx">
+            <div class="t">Administrar métodos de pago</div>
+            <div class="s">Tarjetas, SINPE e IBAN</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+    </a>
+
+    <a href="@Url.Action("MisFacturas", "Clientes")" class="row-item" style="text-decoration:none; color:inherit;">
+        <div class="ic" style="background:#eef0ff; font-size:18px; display:grid; place-items:center;">🧾</div>
+        <div class="tx">
+            <div class="t">Ver facturas eléctricas</div>
+            <div class="s">Historial de consumo y pagos</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+    </a>
+</div>
+
+<script>
+    function formatearCRC(n) {
+        return '₡' + Math.round(n).toLocaleString('es-CR');
+    }
+
+    function renderCompras() {
+        var compras = [];
+        try { compras = JSON.parse(localStorage.getItem('cnfl_compras') || '[]'); } catch (e) { compras = []; }
+
+        var cont = document.getElementById('listaCompras');
+        var vacio = document.getElementById('comprasVacio');
+
+        if (compras.length === 0) {
+            vacio.style.display = 'block';
+            return;
+        }
+        vacio.style.display = 'none';
+
+        cont.innerHTML = '';
+        // Orden descendente por fecha
+        compras.sort(function (a, b) { return new Date(b.fecha) - new Date(a.fecha); });
+
+        compras.forEach(function (c) {
+            var fecha = new Date(c.fecha);
+            var fechaStr = fecha.toLocaleDateString('es-CR') + ' ' + fecha.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
+            var emojis = c.items.map(function (i) { return i.emoji; }).slice(0, 3).join(' ');
+
+            var div = document.createElement('div');
+            div.className = 'row-item';
+            div.style.cursor = 'default';
+            div.style.alignItems = 'flex-start';
+            div.innerHTML =
+                '<div class="ic" style="background:#eef6ff; font-size:22px; display:grid; place-items:center;">' + emojis + '</div>' +
+                '<div class="tx" style="flex:1;">' +
+                    '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">' +
+                        '<div class="t">Compra #' + (c.items.length) + ' items</div>' +
+                        '<span class="pill st-normal" style="font-size:10px;"><span class="dot"></span>Pagada</span>' +
+                    '</div>' +
+                    '<div class="s">' + fechaStr + '</div>' +
+                    '<div style="font-weight:800; color:var(--orange); font-size:14px; margin-top:6px;">' + c.total + '</div>' +
+                    '<div style="font-size:11px; color:var(--muted); margin-top:2px;">Método: ' + c.metodo + '</div>' +
+                '</div>';
+            cont.appendChild(div);
+        });
+    }
+
+    renderCompras();
+</script>

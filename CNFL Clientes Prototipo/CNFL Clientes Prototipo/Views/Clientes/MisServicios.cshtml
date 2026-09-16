@@ -1,0 +1,259 @@
+﻿@{
+    ViewBag.Title = "Mis Servicios";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="appbar">
+    <div class="brand">
+        <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
+             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
+    </div>
+    <div class="actions">
+        <a href="@Url.Action("Alertas", "Clientes")" class="icon-btn">
+            <span class="badge">3</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+        </a>
+    </div>
+</div>
+
+<h1 class="h-name" style="font-size:26px;">Mis Servicios</h1>
+<p class="h-greet" style="margin-top:6px; line-height:1.5;">
+    Todo lo relacionado con tus NISEs en un solo lugar.
+</p>
+
+<!-- ═══════════ SERVICIOS ASOCIADOS (NISEs) ═══════════ -->
+<div class="eyebrow">Servicios asociados</div>
+
+<div class="rows">
+    <a href="@Url.Action("HistorialConsumo", "Clientes")" class="nise">
+        <div class="ring" style="background:#e9f7ec;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                <path d="M9 21V9l6-6v18M9 13h6" />
+                <path d="M3 21h18" />
+            </svg>
+        </div>
+        <div class="info">
+            <div class="t">NISE-002 · Residencial</div>
+            <div class="s">San Miguel, Santo Domingo, Heredia</div>
+        </div>
+        <span class="pill st-normal"><span class="dot"></span>Normal</span>
+    </a>
+
+    <a href="@Url.Action("HistorialConsumo", "Clientes")" class="nise">
+        <div class="ring" style="background:#fef3e0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
+                <path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" />
+            </svg>
+        </div>
+        <div class="info">
+            <div class="t">NISE-014 · Comercial</div>
+            <div class="s">Mantenimiento programado 2:00pm</div>
+        </div>
+        <span class="pill st-prev"><span class="dot"></span>Prevención</span>
+    </a>
+
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 1 })" class="nise">
+        <div class="ring" style="background:#fdeaea;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+            </svg>
+        </div>
+        <div class="info">
+            <div class="t">NISE-021 · Industrial</div>
+            <div class="s">Avería en la red · atendiéndose</div>
+        </div>
+        <span class="pill st-inc"><span class="dot"></span>Incidente</span>
+    </a>
+</div>
+
+<!-- ═══════════ REPORTAR AVERÍA ═══════════ -->
+<div class="eyebrow">🚨 Reportar avería</div>
+
+<div class="rows">
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 101 })" class="row-item">
+        <div class="ic" style="background:#fef3e0;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
+                <path d="M12 3v3M12 8a4 4 0 0 0-4 4v5h8v-5a4 4 0 0 0-4-4ZM9 21h6" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Avería en alumbrado público</div>
+            <div class="s">Foto + número de poste</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 6 6 6-6 6" />
+        </svg>
+    </a>
+
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 102 })" class="row-item">
+        <div class="ic" style="background:#fdeaea;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Avería eléctrica propia</div>
+            <div class="s">En tu NISE registrado</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 6 6 6-6 6" />
+        </svg>
+    </a>
+
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 103 })" class="row-item">
+        <div class="ic" style="background:#eef6ff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" />
+                <circle cx="12" cy="9" r="2.5" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Avería eléctrica ajena</div>
+            <div class="s">Subí fotos y ubicación GPS</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 6 6 6-6 6" />
+        </svg>
+    </a>
+</div>
+
+<!-- ═══════════ AVERÍAS EN SEGUIMIENTO ═══════════ -->
+<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+    <span>Averías en seguimiento</span>
+    <a href="@Url.Action("HistorialReportes", "Clientes")"
+       style="font-size:11px; color:var(--blue); font-weight:800; text-decoration:none;">
+        Ver todas →
+    </a>
+</div>
+
+<div class="rows">
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 6 })" class="row-item">
+        <div class="ic" style="background:#fff3ec;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">#6 · Transformador dañado</div>
+            <div class="s">11/09/2026 · 14:08</div>
+        </div>
+        <span class="pill st-prev"><span class="dot"></span>Operador en camino</span>
+    </a>
+
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 3 })" class="row-item">
+        <div class="ic" style="background:#fff3ec;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">#3 · Transformador dañado</div>
+            <div class="s">11/09/2026 · 14:08</div>
+        </div>
+        <span class="pill st-prev"><span class="dot"></span>Operador en camino</span>
+    </a>
+
+    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 1 })" class="row-item">
+        <div class="ic" style="background:#e9f7ec;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                <path d="M20 6 9 17l-5-5" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">#1 · Sin energía</div>
+            <div class="s">09/09/2026 · 23:25</div>
+        </div>
+        <span class="pill st-normal"><span class="dot"></span>Resuelto</span>
+    </a>
+</div>
+
+<!-- ═══════════ SECCIONES ═══════════ -->
+<div class="eyebrow">📋 Más secciones</div>
+
+<div class="rows">
+    <a href="@Url.Action("HistorialConsumo", "Clientes")" class="row-item">
+        <div class="ic" style="background:#eef0ff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                <path d="M3 3v18h18" />
+                <path d="M7 14l4-4 4 4 5-5" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Historial de consumo</div>
+            <div class="s">kWh y ₡ · últimos 6 meses</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 6 6 6-6 6" />
+        </svg>
+    </a>
+
+    <a href="@Url.Action("ConsultaMedidor", "Clientes")" class="row-item">
+        <div class="ic" style="background:#e8f7ec;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Consulta al medidor (AMI)</div>
+            <div class="s">Última lectura · voltaje · costo estimado</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 6 6 6-6 6" />
+        </svg>
+    </a>
+
+    <a href="@Url.Action("MapaGIS", "Clientes")" class="row-item">
+        <div class="ic" style="background:#e8f3ff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" />
+                <circle cx="12" cy="9" r="2.5" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Mapa GIS</div>
+            <div class="s">Averías, estaciones de recarga y puntos verdes</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 6 6 6-6 6" />
+        </svg>
+    </a>
+
+    <a href="@Url.Action("Calculadora", "Clientes")" class="row-item">
+        <div class="ic" style="background:#f3f0ff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2">
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <path d="M8 6h8M8 10h3M13 10h3M8 14h3M13 14h3M8 18h8" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Calculadora energética</div>
+            <div class="s">Estimá el costo de tus equipos</div>
+        </div>
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 6 6 6-6 6" />
+        </svg>
+    </a>
+</div>
+
+<!-- ═══════════ TIP ═══════════ -->
+<div class="card" style="margin-top:18px; background:#f7f8fc; border-style:dashed;">
+    <div style="display:flex; gap:11px; align-items:flex-start;">
+        <div style="width:36px; height:36px; border-radius:11px; background:#eef0ff; display:grid; place-items:center; flex:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 16v-4M12 8h.01" />
+            </svg>
+        </div>
+        <div>
+            <div style="font-size:12.5px; font-weight:800; color:var(--ink);">Cambio de color según estado</div>
+            <div style="font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.4;">
+                Verde: normal · Ámbar: prevención (suspensión programada) · Rojo: avería.
+            </div>
+        </div>
+    </div>
+</div>

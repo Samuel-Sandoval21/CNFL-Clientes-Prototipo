@@ -1,467 +1,478 @@
 ﻿@model CNFL_Clientes_Prototipo.Models.Usuario
-
 @{
-    ViewBag.Title = "Crear Cuenta";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    ViewBag.Title = "Crear cuenta";
+    Layout = "~/Views/Shared/_LayoutPublico.cshtml";
+
+    var actividades = ViewBag.ActividadesEconomicas as List<CNFL_Clientes_Prototipo.Models.ActividadEconomicaDto>
+                      ?? new List<CNFL_Clientes_Prototipo.Models.ActividadEconomicaDto>();
+    var provincias = ViewBag.Provincias as List<string> ?? new List<string>();
+
+    var nombreCompletoPrevio = ViewBag.NombreCompleto as string ?? "";
+    var direccionExactaPrevia = ViewBag.DireccionExacta as string ?? "";
+    var provinciaPrevia = ViewBag.Provincia as string ?? "";
+    var cantonPrevio = ViewBag.Canton as string ?? "";
+    var distritoPrevio = ViewBag.Distrito as string ?? "";
+    var aceptoPoliticaPrevio = ViewBag.AceptoPolitica as bool? ?? false;
+    var aceptoConsentimientoPrevio = ViewBag.AceptoConsentimiento as bool? ?? false;
+    var facturaElectronicaPrevia = ViewBag.FacturaElectronica as bool? ?? false;
 }
 
-@section Styles {
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <style>
-        .select2-container {
-            width: 100% !important;
-        }
-
-        .select2-container--default .select2-selection--single {
-            height: auto !important;
-            border: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-        }
-
-            .select2-container--default .select2-selection--single .select2-selection__rendered {
-                color: #0E1116 !important;
-                font-size: 14px !important;
-                line-height: normal !important;
-                padding-left: 0 !important;
-                padding-right: 20px !important;
-            }
-
-            .select2-container--default .select2-selection--single .select2-selection__placeholder {
-                color: #aab0be !important;
-                font-size: 14px !important;
-            }
-
-            .select2-container--default .select2-selection--single .select2-selection__arrow {
-                height: 100% !important;
-                right: 0 !important;
-            }
-
-        .select2-container--open {
-            z-index: 99999 !important;
-        }
-
-        .select2-dropdown {
-            z-index: 99999 !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 30px rgba(16,20,40,.15) !important;
-            border: 1px solid #EDEFF3 !important;
-        }
-
-        .select2-results__option {
-            font-size: 13px !important;
-            padding: 8px 12px !important;
-        }
-
-        .select2-search--dropdown .select2-search__field {
-            border-radius: 8px !important;
-            border: 1px solid #EDEFF3 !important;
-            padding: 6px 10px !important;
-            font-family: inherit !important;
-            font-size: 13px !important;
-        }
-
-        .field select.native-select {
-            width: 100%;
-            border: none;
-            background: transparent;
-            font-family: inherit;
-            font-size: 14px;
-            color: #0E1116;
-            padding: 12px 0;
-            outline: none;
-            cursor: pointer;
-        }
-
-            .field select.native-select option {
-                color: #0E1116;
-                background: #fff;
-            }
-
-        .field .hint {
-            font-size: 11px;
-            color: #aab0be;
-            margin-top: 4px;
-            padding-left: 4px;
-        }
-
-        .toggle-password {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            display: grid;
-            place-items: center;
-            color: #aab0be;
-            flex-shrink: 0;
-            transition: color .2s ease;
-        }
-
-            .toggle-password:hover {
-                color: #1E23E6 !important;
-            }
-
-            .toggle-password svg {
-                width: 20px;
-                height: 20px;
-            }
-    </style>
-}
-
-<div class="login-wrap">
-    <div style="text-align:center; margin-bottom:16px;">
-        <div style="font-size:48px;">📋</div>
-        <div class="login-h" style="font-size:24px; margin-top:8px;">Crear cuenta</div>
-        <div class="login-p" style="font-size:13px;">Regístrate para conectar con la Agencia Virtual.</div>
-    </div>
-
-    @if (TempData["Mensaje"] != null)
-    {
-        <div style="background:#E8F5E9; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #A5D6A7;">
-            <span style="color:#2E7D32; font-weight:700;">✅ @TempData["Mensaje"]</span>
-        </div>
-    }
-
-    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
-    {
-        <div style="background:#FFEBEE; padding:12px 16px; border-radius:12px; margin-bottom:12px; border:1px solid #FFCDD2;">
-            <span style="color:#D32F2F; font-weight:700;">❌ @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage</span>
-        </div>
-    }
-
-    @using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-
-        <!-- 1. CÉDULA -->
-        <div class="field">
-            <label>CÉDULA *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="9" cy="12" r="2.5" /><path d="M14 10h4M14 14h4" /></svg>
-                <input type="text" name="Cedula" placeholder="2-0874-0716" autocomplete="off" required />
-            </div>
-        </div>
-
-        <!-- 2. NOMBRE COMPLETO -->
-        <div class="field">
-            <label>NOMBRE COMPLETO *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                <input type="text" name="NombreCompleto" value="@ViewBag.NombreCompleto" placeholder="Ej: María José Rodríguez Vargas" autocomplete="off" required />
-            </div>
-            <div class="hint">Incluya nombre(s) y ambos apellidos</div>
-        </div>
-
-        <!-- 3. SEXO -->
-        <div class="field">
-            <label>SEXO *</label>
-            <div style="display:flex; gap:18px; align-items:center; padding-left:8px;">
-                <label style="font-weight:600;"><input type="radio" name="Sexo" value="Masculino" required /> Masculino</label>
-                <label style="font-weight:600;"><input type="radio" name="Sexo" value="Femenino" /> Femenino</label>
-            </div>
-        </div>
-
-        <!-- 4. CORREO -->
-        <div class="field">
-            <label>CORREO *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 5L2 7" /></svg>
-                <input type="email" name="Correo" placeholder="usuario@correo.com" autocomplete="off" required />
-            </div>
-        </div>
-
-        <!-- 5. TELÉFONO -->
-        <div class="field">
-            <label>TELÉFONO *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.07 9.81 19.79 19.79 0 0 1 0 1.18 2 2 0 0 1 2 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L6.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-                <input type="text" name="Telefono" placeholder="8888-8888" autocomplete="off" required />
-            </div>
-        </div>
-
-        <!-- 6. NOMBRE DE USUARIO -->
-        <div class="field">
-            <label>NOMBRE DE USUARIO *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
-                <input type="text" name="NombreUsuario" placeholder="Nombre de usuario (máx 30)" maxlength="30" autocomplete="off" required />
-            </div>
-        </div>
-
-        <!-- 7. ACTIVIDAD ECONÓMICA (OPCIONAL) -->
-        <div class="field">
-            <label>ACTIVIDAD ECONÓMICA (OPCIONAL)</label>
-            <div class="inp" style="padding:6px 14px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3z" /><path d="M3 11h18v10H3z" /></svg>
-                <select id="actividadEconomica" name="ActividadEconomicaId" style="width:100%;"></select>
-            </div>
-            <div class="hint">Si no la conoce ahora, puede completarla luego en Editar Perfil</div>
-        </div>
-
-        <!-- 8. UBICACIÓN -->
-        <div class="field" style="display:flex; gap:8px;">
-            <div style="flex:1;">
-                <label>PROVINCIA *</label>
-                <div class="inp">
-                    <select name="Provincia" id="provincia" class="native-select" required>
-                        <option value="">Seleccione</option>
-                    </select>
-                </div>
-            </div>
-            <div style="flex:1;">
-                <label>CANTÓN *</label>
-                <div class="inp">
-                    <select name="Canton" id="canton" class="native-select" required>
-                        <option value="">Seleccione</option>
-                    </select>
-                </div>
-            </div>
-            <div style="flex:1;">
-                <label>DISTRITO *</label>
-                <div class="inp">
-                    <select name="Distrito" id="distrito" class="native-select" required>
-                        <option value="">Seleccione</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- 9. CONTRASEÑA -->
-        <div class="field">
-            <label>CONTRASEÑA *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="Contraseña" id="pass1" placeholder="••••••••" autocomplete="new-password" required />
-                <button type="button" class="toggle-password" data-target="pass1" title="Mostrar/ocultar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- 10. CONFIRMAR CONTRASEÑA -->
-        <div class="field">
-            <label>CONFIRMAR CONTRASEÑA *</label>
-            <div class="inp">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
-                <input type="password" name="confirmarContraseña" id="pass2" placeholder="••••••••" autocomplete="new-password" required />
-                <button type="button" class="toggle-password" data-target="pass2" title="Mostrar/ocultar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- 11. TÉRMINOS -->
-        <div style="background:#f8f9fe; border-radius:12px; border:1px solid #EDEFF3; padding:14px; margin-top:14px; display:flex; flex-direction:column; gap:12px;">
-            <label style="display:flex; align-items:flex-start; gap:10px; font-size:13px; font-weight:600; cursor:pointer; line-height:1.5; color:#0E1116;">
-                <input type="checkbox" name="AceptaPolitica" value="true" required style="width:18px; height:18px; margin-top:2px; flex-shrink:0; cursor:pointer; accent-color:#1E23E6;" />
-                <span>Acepto la <a href="javascript:void(0)" onclick="abrirDocumento('politica')" style="color:#1E23E6; font-weight:700; text-decoration:underline;">Política de Privacidad y Seguridad</a></span>
-            </label>
-            <label style="display:flex; align-items:flex-start; gap:10px; font-size:13px; font-weight:600; cursor:pointer; line-height:1.5; color:#0E1116;">
-                <input type="checkbox" name="AceptaConsentimiento" value="true" required style="width:18px; height:18px; margin-top:2px; flex-shrink:0; cursor:pointer; accent-color:#1E23E6;" />
-                <span>Acepto el <a href="javascript:void(0)" onclick="abrirDocumento('consentimiento')" style="color:#1E23E6; font-weight:700; text-decoration:underline;">Consentimiento Informado (F-085)</a></span>
-            </label>
-        </div>
-
-        <button type="submit" class="btn btn-cta btn-block" style="margin-top:16px;">Registrar cuenta</button>
-    }
-
-    <div class="login-foot">
-        ¿Ya tienes cuenta? <a href="@Url.Action("Login", "Cuenta")">Inicia sesión aquí</a>
-    </div>
+<div class="reg-hero">
+    <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
+         onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';"
+         style="height:42px; width:auto; display:inline-block; margin-bottom:10px;" />
+    <h1>Crear cuenta</h1>
+    <p>Registrate con tu cédula para gestionar tus servicios CNFL.</p>
 </div>
 
-<div id="cnflModal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:99999; padding:20px;">
-    <div style="background:#fff; border-radius:16px; max-width:500px; width:100%; max-height:80vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.35);">
-        <div style="padding:16px 20px; border-bottom:1px solid #EDEFF3; display:flex; justify-content:space-between; align-items:center;">
-            <h3 id="cnflModalTitle" style="font-size:16px; margin:0; font-weight:800;">Documento</h3>
-            <button type="button" onclick="cerrarDocumento()" style="background:none; border:none; cursor:pointer; font-size:22px; line-height:1; color:#727A86;">×</button>
-        </div>
-        <div id="cnflModalBody" style="padding:18px 20px; overflow-y:auto; font-size:13px; line-height:1.6; color:#0E1116;"></div>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="aviso err">
+        <ul style="padding-left:18px; margin:0;">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
     </div>
+}
+
+@using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post, new { id = "formRegistro" }))
+{
+    @Html.AntiForgeryToken()
+
+    <!-- DATOS PERSONALES -->
+    <div class="reg-card">
+        <h3>👤 Datos personales</h3>
+
+        <div class="reg-field">
+            <label for="Cedula">Cédula *</label>
+            @Html.TextBoxFor(m => m.Cedula, new
+            {
+                id = "Cedula",
+                placeholder = "Ej: 1 2345 6789",
+                required = "required",
+                maxlength = "20"
+            })
+            <small class="hint">Sin guiones. Solo números y espacios.</small>
+        </div>
+
+        <div class="reg-field">
+            <label for="NombreCompleto">Nombre completo *</label>
+            <input type="text"
+                   id="NombreCompleto"
+                   name="NombreCompleto"
+                   value="@nombreCompletoPrevio"
+                   placeholder="Ej: Juan Pérez Mora"
+                   autocomplete="name"
+                   required />
+            <small class="hint">Escribí nombre y dos apellidos.</small>
+        </div>
+
+        <div class="reg-field">
+            <label for="NombreUsuario">Nombre de usuario *</label>
+            @Html.TextBoxFor(m => m.NombreUsuario, new
+            {
+                id = "NombreUsuario",
+                placeholder = "Ej: juanperez",
+                required = "required",
+                maxlength = "50",
+                autocomplete = "username"
+            })
+            <small class="hint">Con este nombre vas a poder iniciar sesión (además de la cédula).</small>
+        </div>
+
+        <div class="reg-field">
+            <label for="Sexo">Sexo *</label>
+            <select id="Sexo" name="Sexo" required>
+                <option value="">— Seleccioná una opción —</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- CONTACTO -->
+    <div class="reg-card">
+        <h3>📞 Contacto</h3>
+
+        <div class="reg-field">
+            <label for="Correo">Correo principal *</label>
+            @Html.TextBoxFor(m => m.Correo, new
+            {
+                id = "Correo",
+                type = "email",
+                placeholder = "Ej: tucorreo@dominio.com",
+                autocomplete = "email",
+                required = "required"
+            })
+            <small class="hint">Ahí te enviaremos facturas y notificaciones.</small>
+        </div>
+
+        <div class="reg-field">
+            <label for="Telefono">Teléfono principal *</label>
+            @Html.TextBoxFor(m => m.Telefono, new
+            {
+                id = "Telefono",
+                type = "tel",
+                placeholder = "Ej: 8888-8888",
+                autocomplete = "tel",
+                maxlength = "15",
+                required = "required"
+            })
+            <small class="hint">Formato: 8 dígitos con guion.</small>
+        </div>
+    </div>
+
+    <!-- UBICACIÓN -->
+    <div class="reg-card">
+        <h3>📍 Ubicación</h3>
+
+        <div class="reg-field">
+            <label for="DireccionExacta">Dirección exacta *</label>
+            <input type="text"
+                   id="DireccionExacta"
+                   name="DireccionExacta"
+                   value="@direccionExactaPrevia"
+                   placeholder="Ej: 200m norte de la iglesia, casa azul"
+                   required />
+            <small class="hint">Puntos de referencia para ubicar tu vivienda.</small>
+        </div>
+
+        <div class="reg-field">
+            <label for="Provincia">Provincia *</label>
+            <select id="Provincia" name="Provincia" required onchange="onProvinciaChange(this);">
+                <option value="">— Seleccioná una provincia —</option>
+                @foreach (var p in provincias)
+                {
+                    <option value="@p" @(p == provinciaPrevia ? "selected" : "")>@p</option>
+                }
+            </select>
+        </div>
+
+        <div class="reg-field">
+            <label for="Canton">Cantón *</label>
+            <select id="Canton" name="Canton" required onchange="onCantonChange(this);">
+                <option value="">— Primero elegí la provincia —</option>
+            </select>
+        </div>
+
+        <div class="reg-field">
+            <label for="Distrito">Distrito *</label>
+            <select id="Distrito" name="Distrito" required>
+                <option value="">— Primero elegí el cantón —</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- CONTRASEÑA -->
+    <div class="reg-card">
+        <h3>🔒 Contraseña</h3>
+
+        <div class="reg-field">
+            <label for="Contraseña">Contraseña *</label>
+            <div class="with-icon">
+                <input type="password"
+                       id="Contraseña"
+                       name="Contraseña"
+                       placeholder="Mínimo 6 caracteres"
+                       autocomplete="new-password"
+                       minlength="6"
+                       required />
+                <button type="button" class="toggle-password" onclick="togglePass('Contraseña', this);" title="Mostrar/ocultar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+            </div>
+            <small class="hint">Mínimo 6 caracteres. Te recomendamos mezclar letras y números.</small>
+        </div>
+
+        <div class="reg-field">
+            <label for="confirmarContraseña">Confirmar contraseña *</label>
+            <div class="with-icon">
+                <input type="password"
+                       id="confirmarContraseña"
+                       name="confirmarContraseña"
+                       placeholder="Repetí la contraseña"
+                       autocomplete="new-password"
+                       minlength="6"
+                       required />
+                <button type="button" class="toggle-password" onclick="togglePass('confirmarContraseña', this);" title="Mostrar/ocultar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FACTURA ELECTRÓNICA -->
+    <div class="reg-card">
+        <h3>🧾 Facturación electrónica</h3>
+
+        <label class="reg-check" for="chkFactura">
+            <input type="checkbox" id="chkFactura" name="FacturaElectronica" value="true"
+                   @(facturaElectronicaPrevia ? "checked" : "")
+                   onchange="toggleFactura(this);" />
+            <span class="txt">
+                <span class="t">Quiero recibir factura electrónica</span>
+                <span class="s">Si marcás esta casilla, elegí tu actividad económica debajo.</span>
+            </span>
+        </label>
+
+        <div class="reg-actividad" id="actividadWrap" style="display:@(facturaElectronicaPrevia ? "block" : "none");">
+            <div class="reg-field">
+                <label for="buscadorActividad">Actividad económica</label>
+                <input type="text"
+                       id="buscadorActividad"
+                       placeholder="Buscá por código o nombre (ej: 4711, comercio)"
+                       autocomplete="off"
+                       onfocus="mostrarActividades();"
+                       oninput="filtrarActividades();" />
+                <small class="hint">Escribí al menos 3 letras o el código para filtrar.</small>
+
+                <div id="listaActividades" style="margin-top:8px;max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;background:#fff;display:none;">
+                    @foreach (var item in actividades)
+                    {
+                        var idStr = item.Id.ToString();
+                        var textStr = item.Codigo + " - " + item.Nombre;
+                        <div class="actividad-item"
+                             data-value="@idStr"
+                             data-text="@textStr.ToLower()"
+                             style="padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px;"
+                             onclick="seleccionarActividad('@idStr', '@Html.Raw(textStr.Replace("'", "\\'"))');">
+                            @textStr
+                        </div>
+                    }
+                </div>
+
+                <div id="actividadSeleccionada" style="display:none;margin-top:8px;padding:10px 14px;background:#eef0ff;border-radius:12px;font-size:12.5px;font-weight:800;color:var(--blue);">
+                    ✓ <span id="actividadTexto"></span>
+                </div>
+
+                <input type="hidden" id="ActividadEconomicaId" name="ActividadEconomicaId" value="" />
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTORIZACIONES -->
+    <div class="reg-card">
+        <h3>⚖️ Autorizaciones</h3>
+
+        <label class="reg-check" for="chkPolitica">
+            <input type="checkbox" id="chkPolitica" name="AceptoPolitica" value="true"
+                   @(aceptoPoliticaPrevio ? "checked" : "") required />
+            <span class="txt">
+                <span class="t">Acepto la Política de Privacidad *</span>
+                <span class="s">Autorizo el tratamiento de mis datos personales según la ley 8968.</span>
+            </span>
+        </label>
+
+        <label class="reg-check" for="chkConsentimiento">
+            <input type="checkbox" id="chkConsentimiento" name="AceptoConsentimiento" value="true"
+                   @(aceptoConsentimientoPrevio ? "checked" : "") required />
+            <span class="txt">
+                <span class="t">Acepto el Consentimiento Informado *</span>
+                <span class="s">Autorizo el uso de mi información para los servicios CNFL.</span>
+            </span>
+        </label>
+    </div>
+
+    <button type="submit" class="reg-btn">Crear cuenta</button>
+}
+
+<div class="reg-login-link">
+    ¿Ya tenés cuenta? <a href="@Url.Action("Login", "Cuenta")">Iniciar sesión</a>
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(function () {
-            $('#actividadEconomica').select2({
-                placeholder: 'Seleccione o busque una actividad (opcional)...',
-                allowClear: true,
-                width: '100%',
-                minimumInputLength: 0,
-                language: {
-                    noResults: function () { return "Sin resultados"; },
-                    searching: function () { return "Buscando..."; },
-                    inputTooShort: function () { return "Escriba para buscar..."; }
-                },
-                ajax: {
-                    url: '@Url.Action("SearchActividades", "Cuenta")',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return { q: params.term || '' };
-                    },
-                    processResults: function (data) {
-                        return { results: data };
-                    },
-                    cache: true
-                }
+    <text>
+        <script>
+    var urlCantones = '@Url.Action("GetCantones", "Cuenta")';
+    var urlDistritos = '@Url.Action("GetDistritos", "Cuenta")';
+
+    function togglePass(id, btn) {
+        var input = document.getElementById(id);
+        if (!input) return;
+        var esPassword = input.getAttribute('type') === 'password';
+        input.setAttribute('type', esPassword ? 'text' : 'password');
+        btn.innerHTML = esPassword
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    }
+
+    function onProvinciaChange(sel) {
+        var selCanton = document.getElementById('Canton');
+        var selDistrito = document.getElementById('Distrito');
+        if (!selCanton || !selDistrito) return;
+
+        selCanton.innerHTML = '<option value="">Cargando...</option>';
+        selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
+        if (!sel.value) {
+            selCanton.innerHTML = '<option value="">— Primero elegí la provincia —</option>';
+            return;
+        }
+        fetch(urlCantones + '?provincia=' + encodeURIComponent(sel.value))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                var html = '<option value="">— Seleccioná cantón —</option>';
+                data.forEach(function (c) {
+                    html += '<option value="' + c + '">' + c + '</option>';
+                });
+                selCanton.innerHTML = html;
             });
+    }
 
-            // Provincia / Cantón / Distrito — Costa Rica completo
-            const dataCR = {
-                "San José": {
-                    "San José": ["Carmen", "Merced", "Hospital", "Catedral", "Zapote", "San Francisco de Dos Ríos", "Uruca", "Mata Redonda", "Pavas", "Hatillo", "San Sebastián"],
-                    "Escazú": ["Escazú", "San Antonio", "San Rafael"],
-                    "Desamparados": ["Desamparados", "San Miguel", "San Juan de Dios", "San Rafael Arriba", "San Antonio", "Frailes", "Patarrá", "San Cristóbal", "Rosario", "Damas", "San Rafael Abajo", "Gravilias", "Los Guido"],
-                    "Puriscal": ["Santiago", "Mercedes Sur", "Barbacoas", "Grifo Alto", "San Rafael", "Candelarita", "Desamparaditos", "San Antonio", "Chires"],
-                    "Tarrazú": ["San Marcos", "San Lorenzo", "San Carlos"],
-                    "Aserrí": ["Aserrí", "Tarbaca", "Vuelta de Jorco", "San Gabriel", "Legua", "Monterrey", "Salitrillos"],
-                    "Mora": ["Colón", "Guayabo", "Tabarcia", "Piedras Negras", "Picagres", "Jaris", "Quitirrisí"],
-                    "Goicoechea": ["Guadalupe", "San Francisco", "Calle Blancos", "Mata de Plátano", "Ipís", "Rancho Redondo", "Purral"],
-                    "Santa Ana": ["Santa Ana", "Salitral", "Pozos", "Uruca", "Piedades", "Brasil"],
-                    "Alajuelita": ["Alajuelita", "San Josecito", "San Antonio", "Concepción", "San Felipe"],
-                    "Vázquez de Coronado": ["San Isidro", "San Rafael", "Dulce Nombre de Jesús", "Patalillo", "Cascajal"],
-                    "Acosta": ["San Ignacio", "Guaitil", "Palmichal", "Cangrejal", "Sabanillas"],
-                    "Tibás": ["San Juan", "Cinco Esquinas", "Anselmo Llorente", "León XIII", "Colima"],
-                    "Moravia": ["San Vicente", "San Jerónimo", "La Trinidad"],
-                    "Montes de Oca": ["San Pedro", "Sabanilla", "Mercedes", "San Rafael"],
-                    "Turrubares": ["San Pablo", "San Pedro", "San Juan de Mata", "San Luis", "Carara"],
-                    "Dota": ["Santa María", "Jardín", "Copey"],
-                    "Curridabat": ["Curridabat", "Granadilla", "Sánchez", "Tirrases"],
-                    "Pérez Zeledón": ["San Isidro de El General", "El General", "Daniel Flores", "Rivas", "San Pedro", "Platanares", "Pejibaye", "Cajón", "Barú", "Río Nuevo", "Páramo", "La Amistad"],
-                    "León Cortés Castro": ["San Pablo", "San Andrés", "Llano Bonito", "San Isidro", "Santa Cruz", "San Antonio"]
-                },
-                "Alajuela": {
-                    "Alajuela": ["Alajuela", "San José", "Carrizal", "San Antonio", "Guácima", "San Isidro", "Sabanilla", "San Rafael", "Río Segundo", "Desamparados", "Turrúcares", "Tambor", "Garita", "Sarapiquí"],
-                    "San Ramón": ["San Ramón", "Santiago", "San Juan", "Piedades Norte", "Piedades Sur", "San Rafael", "San Isidro", "Ángeles", "Alfaro", "Volio", "Concepción", "Zapotal", "Peñas Blancas", "San Lorenzo"],
-                    "Grecia": ["Grecia", "San Isidro", "San José", "San Roque", "Tacares", "Puente de Piedra", "Bolívar"],
-                    "San Mateo": ["San Mateo", "Desmonte", "Jesús María", "Labrador"],
-                    "Atenas": ["Atenas", "Jesús", "Mercedes", "San Isidro", "Concepción", "San José", "Santa Eulalia", "Escobal"],
-                    "Naranjo": ["Naranjo", "San Miguel", "San José", "Cirrí Sur", "San Jerónimo", "San Juan", "El Rosario", "Palmitos"],
-                    "Palmares": ["Palmares", "Zaragoza", "Buenos Aires", "Santiago", "Candelaria", "Esquipulas", "La Granja"],
-                    "Poás": ["San Pedro", "San Juan", "San Rafael", "Carrillos", "Sabana Redonda"],
-                    "Orotina": ["Orotina", "El Mastate", "Hacienda Vieja", "Coyolar", "La Ceiba"],
-                    "San Carlos": ["Quesada", "Florencia", "Buenavista", "Aguas Zarcas", "Venecia", "Pital", "La Fortuna", "La Tigra", "La Palmera", "Venado", "Cutris", "Monterrey", "Pocosol"],
-                    "Zarcero": ["Zarcero", "Laguna", "Tapesco", "Guadalupe", "Palmira", "Zapote", "Brisas"],
-                    "Sarchí": ["Sarchí Norte", "Sarchí Sur", "Toro Amarillo", "San Pedro", "Rodríguez"],
-                    "Upala": ["Upala", "Aguas Claras", "San José o Pizote", "Bijagua", "Delicias", "Dos Ríos", "Yolillal", "Canalete"],
-                    "Los Chiles": ["Los Chiles", "Caño Negro", "El Amparo", "San Jorge"],
-                    "Guatuso": ["San Rafael", "Buenavista", "Cote", "Katira"],
-                    "Río Cuarto": ["Río Cuarto", "Santa Rita", "Santa Isabel"]
-                },
-                "Cartago": {
-                    "Cartago": ["Oriental", "Occidental", "Carmen", "San Nicolás", "Aguacaliente", "San Francisco", "Tres Ríos", "Santa Rosa", "Llanos de Santa Lucía"],
-                    "Paraíso": ["Paraíso", "San Francisco", "San José", "Urba", "Santiago", "Orosi", "Cachí", "Llanos de Santa Lucía", "Birrisito"],
-                    "La Unión": ["Tres Ríos", "San Diego", "San Juan", "San Rafael", "Concepción", "Dulce Nombre", "San Ramón", "Río Azul"],
-                    "Jiménez": ["Juan Viñas", "Tucurrique", "Pejibaye"],
-                    "Turrialba": ["Turrialba", "Jesús María", "Santa Teresita", "Pavones", "Tuis", "Tayutic", "Santa Rosa", "Tres Equis", "La Isabel", "Chirripó"],
-                    "Alvarado": ["Pacayas", "Cervantes", "Capellades"],
-                    "Oreamuno": ["San Rafael", "Cot", "Potrero Cerrado", "Cipreses", "Santa Rosa"],
-                    "El Guarco": ["El Tejar", "San Isidro", "Tobosi", "Patio de Agua"]
-                },
-                "Heredia": {
-                    "Heredia": ["Heredia", "Mercedes", "San Francisco", "Ulloa", "Varablanca"],
-                    "Barva": ["Barva", "San Pedro", "San Pablo", "San Roque", "Santa Lucía", "San José de la Montaña"],
-                    "Santo Domingo": ["Santo Domingo", "San Vicente", "San Miguel", "Paracito", "Santo Tomás", "Santa Rosa", "Tures", "Pará"],
-                    "Santa Bárbara": ["Santa Bárbara", "San Pedro", "San Juan", "Jesús", "Santo Domingo", "Purabá"],
-                    "San Rafael": ["San Rafael", "San Josecito", "Santiago", "Los Ángeles", "Concepción"],
-                    "San Isidro": ["San Isidro", "San José", "Concepción", "San Francisco"],
-                    "Belén": ["San Antonio", "La Ribera", "La Asunción"],
-                    "Flores": ["San Joaquín", "Barrantes", "Llorente"],
-                    "San Pablo": ["San Pablo", "Rincón de Sabanilla"],
-                    "Sarapiquí": ["Puerto Viejo", "La Virgen", "Horquetas", "Llanuras del Gaspar", "Cureña"]
-                },
-                "Guanacaste": {
-                    "Liberia": ["Liberia", "Cañas Dulces", "Mayorga", "Nacascolo", "Curubandé"],
-                    "Nicoya": ["Nicoya", "Mansión", "San Antonio", "Quebrada Honda", "Sámara", "Nosara", "Belén de Nosarita"],
-                    "Santa Cruz": ["Santa Cruz", "Bolsón", "Veintisiete de Abril", "Tempate", "Cartagena", "Cuajiniquil", "Diriá", "Cabo Velas", "Tamarindo"],
-                    "Bagaces": ["Bagaces", "Fortuna", "Mogote", "Río Naranjo"],
-                    "Carrillo": ["Filadelfia", "Palmira", "Sardinal", "Belén"],
-                    "Cañas": ["Cañas", "Palmira", "San Miguel", "Bebedero", "Porozal"],
-                    "Abangares": ["Las Juntas", "Sierra", "San Juan", "Colorado"],
-                    "Tilarán": ["Tilarán", "Quebrada Grande", "Tronadora", "Santa Rosa", "Líbano", "Tierras Morenas", "Arenal", "Cabeceras"],
-                    "Nandayure": ["Carmona", "Santa Rita", "Zapotal", "San Pablo", "Porvenir", "Bejuco"],
-                    "La Cruz": ["La Cruz", "Santa Cecilia", "La Garita", "Santa Elena"],
-                    "Hojancha": ["Hojancha", "Monte Romo", "Puerto Carrillo", "Huacas", "Matambú"]
-                },
-                "Puntarenas": {
-                    "Puntarenas": ["Puntarenas", "Chacarita", "El Roble", "Aranjuez", "Barranca", "Monteverde", "Pitahaya"],
-                    "Esparza": ["Esparza", "San Juan Grande", "Macacona", "San Rafael", "San Jerónimo", "Caldera"],
-                    "Buenos Aires": ["Buenos Aires", "Volcán", "Potrero Grande", "Boruca", "Pilas", "Colinas", "Chánguena", "Biolley", "Brunka"],
-                    "Montes de Oro": ["Miramar", "La Unión", "San Isidro"],
-                    "Osa": ["Puerto Cortés", "Palmar", "Sierpe", "Bahía Ballena", "Piedras Blancas", "Bahía Drake"],
-                    "Quepos": ["Quepos", "Savegre", "Naranjito"],
-                    "Golfito": ["Golfito", "Puerto Jiménez", "Guaycará", "Pavón"],
-                    "Coto Brus": ["San Vito", "Sabalito", "Aguabuena", "Limoncito", "Pittier", "Gutiérrez Braun"],
-                    "Parrita": ["Parrita"],
-                    "Corredores": ["Corredor", "La Cuesta", "Canoas", "Laurel"],
-                    "Garabito": ["Jacó", "Tárcoles", "Lagunillas"]
-                },
-                "Limón": {
-                    "Limón": ["Limón", "Valle La Estrella", "Río Blanco", "Matama"],
-                    "Pococí": ["Guápiles", "Jiménez", "Rita", "Roxana", "Cariari", "Colorado", "La Colonia"],
-                    "Siquirres": ["Siquirres", "Pacuarito", "Florida", "Germania", "Cairo", "Alegría", "El Bosque", "Reventazón"],
-                    "Talamanca": ["Bratsi", "Sixaola", "Cahuita", "Telire"],
-                    "Matina": ["Matina", "Batán", "Carrandi"],
-                    "Guácimo": ["Guácimo", "Mercedes", "Pocora", "Río Jiménez", "Duacarí"]
-                }
-            };
+    function onCantonChange(sel) {
+        var selProv = document.getElementById('Provincia');
+        var selDistrito = document.getElementById('Distrito');
+        if (!selProv || !selDistrito) return;
 
-            const $prov = $('#provincia'), $cant = $('#canton'), $dist = $('#distrito');
-            Object.keys(dataCR).sort().forEach(function (p) { $prov.append('<option value="' + p + '">' + p + '</option>'); });
-
-            $prov.on('change', function () {
-                $cant.empty().append('<option value="">Seleccione</option>');
-                $dist.empty().append('<option value="">Seleccione</option>');
-                var prov = dataCR[this.value];
-                if (prov) Object.keys(prov).sort().forEach(function (c) { $cant.append('<option value="' + c + '">' + c + '</option>'); });
+        selDistrito.innerHTML = '<option value="">Cargando...</option>';
+        if (!sel.value || !selProv.value) {
+            selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
+            return;
+        }
+        fetch(urlDistritos + '?provincia=' + encodeURIComponent(selProv.value) + '&canton=' + encodeURIComponent(sel.value))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                var html = '<option value="">— Seleccioná distrito —</option>';
+                data.forEach(function (d) {
+                    html += '<option value="' + d + '">' + d + '</option>';
+                });
+                selDistrito.innerHTML = html;
             });
+    }
 
-            $cant.on('change', function () {
-                $dist.empty().append('<option value="">Seleccione</option>');
-                var prov = dataCR[$prov.val()];
-                if (prov && prov[this.value]) prov[this.value].forEach(function (d) { $dist.append('<option value="' + d + '">' + d + '</option>'); });
-            });
+    function toggleFactura(chk) {
+        var wrap = document.getElementById('actividadWrap');
+        var hidden = document.getElementById('ActividadEconomicaId');
+        var buscador = document.getElementById('buscadorActividad');
+        var lista = document.getElementById('listaActividades');
+        var seleccionada = document.getElementById('actividadSeleccionada');
+        if (!wrap || !hidden || !buscador || !lista || !seleccionada) return;
 
-            // Toggle mostrar/ocultar contraseña
-            $('.toggle-password').on('click', function () {
-                var targetId = $(this).data('target');
-                var $input = $('#' + targetId);
-                var esPassword = $input.attr('type') === 'password';
+        wrap.style.display = chk.checked ? 'block' : 'none';
+        if (!chk.checked) {
+            hidden.value = '';
+            seleccionada.style.display = 'none';
+            buscador.value = '';
+            lista.style.display = 'none';
+        }
+    }
 
-                if (esPassword) {
-                    $input.attr('type', 'text');
-                    $(this).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>');
-                } else {
-                    $input.attr('type', 'password');
-                    $(this).html('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>');
-                }
-            });
+    function mostrarActividades() {
+        var lista = document.getElementById('listaActividades');
+        if (lista) lista.style.display = 'block';
+        filtrarActividades();
+    }
 
-            // Modal
-            window.abrirDocumento = function (tipo) {
-                var titulo = '', contenido = '';
-                if (tipo === 'politica') {
-                    titulo = 'Política de Privacidad y Seguridad';
-                    contenido = '<p>La CNFL se compromete a proteger la privacidad y los datos personales de sus clientes, en cumplimiento con la Ley N.° 8968.</p><h4>1. Datos recopilados</h4><p>Cédula, nombre, apellidos, correo, teléfono, dirección y NISE.</p><h4>2. Uso</h4><p>Gestión del servicio eléctrico, facturación, comunicación y obligaciones legales.</p><h4>3. Derechos</h4><p>Acceso, rectificación, cancelación y oposición escribiendo a info@cnfl.go.cr.</p>';
-                } else {
-                    titulo = 'Consentimiento Informado (F-085)';
-                    contenido = '<p>El usuario manifiesta su consentimiento libre, previo, expreso e informado para que la CNFL trate sus datos personales conforme al formulario F-085.</p><h4>1. Finalidad</h4><p>Gestión del servicio eléctrico, facturación y obligaciones legales.</p><h4>2. Alcance</h4><p>Recopilación, almacenamiento, uso, circulación y supresión de datos, según la Ley N.° 8968.</p><h4>3. Revocatoria</h4><p>Puede revocar su consentimiento escribiendo a info@cnfl.go.cr.</p>';
-                }
-                document.getElementById('cnflModalTitle').innerText = titulo;
-                document.getElementById('cnflModalBody').innerHTML = contenido;
-                document.getElementById('cnflModal').style.display = 'flex';
-            };
-            window.cerrarDocumento = function () { document.getElementById('cnflModal').style.display = 'none'; };
-            document.getElementById('cnflModal').addEventListener('click', function (e) { if (e.target === this) cerrarDocumento(); });
+    function filtrarActividades() {
+        var buscador = document.getElementById('buscadorActividad');
+        var lista = document.getElementById('listaActividades');
+        if (!buscador || !lista) return;
+
+        var q = buscador.value.toLowerCase().trim();
+        var visibles = 0;
+        var items = document.querySelectorAll('.actividad-item');
+        for (var i = 0; i < items.length; i++) {
+            var it = items[i];
+            var txt = it.getAttribute('data-text') || '';
+            if (!q || txt.indexOf(q) >= 0) {
+                it.style.display = 'block';
+                visibles++;
+            } else {
+                it.style.display = 'none';
+            }
+        }
+        lista.style.display = visibles > 0 ? 'block' : 'none';
+    }
+
+    function seleccionarActividad(id, texto) {
+        var hidden = document.getElementById('ActividadEconomicaId');
+        var textoEl = document.getElementById('actividadTexto');
+        var seleccionada = document.getElementById('actividadSeleccionada');
+        var lista = document.getElementById('listaActividades');
+        var buscador = document.getElementById('buscadorActividad');
+        if (!hidden || !textoEl || !seleccionada || !lista || !buscador) return;
+
+        hidden.value = id;
+        textoEl.textContent = texto;
+        seleccionada.style.display = 'block';
+        lista.style.display = 'none';
+        buscador.value = texto;
+    }
+
+    document.addEventListener('click', function (e) {
+        var buscador = document.getElementById('buscadorActividad');
+        var lista = document.getElementById('listaActividades');
+        if (!buscador || !lista) return;
+        var target = e.target;
+        if (!target) return;
+        if (!buscador.contains(target) && !lista.contains(target)) {
+            lista.style.display = 'none';
+        }
+    });
+
+    var formRegistro = document.getElementById('formRegistro');
+    if (formRegistro) {
+        formRegistro.addEventListener('submit', function (e) {
+            var provEl = document.getElementById('Provincia');
+            var cantEl = document.getElementById('Canton');
+            var distEl = document.getElementById('Distrito');
+            var politica = document.getElementById('chkPolitica');
+            var consent = document.getElementById('chkConsentimiento');
+            var chkFactura = document.getElementById('chkFactura');
+            var actId = document.getElementById('ActividadEconomicaId');
+            var buscador = document.getElementById('buscadorActividad');
+            var passEl = document.getElementById('Contraseña');
+            var confEl = document.getElementById('confirmarContraseña');
+
+            if (!provEl || !cantEl || !distEl || !politica || !consent || !chkFactura || !actId || !buscador || !passEl || !confEl) return;
+
+            if (!provEl.value || !cantEl.value || !distEl.value) {
+                e.preventDefault();
+                alert('Completá provincia, cantón y distrito.');
+                return;
+            }
+            if (!politica.checked) {
+                e.preventDefault();
+                alert('Debés aceptar la Política de Privacidad.');
+                return;
+            }
+            if (!consent.checked) {
+                e.preventDefault();
+                alert('Debés aceptar el Consentimiento Informado.');
+                return;
+            }
+            if (chkFactura.checked && !actId.value) {
+                e.preventDefault();
+                alert('Elegí la actividad económica para activar la factura electrónica.');
+                buscador.focus();
+                return;
+            }
+            var pass = passEl.value;
+            var conf = confEl.value;
+            if (pass.length < 6) {
+                e.preventDefault();
+                alert('La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+            if (pass !== conf) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden.');
+                return;
+            }
         });
-    </script>
+    }
+
+    (function () {
+        var prov = document.getElementById('Provincia');
+        if (prov && prov.value) onProvinciaChange(prov);
+    })();
+        </script>
+    </text>
 }

@@ -1,0 +1,139 @@
+﻿@{
+    ViewBag.Title = "Reportes";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var desde = ViewBag.Desde as string ?? DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd");
+    var hasta = ViewBag.Hasta as string ?? DateTime.Now.ToString("yyyy-MM-dd");
+    var totalFacturado = (decimal)(ViewBag.TotalFacturado ?? 0m);
+    var totalCobrado = (decimal)(ViewBag.TotalCobrado ?? 0m);
+    var totalAverias = (int)(ViewBag.TotalAverias ?? 0);
+    var totalTramites = (int)(ViewBag.TotalTramites ?? 0);
+}
+
+<div class="appbar">
+    <a href="@Url.Action("Dashboard", "Admin")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Reportes</div>
+    <div style="width:40px;"></div>
+</div>
+
+<h1 class="h-name" style="font-size:24px;">Reportes</h1>
+<p class="h-greet" style="margin-top:6px; line-height:1.5;">
+    Análisis del sistema por rango de fechas
+</p>
+
+<form method="get" action="@Url.Action("Reportes", "Admin")" class="admin-search" style="margin-top:14px;">
+    <input type="date" name="desde" value="@desde" />
+    <input type="date" name="hasta" value="@hasta" />
+    <button type="submit" class="admin-btn primary">Aplicar</button>
+</form>
+
+<div class="admin-stats">
+    <div class="admin-stat">
+        <div class="row1"><div class="ico" style="background:#eef0ff;">💰</div></div>
+        <div class="k">Facturado</div>
+        <div class="v" style="font-size:18px;">₡@totalFacturado.ToString("N0")</div>
+    </div>
+
+    <div class="admin-stat">
+        <div class="row1"><div class="ico" style="background:#e9f7ec;">✅</div></div>
+        <div class="k">Cobrado</div>
+        <div class="v" style="font-size:18px;">₡@totalCobrado.ToString("N0")</div>
+    </div>
+
+    <div class="admin-stat">
+        <div class="row1"><div class="ico" style="background:#fdeaea;">⚡</div></div>
+        <div class="k">Averías</div>
+        <div class="v">@totalAverias</div>
+    </div>
+
+    <div class="admin-stat">
+        <div class="row1"><div class="ico" style="background:#f3f0ff;">📋</div></div>
+        <div class="k">Trámites</div>
+        <div class="v">@totalTramites</div>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>📈 Facturación por mes</h3>
+    <div class="sub">Total facturado en el período</div>
+    <div class="admin-chart">
+        <canvas id="chartFacturas"></canvas>
+    </div>
+</div>
+
+<div class="admin-card">
+    <h3>⚡ Averías por tipo</h3>
+    <div class="sub">Top 6 tipos</div>
+    <div class="admin-chart">
+        <canvas id="chartAverias"></canvas>
+    </div>
+</div>
+
+<div style="display:flex; flex-direction:column; gap:10px; margin-top:14px;">
+    <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "averias" })" target="_blank" class="admin-btn">
+        📄 Exportar averías (PDF)
+    </a>
+    <a href="@Url.Action("ReportesPDF", "Admin", new { tipo = "averias" })" target="_blank" class="admin-btn">
+        📊 Exportar averías (Excel)
+    </a>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        var facturasMes = @Html.Raw(ViewBag.FacturasMesJson ?? "[]");
+        var averiasTipo = @Html.Raw(ViewBag.AveriasTipoJson ?? "[]");
+
+        if (facturasMes.length > 0) {
+            new Chart(document.getElementById('chartFacturas'), {
+                type: 'bar',
+                data: {
+                    labels: facturasMes.map(function (f) { return f.Mes; }),
+                    datasets: [{
+                        label: 'Facturado',
+                        data: facturasMes.map(function (f) { return f.Total; }),
+                        backgroundColor: 'rgba(30,35,230,.85)',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10, weight: '700' } } }
+                    }
+                }
+            });
+        }
+
+        if (averiasTipo.length > 0) {
+            new Chart(document.getElementById('chartAverias'), {
+                type: 'bar',
+                data: {
+                    labels: averiasTipo.map(function (a) { return a.Tipo; }),
+                    datasets: [{
+                        data: averiasTipo.map(function (a) { return a.Cantidad; }),
+                        backgroundColor: 'rgba(255,105,45,.85)',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } },
+                        y: { ticks: { font: { size: 10, weight: '700' } } }
+                    }
+                }
+            });
+        }
+    </script>
+}

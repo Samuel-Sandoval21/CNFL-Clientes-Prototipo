@@ -1,191 +1,215 @@
 ﻿@{
-    ViewBag.Title = "Calculadora";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    ViewBag.Title = "Calculadora energética";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
-@section Styles {
-    <style>
-        .calc-hero {
-            background: linear-gradient(135deg, var(--blue), #2a4fd6);
-            border-radius: 22px;
-            padding: 22px 20px;
-            color: #fff;
-            box-shadow: 0 12px 30px -12px rgba(16,20,60,.45);
-            margin-top: 8px;
-        }
-
-            .calc-hero h1 {
-                margin: 0;
-                font-size: 22px;
-                font-weight: 800;
-                letter-spacing: -.02em;
-            }
-
-            .calc-hero p {
-                margin: 6px 0 0;
-                font-size: 12.5px;
-                opacity: .9;
-                line-height: 1.4;
-            }
-
-        .calc-card {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 16px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .calc-field {
-            margin-bottom: 14px;
-        }
-
-        .calc-label {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--muted);
-            display: block;
-            margin-bottom: 7px;
-        }
-
-        .calc-input, .calc-select {
-            width: 100%;
-            border: 1.5px solid var(--line);
-            border-radius: 14px;
-            padding: 13px 15px;
-            font-size: 14px;
-            font-family: inherit;
-            color: var(--ink);
-            outline: none;
-            background: #fff;
-            transition: border-color .15s;
-        }
-
-            .calc-input:focus, .calc-select:focus {
-                border-color: var(--blue);
-            }
-
-        .calc-btn {
-            width: 100%;
-            background: var(--blue);
-            color: #fff;
-            border: 0;
-            font-family: inherit;
-            font-weight: 800;
-            font-size: 14px;
-            padding: 15px;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: transform .12s;
-            margin-top: 6px;
-        }
-
-            .calc-btn:active {
-                transform: scale(.97);
-            }
-
-        .calc-result {
-            background: linear-gradient(135deg, #e9f7ec, #d6f0dc);
-            border: 1px solid #cdeed4;
-            border-radius: 18px;
-            padding: 18px;
-            margin-top: 16px;
-            display: none;
-        }
-
-            .calc-result.show {
-                display: block;
-            }
-
-            .calc-result .lbl {
-                font-size: 11.5px;
-                font-weight: 800;
-                color: #2f8f3e;
-                letter-spacing: .3px;
-            }
-
-            .calc-result .monto {
-                font-size: 28px;
-                font-weight: 800;
-                color: #1e6b2c;
-                margin-top: 4px;
-            }
-
-            .calc-result .detalle {
-                font-size: 12px;
-                color: #4a9a57;
-                margin-top: 8px;
-                line-height: 1.5;
-            }
-
-        .calc-tips {
-            background: #eef0ff;
-            border-radius: 14px;
-            padding: 12px 14px;
-            font-size: 12px;
-            color: var(--blue);
-            line-height: 1.5;
-            margin-top: 14px;
-        }
-
-            .calc-tips b {
-                font-weight: 800;
-            }
-    </style>
-}
-
-<div class="calc-hero">
-    <h1 data-i18n="calc.title">🧮 Calculadora de consumo</h1>
-    <p data-i18n="calc.sub">Estimá el monto aproximado de tu factura según el consumo de tus electrodomésticos.</p>
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="appbar">
+    <a href="@Url.Action("MisServicios", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Calculadora</div>
+    <div style="width:40px;"></div>
 </div>
 
-<div class="calc-card">
-    <div class="calc-field">
-        <label class="calc-label">TARIFA (₡ / kWh)</label>
-        <select id="tarifa" class="calc-select">
-            <option value="78">Residencial — ₡78 / kWh</option>
-            <option value="95">Comercial — ₡95 / kWh</option>
-            <option value="110">Industrial — ₡110 / kWh</option>
+<p class="h-greet" style="margin-top:4px; line-height:1.5;">
+    Estimá el costo mensual de tus electrodomésticos.
+</p>
+
+<!-- ═══════════ AGREGAR EQUIPO ═══════════ -->
+<div class="eyebrow">Agregar equipo</div>
+
+<div class="reg-card">
+    <div class="reg-field">
+        <label for="equipo">Equipo</label>
+        <select id="equipo">
+            <option value="1500">Aire acondicionado (1.500 W)</option>
+            <option value="1200">Refrigeradora (1.200 W)</option>
+            <option value="2000">Horno microondas (2.000 W)</option>
+            <option value="1000">Plancha (1.000 W)</option>
+            <option value="800">Televisor (800 W)</option>
+            <option value="500">Computadora (500 W)</option>
+            <option value="300">Ventilador (300 W)</option>
+            <option value="200">Router / Internet (200 W)</option>
+            <option value="100">Bombillo LED (100 W)</option>
         </select>
     </div>
 
-    <div class="calc-field">
-        <label class="calc-label">CONSUMO MENSUAL (kWh)</label>
-        <input type="number" id="kwh" class="calc-input" placeholder="Ej: 250" min="0" step="1" />
+    <div class="reg-field">
+        <label for="horas">Horas de uso al día</label>
+        <input type="number" id="horas" value="4" min="0.5" max="24" step="0.5" />
+        <small class="hint">¿Cuántas horas al día lo usás en promedio?</small>
     </div>
 
-    <button type="button" class="calc-btn" onclick="calcular()">Calcular monto</button>
+    <button type="button" class="reg-btn" id="btnAgregar">Agregar a la lista</button>
+</div>
 
-    <div class="calc-result" id="resultado">
-        <div class="lbl">MONTO ESTIMADO</div>
-        <div class="monto" id="monto">₡0</div>
-        <div class="detalle" id="detalle"></div>
-    </div>
+<!-- ═══════════ LISTA DE EQUIPOS ═══════════ -->
+<div class="eyebrow">Equipos agregados</div>
 
-    <div class="calc-tips">
-        💡 <b>Tip:</b> Un hogar promedio consume entre 150 y 300 kWh al mes.
+<div id="listaEquipos" class="rows"></div>
+
+<div id="vacio" class="card" style="text-align:center; padding:26px 18px;">
+    <div style="font-size:38px; line-height:1;">🧮</div>
+    <p style="font-weight:800; font-size:13px; margin-top:12px; color:var(--ink);">Sin equipos agregados</p>
+    <p style="font-size:11.5px; color:var(--muted); margin-top:6px; line-height:1.5;">
+        Elegí un equipo arriba y presioná "Agregar a la lista".
+    </p>
+</div>
+
+<!-- ═══════════ RESULTADO ═══════════ -->
+<div class="eyebrow">Costo estimado mensual</div>
+
+<div class="bill" style="margin-top:0;">
+    <div class="lbl">TOTAL ESTIMADO · ₡ 130 / kWh</div>
+    <div class="amt" id="totalCosto">₡ 0</div>
+    <div class="due" id="totalKwh">0 kWh al mes</div>
+</div>
+
+<!-- ═══════════ TIP ═══════════ -->
+<div class="card" style="margin-top:14px; background:#f7f8fc; border-style:dashed;">
+    <div style="display:flex; gap:11px; align-items:flex-start;">
+        <div style="width:36px; height:36px; border-radius:11px; background:#eef0ff; display:grid; place-items:center; flex:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 16v-4M12 8h.01" />
+            </svg>
+        </div>
+        <div>
+            <div style="font-size:12.5px; font-weight:800; color:var(--ink);">Tarifa de referencia</div>
+            <div style="font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.4;">
+                Este cálculo es una estimación. La tarifa real depende de tu NISE y consumo acumulado.
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        function calcular() {
-            var kwh = parseFloat(document.getElementById('kwh').value) || 0;
-            var tarifa = parseFloat(document.getElementById('tarifa').value) || 0;
-            if (kwh <= 0) { alert('Ingresá un consumo mayor a 0.'); return; }
+            (function () {
+                var TARIFA = 130; // ₡ por kWh
+                var STORAGE_KEY = 'cnfl_calculadora_equipos';
 
-            var subtotal = kwh * tarifa;
-            var iva = subtotal * 0.13;
-            var total = subtotal + iva;
+                var sel = document.getElementById('equipo');
+                var horas = document.getElementById('horas');
+                var lista = document.getElementById('listaEquipos');
+                var vacio = document.getElementById('vacio');
+                var totalCosto = document.getElementById('totalCosto');
+                var totalKwh = document.getElementById('totalKwh');
+                var btn = document.getElementById('btnAgregar');
 
-            document.getElementById('monto').innerText = '₡' + total.toLocaleString('es-CR', { maximumFractionDigits: 0 });
-            document.getElementById('detalle').innerHTML =
-                'Consumo: <b>' + kwh + ' kWh</b><br>' +
-                'Subtotal: ₡' + subtotal.toLocaleString('es-CR', { maximumFractionDigits: 0 }) + '<br>' +
-                'IVA (13%): ₡' + iva.toLocaleString('es-CR', { maximumFractionDigits: 0 });
+                var equipos = [];
 
-            document.getElementById('resultado').classList.add('show');
-        }
+                function cargar() {
+                    try {
+                        var raw = localStorage.getItem(STORAGE_KEY);
+                        if (raw) equipos = JSON.parse(raw) || [];
+                    } catch (e) { equipos = []; }
+                }
+
+                function guardar() {
+                    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(equipos)); } catch (e) {}
+                }
+
+                function formatearCRC(n) {
+                    return '₡ ' + n.toLocaleString('es-CR', { maximumFractionDigits: 0 });
+                }
+
+                function render() {
+                    lista.innerHTML = '';
+
+                    if (equipos.length === 0) {
+                        vacio.style.display = 'block';
+                    } else {
+                        vacio.style.display = 'none';
+                    }
+
+                    var totalKwhMes = 0;
+
+                    for (var i = 0; i < equipos.length; i++) {
+                        var eq = equipos[i];
+                        var kwhDia = (eq.watts * eq.horas) / 1000;
+                        var kwhMes = kwhDia * 30;
+                        totalKwhMes += kwhMes;
+
+                        var row = document.createElement('div');
+                        row.className = 'row-item';
+
+                        var ic = document.createElement('div');
+                        ic.className = 'ic';
+                        ic.style.background = '#eef0ff';
+                        ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#1E23E6" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>';
+
+                        var tx = document.createElement('div');
+                        tx.className = 'tx';
+
+                        var t = document.createElement('div');
+                        t.className = 't';
+                        t.textContent = eq.nombre;
+
+                        var s = document.createElement('div');
+                        s.className = 's';
+                        s.textContent = eq.horas + ' h/día · ' + kwhMes.toFixed(1) + ' kWh/mes';
+
+                        tx.appendChild(t);
+                        tx.appendChild(s);
+
+                        var btnDel = document.createElement('button');
+                        btnDel.type = 'button';
+                        btnDel.style.background = '#fdeaea';
+                        btnDel.style.border = '0';
+                        btnDel.style.color = '#E5484D';
+                        btnDel.style.width = '34px';
+                        btnDel.style.height = '34px';
+                        btnDel.style.borderRadius = '10px';
+                        btnDel.style.cursor = 'pointer';
+                        btnDel.style.display = 'grid';
+                        btnDel.style.placeItems = 'center';
+                        btnDel.style.flexShrink = '0';
+                        btnDel.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+                        btnDel.setAttribute('data-idx', i);
+
+                        btnDel.addEventListener('click', function (e) {
+                            var idx = parseInt(this.getAttribute('data-idx'), 10);
+                            equipos.splice(idx, 1);
+                            guardar();
+                            render();
+                        });
+
+                        row.appendChild(ic);
+                        row.appendChild(tx);
+                        row.appendChild(btnDel);
+
+                        lista.appendChild(row);
+                    }
+
+                    var costo = totalKwhMes * TARIFA;
+                    totalKwh.textContent = totalKwhMes.toFixed(1) + ' kWh al mes';
+                    totalCosto.textContent = formatearCRC(costo);
+                }
+
+                btn.addEventListener('click', function () {
+                    var opt = sel.options[sel.selectedIndex];
+                    var nombre = opt.textContent;
+                    var watts = parseInt(opt.value, 10) || 0;
+                    var h = parseFloat(horas.value) || 0;
+
+                    if (h <= 0) {
+                        alert('Ingresá al menos 0.5 horas al día.');
+                        return;
+                    }
+
+                    equipos.push({ nombre: nombre, watts: watts, horas: h });
+                    guardar();
+                    render();
+
+                    horas.value = 4;
+                });
+
+                cargar();
+                render();
+            })();
     </script>
 }

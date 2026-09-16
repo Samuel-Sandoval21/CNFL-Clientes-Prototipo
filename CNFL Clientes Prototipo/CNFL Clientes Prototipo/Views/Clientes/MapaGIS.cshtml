@@ -1,0 +1,166 @@
+﻿@{
+    ViewBag.Title = "Mapa GIS";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+<div class="appbar">
+    <a href="@Url.Action("MisServicios", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">Mapa GIS</div>
+    <div style="width:40px;"></div>
+</div>
+
+<p class="h-greet" style="margin-top:4px; line-height:1.5;">
+    Averías en la red, estaciones de recarga y puntos verdes.
+</p>
+
+<div class="eyebrow">Mapa en vivo</div>
+
+<div id="map" style="width:100%; height:380px; border-radius:18px; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow-sm);"></div>
+
+<div class="eyebrow">Clasificación de incidentes</div>
+
+<div class="card">
+    <p style="font-size:12.5px; color:var(--muted); line-height:1.5; margin-bottom:14px;">
+        Los incidentes se representan con un círculo. El color indica la cantidad de clientes afectados.
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:11px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span style="width:14px; height:14px; border-radius:50%; background:#64B95A; flex:none;"></span>
+            <div style="font-size:12.5px; color:var(--ink);">
+                <b>Verde</b> · menor o igual a 10 clientes afectados
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span style="width:14px; height:14px; border-radius:50%; background:#F5C842; flex:none;"></span>
+            <div style="font-size:12.5px; color:var(--ink);">
+                <b>Amarillo</b> · entre 11 y 500 clientes afectados
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span style="width:14px; height:14px; border-radius:50%; background:#FF692D; flex:none;"></span>
+            <div style="font-size:12.5px; color:var(--ink);">
+                <b>Naranja</b> · entre 501 y 1000 clientes afectados
+            </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <span style="width:14px; height:14px; border-radius:50%; background:#E5484D; flex:none;"></span>
+            <div style="font-size:12.5px; color:var(--ink);">
+                <b>Rojo</b> · mayor o igual a 1001 clientes afectados
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="eyebrow">Otros puntos de interés</div>
+
+<div class="rows">
+    <!-- Estaciones de recarga eléctrica -->
+    <div class="row-item">
+        <div class="ic" style="background:#eef6ff;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2">
+                <rect x="3" y="7" width="12" height="10" rx="2" />
+                <path d="M15 10h3v4h-3z" />
+                <path d="M18 11v2" />
+                <path d="M6 10h4M6 13h3" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Estaciones de recarga eléctrica</div>
+            <div class="s">Disponible / reservable / fuera de servicio</div>
+        </div>
+    </div>
+
+    <!-- Puntos verdes -->
+    <div class="row-item">
+        <div class="ic" style="background:#e9f7ec;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+                <path d="M2 21c0-3 1.85-5.36 5.08-6" />
+            </svg>
+        </div>
+        <div class="tx">
+            <div class="t">Puntos verdes</div>
+            <div class="s">Centros de reciclaje y sostenibilidad</div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+}
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+                (function () {
+                    var map = L.map('map').setView([9.9281, -84.0907], 8);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; OpenStreetMap'
+                    }).addTo(map);
+
+                    var averias = [
+                        { lat: 9.9281, lng: -84.0907, color: '#E5484D', afectados: 2500, desc: 'San José centro' },
+                        { lat: 9.9977, lng: -84.1165, color: '#FF692D', afectados: 780,  desc: 'Heredia' },
+                        { lat: 10.0170, lng: -84.2100, color: '#F5C842', afectados: 320,  desc: 'Alajuela' },
+                        { lat: 9.8637, lng: -83.9256, color: '#64B95A', afectados: 8,    desc: 'Cartago' },
+                        { lat: 10.0883, lng: -84.4720, color: '#64B95A', afectados: 5,    desc: 'San Ramón' }
+                    ];
+
+                    averias.forEach(function (a) {
+                        L.circleMarker([a.lat, a.lng], {
+                            radius: 8,
+                            fillColor: a.color,
+                            color: '#fff',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.9
+                        })
+                        .addTo(map)
+                        .bindPopup('<b>' + a.desc + '</b><br>' + a.afectados + ' clientes afectados');
+                    });
+
+                    var estaciones = [
+                        { lat: 9.9350, lng: -84.1050, desc: 'Estación Sabana' },
+                        { lat: 9.9450, lng: -84.0800, desc: 'Estación Zapote' }
+                    ];
+
+                    estaciones.forEach(function (e) {
+                        L.circleMarker([e.lat, e.lng], {
+                            radius: 9,
+                            fillColor: '#64B9CD',
+                            color: '#fff',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.95
+                        })
+                        .addTo(map)
+                        .bindPopup('<b>' + e.desc + '</b><br>Estado: Disponible');
+                    });
+
+                    var verdes = [
+                        { lat: 9.9200, lng: -84.1300, desc: 'Punto verde UCR' },
+                        { lat: 9.9600, lng: -84.0900, desc: 'Punto verde Tibás' }
+                    ];
+
+                    verdes.forEach(function (p) {
+                        L.circleMarker([p.lat, p.lng], {
+                            radius: 7,
+                            fillColor: '#64B95A',
+                            color: '#fff',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.95
+                        })
+                        .addTo(map)
+                        .bindPopup('<b>' + p.desc + '</b><br>Centro de reciclaje');
+                    });
+                })();
+    </script>
+}
