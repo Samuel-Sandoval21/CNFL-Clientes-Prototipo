@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CNFL_Clientes_Prototipo.Models
 {
     // ═══════════════════════════════════════════════════════════
-    // DTOs del DASHBOARD
+    // DTOs del DASHBOARD (Cliente)
     // ═══════════════════════════════════════════════════════════
 
     public class AveriaResumenDto
@@ -90,6 +90,7 @@ namespace CNFL_Clientes_Prototipo.Models
     // DTOs del ADMIN
     // ═══════════════════════════════════════════════════════════
 
+    /// <summary>DTO con datos de un cliente para el panel de administración.</summary>
     public class ClienteAdminDto
     {
         public int UsuarioId { get; set; }
@@ -104,6 +105,15 @@ namespace CNFL_Clientes_Prototipo.Models
         public int FacturasPendientes { get; set; }
         public decimal MontoPendiente { get; set; }
         public int AveriasActivas { get; set; }
+    }
+
+    /// <summary>DTO con tiempo de uso de la app por cliente (Admin → Actividad).</summary>
+    public class TiempoUsoClienteDto
+    {
+        public int UsuarioId { get; set; }
+        public string Nombre { get; set; }
+        public string Correo { get; set; }
+        public int MinutosTotales { get; set; }
     }
 
     // ═══════════════════════════════════════════════════════════

@@ -24,6 +24,11 @@
         <div class="aviso ok" style="margin-top:16px;">@TempData["Mensaje"]</div>
     }
 
+    @if (ViewBag.Error != null)
+    {
+        <div class="aviso err" style="margin-top:16px;">@ViewBag.Error</div>
+    }
+
     @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
     {
         <div class="aviso err" style="margin-top:16px;">

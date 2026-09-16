@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "Cuenta";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var nombreAdmin = ViewBag.NombreAdmin as string ?? "Administrador";
+    var correoAdmin = ViewBag.CorreoAdmin as string ?? "admin@cnfl.go.cr";
+    var inicial = !string.IsNullOrEmpty(nombreAdmin) ? nombreAdmin.Substring(0, 1).ToUpper() : "A";
+}
+
+@section Styles {
+    <style>
+        .perfil-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 26px 20px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .avatar-grande {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a2b6b, #2b3f8f);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 30px;
+            margin: 0 auto 14px;
+            box-shadow: 0 10px 24px -8px rgba(30, 35, 230, .5);
+        }
+
+        .perfil-nombre {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .perfil-correo {
+            font-size: 12.5px;
+            color: var(--muted);
+        }
+
+        .rol-badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 5px 14px;
+            background: #eef0ff;
+            color: #1a2b6b;
+            border-radius: 12px;
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            margin: 22px 6px 10px;
+        }
+
+        .opcion-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 14px 16px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform .15s;
+        }
+
+            .opcion-card:active {
+                transform: scale(.98);
+            }
+
+        .opcion-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #eef0ff;
+            color: #1a2b6b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .opcion-texto {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .opcion-titulo {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .opcion-sub {
+            font-size: 11.5px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .opcion-arrow {
+            color: #c9ced9;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 15px;
+            background: #fff;
+            color: #e53935;
+            border: 2px solid #e53935;
+            border-radius: 14px;
+            font-size: 13.5px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background .18s, color .18s;
+        }
+
+            .logout-btn:active {
+                background: #e53935;
+                color: #fff;
+            }
+    </style>
+}
+
+<h1 class="page-title">Mi cuenta</h1>
+
+<div class="perfil-card">
+    <div class="avatar-grande">@inicial</div>
+    <div class="perfil-nombre">@nombreAdmin</div>
+    <div class="perfil-correo">@correoAdmin</div>
+    <div class="rol-badge">Administrador</div>
+</div>
+
+<div class="section-label">Supervisión</div>
+
+<a href="@Url.Action("Actividad", "Admin")" class="opcion-card">
+    <div class="opcion-icon"><i class="fas fa-chart-bar"></i></div>
+    <div class="opcion-texto">
+        <div class="opcion-titulo">Actividad de uso</div>
+        <div class="opcion-sub">Tiempo que pasan los clientes en la app</div>
+    </div>
+    <i class="fas fa-chevron-right opcion-arrow"></i>
+</a>
+
+<a href="@Url.Action("Configuracion", "Admin")" class="opcion-card">
+    <div class="opcion-icon"><i class="fas fa-cog"></i></div>
+    <div class="opcion-texto">
+        <div class="opcion-titulo">Configuración</div>
+        <div class="opcion-sub">Catálogos y parámetros del sistema</div>
+    </div>
+    <i class="fas fa-chevron-right opcion-arrow"></i>
+</a>
+
+<a href="@Url.Action("Alertas", "Admin")" class="opcion-card">
+    <div class="opcion-icon"><i class="fas fa-bell"></i></div>
+    <div class="opcion-texto">
+        <div class="opcion-titulo">Alertas</div>
+        <div class="opcion-sub">Notificaciones y avisos del sistema</div>
+    </div>
+    <i class="fas fa-chevron-right opcion-arrow"></i>
+</a>
+
+@using (Html.BeginForm("Logout", "Admin", FormMethod.Get))
+{
+    <button type="submit" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+    </button>
+}

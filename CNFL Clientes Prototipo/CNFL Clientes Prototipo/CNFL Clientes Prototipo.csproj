@@ -378,6 +378,8 @@
     <Content Include="Views\Admin\Tramites.cshtml" />
     <Content Include="Views\Admin\Actividad.cshtml" />
     <Content Include="Views\Admin\Configuracion.cshtml" />
+    <Content Include="Views\Admin\Cuenta.cshtml" />
+    <Content Include="Views\Admin\Alertas.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

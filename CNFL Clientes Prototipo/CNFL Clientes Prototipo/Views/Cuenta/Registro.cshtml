@@ -17,6 +17,88 @@
     var facturaElectronicaPrevia = ViewBag.FacturaElectronica as bool? ?? false;
 }
 
+@section Styles {
+    <style>
+        .legal-link {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--blue);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+            .legal-link:hover {
+                opacity: .8;
+            }
+
+        .modal-legal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-legal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+        }
+
+        .modal-legal-box {
+            position: relative;
+            background: #fff;
+            border-radius: 18px;
+            max-width: 720px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,.3);
+            overflow: hidden;
+        }
+
+        .modal-legal-close {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            background: #eef0ff;
+            color: var(--blue);
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .modal-legal-scroll {
+            overflow-y: auto;
+            padding: 28px 26px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #222;
+        }
+
+            .modal-legal-scroll h2 {
+                font-size: 18px;
+                color: var(--blue);
+                margin: 0 0 16px;
+            }
+
+            .modal-legal-scroll p {
+                margin: 0 0 12px;
+                text-align: justify;
+            }
+    </style>
+}
+
 <div class="reg-hero">
     <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
          onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';"
@@ -25,7 +107,7 @@
     <p>Registrate con tu cédula para gestionar tus servicios CNFL.</p>
 </div>
 
-@if (!ViewData.ModelState.IsValid)
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
 {
     <div class="aviso err">
         <ul style="padding-left:18px; margin:0;">
@@ -47,13 +129,14 @@
 
         <div class="reg-field">
             <label for="Cedula">Cédula *</label>
-            @Html.TextBoxFor(m => m.Cedula, new
-            {
-                id = "Cedula",
-                placeholder = "Ej: 1 2345 6789",
-                required = "required",
-                maxlength = "20"
-            })
+            <input type="text"
+                   id="Cedula"
+                   name="Cedula"
+                   placeholder="Ej: 1 2345 6789"
+                   required
+                   maxlength="20"
+                   value="@(Model != null ? Model.Cedula : "")"
+                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
             <small class="hint">Sin guiones. Solo números y espacios.</small>
         </div>
 
@@ -65,26 +148,29 @@
                    value="@nombreCompletoPrevio"
                    placeholder="Ej: Juan Pérez Mora"
                    autocomplete="name"
-                   required />
+                   required
+                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
             <small class="hint">Escribí nombre y dos apellidos.</small>
         </div>
 
         <div class="reg-field">
             <label for="NombreUsuario">Nombre de usuario *</label>
-            @Html.TextBoxFor(m => m.NombreUsuario, new
-            {
-                id = "NombreUsuario",
-                placeholder = "Ej: juanperez",
-                required = "required",
-                maxlength = "50",
-                autocomplete = "username"
-            })
+            <input type="text"
+                   id="NombreUsuario"
+                   name="NombreUsuario"
+                   placeholder="Ej: juanperez"
+                   required
+                   maxlength="50"
+                   autocomplete="username"
+                   value="@(Model != null ? Model.NombreUsuario : "")"
+                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
             <small class="hint">Con este nombre vas a poder iniciar sesión (además de la cédula).</small>
         </div>
 
         <div class="reg-field">
             <label for="Sexo">Sexo *</label>
-            <select id="Sexo" name="Sexo" required>
+            <select id="Sexo" name="Sexo" required
+                    style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;">
                 <option value="">— Seleccioná una opción —</option>
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
@@ -98,28 +184,28 @@
 
         <div class="reg-field">
             <label for="Correo">Correo principal *</label>
-            @Html.TextBoxFor(m => m.Correo, new
-            {
-                id = "Correo",
-                type = "email",
-                placeholder = "Ej: tucorreo@dominio.com",
-                autocomplete = "email",
-                required = "required"
-            })
+            <input type="email"
+                   id="Correo"
+                   name="Correo"
+                   placeholder="Ej: tucorreo@dominio.com"
+                   autocomplete="email"
+                   required
+                   value="@(Model != null ? Model.Correo : "")"
+                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
             <small class="hint">Ahí te enviaremos facturas y notificaciones.</small>
         </div>
 
         <div class="reg-field">
             <label for="Telefono">Teléfono principal *</label>
-            @Html.TextBoxFor(m => m.Telefono, new
-            {
-                id = "Telefono",
-                type = "tel",
-                placeholder = "Ej: 8888-8888",
-                autocomplete = "tel",
-                maxlength = "15",
-                required = "required"
-            })
+            <input type="tel"
+                   id="Telefono"
+                   name="Telefono"
+                   placeholder="Ej: 8888-8888"
+                   autocomplete="tel"
+                   maxlength="15"
+                   required
+                   value="@(Model != null ? Model.Telefono : "")"
+                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
             <small class="hint">Formato: 8 dígitos con guion.</small>
         </div>
     </div>
@@ -135,13 +221,15 @@
                    name="DireccionExacta"
                    value="@direccionExactaPrevia"
                    placeholder="Ej: 200m norte de la iglesia, casa azul"
-                   required />
+                   required
+                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
             <small class="hint">Puntos de referencia para ubicar tu vivienda.</small>
         </div>
 
         <div class="reg-field">
             <label for="Provincia">Provincia *</label>
-            <select id="Provincia" name="Provincia" required onchange="onProvinciaChange(this);">
+            <select id="Provincia" name="Provincia" required onchange="onProvinciaChange(this);"
+                    style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;">
                 <option value="">— Seleccioná una provincia —</option>
                 @foreach (var p in provincias)
                 {
@@ -152,14 +240,16 @@
 
         <div class="reg-field">
             <label for="Canton">Cantón *</label>
-            <select id="Canton" name="Canton" required onchange="onCantonChange(this);">
+            <select id="Canton" name="Canton" required onchange="onCantonChange(this);"
+                    style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;">
                 <option value="">— Primero elegí la provincia —</option>
             </select>
         </div>
 
         <div class="reg-field">
             <label for="Distrito">Distrito *</label>
-            <select id="Distrito" name="Distrito" required>
+            <select id="Distrito" name="Distrito" required
+                    style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;">
                 <option value="">— Primero elegí el cantón —</option>
             </select>
         </div>
@@ -171,16 +261,20 @@
 
         <div class="reg-field">
             <label for="Contraseña">Contraseña *</label>
-            <div class="with-icon">
+            <div style="position:relative;">
                 <input type="password"
                        id="Contraseña"
                        name="Contraseña"
                        placeholder="Mínimo 6 caracteres"
                        autocomplete="new-password"
                        minlength="6"
-                       required />
-                <button type="button" class="toggle-password" onclick="togglePass('Contraseña', this);" title="Mostrar/ocultar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                       required
+                       style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+                <button type="button"
+                        onclick="togglePass('Contraseña', this);"
+                        title="Mostrar/ocultar"
+                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                         <circle cx="12" cy="12" r="3" />
                     </svg>
@@ -191,16 +285,20 @@
 
         <div class="reg-field">
             <label for="confirmarContraseña">Confirmar contraseña *</label>
-            <div class="with-icon">
+            <div style="position:relative;">
                 <input type="password"
                        id="confirmarContraseña"
                        name="confirmarContraseña"
                        placeholder="Repetí la contraseña"
                        autocomplete="new-password"
                        minlength="6"
-                       required />
-                <button type="button" class="toggle-password" onclick="togglePass('confirmarContraseña', this);" title="Mostrar/ocultar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                       required
+                       style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+                <button type="button"
+                        onclick="togglePass('confirmarContraseña', this);"
+                        title="Mostrar/ocultar"
+                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                         <circle cx="12" cy="12" r="3" />
                     </svg>
@@ -231,7 +329,8 @@
                        placeholder="Buscá por código o nombre (ej: 4711, comercio)"
                        autocomplete="off"
                        onfocus="mostrarActividades();"
-                       oninput="filtrarActividades();" />
+                       oninput="filtrarActividades();"
+                       style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
                 <small class="hint">Escribí al menos 3 letras o el código para filtrar.</small>
 
                 <div id="listaActividades" style="margin-top:8px;max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;background:#fff;display:none;">
@@ -243,7 +342,7 @@
                              data-value="@idStr"
                              data-text="@textStr.ToLower()"
                              style="padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px;"
-                             onclick="seleccionarActividad('@idStr', '@Html.Raw(textStr.Replace("'", "\\'"))');">
+                             onclick="seleccionarActividad(this);">
                             @textStr
                         </div>
                     }
@@ -268,6 +367,9 @@
             <span class="txt">
                 <span class="t">Acepto la Política de Privacidad *</span>
                 <span class="s">Autorizo el tratamiento de mis datos personales según la ley 8968.</span>
+                <a href="javascript:void(0);"
+                   onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('politica');"
+                   class="legal-link">Ver Política de Privacidad</a>
             </span>
         </label>
 
@@ -277,6 +379,9 @@
             <span class="txt">
                 <span class="t">Acepto el Consentimiento Informado *</span>
                 <span class="s">Autorizo el uso de mi información para los servicios CNFL.</span>
+                <a href="javascript:void(0);"
+                   onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('consentimiento');"
+                   class="legal-link">Ver Consentimiento Informado</a>
             </span>
         </label>
     </div>
@@ -288,191 +393,255 @@
     ¿Ya tenés cuenta? <a href="@Url.Action("Login", "Cuenta")">Iniciar sesión</a>
 </div>
 
+<!-- MODAL LEGAL -->
+<div id="modalLegal" class="modal-legal" style="display:none;">
+    <div class="modal-legal-backdrop" onclick="cerrarLegal();"></div>
+    <div class="modal-legal-box">
+        <button type="button" class="modal-legal-close" onclick="cerrarLegal();">✕</button>
+        <div id="modalLegalContenido" class="modal-legal-scroll"></div>
+    </div>
+</div>
+
 @section Scripts {
     <text>
         <script>
-    var urlCantones = '@Url.Action("GetCantones", "Cuenta")';
-    var urlDistritos = '@Url.Action("GetDistritos", "Cuenta")';
+            var urlCantones = '@Html.Raw(Url.Action("GetCantones", "Cuenta"))';
+            var urlDistritos = '@Html.Raw(Url.Action("GetDistritos", "Cuenta"))';
 
-    function togglePass(id, btn) {
-        var input = document.getElementById(id);
-        if (!input) return;
-        var esPassword = input.getAttribute('type') === 'password';
-        input.setAttribute('type', esPassword ? 'text' : 'password');
-        btn.innerHTML = esPassword
-            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
-            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-    }
+            function togglePass(id, btn) {
+                var input = document.getElementById(id);
+                if (!input) return;
+                var esPassword = input.getAttribute('type') === 'password';
+                input.setAttribute('type', esPassword ? 'text' : 'password');
+                btn.innerHTML = esPassword
+                    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+                    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+            }
 
-    function onProvinciaChange(sel) {
-        var selCanton = document.getElementById('Canton');
-        var selDistrito = document.getElementById('Distrito');
-        if (!selCanton || !selDistrito) return;
+            function onProvinciaChange(sel) {
+                var selCanton = document.getElementById('Canton');
+                var selDistrito = document.getElementById('Distrito');
+                if (!selCanton || !selDistrito) return;
 
-        selCanton.innerHTML = '<option value="">Cargando...</option>';
-        selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
-        if (!sel.value) {
-            selCanton.innerHTML = '<option value="">— Primero elegí la provincia —</option>';
-            return;
-        }
-        fetch(urlCantones + '?provincia=' + encodeURIComponent(sel.value))
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                var html = '<option value="">— Seleccioná cantón —</option>';
-                data.forEach(function (c) {
-                    html += '<option value="' + c + '">' + c + '</option>';
-                });
-                selCanton.innerHTML = html;
+                selCanton.innerHTML = '<option value="">Cargando...</option>';
+                selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
+                if (!sel.value) {
+                    selCanton.innerHTML = '<option value="">— Primero elegí la provincia —</option>';
+                    return;
+                }
+                fetch(urlCantones + '?provincia=' + encodeURIComponent(sel.value))
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        var html = '<option value="">— Seleccioná cantón —</option>';
+                        data.forEach(function (c) {
+                            html += '<option value="' + c + '">' + c + '</option>';
+                        });
+                        selCanton.innerHTML = html;
+                    });
+            }
+
+            function onCantonChange(sel) {
+                var selProv = document.getElementById('Provincia');
+                var selDistrito = document.getElementById('Distrito');
+                if (!selProv || !selDistrito) return;
+
+                selDistrito.innerHTML = '<option value="">Cargando...</option>';
+                if (!sel.value || !selProv.value) {
+                    selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
+                    return;
+                }
+                fetch(urlDistritos + '?provincia=' + encodeURIComponent(selProv.value) + '&canton=' + encodeURIComponent(sel.value))
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        var html = '<option value="">— Seleccioná distrito —</option>';
+                        data.forEach(function (d) {
+                            html += '<option value="' + d + '">' + d + '</option>';
+                        });
+                        selDistrito.innerHTML = html;
+                    });
+            }
+
+            function toggleFactura(chk) {
+                var wrap = document.getElementById('actividadWrap');
+                var hidden = document.getElementById('ActividadEconomicaId');
+                var buscador = document.getElementById('buscadorActividad');
+                var lista = document.getElementById('listaActividades');
+                var seleccionada = document.getElementById('actividadSeleccionada');
+                if (!wrap || !hidden || !buscador || !lista || !seleccionada) return;
+
+                wrap.style.display = chk.checked ? 'block' : 'none';
+                if (!chk.checked) {
+                    hidden.value = '';
+                    seleccionada.style.display = 'none';
+                    buscador.value = '';
+                    lista.style.display = 'none';
+                }
+            }
+
+            function mostrarActividades() {
+                var lista = document.getElementById('listaActividades');
+                if (lista) lista.style.display = 'block';
+                filtrarActividades();
+            }
+
+            function filtrarActividades() {
+                var buscador = document.getElementById('buscadorActividad');
+                var lista = document.getElementById('listaActividades');
+                if (!buscador || !lista) return;
+
+                var q = buscador.value.toLowerCase().trim();
+                var visibles = 0;
+                var items = document.querySelectorAll('.actividad-item');
+                for (var i = 0; i < items.length; i++) {
+                    var it = items[i];
+                    var txt = it.getAttribute('data-text') || '';
+                    if (!q || txt.indexOf(q) >= 0) {
+                        it.style.display = 'block';
+                        visibles++;
+                    } else {
+                        it.style.display = 'none';
+                    }
+                }
+                lista.style.display = visibles > 0 ? 'block' : 'none';
+            }
+
+            function seleccionarActividad(el) {
+                var hidden = document.getElementById('ActividadEconomicaId');
+                var textoEl = document.getElementById('actividadTexto');
+                var seleccionada = document.getElementById('actividadSeleccionada');
+                var lista = document.getElementById('listaActividades');
+                var buscador = document.getElementById('buscadorActividad');
+                if (!hidden || !textoEl || !seleccionada || !lista || !buscador || !el) return;
+
+                var id = el.getAttribute('data-value');
+                var texto = el.textContent.trim();
+
+                hidden.value = id;
+                textoEl.textContent = texto;
+                seleccionada.style.display = 'block';
+                lista.style.display = 'none';
+                buscador.value = texto;
+            }
+
+            document.addEventListener('click', function (e) {
+                var buscador = document.getElementById('buscadorActividad');
+                var lista = document.getElementById('listaActividades');
+                if (!buscador || !lista) return;
+                var target = e.target;
+                if (!target) return;
+                if (!buscador.contains(target) && !lista.contains(target)) {
+                    lista.style.display = 'none';
+                }
             });
-    }
 
-    function onCantonChange(sel) {
-        var selProv = document.getElementById('Provincia');
-        var selDistrito = document.getElementById('Distrito');
-        if (!selProv || !selDistrito) return;
+            // ── Modal legal ──────────────────────────────────────────
+            var legalCache = {};
 
-        selDistrito.innerHTML = '<option value="">Cargando...</option>';
-        if (!sel.value || !selProv.value) {
-            selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
-            return;
-        }
-        fetch(urlDistritos + '?provincia=' + encodeURIComponent(selProv.value) + '&canton=' + encodeURIComponent(sel.value))
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                var html = '<option value="">— Seleccioná distrito —</option>';
-                data.forEach(function (d) {
-                    html += '<option value="' + d + '">' + d + '</option>';
-                });
-                selDistrito.innerHTML = html;
+            function abrirLegal(tipo) {
+                var modal = document.getElementById('modalLegal');
+                var cont = document.getElementById('modalLegalContenido');
+                if (!modal || !cont) return;
+
+                var urls = {
+                    politica:       '@Html.Raw(Url.Action("PoliticaPrivacidad", "Cuenta"))',
+                    consentimiento: '@Html.Raw(Url.Action("ConsentimientoInformado", "Cuenta"))'
+                };
+
+                var url = urls[tipo];
+                if (!url) return;
+
+                modal.style.display = 'flex';
+
+                if (legalCache[tipo]) {
+                    cont.innerHTML = legalCache[tipo];
+                    cont.scrollTop = 0;
+                    return;
+                }
+
+                cont.innerHTML = '<p style="text-align:center;padding:30px;">Cargando…</p>';
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function (r) {
+                        if (!r.ok) throw new Error('No se pudo cargar');
+                        return r.text();
+                    })
+                    .then(function (html) {
+                        legalCache[tipo] = html;
+                        cont.innerHTML = html;
+                        cont.scrollTop = 0;
+                    })
+                    .catch(function () {
+                        cont.innerHTML = '<p style="color:#b00;">No se pudo cargar el documento. Intentá de nuevo.</p>';
+                    });
+            }
+
+            function cerrarLegal() {
+                var modal = document.getElementById('modalLegal');
+                if (modal) modal.style.display = 'none';
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') cerrarLegal();
             });
-    }
 
-    function toggleFactura(chk) {
-        var wrap = document.getElementById('actividadWrap');
-        var hidden = document.getElementById('ActividadEconomicaId');
-        var buscador = document.getElementById('buscadorActividad');
-        var lista = document.getElementById('listaActividades');
-        var seleccionada = document.getElementById('actividadSeleccionada');
-        if (!wrap || !hidden || !buscador || !lista || !seleccionada) return;
+            // ── Validación del formulario ───────────────────────────
+            var formRegistro = document.getElementById('formRegistro');
+            if (formRegistro) {
+                formRegistro.addEventListener('submit', function (e) {
+                    var provEl = document.getElementById('Provincia');
+                    var cantEl = document.getElementById('Canton');
+                    var distEl = document.getElementById('Distrito');
+                    var politica = document.getElementById('chkPolitica');
+                    var consent = document.getElementById('chkConsentimiento');
+                    var chkFactura = document.getElementById('chkFactura');
+                    var actId = document.getElementById('ActividadEconomicaId');
+                    var buscador = document.getElementById('buscadorActividad');
+                    var passEl = document.getElementById('Contraseña');
+                    var confEl = document.getElementById('confirmarContraseña');
 
-        wrap.style.display = chk.checked ? 'block' : 'none';
-        if (!chk.checked) {
-            hidden.value = '';
-            seleccionada.style.display = 'none';
-            buscador.value = '';
-            lista.style.display = 'none';
-        }
-    }
+                    if (!provEl || !cantEl || !distEl || !politica || !consent ||
+                        !chkFactura || !actId || !buscador || !passEl || !confEl) return;
 
-    function mostrarActividades() {
-        var lista = document.getElementById('listaActividades');
-        if (lista) lista.style.display = 'block';
-        filtrarActividades();
-    }
-
-    function filtrarActividades() {
-        var buscador = document.getElementById('buscadorActividad');
-        var lista = document.getElementById('listaActividades');
-        if (!buscador || !lista) return;
-
-        var q = buscador.value.toLowerCase().trim();
-        var visibles = 0;
-        var items = document.querySelectorAll('.actividad-item');
-        for (var i = 0; i < items.length; i++) {
-            var it = items[i];
-            var txt = it.getAttribute('data-text') || '';
-            if (!q || txt.indexOf(q) >= 0) {
-                it.style.display = 'block';
-                visibles++;
-            } else {
-                it.style.display = 'none';
+                    if (!provEl.value || !cantEl.value || !distEl.value) {
+                        e.preventDefault();
+                        alert('Completá provincia, cantón y distrito.');
+                        return;
+                    }
+                    if (!politica.checked) {
+                        e.preventDefault();
+                        alert('Debés aceptar la Política de Privacidad.');
+                        return;
+                    }
+                    if (!consent.checked) {
+                        e.preventDefault();
+                        alert('Debés aceptar el Consentimiento Informado.');
+                        return;
+                    }
+                    if (chkFactura.checked && !actId.value) {
+                        e.preventDefault();
+                        alert('Elegí la actividad económica para activar la factura electrónica.');
+                        buscador.focus();
+                        return;
+                    }
+                    var pass = passEl.value;
+                    var conf = confEl.value;
+                    if (pass.length < 6) {
+                        e.preventDefault();
+                        alert('La contraseña debe tener al menos 6 caracteres.');
+                        return;
+                    }
+                    if (pass !== conf) {
+                        e.preventDefault();
+                        alert('Las contraseñas no coinciden.');
+                        return;
+                    }
+                });
             }
-        }
-        lista.style.display = visibles > 0 ? 'block' : 'none';
-    }
 
-    function seleccionarActividad(id, texto) {
-        var hidden = document.getElementById('ActividadEconomicaId');
-        var textoEl = document.getElementById('actividadTexto');
-        var seleccionada = document.getElementById('actividadSeleccionada');
-        var lista = document.getElementById('listaActividades');
-        var buscador = document.getElementById('buscadorActividad');
-        if (!hidden || !textoEl || !seleccionada || !lista || !buscador) return;
-
-        hidden.value = id;
-        textoEl.textContent = texto;
-        seleccionada.style.display = 'block';
-        lista.style.display = 'none';
-        buscador.value = texto;
-    }
-
-    document.addEventListener('click', function (e) {
-        var buscador = document.getElementById('buscadorActividad');
-        var lista = document.getElementById('listaActividades');
-        if (!buscador || !lista) return;
-        var target = e.target;
-        if (!target) return;
-        if (!buscador.contains(target) && !lista.contains(target)) {
-            lista.style.display = 'none';
-        }
-    });
-
-    var formRegistro = document.getElementById('formRegistro');
-    if (formRegistro) {
-        formRegistro.addEventListener('submit', function (e) {
-            var provEl = document.getElementById('Provincia');
-            var cantEl = document.getElementById('Canton');
-            var distEl = document.getElementById('Distrito');
-            var politica = document.getElementById('chkPolitica');
-            var consent = document.getElementById('chkConsentimiento');
-            var chkFactura = document.getElementById('chkFactura');
-            var actId = document.getElementById('ActividadEconomicaId');
-            var buscador = document.getElementById('buscadorActividad');
-            var passEl = document.getElementById('Contraseña');
-            var confEl = document.getElementById('confirmarContraseña');
-
-            if (!provEl || !cantEl || !distEl || !politica || !consent || !chkFactura || !actId || !buscador || !passEl || !confEl) return;
-
-            if (!provEl.value || !cantEl.value || !distEl.value) {
-                e.preventDefault();
-                alert('Completá provincia, cantón y distrito.');
-                return;
-            }
-            if (!politica.checked) {
-                e.preventDefault();
-                alert('Debés aceptar la Política de Privacidad.');
-                return;
-            }
-            if (!consent.checked) {
-                e.preventDefault();
-                alert('Debés aceptar el Consentimiento Informado.');
-                return;
-            }
-            if (chkFactura.checked && !actId.value) {
-                e.preventDefault();
-                alert('Elegí la actividad económica para activar la factura electrónica.');
-                buscador.focus();
-                return;
-            }
-            var pass = passEl.value;
-            var conf = confEl.value;
-            if (pass.length < 6) {
-                e.preventDefault();
-                alert('La contraseña debe tener al menos 6 caracteres.');
-                return;
-            }
-            if (pass !== conf) {
-                e.preventDefault();
-                alert('Las contraseñas no coinciden.');
-                return;
-            }
-        });
-    }
-
-    (function () {
-        var prov = document.getElementById('Provincia');
-        if (prov && prov.value) onProvinciaChange(prov);
-    })();
+            (function () {
+                var prov = document.getElementById('Provincia');
+                if (prov && prov.value) onProvinciaChange(prov);
+            })();
         </script>
     </text>
 }

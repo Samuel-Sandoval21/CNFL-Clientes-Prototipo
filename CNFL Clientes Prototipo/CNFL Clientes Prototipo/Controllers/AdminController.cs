@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using CNFL_Clientes_Prototipo.Models;
@@ -8,131 +7,109 @@ using CNFL_Clientes_Prototipo.Data;
 
 namespace CNFL_Clientes_Prototipo.Controllers
 {
-    [CNFL_Clientes_Prototipo.Filters.SessionAuthorize(RequiredRole = "Admin")]
     public class AdminController : Controller
     {
         private CNFLDbContext _db = new CNFLDbContext();
 
         // ═══════════════════════════════════════════════════════════
-        // DASHBOARD ADMIN
+        // VALIDACIÓN DE SESIÓN ADMIN
+        // ═══════════════════════════════════════════════════════════
+        private bool EsAdmin()
+        {
+            return Session["AdminLogueado"] != null && (bool)Session["AdminLogueado"];
+        }
+
+        private ActionResult RedirigirSiNoEsAdmin()
+        {
+            if (!EsAdmin())
+                return RedirectToAction("Login", "Cuenta");
+            return null;
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // DASHBOARD
         // ═══════════════════════════════════════════════════════════
         public ActionResult Dashboard()
         {
-            var hoy = DateTime.Now.Date;
-            var hace7 = hoy.AddDays(-7);
-            var hace30 = hoy.AddDays(-30);
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
 
-            var totalUsuarios = _db.Usuarios.Count();
-            var totalClientes = _db.Usuarios.Count(u =>
-                _db.UsuarioRoles.Any(ur => ur.UsuarioId == u.UsuarioId && ur.Rol.NombreRol == "Cliente"));
-            var totalNISEs = _db.NISEs.Count();
-            var facturasPendientes = _db.Facturas.Count(f => !f.Pagada);
-            var montoPendiente = _db.Facturas.Where(f => !f.Pagada).Sum(f => (decimal?)f.Monto) ?? 0m;
+            var hoy = DateTime.Now;
+            var inicioMes = new DateTime(hoy.Year, hoy.Month, 1);
 
-            var averiasAbiertas = _db.Averias.Count(a => a.Estado != "Resuelto" && a.Estado != "Problema resuelto");
-            var averiasResueltas = _db.Averias.Count(a => a.Estado == "Resuelto" || a.Estado == "Problema resuelto");
-            var tasaResolucion = (averiasAbiertas + averiasResueltas) > 0
-                ? Math.Round((double)averiasResueltas / (averiasAbiertas + averiasResueltas) * 100, 0)
-                : 0;
+            ViewBag.TotalClientes = _db.Usuarios.Count();
+            ViewBag.ClientesActivos = _db.Usuarios.Count(u => u.Activo);
+            ViewBag.TotalNISEs = _db.NISEs.Count();
 
-            var tramitesAbiertos = _db.Tramites.Count(t => t.Estado != "Resuelto");
+            var facturasPendientes = _db.Facturas.Where(f => !f.Pagada);
+            ViewBag.FacturasPendientes = facturasPendientes.Count();
+            ViewBag.MontoPendiente = facturasPendientes
+                .Select(f => (decimal?)f.Monto)
+                .Sum() ?? 0m;
 
-            var averiasResueltasList = _db.Averias
-                .Where(a => (a.Estado == "Resuelto" || a.Estado == "Problema resuelto")
-                         && a.FechaActualizacion != null)
-                .ToList();
-            var tiempoPromedio = averiasResueltasList.Any()
-                ? Math.Round(averiasResueltasList.Average(a =>
-                    (a.FechaActualizacion.Value - a.FechaReporte).TotalDays), 0)
-                : 0;
+            ViewBag.IngresosMes = _db.Facturas
+                .Where(f => f.Pagada && f.FechaEmision >= inicioMes)
+                .Select(f => (decimal?)f.Monto)
+                .Sum() ?? 0m;
 
-            var actividad = _db.ActividadUsuario
-                .Where(a => a.Fecha >= hace7)
-                .ToList();
+            ViewBag.AveriasAbiertas = _db.Averias.Count(a =>
+                a.Estado != "Resuelta" && a.Estado != "Cerrada");
+            ViewBag.AveriasResueltas = _db.Averias.Count(a =>
+                a.Estado == "Resuelta" || a.Estado == "Cerrada");
 
-            var ingresosMes = _db.Pagos
-                .Where(p => p.FechaCreacion >= hace30 && p.Estado == "Completado")
-                .Sum(p => (decimal?)p.Monto) ?? 0m;
+            ViewBag.TramitesAbiertos = _db.Tramites.Count(t =>
+                t.Estado != "Completado" && t.Estado != "Cerrado");
 
-            var clientesRecientes = _db.Usuarios
-                .Where(u => _db.UsuarioRoles.Any(ur => ur.UsuarioId == u.UsuarioId && ur.Rol.NombreRol == "Cliente"))
-                .OrderByDescending(u => u.FechaRegistro)
-                .Take(5)
+            var averiasResueltas = _db.Averias
+                .Where(a => (a.Estado == "Resuelta" || a.Estado == "Cerrada")
+                            && a.FechaActualizacion != null)
                 .ToList();
 
-            var averiasPorEstado = _db.Averias
-                .GroupBy(a => a.Estado)
-                .Select(g => new { Estado = g.Key, Count = g.Count() })
-                .ToList();
-
-            var averiasPorDia = new List<int>();
-            var diasLabels = new List<string>();
-            for (int i = 6; i >= 0; i--)
+            double tiempoPromedio = 0;
+            if (averiasResueltas.Any())
             {
-                var dia = hoy.AddDays(-i);
-                averiasPorDia.Add(_db.Averias.Count(a => DbFunctions.TruncateTime(a.FechaReporte) == dia));
-                diasLabels.Add(dia.ToString("ddd", new System.Globalization.CultureInfo("es-CR")));
+                tiempoPromedio = averiasResueltas
+                    .Average(a => ((DateTime)a.FechaActualizacion - a.FechaReporte).TotalDays);
             }
-
-            ViewBag.NombreAdmin = Session["Nombre"] as string ?? "Admin";
-            ViewBag.TotalUsuarios = totalUsuarios;
-            ViewBag.TotalClientes = totalClientes;
-            ViewBag.TotalNISEs = totalNISEs;
-            ViewBag.FacturasPendientes = facturasPendientes;
-            ViewBag.MontoPendiente = montoPendiente;
-            ViewBag.AveriasAbiertas = averiasAbiertas;
-            ViewBag.AveriasResueltas = averiasResueltas;
-            ViewBag.TasaResolucion = tasaResolucion;
-            ViewBag.TramitesAbiertos = tramitesAbiertos;
-            ViewBag.TiempoPromedio = tiempoPromedio;
-            ViewBag.IngresosMes = ingresosMes;
-            ViewBag.ActividadSemana = actividad.Count;
-
-            // ❌ SIN AVERÍAS RECIENTES (a pedido del bloc de notas)
-
-            ViewBag.ClientesRecientes = clientesRecientes;
-
-            ViewBag.AveriasEstadoJson = Newtonsoft.Json.JsonConvert.SerializeObject(averiasPorEstado);
-            ViewBag.AveriasDiaJson = Newtonsoft.Json.JsonConvert.SerializeObject(new { labels = diasLabels, data = averiasPorDia });
+            ViewBag.TiempoPromedio = Math.Round(tiempoPromedio, 1);
 
             return View();
         }
 
         // ═══════════════════════════════════════════════════════════
-        // GESTIÓN DE CLIENTES
+        // ALERTAS
         // ═══════════════════════════════════════════════════════════
-        public ActionResult Clientes(string q, string rol = "Cliente")
+        public ActionResult Alertas()
         {
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
+
+            return View();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CLIENTES
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult Clientes(string q = "")
+        {
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
+
             var query = _db.Usuarios.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(q))
             {
-                q = q.Trim().ToLower();
+                q = q.Trim();
                 query = query.Where(u =>
-                    u.Nombre.ToLower().Contains(q) ||
-                    u.Apellidos.ToLower().Contains(q) ||
+                    u.Nombre.Contains(q) ||
+                    u.Apellidos.Contains(q) ||
                     u.Cedula.Contains(q) ||
-                    u.Correo.ToLower().Contains(q));
+                    u.Correo.Contains(q));
             }
 
-            if (rol == "Cliente")
-            {
-                query = query.Where(u => _db.UsuarioRoles.Any(ur => ur.UsuarioId == u.UsuarioId && ur.Rol.NombreRol == "Cliente"));
-            }
-            else if (rol == "Admin")
-            {
-                query = query.Where(u => _db.UsuarioRoles.Any(ur => ur.UsuarioId == u.UsuarioId && ur.Rol.NombreRol == "Admin"));
-            }
-
-            var clientes = query.OrderBy(u => u.Apellidos).ThenBy(u => u.Nombre).ToList();
-
-            var viewModel = new List<ClienteAdminDto>();
-            foreach (var u in clientes)
-            {
-                var nises = _db.NISEs.Where(n => n.UsuarioId == u.UsuarioId).ToList();
-                var niseIds = nises.Select(n => n.NiseId).ToList();
-
-                viewModel.Add(new ClienteAdminDto
+            var lista = query
+                .OrderBy(u => u.Nombre)
+                .Select(u => new ClienteAdminDto
                 {
                     UsuarioId = u.UsuarioId,
                     Nombre = u.Nombre,
@@ -142,311 +119,229 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     Telefono = u.Telefono,
                     Activo = u.Activo,
                     FechaRegistro = u.FechaRegistro,
-                    TotalNISEs = nises.Count,
-                    FacturasPendientes = _db.Facturas.Count(f => niseIds.Contains(f.NiseId) && !f.Pagada),
-                    MontoPendiente = _db.Facturas.Where(f => niseIds.Contains(f.NiseId) && !f.Pagada).Sum(f => (decimal?)f.Monto) ?? 0m,
-                    AveriasActivas = _db.Averias.Count(a => a.UsuarioId == u.UsuarioId && a.Estado != "Resuelto" && a.Estado != "Problema resuelto")
-                });
-            }
+                    TotalNISEs = _db.NISEs.Count(n => n.UsuarioId == u.UsuarioId),
+                    FacturasPendientes = _db.Facturas.Count(f =>
+                        f.NISE.UsuarioId == u.UsuarioId && !f.Pagada),
+                    MontoPendiente = _db.Facturas
+                        .Where(f => f.NISE.UsuarioId == u.UsuarioId && !f.Pagada)
+                        .Select(f => (decimal?)f.Monto)
+                        .Sum() ?? 0m,
+                    AveriasActivas = _db.Averias.Count(a =>
+                        a.UsuarioId == u.UsuarioId &&
+                        a.Estado != "Resuelta" &&
+                        a.Estado != "Cerrada")
+                })
+                .ToList();
 
             ViewBag.Busqueda = q;
-            ViewBag.RolFiltro = rol;
-            ViewBag.TotalClientes = viewModel.Count;
-            return View(viewModel);
+            return View(lista);
         }
 
-        // GET: Admin/DetalleCliente/5
+        // ═══════════════════════════════════════════════════════════
+        // DETALLE CLIENTE
+        // ═══════════════════════════════════════════════════════════
         public ActionResult DetalleCliente(int id)
         {
-            var usuario = _db.Usuarios
-                .Include("NISEs")
-                .Include("Averias")
-                .Include("Notificaciones")
-                .FirstOrDefault(u => u.UsuarioId == id);
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
 
+            var usuario = _db.Usuarios.FirstOrDefault(u => u.UsuarioId == id);
             if (usuario == null) return HttpNotFound();
 
-            var nises = _db.NISEs.Where(n => n.UsuarioId == id).ToList();
-            var niseIds = nises.Select(n => n.NiseId).ToList();
+            ViewBag.NISEs = _db.NISEs.Where(n => n.UsuarioId == id).ToList();
 
-            var facturas = _db.Facturas
-                .Where(f => niseIds.Contains(f.NiseId))
+            ViewBag.Facturas = _db.Facturas
+                .Where(f => f.NISE.UsuarioId == id)
                 .OrderByDescending(f => f.FechaEmision)
+                .Take(20)
                 .ToList();
 
-            var averias = _db.Averias
+            ViewBag.Averias = _db.Averias
                 .Where(a => a.UsuarioId == id)
                 .OrderByDescending(a => a.FechaReporte)
+                .Take(20)
                 .ToList();
 
-            var tramites = _db.Tramites
+            ViewBag.Tramites = _db.Tramites
                 .Where(t => t.UsuarioId == id)
                 .OrderByDescending(t => t.FechaSolicitud)
+                .Take(20)
                 .ToList();
-
-            var pagos = _db.Pagos
-                .Where(p => p.UsuarioId == id)
-                .OrderByDescending(p => p.FechaCreacion)
-                .ToList();
-
-            ViewBag.NISEs = nises;
-            ViewBag.Facturas = facturas;
-            ViewBag.Averias = averias;
-            ViewBag.Tramites = tramites;
-            ViewBag.Pagos = pagos;
-            ViewBag.TotalFacturado = facturas.Sum(f => (decimal?)f.Monto) ?? 0m;
-            ViewBag.TotalPagado = pagos.Where(p => p.Estado == "Completado").Sum(p => (decimal?)p.Monto) ?? 0m;
 
             return View(usuario);
         }
 
-        // POST: Admin/ToggleActivo/5
-        [HttpPost]
-        public JsonResult ToggleActivo(int id)
-        {
-            var usuario = _db.Usuarios.Find(id);
-            if (usuario == null) return Json(new { success = false, message = "Usuario no encontrado." });
-
-            usuario.Activo = !usuario.Activo;
-            _db.SaveChanges();
-
-            return Json(new { success = true, activo = usuario.Activo });
-        }
-
         // ═══════════════════════════════════════════════════════════
-        // GESTIÓN DE AVERÍAS
+        // AVERÍAS
         // ═══════════════════════════════════════════════════════════
-        public ActionResult Averias(string estado, string q, string tipo)
+        public ActionResult Averias(string estado = "")
         {
-            var query = _db.Averias.Include("NISE").AsQueryable();
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
 
-            if (!string.IsNullOrWhiteSpace(estado) && estado != "Todos")
+            var query = _db.Averias.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(estado))
                 query = query.Where(a => a.Estado == estado);
 
-            if (!string.IsNullOrWhiteSpace(tipo) && tipo != "Todos")
-                query = query.Where(a => a.Tipo == tipo);
-
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                q = q.Trim().ToLower();
-                query = query.Where(a =>
-                    a.AveriaId.ToString().Contains(q) ||
-                    (a.NISE != null && a.NISE.NumeroNise.ToLower().Contains(q)) ||
-                    a.Descripcion.ToLower().Contains(q));
-            }
-
-            var averias = query.OrderByDescending(a => a.FechaReporte).ToList();
-
-            ViewBag.EstadoFiltro = estado;
-            ViewBag.TipoFiltro = tipo;
-            ViewBag.Busqueda = q;
-            ViewBag.Total = averias.Count;
-            ViewBag.Estados = new[] { "Todos", "Ingresado", "En revisión", "Operador en camino", "Resuelto", "Problema resuelto" };
-            ViewBag.Tipos = _db.Averias.Select(a => a.Tipo).Distinct().ToList();
-
-            return View(averias);
-        }
-
-        // GET: Admin/DetalleAveria/5
-        public ActionResult DetalleAveria(int id)
-        {
-            var averia = _db.Averias
-                .Include("NISE")
-                .FirstOrDefault(a => a.AveriaId == id);
-
-            if (averia == null) return HttpNotFound();
-
-            var usuario = _db.Usuarios.Find(averia.UsuarioId);
-            ViewBag.Usuario = usuario;
-
-            var historial = _db.Notificaciones
-                .Where(n => n.UsuarioId == averia.UsuarioId && n.Tipo == "Averia")
-                .OrderByDescending(n => n.Fecha)
-                .Take(10)
+            var lista = query
+                .OrderByDescending(a => a.FechaReporte)
+                .Take(100)
                 .ToList();
-            ViewBag.Historial = historial;
 
-            return View(averia);
-        }
-
-        // POST: Admin/CambiarEstadoAveria
-        [HttpPost]
-        public JsonResult CambiarEstadoAveria(int averiaId, string nuevoEstado, string comentario)
-        {
-            var averia = _db.Averias.Find(averiaId);
-            if (averia == null) return Json(new { success = false, message = "Avería no encontrada." });
-
-            averia.Estado = nuevoEstado;
-            averia.FechaActualizacion = DateTime.Now;
-
-            var notif = new Notificacion
-            {
-                UsuarioId = averia.UsuarioId,
-                Titulo = "Actualización de avería #" + averiaId,
-                Mensaje = "Su avería cambió a estado: " + nuevoEstado + (string.IsNullOrWhiteSpace(comentario) ? "" : ". " + comentario),
-                Fecha = DateTime.Now,
-                Leida = false,
-                Tipo = "Averia",
-                Estado = nuevoEstado
-            };
-            _db.Notificaciones.Add(notif);
-            _db.SaveChanges();
-
-            return Json(new { success = true });
-        }
-
-        // Alias para compatibilidad con vistas antiguas
-        [HttpPost]
-        public JsonResult ActualizarEstadoAveria(int averiaId, string nuevoEstado)
-        {
-            return CambiarEstadoAveria(averiaId, nuevoEstado, null);
+            ViewBag.Estado = estado;
+            return View(lista);
         }
 
         // ═══════════════════════════════════════════════════════════
-        // GESTIÓN DE TRÁMITES
+        // TRÁMITES
         // ═══════════════════════════════════════════════════════════
-        public ActionResult Tramites(string estado, string q)
+        public ActionResult Tramites(string estado = "")
         {
-            var query = _db.Tramites.Include("Usuario").AsQueryable();
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
 
-            if (!string.IsNullOrWhiteSpace(estado) && estado != "Todos")
+            var query = _db.Tramites.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(estado))
                 query = query.Where(t => t.Estado == estado);
 
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                q = q.Trim().ToLower();
-                query = query.Where(t =>
-                    t.NumeroReferencia.ToLower().Contains(q) ||
-                    t.Tipo.ToLower().Contains(q) ||
-                    t.Usuario.Nombre.ToLower().Contains(q) ||
-                    t.Usuario.Apellidos.ToLower().Contains(q));
-            }
+            var lista = query
+                .OrderByDescending(t => t.FechaSolicitud)
+                .Take(100)
+                .ToList();
 
-            var tramites = query.OrderByDescending(t => t.FechaSolicitud).ToList();
-
-            ViewBag.EstadoFiltro = estado;
-            ViewBag.Busqueda = q;
-            ViewBag.Total = tramites.Count;
-            ViewBag.Estados = new[] { "Todos", "Iniciado", "En Proceso", "Resuelto" };
-
-            return View(tramites);
-        }
-
-        // POST: Admin/CambiarEstadoTramite
-        [HttpPost]
-        public JsonResult CambiarEstadoTramite(int tramiteId, string nuevoEstado, string comentario)
-        {
-            var tramite = _db.Tramites.Find(tramiteId);
-            if (tramite == null) return Json(new { success = false, message = "Trámite no encontrado." });
-
-            tramite.Estado = nuevoEstado;
-            tramite.FechaActualizacion = DateTime.Now;
-
-            var notif = new Notificacion
-            {
-                UsuarioId = tramite.UsuarioId,
-                Titulo = "Actualización de trámite " + tramite.NumeroReferencia,
-                Mensaje = "Su trámite cambió a estado: " + nuevoEstado + (string.IsNullOrWhiteSpace(comentario) ? "" : ". " + comentario),
-                Fecha = DateTime.Now,
-                Leida = false,
-                Tipo = "Tramite",
-                Estado = nuevoEstado
-            };
-            _db.Notificaciones.Add(notif);
-            _db.SaveChanges();
-
-            return Json(new { success = true });
+            ViewBag.Estado = estado;
+            return View(lista);
         }
 
         // ═══════════════════════════════════════════════════════════
         // REPORTES
         // ═══════════════════════════════════════════════════════════
-        public ActionResult Reportes(DateTime? desde, DateTime? hasta)
+        public ActionResult Reportes()
         {
-            var d = desde ?? DateTime.Now.AddDays(-30);
-            var h = hasta ?? DateTime.Now;
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
 
-            var facturas = _db.Facturas.Where(f => f.FechaEmision >= d && f.FechaEmision <= h).ToList();
-            var averias = _db.Averias.Where(a => a.FechaReporte >= d && a.FechaReporte <= h).ToList();
-            var pagos = _db.Pagos.Where(p => p.FechaCreacion >= d && p.FechaCreacion <= h).ToList();
-            var tramites = _db.Tramites.Where(t => t.FechaSolicitud >= d && t.FechaSolicitud <= h).ToList();
+            var hoy = DateTime.Now;
 
-            ViewBag.Desde = d.ToString("yyyy-MM-dd");
-            ViewBag.Hasta = h.ToString("yyyy-MM-dd");
-            ViewBag.TotalFacturado = facturas.Sum(f => (decimal?)f.Monto) ?? 0m;
-            ViewBag.TotalCobrado = pagos.Where(p => p.Estado == "Completado").Sum(p => (decimal?)p.Monto) ?? 0m;
-            ViewBag.TotalAverias = averias.Count;
-            ViewBag.TotalTramites = tramites.Count;
+            var consumos = new List<ConsumoMensualDto>();
+            for (int i = 5; i >= 0; i--)
+            {
+                var fecha = hoy.AddMonths(-i);
+                var inicio = new DateTime(fecha.Year, fecha.Month, 1);
+                var fin = inicio.AddMonths(1);
 
-            var meses = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
-            var facturasPorMes = facturas
-                .GroupBy(f => f.FechaEmision.Month)
-                .Select(g => new { Mes = meses[g.Key - 1], Total = g.Sum(f => f.Monto) })
-                .OrderBy(x => Array.IndexOf(meses, x.Mes))
-                .ToList();
+                var facturasMes = _db.Facturas
+                    .Where(f => f.FechaEmision >= inicio && f.FechaEmision < fin)
+                    .ToList();
 
-            var averiasPorTipo = averias
-                .GroupBy(a => a.Tipo ?? "Otros")
-                .Select(g => new { Tipo = g.Key, Cantidad = g.Count() })
-                .OrderByDescending(x => x.Cantidad)
-                .Take(6)
-                .ToList();
+                consumos.Add(new ConsumoMensualDto
+                {
+                    mes = inicio.ToString("MMM"),
+                    monto = facturasMes.Sum(f => f.Monto),
+                    kwh = 0
+                });
+            }
 
-            ViewBag.FacturasMesJson = Newtonsoft.Json.JsonConvert.SerializeObject(facturasPorMes);
-            ViewBag.AveriasTipoJson = Newtonsoft.Json.JsonConvert.SerializeObject(averiasPorTipo);
+            ViewBag.Consumos = consumos;
+
+            ViewBag.TotalFacturado = _db.Facturas
+                .Select(f => (decimal?)f.Monto)
+                .Sum() ?? 0m;
+
+            ViewBag.TotalCobrado = _db.Facturas
+                .Where(f => f.Pagada)
+                .Select(f => (decimal?)f.Monto)
+                .Sum() ?? 0m;
+
+            ViewBag.TotalPendiente = (decimal)ViewBag.TotalFacturado - (decimal)ViewBag.TotalCobrado;
 
             return View();
         }
 
-        // GET: Admin/ReportesPDF
-        public ActionResult ReportesPDF(string tipo)
+        // ═══════════════════════════════════════════════════════════
+        // EXPORTAR REPORTES
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult ExportarExcel()
         {
-            var averias = _db.Averias
-                .Include("Usuario")
-                .Include("NISE")
-                .OrderByDescending(a => a.FechaReporte)
-                .ToList();
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
 
-            return View(averias);
+            TempData["Mensaje"] = "Export a Excel próximamente.";
+            return RedirectToAction("Reportes");
+        }
+
+        public ActionResult ExportarPDF()
+        {
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
+
+            TempData["Mensaje"] = "Export a PDF próximamente.";
+            return RedirectToAction("Reportes");
         }
 
         // ═══════════════════════════════════════════════════════════
-        // ACTIVIDAD DE USO
+        // ACTIVIDAD
         // ═══════════════════════════════════════════════════════════
-        public ActionResult Actividad(DateTime? desde, DateTime? hasta)
+        public ActionResult Actividad()
         {
-            var d = desde ?? DateTime.Now.AddDays(-7);
-            var h = hasta ?? DateTime.Now;
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
 
-            var actividad = _db.ActividadUsuario
-                .Include("Usuario")
-                .Where(a => a.Fecha >= d && a.Fecha <= h)
-                .OrderByDescending(a => a.Fecha)
-                .Take(500)
-                .ToList();
+            var hoy = DateTime.Now;
+            var lista = new List<ActividadSemanalDto>();
 
-            var porSeccion = actividad
-                .GroupBy(a => a.Seccion ?? "Sin sección")
-                .Select(g => new { Seccion = g.Key, Count = g.Count() })
-                .OrderByDescending(x => x.Count)
-                .ToList();
-
-            var porDia = new List<int>();
-            var diasLabels = new List<string>();
-            var hoy = DateTime.Now.Date;
             for (int i = 6; i >= 0; i--)
             {
                 var dia = hoy.AddDays(-i);
-                porDia.Add(_db.ActividadUsuario.Count(a => DbFunctions.TruncateTime(a.Fecha) == dia));
-                diasLabels.Add(dia.ToString("ddd", new System.Globalization.CultureInfo("es-CR")));
+                var inicio = dia.Date;
+                var fin = inicio.AddDays(1);
+
+                lista.Add(new ActividadSemanalDto
+                {
+                    dia = dia.ToString("ddd"),
+                    facturas = _db.Facturas.Count(f => f.FechaEmision >= inicio && f.FechaEmision < fin),
+                    reportes = _db.Averias.Count(a => a.FechaReporte >= inicio && a.FechaReporte < fin),
+                    tramites = _db.Tramites.Count(t => t.FechaSolicitud >= inicio && t.FechaSolicitud < fin),
+                    perfil = 0
+                });
             }
 
-            ViewBag.Desde = d.ToString("yyyy-MM-dd");
-            ViewBag.Hasta = h.ToString("yyyy-MM-dd");
-            ViewBag.Actividad = actividad;
-            ViewBag.TotalActividad = actividad.Count;
-            ViewBag.PorSeccionJson = Newtonsoft.Json.JsonConvert.SerializeObject(porSeccion);
-            ViewBag.PorDiaJson = Newtonsoft.Json.JsonConvert.SerializeObject(new { labels = diasLabels, data = porDia });
+            ViewBag.Actividad = lista;
+
+            ViewBag.TiempoUso = _db.ActividadUsuario
+                .GroupBy(a => a.UsuarioId)
+                .Select(g => new TiempoUsoClienteDto
+                {
+                    UsuarioId = g.Key,
+                    Nombre = _db.Usuarios
+                        .Where(u => u.UsuarioId == g.Key)
+                        .Select(u => u.Nombre + " " + u.Apellidos)
+                        .FirstOrDefault(),
+                    Correo = _db.Usuarios
+                        .Where(u => u.UsuarioId == g.Key)
+                        .Select(u => u.Correo)
+                        .FirstOrDefault(),
+                    MinutosTotales = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60
+                })
+                .OrderByDescending(t => t.MinutosTotales)
+                .Take(10)
+                .ToList();
+
+            return View();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CUENTA
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult Cuenta()
+        {
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
+
+            ViewBag.NombreAdmin = Session["AdminNombre"] as string ?? "Administrador";
+            ViewBag.CorreoAdmin = Session["AdminCorreo"] as string ?? "admin@cnfl.go.cr";
 
             return View();
         }
@@ -456,16 +351,23 @@ namespace CNFL_Clientes_Prototipo.Controllers
         // ═══════════════════════════════════════════════════════════
         public ActionResult Configuracion()
         {
-            ViewBag.TotalUsuarios = _db.Usuarios.Count();
-            ViewBag.TotalNISEs = _db.NISEs.Count();
-            ViewBag.TotalFacturas = _db.Facturas.Count();
-            ViewBag.TotalAverias = _db.Averias.Count();
-            ViewBag.TotalTramites = _db.Tramites.Count();
-            ViewBag.TotalNotificaciones = _db.Notificaciones.Count();
-            ViewBag.VersionApp = "1.0.0-prototipo";
-            ViewBag.UltimaActualizacion = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
+
+            ViewBag.TotalActividades = _db.ActividadesEconomicas.Count();
+            ViewBag.TotalSuscripciones = _db.Suscripciones.Count();
 
             return View();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // LOGOUT
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            Session.Abandon();
+            return RedirectToAction("Login", "Cuenta");
         }
 
         protected override void Dispose(bool disposing)

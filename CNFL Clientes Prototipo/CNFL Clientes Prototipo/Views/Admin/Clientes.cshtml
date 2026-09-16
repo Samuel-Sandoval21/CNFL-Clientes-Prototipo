@@ -2,101 +2,103 @@
 @{
     ViewBag.Title = "Clientes";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-
-    var clientes = Model ?? new List<CNFL_Clientes_Prototipo.Models.ClienteAdminDto>();
-    var busqueda = ViewBag.Busqueda as string ?? "";
-    var rolFiltro = ViewBag.RolFiltro as string ?? "Cliente";
 }
 
-<div class="appbar">
-    <a href="@Url.Action("Dashboard", "Admin")" class="icon-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
-            <path d="m15 18-6-6 6-6" />
-        </svg>
-    </a>
-    <div class="brand" style="font-weight:800; font-size:16px;">Clientes</div>
-    <button type="button" class="icon-btn" onclick="abrirConfigAdmin();" title="Configuración">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-        </svg>
-    </button>
-</div>
-
-<h1 class="h-name" style="font-size:24px;">Gestión de clientes</h1>
-<p class="h-greet" style="margin-top:6px; line-height:1.5;">
-    @clientes.Count cliente(s) registrado(s)
-</p>
-
-<form method="get" action="@Url.Action("Clientes", "Admin")" class="admin-search" style="margin-top:14px;">
-    <input type="text" name="q" value="@busqueda" placeholder="Buscar..." style="width:100%;" />
-    <select name="rol">
-        <option value="Cliente" @(rolFiltro == "Cliente" ? "selected" : "")>Clientes</option>
-        <option value="Admin" @(rolFiltro == "Admin" ? "selected" : "")>Admins</option>
-        <option value="" @(rolFiltro == "" ? "selected" : "")>Todos</option>
-    </select>
-    <button type="submit" class="admin-btn primary">Buscar</button>
-    @if (!string.IsNullOrWhiteSpace(busqueda) || rolFiltro != "Cliente")
-    {
-        <a href="@Url.Action("Clientes", "Admin")" class="admin-btn">Limpiar</a>
-    }
-</form>
-
-<div class="admin-list" style="margin-top:8px;">
-    @if (clientes.Count == 0)
-    {
-        <div class="admin-card" style="text-align:center; padding:34px 18px;">
-            <div style="font-size:40px;">🔍</div>
-            <p style="font-weight:800; font-size:14px; margin-top:10px;">Sin resultados</p>
-            <p style="font-size:12px; color:var(--muted); margin-top:6px;">Probá con otro término de búsqueda.</p>
-        </div>
-    }
-    else
-    {
-        foreach (var c in clientes)
-        {
-            var nombreCompleto = (c.Nombre + " " + c.Apellidos).Trim();
-
-            var iniciales = "U";
-            if (!string.IsNullOrWhiteSpace(c.Nombre) && !string.IsNullOrWhiteSpace(c.Apellidos))
-            {
-                iniciales = (c.Nombre.Substring(0, 1) + c.Apellidos.Substring(0, 1)).ToUpper();
-            }
-            else if (!string.IsNullOrWhiteSpace(c.Nombre))
-            {
-                iniciales = c.Nombre.Substring(0, 1).ToUpper();
-            }
-
-            <a href="@Url.Action("DetalleCliente", "Admin", new { id = c.UsuarioId })" class="admin-list-item">
-                <div class="ic" style="background:#eef0ff; color:var(--blue); font-weight:800; font-size:13px;">
-                    @iniciales
-                </div>
-                <div class="tx">
-                    <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
-                        <div class="t">@nombreCompleto</div>
-                        @if (c.Activo)
-                        {
-                            <span class="chip ok" style="font-size:10px;"><span class="d"></span>Activo</span>
-                        }
-                        else
-                        {
-                            <span class="chip err" style="font-size:10px;"><span class="d"></span>Inactivo</span>
-                        }
-                    </div>
-                    <div class="s">@c.Cedula · @c.Correo</div>
-                    <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
-                        <span class="chip info" style="font-size:10px;"><span class="d"></span>@c.TotalNISEs NISEs</span>
-                        @if (c.MontoPendiente > 0)
-                        {
-                            <span class="chip warn" style="font-size:10px;"><span class="d"></span>₡@c.MontoPendiente.ToString("N0")</span>
-                        }
-                        @if (c.AveriasActivas > 0)
-                        {
-                            <span class="chip err" style="font-size:10px;"><span class="d"></span>@c.AveriasActivas averías</span>
-                        }
-                    </div>
-                </div>
-            </a>
+@section Styles {
+    <style>
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 14px;
+            background: #fff;
         }
+
+        .cliente-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--blue-soft);
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+            .info .name {
+                font-weight: 800;
+                font-size: 14px;
+                color: var(--text);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .info .meta {
+                font-size: 12px;
+                color: var(--muted);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+    </style>
+}
+
+<h1 class="page-title">Clientes</h1>
+
+@using (Html.BeginForm("Clientes", "Admin", FormMethod.Get))
+{
+    <input type="text" name="q" class="search-box"
+           placeholder="Buscar por nombre, cédula o correo..."
+           value="@ViewBag.Busqueda" />
+}
+
+@if (Model == null || !Model.Any())
+{
+    <div class="empty">
+        <i class="fas fa-users" style="font-size:38px;color:#c9ced9;"></i>
+        <p>No se encontraron clientes.</p>
+    </div>
+}
+else
+{
+    foreach (var c in Model)
+    {
+        var inicial = string.IsNullOrEmpty(c.Nombre) ? "?" : c.Nombre.Substring(0, 1).ToUpper();
+        <a href="@Url.Action("DetalleCliente", "Admin", new { id = c.UsuarioId })" class="cliente-card">
+            <div class="avatar">@inicial</div>
+            <div class="info">
+                <div class="name">@c.Nombre @c.Apellidos</div>
+                <div class="meta">@c.Cedula · @c.Correo</div>
+                <div class="meta" style="margin-top:3px;">
+                    @c.TotalNISEs NISEs · ₡@c.MontoPendiente.ToString("N0") pendiente
+                </div>
+            </div>
+            <span class="badge @(c.Activo ? "ok" : "warn")">
+                @(c.Activo ? "Activo" : "Inactivo")
+            </span>
+        </a>
     }
-</div>
+}

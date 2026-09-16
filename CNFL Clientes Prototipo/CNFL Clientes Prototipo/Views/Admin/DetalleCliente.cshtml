@@ -1,74 +1,184 @@
 ﻿@model CNFL_Clientes_Prototipo.Models.Usuario
-
 @{
-    ViewBag.Title = "Detalle de Cliente";
-    Layout = "~/Views/Shared/_LayoutApp.cshtml";
+    ViewBag.Title = "Detalle Cliente";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var nises = ViewBag.NISEs as List<CNFL_Clientes_Prototipo.Models.NISE> ?? new List<CNFL_Clientes_Prototipo.Models.NISE>();
+    var facturas = ViewBag.Facturas as List<CNFL_Clientes_Prototipo.Models.Factura> ?? new List<CNFL_Clientes_Prototipo.Models.Factura>();
+    var averias = ViewBag.Averias as List<CNFL_Clientes_Prototipo.Models.Averia> ?? new List<CNFL_Clientes_Prototipo.Models.Averia>();
+    var tramites = ViewBag.Tramites as List<CNFL_Clientes_Prototipo.Models.Tramite> ?? new List<CNFL_Clientes_Prototipo.Models.Tramite>();
 }
 
-<link rel="stylesheet" href="~/Content/admin/detalle-cliente.css" />
+@section Styles {
+    <style>
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--blue);
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
 
-<div class="detalle-cliente">
-    <div class="page-header">
-        <h1>Detalle de Cliente</h1>
-        <a href="@Url.Action("Clientes", "Admin")" class="btn-volver">← Volver</a>
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px;
+            gap: 10px;
+        }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+            .info-row .label {
+                color: var(--muted);
+                font-weight: 600;
+                flex-shrink: 0;
+            }
+
+            .info-row .value {
+                color: var(--text);
+                font-weight: 700;
+                text-align: right;
+            }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--blue);
+            margin: 20px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px;
+        }
+
+            .list-item:last-child {
+                border-bottom: none;
+            }
+
+            .list-item .title {
+                font-weight: 700;
+            }
+
+            .list-item .sub {
+                color: var(--muted);
+                font-size: 12px;
+                margin-top: 2px;
+            }
+    </style>
+}
+
+<a href="@Url.Action("Clientes", "Admin")" class="back-link">
+    <i class="fas fa-arrow-left"></i> Volver
+</a>
+
+<h1 class="page-title">@Model.Nombre @Model.Apellidos</h1>
+
+<div class="card">
+    <div class="info-row">
+        <span class="label">Cédula</span>
+        <span class="value">@Model.Cedula</span>
     </div>
-
-    <div class="detalle-grid">
-        <div class="detalle-card">
-            <h3>Información Personal</h3>
-            <p><strong>Nombre:</strong> @Model.Nombre @Model.Apellidos</p>
-            <p><strong>Cédula:</strong> @Model.Cedula</p>
-            <p><strong>Correo:</strong> @Model.Correo</p>
-            <p><strong>Teléfono:</strong> @Model.Telefono</p>
-            <p><strong>Fecha Registro:</strong> @Model.FechaRegistro.ToString("dd/MM/yyyy")</p>
-        </div>
-
-        <div class="detalle-card">
-            <h3>NISEs Asociados</h3>
-            @if (Model.NISEs != null && Model.NISEs.Any())
-            {
-                <ul class="detalle-lista">
-                    @foreach (var nise in Model.NISEs)
-                    {
-                        <li><strong>@nise.NumeroNise</strong> - @nise.Direccion</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p class="empty-message">No tiene NISEs asociados.</p>
-            }
-        </div>
-
-        <div class="detalle-card">
-            <h3>Averías Reportadas</h3>
-            @if (Model.Averias != null && Model.Averias.Any())
-            {
-                <ul class="detalle-lista">
-                    @foreach (var averia in Model.Averias.Take(5))
-                    {
-                        <li>#@averia.AveriaId - @averia.Tipo - <span class="estado-badge @averia.Estado.Replace(" ", "-").ToLower()">@averia.Estado</span></li>
-                    }
-                </ul>
-                if (Model.Averias.Count() > 5)
-                {
-                    <p><a href="@Url.Action("Averias", "Admin")" class="btn-ver-todas">Ver todas las averías →</a></p>
-                }
-            }
-            else
-            {
-                <p class="empty-message">No ha reportado averías.</p>
-            }
-        </div>
+    <div class="info-row">
+        <span class="label">Correo</span>
+        <span class="value">@Model.Correo</span>
     </div>
-
-    <div class="detalle-actions">
-        <button class="btn-editar" id="btnEditarCliente" data-id="@Model.UsuarioId">Editar Cliente</button>
-        <button class="btn-ver-facturas" id="btnVerFacturas" data-id="@Model.UsuarioId">Ver Facturas</button>
-        <button class="btn-imprimir" id="btnImprimir">Imprimir</button>
+    <div class="info-row">
+        <span class="label">Teléfono</span>
+        <span class="value">@Model.Telefono</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Dirección</span>
+        <span class="value">@Model.Provincia, @Model.Canton, @Model.Distrito</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Estado</span>
+        <span class="value">@(Model.Activo ? "Activo" : "Inactivo")</span>
+    </div>
+    <div class="info-row">
+        <span class="label">Registro</span>
+        <span class="value">@(Model.FechaRegistro?.ToString("dd/MM/yyyy") ?? "—")</span>
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/Scripts/admin/detalle-cliente.js"></script>
-}
+<div class="section-title"><i class="fas fa-bolt"></i> NISEs (@nises.Count)</div>
+<div class="card">
+    @if (!nises.Any())
+    {
+        <div class="empty" style="padding:16px;">Sin NISEs registrados</div>
+    }
+    else
+    {
+        foreach (var n in nises)
+        {
+            <div class="list-item">
+                <div class="title">@n.NumeroNise</div>
+                <div class="sub">@n.Direccion · @n.Estado</div>
+            </div>
+        }
+    }
+</div>
+
+<div class="section-title"><i class="fas fa-file-invoice"></i> Facturas (@facturas.Count)</div>
+<div class="card">
+    @if (!facturas.Any())
+    {
+        <div class="empty" style="padding:16px;">Sin facturas</div>
+    }
+    else
+    {
+        foreach (var f in facturas.Take(10))
+        {
+            <div class="list-item">
+                <div class="title">₡@f.MontoTotal.ToString("N0")</div>
+                <div class="sub">@f.FechaEmision.ToString("dd/MM/yyyy") · @f.Estado</div>
+            </div>
+        }
+    }
+</div>
+
+<div class="section-title"><i class="fas fa-exclamation-triangle"></i> Averías (@averias.Count)</div>
+<div class="card">
+    @if (!averias.Any())
+    {
+        <div class="empty" style="padding:16px;">Sin averías</div>
+    }
+    else
+    {
+        foreach (var a in averias.Take(10))
+        {
+            <div class="list-item">
+                <div class="title">@a.Tipo</div>
+                <div class="sub">@a.FechaReporte.ToString("dd/MM/yyyy") · @a.Estado</div>
+            </div>
+        }
+    }
+</div>
+
+<div class="section-title"><i class="fas fa-clipboard-list"></i> Trámites (@tramites.Count)</div>
+<div class="card">
+    @if (!tramites.Any())
+    {
+        <div class="empty" style="padding:16px;">Sin trámites</div>
+    }
+    else
+    {
+        foreach (var t in tramites.Take(10))
+        {
+            <div class="list-item">
+                <div class="title">@t.Tipo</div>
+                <div class="sub">@t.FechaSolicitud.ToString("dd/MM/yyyy") · @t.Estado</div>
+            </div>
+        }
+    }
+</div>

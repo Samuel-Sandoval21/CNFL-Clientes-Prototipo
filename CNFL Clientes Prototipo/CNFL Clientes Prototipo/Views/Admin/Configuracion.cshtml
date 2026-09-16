@@ -2,85 +2,74 @@
     ViewBag.Title = "Configuración";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
-    var totalUsuarios = (int)(ViewBag.TotalUsuarios ?? 0);
-    var totalNISEs = (int)(ViewBag.TotalNISEs ?? 0);
-    var totalFacturas = (int)(ViewBag.TotalFacturas ?? 0);
-    var totalAverias = (int)(ViewBag.TotalAverias ?? 0);
-    var totalTramites = (int)(ViewBag.TotalTramites ?? 0);
-    var totalNotificaciones = (int)(ViewBag.TotalNotificaciones ?? 0);
-    var versionApp = ViewBag.VersionApp as string ?? "1.0.0";
+    var totalActividades = (int)(ViewBag.TotalActividades ?? 0);
+    var totalSuscripciones = (int)(ViewBag.TotalSuscripciones ?? 0);
 }
 
-<div class="appbar">
-    <a href="@Url.Action("Dashboard", "Admin")" class="icon-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
-            <path d="m15 18-6-6 6-6" />
-        </svg>
-    </a>
-    <div class="brand" style="font-weight:800; font-size:16px;">Configuración</div>
-    <div style="width:40px;"></div>
-</div>
+@section Styles {
+    <style>
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+        }
 
-<h1 class="h-name" style="font-size:24px;">Configuración</h1>
-<p class="h-greet" style="margin-top:6px; line-height:1.5;">
-    Información del sistema
-</p>
+            .config-item:last-child {
+                border-bottom: none;
+            }
 
-<div class="admin-card" style="margin-top:14px;">
-    <h3>🔧 Sistema</h3>
-    <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
-        <div style="display:flex; justify-content:space-between;">
-            <span style="font-size:12px; color:var(--muted); font-weight:700;">Versión</span>
-            <span style="font-size:12px; font-weight:800;">@versionApp</span>
+            .config-item .label {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-weight: 700;
+                font-size: 13.5px;
+            }
+
+            .config-item .icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+                background: var(--blue-soft);
+                color: var(--blue);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 15px;
+            }
+
+            .config-item .value {
+                font-weight: 800;
+                color: var(--blue);
+                font-size: 14px;
+            }
+    </style>
+}
+
+<h1 class="page-title">Configuración</h1>
+
+<div class="card">
+    <div class="config-item">
+        <div class="label">
+            <div class="icon"><i class="fas fa-briefcase"></i></div>
+            Actividades económicas
         </div>
-        <div style="display:flex; justify-content:space-between;">
-            <span style="font-size:12px; color:var(--muted); font-weight:700;">Framework</span>
-            <span style="font-size:12px; font-weight:800;">ASP.NET MVC 5</span>
-        </div>
-        <div style="display:flex; justify-content:space-between;">
-            <span style="font-size:12px; color:var(--muted); font-weight:700;">Base de datos</span>
-            <span style="font-size:12px; font-weight:800;">SQL Server</span>
-        </div>
+        <div class="value">@totalActividades</div>
     </div>
-</div>
 
-<div class="eyebrow">📊 Estadísticas</div>
-
-<div class="admin-stats">
-    <div class="admin-stat">
-        <div class="row1"><div class="ico" style="background:#eef0ff;">👥</div></div>
-        <div class="k">Usuarios</div>
-        <div class="v">@totalUsuarios</div>
-    </div>
-    <div class="admin-stat">
-        <div class="row1"><div class="ico" style="background:#eef6ff;">🔌</div></div>
-        <div class="k">NISEs</div>
-        <div class="v">@totalNISEs</div>
-    </div>
-    <div class="admin-stat">
-        <div class="row1"><div class="ico" style="background:#e9f7ec;">💰</div></div>
-        <div class="k">Facturas</div>
-        <div class="v">@totalFacturas</div>
-    </div>
-    <div class="admin-stat">
-        <div class="row1"><div class="ico" style="background:#fdeaea;">⚡</div></div>
-        <div class="k">Averías</div>
-        <div class="v">@totalAverias</div>
-    </div>
-    <div class="admin-stat">
-        <div class="row1"><div class="ico" style="background:#f3f0ff;">📋</div></div>
-        <div class="k">Trámites</div>
-        <div class="v">@totalTramites</div>
-    </div>
-    <div class="admin-stat">
-        <div class="row1"><div class="ico" style="background:#fef3e0;">🔔</div></div>
-        <div class="k">Notificaciones</div>
-        <div class="v">@totalNotificaciones</div>
+    <div class="config-item">
+        <div class="label">
+            <div class="icon"><i class="fas fa-id-card"></i></div>
+            Suscripciones
+        </div>
+        <div class="value">@totalSuscripciones</div>
     </div>
 </div>
 
-<div style="display:flex; flex-direction:column; gap:10px; margin-top:14px;">
-    <a href="@Url.Action("Logout", "Cuenta")" class="admin-btn" style="justify-content:center; color:var(--red); border-color:#f6cfd0;">
-        🚪 Cerrar sesión
-    </a>
+<div class="card">
+    <div style="font-size:13px;color:var(--muted);text-align:center;padding:10px 0;">
+        CNFL Admin · v1.0
+    </div>
 </div>

@@ -1,139 +1,217 @@
 ﻿@{
-    ViewBag.Title = "Actividad";
+    ViewBag.Title = "Reportes";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
-    var desde = ViewBag.Desde as string ?? "";
-    var hasta = ViewBag.Hasta as string ?? "";
-    var actividad = ViewBag.Actividad as List<CNFL_Clientes_Prototipo.Models.ActividadUsuario>
-                    ?? new List<CNFL_Clientes_Prototipo.Models.ActividadUsuario>();
-    var totalActividad = (int)(ViewBag.TotalActividad ?? 0);
+    var consumos = ViewBag.Consumos as List<CNFL_Clientes_Prototipo.Models.ConsumoMensualDto>
+                   ?? new List<CNFL_Clientes_Prototipo.Models.ConsumoMensualDto>();
+    var totalFacturado = (decimal)(ViewBag.TotalFacturado ?? 0m);
+    var totalCobrado = (decimal)(ViewBag.TotalCobrado ?? 0m);
+    var totalPendiente = (decimal)(ViewBag.TotalPendiente ?? 0m);
+
+    var maxMonto = consumos.Any() ? consumos.Max(c => c.monto) : 1m;
+    if (maxMonto <= 0) { maxMonto = 1m; }
 }
 
-<div class="appbar">
-    <a href="@Url.Action("Dashboard", "Admin")" class="icon-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
-            <path d="m15 18-6-6 6-6" />
-        </svg>
-    </a>
-    <div class="brand" style="font-weight:800; font-size:16px;">Actividad</div>
-    <div style="width:40px;"></div>
-</div>
+@section Styles {
+    <style>
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
 
-<h1 class="h-name" style="font-size:24px;">Actividad de uso</h1>
-<p class="h-greet" style="margin-top:6px; line-height:1.5;">
-    @totalActividad registro(s) en el período
-</p>
+        .summary-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 12px 8px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            text-align: center;
+        }
 
-<form method="get" action="@Url.Action("Actividad", "Admin")" class="admin-search" style="margin-top:14px;">
-    <input type="date" name="desde" value="@desde" />
-    <input type="date" name="hasta" value="@hasta" />
-    <button type="submit" class="admin-btn primary">Aplicar</button>
-</form>
+            .summary-card .label {
+                font-size: 10px;
+                color: var(--muted);
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: .4px;
+                margin-bottom: 6px;
+            }
 
-<div class="admin-card">
-    <h3>📊 Por sección</h3>
-    <div class="sub">Top secciones más usadas</div>
-    <div class="admin-chart">
-        <canvas id="chartSeccion"></canvas>
+            .summary-card .value {
+                font-size: 12.5px;
+                font-weight: 800;
+                color: var(--text);
+                word-break: break-all;
+            }
+
+        .chart-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 14.5px;
+            font-weight: 800;
+            color: var(--blue);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .section-title i {
+                font-size: 15px;
+            }
+
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 6px;
+            height: 160px;
+            padding: 10px 0;
+        }
+
+            .chart .bar-wrap {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-end;
+                height: 100%;
+            }
+
+            .chart .bar {
+                width: 100%;
+                background: linear-gradient(180deg, var(--blue), #2b3f8f);
+                border-radius: 8px 8px 0 0;
+                min-height: 6px;
+                transition: height .3s;
+                box-shadow: 0 4px 10px -4px rgba(26, 43, 107, .4);
+            }
+
+            .chart .label {
+                font-size: 11px;
+                color: var(--muted);
+                font-weight: 700;
+                margin-top: 8px;
+                text-transform: uppercase;
+            }
+
+            .chart .value {
+                font-size: 9px;
+                color: var(--blue);
+                font-weight: 800;
+                margin-bottom: 4px;
+            }
+
+        .export-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .export-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 12px;
+            border-radius: 14px;
+            font-size: 13.5px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: transform .15s, box-shadow .15s;
+        }
+
+            .export-btn:active {
+                transform: scale(.97);
+            }
+
+            .export-btn.excel {
+                background: #e0f7e9;
+                color: #046a38;
+                box-shadow: 0 6px 14px -6px rgba(4, 106, 56, .3);
+            }
+
+            .export-btn.pdf {
+                background: #ffe6e6;
+                color: #b71c1c;
+                box-shadow: 0 6px 14px -6px rgba(183, 28, 28, .3);
+            }
+
+            .export-btn i {
+                font-size: 18px;
+            }
+    </style>
+}
+
+<h1 class="page-title">Reportes</h1>
+
+<div class="summary-grid">
+    <div class="summary-card">
+        <div class="label">Facturado</div>
+        <div class="value">₡@totalFacturado.ToString("N0")</div>
+    </div>
+    <div class="summary-card">
+        <div class="label">Cobrado</div>
+        <div class="value" style="color:#00a651;">₡@totalCobrado.ToString("N0")</div>
+    </div>
+    <div class="summary-card">
+        <div class="label">Pendiente</div>
+        <div class="value" style="color:#e53935;">₡@totalPendiente.ToString("N0")</div>
     </div>
 </div>
 
-<div class="admin-card">
-    <h3>📈 Últimos 7 días</h3>
-    <div class="sub">Registros por día</div>
-    <div class="admin-chart">
-        <canvas id="chartDia"></canvas>
+<div class="chart-card">
+    <div class="section-title">
+        <i class="fas fa-chart-bar"></i>
+        Facturación últimos 6 meses
     </div>
-</div>
-
-<div class="eyebrow">📋 Últimos registros</div>
-
-<div class="admin-list">
-    @if (actividad.Count == 0)
+    @if (!consumos.Any())
     {
-        <div class="admin-card" style="text-align:center; padding:34px 18px;">
-            <div style="font-size:40px;">⏱️</div>
-            <p style="font-weight:800; font-size:14px; margin-top:10px;">Sin actividad</p>
-        </div>
+        <div class="empty" style="padding:20px;">Sin datos</div>
     }
     else
     {
-        foreach (var a in actividad.Take(30))
-        {
-            <div class="admin-list-item">
-                <div class="ic" style="background:#eef0ff; color:var(--blue);">📌</div>
-                <div class="tx">
-                    <div class="t">@(a.Seccion ?? "Sin sección")</div>
-                    <div class="s">
-                        @if (a.Usuario != null)
-                        {
-                            <text>@a.Usuario.Nombre @a.Usuario.Apellidos · </text>
-                        }
-                        @a.Accion
-                    </div>
-                    <div class="s" style="font-size:10.5px; margin-top:3px;">
-                        @a.Fecha.ToString("dd/MM/yyyy HH:mm")
-                    </div>
+        <div class="chart">
+            @foreach (var c in consumos)
+            {
+                var pct = (double)(c.monto / maxMonto) * 100;
+                if (pct < 3) { pct = 3; }
+                <div class="bar-wrap">
+                    <div class="value">@((c.monto / 1000).ToString("N0"))k</div>
+                    <div class="bar" style="height:@(pct.ToString("0.0"))%;"></div>
+                    <div class="label">@c.mes</div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     }
 </div>
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script>
-        var porSeccion = @Html.Raw(ViewBag.PorSeccionJson ?? "[]");
-        var porDia = @Html.Raw(ViewBag.PorDiaJson ?? "{\"labels\":[],\"data\":[]}");
-
-        if (porSeccion.length > 0) {
-            new Chart(document.getElementById('chartSeccion'), {
-                type: 'doughnut',
-                data: {
-                    labels: porSeccion.map(function (s) { return s.Seccion; }),
-                    datasets: [{
-                        data: porSeccion.map(function (s) { return s.Count; }),
-                        backgroundColor: ['#1E23E6', '#64B95A', '#FF692D', '#F5A623', '#64B9CD', '#E5484D', '#001482'],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { font: { size: 10, weight: '700' }, boxWidth: 10, padding: 8 } }
-                    }
-                }
-            });
-        }
-
-        if (porDia.labels && porDia.labels.length > 0) {
-            new Chart(document.getElementById('chartDia'), {
-                type: 'line',
-                data: {
-                    labels: porDia.labels,
-                    datasets: [{
-                        data: porDia.data,
-                        borderColor: '#1E23E6',
-                        backgroundColor: 'rgba(30,35,230,.1)',
-                        fill: true,
-                        tension: 0.35,
-                        borderWidth: 2.5,
-                        pointRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } },
-                        x: { ticks: { font: { size: 10, weight: '700' } } }
-                    }
-                }
-            });
-        }
-    </script>
-}
+<div class="chart-card">
+    <div class="section-title">
+        <i class="fas fa-download"></i>
+        Descargar reportes
+    </div>
+    <div class="export-grid">
+        <a href="@Url.Action("ExportarExcel", "Admin")" class="export-btn excel">
+            <i class="fas fa-file-excel"></i>
+            Excel
+        </a>
+        <a href="@Url.Action("ExportarPDF", "Admin")" class="export-btn pdf">
+            <i class="fas fa-file-pdf"></i>
+            PDF
+        </a>
+    </div>
+    <p style="font-size:11.5px;color:var(--muted);margin:12px 0 0;text-align:center;">
+        Los archivos se descargan a tu dispositivo.
+    </p>
+</div>

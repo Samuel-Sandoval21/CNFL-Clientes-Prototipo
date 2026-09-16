@@ -2,86 +2,144 @@
 @{
     ViewBag.Title = "Averías";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-
-    var averias = Model ?? new List<CNFL_Clientes_Prototipo.Models.Averia>();
-    var estadoFiltro = ViewBag.EstadoFiltro as string ?? "Todos";
-    var tipoFiltro = ViewBag.TipoFiltro as string ?? "Todos";
-    var busqueda = ViewBag.Busqueda as string ?? "";
-    var estados = ViewBag.Estados as string[] ?? new string[0];
-    var tipos = ViewBag.Tipos as List<string> ?? new List<string>();
-
-    string ClaseEstado(string e)
-    {
-        var s = (e ?? "").ToLower();
-        if (s.Contains("resuelto")) return "ok";
-        if (s.Contains("revisión") || s.Contains("camino")) return "warn";
-        if (s.Contains("ingresado")) return "info";
-        return "err";
-    }
+    var estadoActual = ViewBag.Estado as string ?? "";
 }
 
-<div class="appbar">
-    <a href="@Url.Action("Dashboard", "Admin")" class="icon-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
-            <path d="m15 18-6-6 6-6" />
-        </svg>
-    </a>
-    <div class="brand" style="font-weight:800; font-size:16px;">Averías</div>
-    <div style="width:40px;"></div>
+@section Styles {
+    <style>
+        .filtros {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            padding-bottom: 6px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+            .filtros::-webkit-scrollbar {
+                display: none;
+            }
+
+        .filtro {
+            padding: 9px 16px;
+            background: #fff;
+            border: 1.5px solid var(--line);
+            border-radius: 22px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--muted);
+            white-space: nowrap;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all .18s;
+        }
+
+            .filtro.active {
+                background: var(--blue);
+                color: #fff;
+                border-color: var(--blue);
+                box-shadow: 0 6px 14px -6px rgba(26, 43, 107, .5);
+            }
+
+        .averia-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            border-left: 4px solid var(--blue);
+        }
+
+            .averia-card.estado-resuelta {
+                border-left-color: #00a651;
+            }
+
+            .averia-card.estado-proceso {
+                border-left-color: #c98a00;
+            }
+
+        .averia-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+
+        .averia-tipo {
+            font-weight: 800;
+            font-size: 14.5px;
+            color: var(--text);
+        }
+
+        .averia-info {
+            font-size: 12.5px;
+            color: var(--muted);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .averia-info i {
+                font-size: 12px;
+                color: #aab0be;
+                width: 14px;
+            }
+    </style>
+}
+
+<h1 class="page-title">Averías</h1>
+
+<div class="filtros">
+    <a href="@Url.Action("Averias", "Admin")" class="filtro @(string.IsNullOrEmpty(estadoActual) ? "active" : "")">Todas</a>
+    <a href="@Url.Action("Averias", "Admin", new { estado = "Ingresado" })" class="filtro @(estadoActual == "Ingresado" ? "active" : "")">Ingresadas</a>
+    <a href="@Url.Action("Averias", "Admin", new { estado = "En revisión" })" class="filtro @(estadoActual == "En revisión" ? "active" : "")">En revisión</a>
+    <a href="@Url.Action("Averias", "Admin", new { estado = "Resuelta" })" class="filtro @(estadoActual == "Resuelta" ? "active" : "")">Resueltas</a>
 </div>
 
-<h1 class="h-name" style="font-size:24px;">Gestión de averías</h1>
-<p class="h-greet" style="margin-top:6px; line-height:1.5;">
-    @averias.Count avería(s) · actualizado en tiempo real
-</p>
-
-<form method="get" action="@Url.Action("Averias", "Admin")" class="admin-search" style="margin-top:14px;">
-    <input type="text" name="q" value="@busqueda" placeholder="Buscar..." style="width:100%;" />
-    <select name="estado">
-        @foreach (var e in estados)
-        {
-            <option value="@e" @(estadoFiltro == e ? "selected" : "")>@e</option>
-        }
-    </select>
-    <select name="tipo">
-        <option value="Todos" @(tipoFiltro == "Todos" ? "selected" : "")>Tipos</option>
-        @foreach (var t in tipos)
-        {
-            <option value="@t" @(tipoFiltro == t ? "selected" : "")>@t</option>
-        }
-    </select>
-    <button type="submit" class="admin-btn primary">Filtrar</button>
-</form>
-
-<div class="admin-list" style="margin-top:8px;">
-    @if (averias.Count == 0)
+@if (Model == null || !Model.Any())
+{
+    <div class="empty">
+        <i class="fas fa-bolt" style="font-size:42px;color:#c9ced9;margin-bottom:12px;display:block;"></i>
+        <p>No hay averías para mostrar.</p>
+    </div>
+}
+else
+{
+    foreach (var a in Model)
     {
-        <div class="admin-card" style="text-align:center; padding:34px 18px;">
-            <div style="font-size:40px;">⚡</div>
-            <p style="font-weight:800; font-size:14px; margin-top:10px;">Sin averías</p>
+        var cssEstado = a.Estado == "Resuelta" || a.Estado == "Cerrada" ? "estado-resuelta" :
+                        (a.Estado == "En revisión" || a.Estado == "En proceso" ? "estado-proceso" : "");
+        var badge = a.Estado == "Resuelta" || a.Estado == "Cerrada" ? "ok" :
+                    (a.Estado == "En revisión" || a.Estado == "En proceso" ? "info" : "warn");
+
+        <div class="averia-card @cssEstado">
+            <div class="averia-top">
+                <span class="averia-tipo">@a.Tipo</span>
+                <span class="badge @badge">@a.Estado</span>
+            </div>
+
+            @if (a.NISE != null)
+            {
+                <div class="averia-info">
+                    <i class="fas fa-bolt"></i>
+                    NISE: @a.NISE.NumeroNise
+                </div>
+            }
+
+            <div class="averia-info">
+                <i class="fas fa-calendar"></i>
+                @a.FechaReporte.ToString("dd/MM/yyyy HH:mm")
+            </div>
+
+            @if (!string.IsNullOrEmpty(a.Descripcion))
+            {
+                <div class="averia-info" style="margin-top:8px;color:var(--text);font-size:13px;">
+                    @a.Descripcion
+                </div>
+            }
         </div>
     }
-    else
-    {
-        foreach (var a in averias)
-        {
-            <a href="@Url.Action("DetalleAveria", "Admin", new { id = a.AveriaId })" class="admin-list-item">
-                <div class="ic" style="background:#fff3ec; color:var(--orange);">⚡</div>
-                <div class="tx">
-                    <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
-                        <div class="t">#@a.AveriaId · @a.Tipo</div>
-                        <span class="chip @ClaseEstado(a.Estado)" style="font-size:10px;">
-                            <span class="d"></span>@a.Estado
-                        </span>
-                    </div>
-                    <div class="s" style="margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                        @a.Descripcion
-                    </div>
-                    <div class="s" style="margin-top:4px; font-weight:700; color:var(--blue); font-size:10.5px;">
-                        @a.FechaReporte.ToString("dd/MM/yyyy HH:mm")
-                    </div>
-                </div>
-            </a>
-        }
-    }
-</div>
+}

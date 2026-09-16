@@ -1,277 +1,414 @@
 ﻿@{
-    ViewBag.Title = "Dashboard";
+    ViewBag.Title = "Dashboard Admin";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
-    var nombreAdmin = ViewBag.NombreAdmin as string ?? "Admin";
-    var totalUsuarios = (int)(ViewBag.TotalUsuarios ?? 0);
+    var nombreAdmin = Session["AdminNombre"] as string ?? "Administrador";
+    var hora = DateTime.Now.Hour;
+    var saludo = hora < 12 ? "Buenos días" : (hora < 19 ? "Buenas tardes" : "Buenas noches");
+    var primerNombre = !string.IsNullOrEmpty(nombreAdmin) ? nombreAdmin.Split(' ')[0] : "Admin";
+
     var totalClientes = (int)(ViewBag.TotalClientes ?? 0);
-    var totalNISEs = (int)(ViewBag.TotalNISEs ?? 0);
-    var facturasPendientes = (int)(ViewBag.FacturasPendientes ?? 0);
+    var clientesActivos = (int)(ViewBag.ClientesActivos ?? 0);
+    var nisesActivos = (int)(ViewBag.NISEsActivos ?? 0);
     var montoPendiente = (decimal)(ViewBag.MontoPendiente ?? 0m);
+    var ingresosMes = (decimal)(ViewBag.IngresosMes ?? 0m);
     var averiasAbiertas = (int)(ViewBag.AveriasAbiertas ?? 0);
     var averiasResueltas = (int)(ViewBag.AveriasResueltas ?? 0);
-    var tasaResolucion = (double)(ViewBag.TasaResolucion ?? 0.0);
     var tramitesAbiertos = (int)(ViewBag.TramitesAbiertos ?? 0);
     var tiempoPromedio = (double)(ViewBag.TiempoPromedio ?? 0.0);
-    var ingresosMes = (decimal)(ViewBag.IngresosMes ?? 0m);
-
-    var iniciales = "A";
-    if (!string.IsNullOrWhiteSpace(nombreAdmin))
-    {
-        var partes = nombreAdmin.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        if (partes.Length >= 2)
-        {
-            iniciales = (partes[0].Substring(0, 1) + partes[1].Substring(0, 1)).ToUpper();
-        }
-        else if (partes.Length == 1)
-        {
-            iniciales = partes[0].Substring(0, 1).ToUpper();
-        }
-    }
 }
 
-<!-- ═══════════ HEADER HERO ═══════════ -->
-<div class="admin-header-hero">
-    <div class="admin-user-row">
-        <div class="admin-avatar">@iniciales</div>
-        <div class="info">
-            <div class="nm">@nombreAdmin</div>
-            <div class="rl">Administrador</div>
-        </div>
-        <div class="admin-header-actions">
-            <button type="button" class="admin-header-btn" onclick="abrirConfigAdmin();" title="Configuración">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3" />
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                </svg>
-            </button>
-        </div>
-    </div>
-    <h1>Panel de control</h1>
-    <div class="sub">Resumen general del sistema</div>
-</div>
+@section Styles {
+    <style>
+        .greeting {
+            margin-bottom: 16px;
+        }
 
-<!-- ═══════════ MÉTRICAS PRINCIPALES ═══════════ -->
-<div class="admin-stats">
-    <div class="admin-stat">
-        <div class="row1">
-            <div class="ico" style="background:#eef0ff;">👥</div>
-            <span class="tag info">+@totalClientes</span>
-        </div>
-        <div class="k">Clientes</div>
-        <div class="v">@totalClientes <small>de @totalUsuarios</small></div>
-    </div>
-
-    <div class="admin-stat">
-        <div class="row1">
-            <div class="ico" style="background:#eef6ff;">🔌</div>
-        </div>
-        <div class="k">NISEs activos</div>
-        <div class="v">@totalNISEs</div>
-    </div>
-
-    <div class="admin-stat">
-        <div class="row1">
-            <div class="ico" style="background:#fff3ec;">💰</div>
-            @if (facturasPendientes > 0)
-            {
-                <span class="tag down">@facturasPendientes</span>
+            .greeting .hi {
+                font-size: 13px;
+                color: var(--muted);
+                font-weight: 600;
             }
-        </div>
-        <div class="k">Monto pendiente</div>
-        <div class="v">₡@montoPendiente.ToString("N0")</div>
+
+            .greeting .name {
+                font-size: 24px;
+                font-weight: 900;
+                color: var(--text);
+                margin-top: 2px;
+                line-height: 1.1;
+            }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, #1a2b6b 0%, #2b3f8f 100%);
+            border-radius: 20px;
+            padding: 18px;
+            color: #fff;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 14px 30px -14px rgba(26, 43, 107, .7);
+        }
+
+            .welcome-banner::before {
+                content: '';
+                position: absolute;
+                top: -30px;
+                right: -30px;
+                width: 110px;
+                height: 110px;
+                background: rgba(255, 255, 255, .08);
+                border-radius: 50%;
+            }
+
+            .welcome-banner .tag {
+                font-size: 10.5px;
+                font-weight: 800;
+                opacity: .75;
+                text-transform: uppercase;
+                letter-spacing: .8px;
+                margin-bottom: 6px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .welcome-banner .title {
+                font-size: 18px;
+                font-weight: 900;
+                line-height: 1.2;
+                margin-bottom: 5px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .welcome-banner .sub {
+                font-size: 12px;
+                opacity: .85;
+                line-height: 1.45;
+                position: relative;
+                z-index: 1;
+            }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .metric-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            position: relative;
+        }
+
+        .metric-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+            .metric-icon.blue {
+                background: #e6ecff;
+                color: #1a2b6b;
+            }
+
+            .metric-icon.green {
+                background: #e0f7e9;
+                color: #00a651;
+            }
+
+            .metric-icon.red {
+                background: #ffe6e6;
+                color: #e53935;
+            }
+
+            .metric-icon.yellow {
+                background: #fff4d9;
+                color: #c98a00;
+            }
+
+            .metric-icon.purple {
+                background: #efe6ff;
+                color: #7a3fbf;
+            }
+
+        .metric-label {
+            font-size: 10px;
+            color: #6b7280;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .metric-value {
+            font-size: 19px;
+            font-weight: 900;
+            color: #1c1f2b;
+            line-height: 1.1;
+        }
+
+            .metric-value small {
+                font-size: 11.5px;
+                font-weight: 600;
+                color: #6b7280;
+                margin-left: 3px;
+            }
+
+        .metric-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ffe6e6;
+            color: #e53935;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+            .metric-badge.gray {
+                background: #eef0f5;
+                color: #6b7280;
+            }
+
+        /* Gráficos */
+        .chart-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            margin-bottom: 14px;
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--blue);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .chart-title i {
+                font-size: 14px;
+            }
+
+        .chart-box {
+            position: relative;
+            height: 180px;
+        }
+
+        /* Botones export */
+        .export-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .export-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 10px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: transform .15s;
+        }
+
+            .export-btn:active {
+                transform: scale(.97);
+            }
+
+            .export-btn.excel {
+                background: #e0f7e9;
+                color: #046a38;
+                box-shadow: 0 6px 14px -6px rgba(4, 106, 56, .3);
+            }
+
+            .export-btn.pdf {
+                background: #ffe6e6;
+                color: #b71c1c;
+                box-shadow: 0 6px 14px -6px rgba(183, 28, 28, .3);
+            }
+
+            .export-btn i {
+                font-size: 17px;
+            }
+    </style>
+}
+
+<!-- Saludo -->
+<div class="greeting">
+    <div class="hi">@saludo,</div>
+    <div class="name">@primerNombre 👋</div>
+</div>
+
+<!-- Banner bienvenida -->
+<div class="welcome-banner">
+    <div class="tag">Panel Administrativo CNFL</div>
+    <div class="title">Todo bajo control,<br />desde un solo lugar.</div>
+    <div class="sub">Gestioná clientes, averías, trámites y reportes de la app móvil.</div>
+</div>
+
+<!-- Métricas -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-icon blue"><i class="fas fa-users"></i></div>
+        <div class="metric-label">Clientes</div>
+        <div class="metric-value">@clientesActivos<small>de @totalClientes</small></div>
     </div>
 
-    <div class="admin-stat">
-        <div class="row1">
-            <div class="ico" style="background:#e9f7ec;">📈</div>
-            <span class="tag up">mes</span>
-        </div>
-        <div class="k">Ingresos del mes</div>
-        <div class="v">₡@ingresosMes.ToString("N0")</div>
+    <div class="metric-card">
+        <div class="metric-icon blue"><i class="fas fa-bolt"></i></div>
+        <div class="metric-label">NISEs activos</div>
+        <div class="metric-value">@nisesActivos</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-icon yellow"><i class="fas fa-money-bill-wave"></i></div>
+        @if (montoPendiente > 0)
+        {
+            <span class="metric-badge">$</span>
+        }
+        <div class="metric-label">Monto pendiente</div>
+        <div class="metric-value">₡@montoPendiente.ToString("N0")</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-icon purple"><i class="fas fa-chart-line"></i></div>
+        <span class="metric-badge gray">mes</span>
+        <div class="metric-label">Ingresos del mes</div>
+        <div class="metric-value">₡@ingresosMes.ToString("N0")</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="metric-label">Averías abiertas</div>
+        <div class="metric-value">@averiasAbiertas</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-icon green"><i class="fas fa-check"></i></div>
+        <div class="metric-label">Averías resueltas</div>
+        <div class="metric-value">@averiasResueltas</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-icon yellow"><i class="fas fa-clipboard-list"></i></div>
+        <div class="metric-label">Trámites abiertos</div>
+        <div class="metric-value">@tramitesAbiertos</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-icon purple"><i class="fas fa-stopwatch"></i></div>
+        <div class="metric-label">Tiempo prom.</div>
+        <div class="metric-value">@tiempoPromedio.ToString("0.0")<small>días</small></div>
     </div>
 </div>
 
-<!-- ═══════════ MÉTRICAS SECUNDARIAS ═══════════ -->
-<div class="admin-stats">
-    <div class="admin-stat">
-        <div class="row1">
-            <div class="ico" style="background:#fdeaea;">⚡</div>
-        </div>
-        <div class="k">Averías abiertas</div>
-        <div class="v">@averiasAbiertas</div>
-    </div>
-
-    <div class="admin-stat">
-        <div class="row1">
-            <div class="ico" style="background:#e9f7ec;">✓</div>
-        </div>
-        <div class="k">Averías resueltas</div>
-        <div class="v">@averiasResueltas</div>
-    </div>
-
-    <div class="admin-stat">
-        <div class="row1">
-            <div class="ico" style="background:#f3f0ff;">📋</div>
-        </div>
-        <div class="k">Trámites abiertos</div>
-        <div class="v">@tramitesAbiertos</div>
-    </div>
-
-    <div class="admin-stat">
-        <div class="row1">
-            <div class="ico" style="background:#fef3e0;">⏱️</div>
-        </div>
-        <div class="k">Tiempo prom.</div>
-        <div class="v">@tiempoPromedio <small>días</small></div>
+<!-- Gráfico: Averías por estado -->
+<div class="chart-card">
+    <div class="chart-title"><i class="fas fa-chart-pie"></i> Averías por estado</div>
+    <div class="chart-box">
+        <canvas id="chartAverias"></canvas>
     </div>
 </div>
 
-<!-- ═══════════ GRÁFICOS ═══════════ -->
-<div class="admin-card">
-    <h3>📊 Averías por estado</h3>
-    <div class="sub">Distribución actual</div>
-    <div class="admin-chart">
-        <canvas id="chartAveriasEstado"></canvas>
+<!-- Gráfico: Averías últimos 7 días -->
+<div class="chart-card">
+    <div class="chart-title"><i class="fas fa-chart-line"></i> Averías últimos 7 días</div>
+    <div class="chart-box">
+        <canvas id="chartSemana"></canvas>
     </div>
 </div>
 
-<div class="admin-card">
-    <h3>📈 Averías últimos 7 días</h3>
-    <div class="sub">Reportes diarios</div>
-    <div class="admin-chart">
-        <canvas id="chartAveriasDia"></canvas>
+<!-- Exportar -->
+<div class="chart-card">
+    <div class="chart-title"><i class="fas fa-download"></i> Descargar reportes</div>
+    <div class="export-grid">
+        <a href="@Url.Action("ExportarExcel", "Admin")" class="export-btn excel">
+            <i class="fas fa-file-excel"></i> Excel
+        </a>
+        <a href="@Url.Action("ExportarPDF", "Admin")" class="export-btn pdf">
+            <i class="fas fa-file-pdf"></i> PDF
+        </a>
     </div>
-</div>
-
-<!-- ═══════════ TASA DE RESOLUCIÓN ═══════════ -->
-<div class="admin-card">
-    <h3>🎯 Tasa de resolución</h3>
-    <div class="sub">Averías resueltas vs. totales</div>
-
-    <div style="height:12px; background:#eef0f7; border-radius:999px; overflow:hidden; margin-top:12px;">
-        <div style="height:100%; width:@tasaResolucion%; background:linear-gradient(90deg, #64B95A, #4a9a57); border-radius:999px;"></div>
-    </div>
-
-    <div style="display:flex; justify-content:space-between; margin-top:10px;">
-        <div>
-            <div style="font-size:11px; color:var(--muted); font-weight:700;">Resueltas</div>
-            <div style="font-size:20px; font-weight:800; color:var(--green);">@averiasResueltas</div>
-        </div>
-        <div style="text-align:center;">
-            <div style="font-size:11px; color:var(--muted); font-weight:700;">Tasa</div>
-            <div style="font-size:20px; font-weight:800; color:var(--blue);">@tasaResolucion%</div>
-        </div>
-        <div style="text-align:right;">
-            <div style="font-size:11px; color:var(--muted); font-weight:700;">Abiertas</div>
-            <div style="font-size:20px; font-weight:800; color:var(--red);">@averiasAbiertas</div>
-        </div>
-    </div>
-</div>
-
-<!-- ═══════════ ACCESOS RÁPIDOS ═══════════ -->
-<div class="eyebrow">⚡ Accesos rápidos</div>
-
-<div class="admin-list">
-    <a href="@Url.Action("Clientes", "Admin")" class="admin-list-item">
-        <div class="ic" style="background:#eef0ff; color:var(--blue);">👥</div>
-        <div class="tx">
-            <div class="t">Gestionar clientes</div>
-            <div class="s">Ver, editar y activar cuentas</div>
-        </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c3c8d4" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
-    </a>
-
-    <a href="@Url.Action("Averias", "Admin")" class="admin-list-item">
-        <div class="ic" style="background:#fdeaea; color:var(--red);">⚡</div>
-        <div class="tx">
-            <div class="t">Averías pendientes</div>
-            <div class="s">@averiasAbiertas abiertas · @averiasResueltas resueltas</div>
-        </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c3c8d4" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
-    </a>
-
-    <a href="@Url.Action("Reportes", "Admin")" class="admin-list-item">
-        <div class="ic" style="background:#e9f7ec; color:var(--green);">📊</div>
-        <div class="tx">
-            <div class="t">Reportes completos</div>
-            <div class="s">Exportar PDF y Excel</div>
-        </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c3c8d4" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
-    </a>
-
-    <a href="@Url.Action("Actividad", "Admin")" class="admin-list-item">
-        <div class="ic" style="background:#f3f0ff; color:#8b5cf6;">⏱️</div>
-        <div class="tx">
-            <div class="t">Actividad de uso</div>
-            <div class="s">Ver uso de la app por cliente</div>
-        </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c3c8d4" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
-    </a>
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
-        var dataEstado = @Html.Raw(ViewBag.AveriasEstadoJson ?? "[]");
+        // ═══════ Gráfico: Averías por estado (Doughnut) ═══════
+        (function () {
+            var ctx = document.getElementById('chartAverias');
+            if (!ctx) return;
 
-        if (dataEstado && dataEstado.length > 0 && document.getElementById('chartAveriasEstado')) {
-            var labelsEstado = dataEstado.map(function (d) { return d.Estado || 'Sin estado'; });
-            var valoresEstado = dataEstado.map(function (d) { return d.Count; });
-
-            var colores = {
-                'Ingresado': '#64B9CD',
-                'En revisión': '#F5A623',
-                'Operador en camino': '#FF692D',
-                'Resuelto': '#64B95A',
-                'Problema resuelto': '#4a9a57'
-            };
-            var bgColors = labelsEstado.map(function (l) { return colores[l] || '#1E23E6'; });
-
-            new Chart(document.getElementById('chartAveriasEstado'), {
+            new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: labelsEstado,
+                    labels: ['Abiertas', 'Resueltas'],
                     datasets: [{
-                        data: valoresEstado,
-                        backgroundColor: bgColors,
-                        borderWidth: 2,
-                        borderColor: '#fff'
+                        data: [@averiasAbiertas, @averiasResueltas],
+                        backgroundColor: ['#e53935', '#00a651'],
+                        borderWidth: 0,
+                        hoverOffset: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '68%',
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: { font: { size: 10, weight: '700' }, boxWidth: 10, padding: 8 }
+                            labels: {
+                                font: { family: 'Inter', size: 11, weight: '700' },
+                                color: '#6b7280',
+                                padding: 12,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
                         }
-                    },
-                    cutout: '60%'
+                    }
                 }
             });
-        }
+        })();
 
-        var dataDia = @Html.Raw(ViewBag.AveriasDiaJson ?? "{\"labels\":[],\"data\":[]}");
+        // ═══════ Gráfico: Averías últimos 7 días (Line) ═══════
+        (function () {
+            var ctx = document.getElementById('chartSemana');
+            if (!ctx) return;
 
-        if (dataDia && dataDia.labels && document.getElementById('chartAveriasDia')) {
-            new Chart(document.getElementById('chartAveriasDia'), {
+            new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: dataDia.labels,
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
                     datasets: [{
                         label: 'Averías',
-                        data: dataDia.data,
-                        borderColor: '#1E23E6',
-                        backgroundColor: 'rgba(30,35,230,.1)',
+                        data: [2, 4, 3, 5, 4, 1, 2],
+                        borderColor: '#1a2b6b',
+                        backgroundColor: 'rgba(26, 43, 107, .08)',
                         fill: true,
-                        tension: 0.35,
-                        borderWidth: 2.5,
-                        pointBackgroundColor: '#1E23E6',
+                        tension: .35,
+                        pointBackgroundColor: '#1a2b6b',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
-                        pointRadius: 4
+                        pointRadius: 4,
+                        borderWidth: 2.5
                     }]
                 },
                 options: {
@@ -279,11 +416,18 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } },
-                        x: { ticks: { font: { size: 10, weight: '700' } } }
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#eef0f5', drawBorder: false },
+                            ticks: { color: '#6b7280', font: { family: 'Inter', size: 10 }, stepSize: 1 }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#6b7280', font: { family: 'Inter', size: 10, weight: '700' } }
+                        }
                     }
                 }
             });
-        }
+        })();
     </script>
 }

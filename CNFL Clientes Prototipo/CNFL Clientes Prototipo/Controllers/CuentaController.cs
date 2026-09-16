@@ -12,138 +12,62 @@ namespace CNFL_Clientes_Prototipo.Controllers
         private CNFLDbContext _db = new CNFLDbContext();
 
         // ═══════════════════════════════════════════════════════════
-        // LOGIN
+        // LOGIN (CLIENTE + ADMIN)
         // ═══════════════════════════════════════════════════════════
-
+        [AllowAnonymous]
+        [HttpGet]
         public ActionResult Login()
         {
-            if (Session["UsuarioId"] != null)
-                return RedirectToAction("Dashboard", "Clientes");
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginViewModel model)
+        public ActionResult Login(string UserName, string Contraseña)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Contraseña))
             {
-                var usuario = _db.Usuarios.FirstOrDefault(u =>
-                    (u.Cedula == model.UserName
-                     || u.Correo == model.UserName
-                     || u.NombreUsuario == model.UserName)
-                    && u.Contraseña == model.Contraseña);
-
-                if (usuario != null && usuario.Activo)
-                {
-                    CrearSesion(usuario);
-
-                    var rol = Session["Rol"] as string ?? "Cliente";
-                    return rol == "Admin"
-                        ? RedirectToAction("Dashboard", "Admin")
-                        : RedirectToAction("Dashboard", "Clientes");
-                }
-
-                ModelState.AddModelError("", "Usuario o contraseña incorrectos.");
+                ViewBag.Error = "Completá cédula y contraseña.";
+                return View();
             }
-            return View(model);
-        }
 
-        // ═══════════════════════════════════════════════════════════
-        // LOGIN BIOMÉTRICO (Face ID / Huella)
-        // ═══════════════════════════════════════════════════════════
+            var cedulaLimpia = UserName.Trim();
 
-        [HttpPost]
-        public JsonResult LoginBiometrico(int usuarioId, string token, string tipo)
-        {
-            try
-            {
-                var usuario = _db.Usuarios.Find(usuarioId);
-                if (usuario == null || !usuario.Activo)
-                    return Json(new { success = false, message = "Usuario no encontrado o inactivo." });
+            var usuario = _db.Usuarios.FirstOrDefault(u =>
+                (u.Cedula == cedulaLimpia ||
+                 u.Correo == cedulaLimpia ||
+                 u.NombreUsuario == cedulaLimpia) &&
+                u.Contraseña == Contraseña &&
+                u.Activo);
 
-                var tokenEsperado = GenerarTokenBiometrico(usuario.Cedula);
-                if (token != tokenEsperado)
-                    return Json(new { success = false, message = "Verificación biométrica inválida." });
-
-                CrearSesion(usuario);
-                Session["Biometrico"] = tipo;
-
-                var rol = Session["Rol"] as string ?? "Cliente";
-                var redirectUrl = rol == "Admin"
-                    ? Url.Action("Dashboard", "Admin")
-                    : Url.Action("Dashboard", "Clientes");
-
-                try
-                {
-                    _db.ActividadUsuario.Add(new ActividadUsuario
-                    {
-                        UsuarioId = usuario.UsuarioId,
-                        Seccion = "Login",
-                        Accion = "Biometrico",
-                        Detalle = "Login con " + tipo,
-                        Fecha = DateTime.Now
-                    });
-                    _db.SaveChanges();
-                }
-                catch { /* silencioso */ }
-
-                return Json(new { success = true, redirectUrl = redirectUrl });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        [HttpGet]
-        public JsonResult GetUsuarioPorCedula(string cedula)
-        {
-            if (string.IsNullOrWhiteSpace(cedula))
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
-
-            var usuario = _db.Usuarios.FirstOrDefault(u => u.Cedula == cedula && u.Activo);
             if (usuario == null)
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
-
-            return Json(new
             {
-                success = true,
-                usuarioId = usuario.UsuarioId,
-                token = GenerarTokenBiometrico(usuario.Cedula)
-            }, JsonRequestBehavior.AllowGet);
-        }
-
-        private string GenerarTokenBiometrico(string cedula)
-        {
-            if (string.IsNullOrWhiteSpace(cedula)) return "";
-            using (var sha = System.Security.Cryptography.SHA256.Create())
-            {
-                var bytes = System.Text.Encoding.UTF8.GetBytes(cedula + "CNFL_BIOMETRICO_2026");
-                var hash = sha.ComputeHash(bytes);
-                return Convert.ToBase64String(hash).Substring(0, 24);
+                ViewBag.Error = "Cédula o contraseña incorrectas.";
+                return View();
             }
-        }
 
-        private void CrearSesion(Usuario usuario)
-        {
+            var esAdmin = _db.UsuarioRoles
+                .Any(ur => ur.UsuarioId == usuario.UsuarioId &&
+                           ur.Rol.NombreRol == "Admin");
+
+            if (esAdmin)
+            {
+                Session["AdminLogueado"] = true;
+                Session["AdminNombre"] = usuario.Nombre + " " + usuario.Apellidos;
+                Session["AdminCorreo"] = usuario.Correo;
+                Session["AdminId"] = usuario.UsuarioId;
+                return RedirectToAction("Dashboard", "Admin");
+            }
+
             Session["UsuarioId"] = usuario.UsuarioId;
-            Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
-            Session["Cedula"] = usuario.Cedula;
-            Session["NombreUsuario"] = usuario.NombreUsuario;
-
-            var usuarioRol = _db.UsuarioRoles
-                .Where(ur => ur.UsuarioId == usuario.UsuarioId)
-                .Select(ur => ur.Rol)
-                .FirstOrDefault();
-
-            Session["Rol"] = usuarioRol != null ? usuarioRol.NombreRol : "Cliente";
+            Session["NombreUsuario"] = usuario.Nombre;
+            return RedirectToAction("Dashboard", "Clientes");
         }
 
         // ═══════════════════════════════════════════════════════════
         // LOGOUT
         // ═══════════════════════════════════════════════════════════
-
         public ActionResult Logout()
         {
             Session.Clear();
@@ -151,111 +75,147 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return RedirectToAction("Login", "Cuenta");
         }
 
-        public ActionResult CerrarSesion()
-        {
-            return Logout();
-        }
-
         // ═══════════════════════════════════════════════════════════
-        // REGISTRO
+        // RECUPERAR CLAVE
         // ═══════════════════════════════════════════════════════════
-
-        public ActionResult Registro()
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult RecuperarClave()
         {
-            CargarListasRegistro();
             return View();
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RecuperarClave(string cedula, string nuevaContrasena, string confirmarContrasena)
+        {
+            if (string.IsNullOrWhiteSpace(cedula) ||
+                string.IsNullOrWhiteSpace(nuevaContrasena) ||
+                string.IsNullOrWhiteSpace(confirmarContrasena))
+            {
+                ViewBag.Error = "Completá todos los campos.";
+                return View();
+            }
+
+            if (nuevaContrasena.Length < 6)
+            {
+                ViewBag.Error = "La contraseña debe tener al menos 6 caracteres.";
+                return View();
+            }
+
+            if (nuevaContrasena != confirmarContrasena)
+            {
+                ViewBag.Error = "Las contraseñas no coinciden.";
+                return View();
+            }
+
+            var cedulaLimpia = cedula.Trim();
+
+            var usuario = _db.Usuarios.FirstOrDefault(u =>
+                u.Cedula == cedulaLimpia || u.Correo == cedulaLimpia);
+
+            if (usuario == null)
+            {
+                ViewBag.Error = "No existe una cuenta con esa cédula o correo.";
+                return View();
+            }
+
+            usuario.Contraseña = nuevaContrasena;
+            _db.SaveChanges();
+
+            ViewBag.Mensaje = "✅ Contraseña actualizada correctamente. Ya podés iniciar sesión.";
+            return View();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // REGISTRO (GET)
+        // ═══════════════════════════════════════════════════════════
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult Registro()
+        {
+            CargarListasRegistro();
+            return View(new Usuario());
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // REGISTRO (POST) — Sin bindear Usuario model
+        // ═══════════════════════════════════════════════════════════
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Registro(
-            Usuario usuario,
-            string confirmarContraseña,
+            string Cedula,
             string NombreCompleto,
+            string NombreUsuario,
+            string Sexo,
+            string Correo,
+            string Telefono,
             string DireccionExacta,
             string Provincia,
             string Canton,
             string Distrito,
-            bool AceptoPolitica = false,
-            bool AceptoConsentimiento = false,
-            bool FacturaElectronica = false,
-            bool RegistrarBiometrico = false,
-            int? ActividadEconomicaId = null)
+            string Contraseña,
+            string confirmarContraseña,
+            bool? AceptoPolitica,
+            bool? AceptoConsentimiento,
+            bool? FacturaElectronica,
+            int? ActividadEconomicaId)
         {
-            // Separar "Nombre completo" en Nombre / Apellidos
-            if (!string.IsNullOrWhiteSpace(NombreCompleto))
-            {
-                var partes = NombreCompleto.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (partes.Length >= 3)
-                {
-                    usuario.Apellidos = string.Join(" ", partes.Skip(partes.Length - 2));
-                    usuario.Nombre = string.Join(" ", partes.Take(partes.Length - 2));
-                }
-                else if (partes.Length == 2)
-                {
-                    usuario.Nombre = partes[0];
-                    usuario.Apellidos = partes[1];
-                }
-                else
-                {
-                    usuario.Nombre = NombreCompleto.Trim();
-                    usuario.Apellidos = "";
-                }
-            }
+            // ═══════════════════════════════════════════════════════
+            // VALIDACIONES MANUALES
+            // ═══════════════════════════════════════════════════════
+            if (string.IsNullOrWhiteSpace(Cedula))
+                ModelState.AddModelError("Cedula", "La cédula es obligatoria.");
 
-            // Validaciones
-            if (string.IsNullOrWhiteSpace(usuario.Nombre))
-                ModelState.AddModelError("", "Debe ingresar su nombre completo.");
+            if (string.IsNullOrWhiteSpace(NombreCompleto))
+                ModelState.AddModelError("NombreCompleto", "El nombre completo es obligatorio.");
 
-            if (string.IsNullOrWhiteSpace(usuario.Cedula))
-                ModelState.AddModelError("", "Debe ingresar su cédula.");
+            if (string.IsNullOrWhiteSpace(NombreUsuario))
+                ModelState.AddModelError("NombreUsuario", "El nombre de usuario es obligatorio.");
 
-            if (string.IsNullOrWhiteSpace(usuario.Correo))
-                ModelState.AddModelError("", "Debe ingresar su correo principal.");
+            if (string.IsNullOrWhiteSpace(Correo))
+                ModelState.AddModelError("Correo", "El correo es obligatorio.");
 
-            if (string.IsNullOrWhiteSpace(usuario.Telefono))
-                ModelState.AddModelError("", "Debe ingresar su teléfono principal.");
+            if (string.IsNullOrWhiteSpace(Telefono))
+                ModelState.AddModelError("Telefono", "El teléfono es obligatorio.");
 
-            if (string.IsNullOrWhiteSpace(DireccionExacta))
-                ModelState.AddModelError("", "Debe ingresar su dirección exacta.");
+            if (string.IsNullOrWhiteSpace(Contraseña) || Contraseña.Length < 6)
+                ModelState.AddModelError("Contraseña", "La contraseña debe tener al menos 6 caracteres.");
 
-            if (string.IsNullOrWhiteSpace(Provincia))
-                ModelState.AddModelError("", "Debe seleccionar la provincia.");
+            if (Contraseña != confirmarContraseña)
+                ModelState.AddModelError("confirmarContraseña", "Las contraseñas no coinciden.");
 
-            if (string.IsNullOrWhiteSpace(Canton))
-                ModelState.AddModelError("", "Debe seleccionar el cantón.");
+            if (string.IsNullOrWhiteSpace(Provincia) ||
+                string.IsNullOrWhiteSpace(Canton) ||
+                string.IsNullOrWhiteSpace(Distrito))
+                ModelState.AddModelError("Provincia", "Completá provincia, cantón y distrito.");
 
-            if (string.IsNullOrWhiteSpace(Distrito))
-                ModelState.AddModelError("", "Debe seleccionar el distrito.");
+            if (AceptoPolitica != true)
+                ModelState.AddModelError("AceptoPolitica", "Debés aceptar la Política de Privacidad.");
 
-            if (string.IsNullOrWhiteSpace(usuario.Contraseña) || usuario.Contraseña.Length < 6)
-                ModelState.AddModelError("", "La contraseña debe tener al menos 6 caracteres.");
+            if (AceptoConsentimiento != true)
+                ModelState.AddModelError("AceptoConsentimiento", "Debés aceptar el Consentimiento Informado.");
 
-            if (usuario.Contraseña != confirmarContraseña)
-                ModelState.AddModelError("", "Las contraseñas no coinciden.");
+            var cedulaLimpia = (Cedula ?? "").Trim();
 
-            if (!AceptoPolitica)
-                ModelState.AddModelError("", "Debe aceptar la Política de Privacidad.");
+            if (_db.Usuarios.Any(u => u.Cedula == cedulaLimpia))
+                ModelState.AddModelError("Cedula", "Ya existe una cuenta con esa cédula.");
 
-            if (!AceptoConsentimiento)
-                ModelState.AddModelError("", "Debe aceptar el Consentimiento Informado.");
+            if (!string.IsNullOrWhiteSpace(NombreUsuario) &&
+                _db.Usuarios.Any(u => u.NombreUsuario == NombreUsuario))
+                ModelState.AddModelError("NombreUsuario", "Ese nombre de usuario ya está en uso.");
 
-            if (!string.IsNullOrWhiteSpace(usuario.Cedula) &&
-                _db.Usuarios.Any(u => u.Cedula == usuario.Cedula))
-                ModelState.AddModelError("", "Ya existe un usuario con esta cédula.");
+            if (!string.IsNullOrWhiteSpace(Correo) &&
+                _db.Usuarios.Any(u => u.Correo == Correo))
+                ModelState.AddModelError("Correo", "Ya existe una cuenta con ese correo.");
 
-            if (!string.IsNullOrWhiteSpace(usuario.Correo) &&
-                _db.Usuarios.Any(u => u.Correo == usuario.Correo))
-                ModelState.AddModelError("", "Ya existe un usuario con este correo.");
+            if (FacturaElectronica == true &&
+                (!ActividadEconomicaId.HasValue || ActividadEconomicaId.Value <= 0))
+                ModelState.AddModelError("ActividadEconomicaId", "Elegí la actividad económica.");
 
-            // ✅ NUEVO: Validar nombre de usuario único
-            if (!string.IsNullOrWhiteSpace(usuario.NombreUsuario) &&
-                _db.Usuarios.Any(u => u.NombreUsuario == usuario.NombreUsuario))
-                ModelState.AddModelError("", "Ya existe un usuario con ese nombre de usuario.");
-
-            if (FacturaElectronica && !ActividadEconomicaId.HasValue)
-                ModelState.AddModelError("", "Elegí la actividad económica para activar la factura electrónica.");
-
+            // Si hay errores → volver a la vista
             if (!ModelState.IsValid)
             {
                 ViewBag.NombreCompleto = NombreCompleto;
@@ -263,26 +223,52 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 ViewBag.Provincia = Provincia;
                 ViewBag.Canton = Canton;
                 ViewBag.Distrito = Distrito;
-                ViewBag.AceptoPolitica = AceptoPolitica;
-                ViewBag.AceptoConsentimiento = AceptoConsentimiento;
-                ViewBag.FacturaElectronica = FacturaElectronica;
+                ViewBag.AceptoPolitica = AceptoPolitica ?? false;
+                ViewBag.AceptoConsentimiento = AceptoConsentimiento ?? false;
+                ViewBag.FacturaElectronica = FacturaElectronica ?? false;
+
                 CargarListasRegistro();
-                return View(usuario);
+                return View(new Usuario());
             }
 
-            usuario.Provincia = Provincia;
-            usuario.Canton = Canton;
-            usuario.Distrito = Distrito;
-            usuario.DireccionExacta = DireccionExacta;
-            usuario.FechaRegistro = DateTime.Now;
-            usuario.Activo = true;
+            // ═══════════════════════════════════════════════════════
+            // SEPARAR NombreCompleto EN Nombre + Apellidos
+            // ═══════════════════════════════════════════════════════
+            var partes = (NombreCompleto ?? "").Trim()
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            usuario.FacturaElectronica = FacturaElectronica;
-            usuario.ActividadEconomicaId = FacturaElectronica ? ActividadEconomicaId : null;
+            string nombre = partes.Length > 0 ? partes[0] : "";
+            string apellidos = partes.Length > 1 ? string.Join(" ", partes.Skip(1)) : "";
+
+            // ═══════════════════════════════════════════════════════
+            // CREAR USUARIO
+            // ═══════════════════════════════════════════════════════
+            var usuario = new Usuario
+            {
+                Cedula = cedulaLimpia,
+                Nombre = nombre,
+                Apellidos = apellidos,
+                NombreUsuario = NombreUsuario,
+                Correo = Correo,
+                Telefono = Telefono,
+                Sexo = Sexo,
+                Contraseña = Contraseña,
+                Activo = true,
+                FechaRegistro = DateTime.Now,
+                Provincia = Provincia,
+                Canton = Canton,
+                Distrito = Distrito,
+                DireccionExacta = DireccionExacta,
+                FacturaElectronica = FacturaElectronica ?? false,
+                ActividadEconomicaId = (FacturaElectronica == true) ? ActividadEconomicaId : null
+            };
 
             _db.Usuarios.Add(usuario);
             _db.SaveChanges();
 
+            // ═══════════════════════════════════════════════════════
+            // ASIGNAR ROL CLIENTE
+            // ═══════════════════════════════════════════════════════
             var rolCliente = _db.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
             if (rolCliente != null)
             {
@@ -294,20 +280,71 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 _db.SaveChanges();
             }
 
-            TempData["Mensaje"] = "Cuenta creada correctamente. Ya podés iniciar sesión.";
-
-            if (RegistrarBiometrico)
-            {
-                return RedirectToAction("Login", new { bio = usuario.Cedula });
-            }
-
-            return RedirectToAction("Login");
+            TempData["MensajeExito"] = "¡Cuenta creada! Ya podés iniciar sesión.";
+            return RedirectToAction("Login", "Cuenta");
         }
 
+        // ═══════════════════════════════════════════════════════════
+        // COMBOS UBICACIÓN (AJAX)
+        // ═══════════════════════════════════════════════════════════
+        [AllowAnonymous]
+        [HttpGet]
+        public JsonResult GetCantones(string provincia)
+        {
+            var lista = new List<string>();
+            if (!string.IsNullOrWhiteSpace(provincia) &&
+                UbicacionCostaRica.Catalogo.ContainsKey(provincia))
+            {
+                lista = UbicacionCostaRica.Catalogo[provincia].Keys.ToList();
+            }
+            return Json(lista, JsonRequestBehavior.AllowGet);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public JsonResult GetDistritos(string provincia, string canton)
+        {
+            var lista = new List<string>();
+            if (!string.IsNullOrWhiteSpace(provincia) &&
+                !string.IsNullOrWhiteSpace(canton) &&
+                UbicacionCostaRica.Catalogo.ContainsKey(provincia) &&
+                UbicacionCostaRica.Catalogo[provincia].ContainsKey(canton))
+            {
+                lista = UbicacionCostaRica.Catalogo[provincia][canton];
+            }
+            return Json(lista, JsonRequestBehavior.AllowGet);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // PARTIALS LEGALES
+        // ═══════════════════════════════════════════════════════════
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult PoliticaPrivacidad()
+        {
+            return PartialView("_PoliticaPrivacidad");
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult TerminosCondiciones()
+        {
+            return PartialView("_TerminosCondiciones");
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult ConsentimientoInformado()
+        {
+            return PartialView("_ConsentimientoInformado");
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // HELPER
+        // ═══════════════════════════════════════════════════════════
         private void CargarListasRegistro()
         {
             ViewBag.Provincias = UbicacionCostaRica.Catalogo.Keys.ToList();
-
             ViewBag.ActividadesEconomicas = _db.ActividadesEconomicas
                 .OrderBy(a => a.Codigo)
                 .Select(a => new ActividadEconomicaDto
@@ -319,109 +356,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .ToList();
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // AJAX: Provincia → Cantón → Distrito
-        // ═══════════════════════════════════════════════════════════
-
-        [HttpGet]
-        public JsonResult GetCantones(string provincia)
-        {
-            if (string.IsNullOrWhiteSpace(provincia) ||
-                !UbicacionCostaRica.Catalogo.ContainsKey(provincia))
-                return Json(new string[0], JsonRequestBehavior.AllowGet);
-
-            var cantones = UbicacionCostaRica.Catalogo[provincia].Keys.ToList();
-            return Json(cantones, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public JsonResult GetDistritos(string provincia, string canton)
-        {
-            if (string.IsNullOrWhiteSpace(provincia) ||
-                string.IsNullOrWhiteSpace(canton) ||
-                !UbicacionCostaRica.Catalogo.ContainsKey(provincia) ||
-                !UbicacionCostaRica.Catalogo[provincia].ContainsKey(canton))
-                return Json(new string[0], JsonRequestBehavior.AllowGet);
-
-            var distritos = UbicacionCostaRica.Catalogo[provincia][canton];
-            return Json(distritos, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public JsonResult SearchActividades(string q)
-        {
-            var query = _db.ActividadesEconomicas.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                q = q.Trim();
-                query = query.Where(a => a.Codigo.Contains(q) || a.Nombre.Contains(q));
-            }
-
-            var results = query
-                .OrderBy(a => a.Codigo)
-                .Take(50)
-                .Select(a => new { id = a.Id, text = a.Codigo + " - " + a.Nombre })
-                .ToList();
-
-            return Json(results, JsonRequestBehavior.AllowGet);
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // RECUPERAR CLAVE
-        // ═══════════════════════════════════════════════════════════
-
-        public ActionResult RecuperarClave()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult RecuperarClave(string correo, string nuevaClave, string confirmarClave)
-        {
-            if (string.IsNullOrWhiteSpace(correo))
-            {
-                ViewBag.Error = "Ingresá tu correo electrónico.";
-                return View();
-            }
-
-            if (string.IsNullOrWhiteSpace(nuevaClave) || nuevaClave.Length < 6)
-            {
-                ViewBag.Error = "La contraseña debe tener al menos 6 caracteres.";
-                return View();
-            }
-
-            if (nuevaClave != confirmarClave)
-            {
-                ViewBag.Error = "Las contraseñas no coinciden.";
-                return View();
-            }
-
-            var usuario = _db.Usuarios.FirstOrDefault(u => u.Correo == correo);
-            if (usuario == null)
-            {
-                ViewBag.Error = "No existe una cuenta con ese correo electrónico.";
-                return View();
-            }
-
-            usuario.Contraseña = nuevaClave;
-            _db.SaveChanges();
-
-            TempData["Mensaje"] = "Contraseña actualizada correctamente.";
-            return RedirectToAction("Login");
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing) _db.Dispose();
             base.Dispose(disposing);
         }
-    }
-
-    public class LoginViewModel
-    {
-        public string UserName { get; set; }
-        public string Contraseña { get; set; }
     }
 }
