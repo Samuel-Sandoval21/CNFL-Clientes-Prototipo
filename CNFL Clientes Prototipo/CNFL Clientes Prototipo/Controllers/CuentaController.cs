@@ -57,11 +57,18 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 Session["AdminNombre"] = usuario.Nombre + " " + usuario.Apellidos;
                 Session["AdminCorreo"] = usuario.Correo;
                 Session["AdminId"] = usuario.UsuarioId;
+                Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
                 return RedirectToAction("Dashboard", "Admin");
             }
 
+            // ═══════════════════════════════════════════════════════
+            // ES CLIENTE — GUARDAR TODAS LAS CLAVES DE SESIÓN
+            // ═══════════════════════════════════════════════════════
             Session["UsuarioId"] = usuario.UsuarioId;
             Session["NombreUsuario"] = usuario.Nombre;
+            Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;   // ← FIX
+            Session["FotoPerfil"] = usuario.FotoPerfil;
+
             return RedirectToAction("Dashboard", "Clientes");
         }
 
@@ -140,7 +147,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
-        // REGISTRO (POST) — Sin bindear Usuario model
+        // REGISTRO (POST) — SIN Sexo ni Ubicación
         // ═══════════════════════════════════════════════════════════
         [AllowAnonymous]
         [HttpPost]
@@ -149,13 +156,8 @@ namespace CNFL_Clientes_Prototipo.Controllers
             string Cedula,
             string NombreCompleto,
             string NombreUsuario,
-            string Sexo,
             string Correo,
             string Telefono,
-            string DireccionExacta,
-            string Provincia,
-            string Canton,
-            string Distrito,
             string Contraseña,
             string confirmarContraseña,
             bool? AceptoPolitica,
@@ -163,9 +165,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             bool? FacturaElectronica,
             int? ActividadEconomicaId)
         {
-            // ═══════════════════════════════════════════════════════
-            // VALIDACIONES MANUALES
-            // ═══════════════════════════════════════════════════════
             if (string.IsNullOrWhiteSpace(Cedula))
                 ModelState.AddModelError("Cedula", "La cédula es obligatoria.");
 
@@ -186,11 +185,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             if (Contraseña != confirmarContraseña)
                 ModelState.AddModelError("confirmarContraseña", "Las contraseñas no coinciden.");
-
-            if (string.IsNullOrWhiteSpace(Provincia) ||
-                string.IsNullOrWhiteSpace(Canton) ||
-                string.IsNullOrWhiteSpace(Distrito))
-                ModelState.AddModelError("Provincia", "Completá provincia, cantón y distrito.");
 
             if (AceptoPolitica != true)
                 ModelState.AddModelError("AceptoPolitica", "Debés aceptar la Política de Privacidad.");
@@ -215,14 +209,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 (!ActividadEconomicaId.HasValue || ActividadEconomicaId.Value <= 0))
                 ModelState.AddModelError("ActividadEconomicaId", "Elegí la actividad económica.");
 
-            // Si hay errores → volver a la vista
             if (!ModelState.IsValid)
             {
                 ViewBag.NombreCompleto = NombreCompleto;
-                ViewBag.DireccionExacta = DireccionExacta;
-                ViewBag.Provincia = Provincia;
-                ViewBag.Canton = Canton;
-                ViewBag.Distrito = Distrito;
                 ViewBag.AceptoPolitica = AceptoPolitica ?? false;
                 ViewBag.AceptoConsentimiento = AceptoConsentimiento ?? false;
                 ViewBag.FacturaElectronica = FacturaElectronica ?? false;
@@ -231,18 +220,12 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 return View(new Usuario());
             }
 
-            // ═══════════════════════════════════════════════════════
-            // SEPARAR NombreCompleto EN Nombre + Apellidos
-            // ═══════════════════════════════════════════════════════
             var partes = (NombreCompleto ?? "").Trim()
                 .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             string nombre = partes.Length > 0 ? partes[0] : "";
             string apellidos = partes.Length > 1 ? string.Join(" ", partes.Skip(1)) : "";
 
-            // ═══════════════════════════════════════════════════════
-            // CREAR USUARIO
-            // ═══════════════════════════════════════════════════════
             var usuario = new Usuario
             {
                 Cedula = cedulaLimpia,
@@ -251,14 +234,9 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 NombreUsuario = NombreUsuario,
                 Correo = Correo,
                 Telefono = Telefono,
-                Sexo = Sexo,
                 Contraseña = Contraseña,
                 Activo = true,
                 FechaRegistro = DateTime.Now,
-                Provincia = Provincia,
-                Canton = Canton,
-                Distrito = Distrito,
-                DireccionExacta = DireccionExacta,
                 FacturaElectronica = FacturaElectronica ?? false,
                 ActividadEconomicaId = (FacturaElectronica == true) ? ActividadEconomicaId : null
             };
@@ -266,9 +244,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             _db.Usuarios.Add(usuario);
             _db.SaveChanges();
 
-            // ═══════════════════════════════════════════════════════
-            // ASIGNAR ROL CLIENTE
-            // ═══════════════════════════════════════════════════════
             var rolCliente = _db.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
             if (rolCliente != null)
             {

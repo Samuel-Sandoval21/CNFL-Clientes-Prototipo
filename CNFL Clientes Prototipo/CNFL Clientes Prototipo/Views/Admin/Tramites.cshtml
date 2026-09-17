@@ -7,41 +7,6 @@
 
 @section Styles {
     <style>
-        .filtros {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            margin-bottom: 16px;
-            padding-bottom: 6px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-
-            .filtros::-webkit-scrollbar {
-                display: none;
-            }
-
-        .filtro {
-            padding: 9px 16px;
-            background: #fff;
-            border: 1.5px solid var(--line);
-            border-radius: 22px;
-            font-size: 12.5px;
-            font-weight: 700;
-            color: var(--muted);
-            white-space: nowrap;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: all .18s;
-        }
-
-            .filtro.active {
-                background: var(--blue);
-                color: #fff;
-                border-color: var(--blue);
-                box-shadow: 0 6px 14px -6px rgba(26, 43, 107, .5);
-            }
-
         .tramite-card {
             background: #fff;
             border-radius: 18px;
@@ -49,14 +14,20 @@
             margin-bottom: 12px;
             box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
             border-left: 4px solid var(--blue);
+            transition: transform .15s, box-shadow .15s;
         }
 
+            .tramite-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(20, 30, 70, .1);
+            }
+
             .tramite-card.estado-completado {
-                border-left-color: #00a651;
+                border-left-color: var(--green);
             }
 
             .tramite-card.estado-proceso {
-                border-left-color: #c98a00;
+                border-left-color: var(--gold);
             }
 
         .tramite-top {
@@ -78,21 +49,38 @@
         .tramite-info {
             font-size: 12.5px;
             color: var(--muted);
-            margin-bottom: 4px;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
             .tramite-info i {
                 font-size: 12px;
                 color: #aab0be;
                 width: 14px;
+                text-align: center;
             }
     </style>
 }
 
 <h1 class="page-title">Trámites</h1>
+<p class="page-subtitle">Seguimiento de todas las solicitudes de los clientes.</p>
+
+<div class="stats-row">
+    <div class="stat-mini blue">
+        <div class="num">@Model.Count(t => t.Estado == "Solicitado" || t.Estado == "Iniciado")</div>
+        <div class="lbl">Solicitados</div>
+    </div>
+    <div class="stat-mini gold">
+        <div class="num">@Model.Count(t => t.Estado == "En proceso")</div>
+        <div class="lbl">En proceso</div>
+    </div>
+    <div class="stat-mini green">
+        <div class="num">@Model.Count(t => t.Estado == "Completado" || t.Estado == "Cerrado")</div>
+        <div class="lbl">Completados</div>
+    </div>
+</div>
 
 <div class="filtros">
     <a href="@Url.Action("Tramites", "Admin")" class="filtro @(string.IsNullOrEmpty(estadoActual) ? "active" : "")">Todos</a>
@@ -104,7 +92,7 @@
 @if (Model == null || !Model.Any())
 {
     <div class="empty">
-        <i class="fas fa-file-alt" style="font-size:42px;color:#c9ced9;margin-bottom:12px;display:block;"></i>
+        <i class="fas fa-file-alt"></i>
         <p>No hay trámites para mostrar.</p>
     </div>
 }
@@ -115,7 +103,7 @@ else
         var cssEstado = t.Estado == "Completado" || t.Estado == "Cerrado" ? "estado-completado" :
                         (t.Estado == "En proceso" ? "estado-proceso" : "");
         var badge = t.Estado == "Completado" || t.Estado == "Cerrado" ? "ok" :
-                    (t.Estado == "En proceso" ? "info" : "warn");
+                    (t.Estado == "En proceso" ? "gold" : "warn");
 
         <div class="tramite-card @cssEstado">
             <div class="tramite-top">
@@ -146,7 +134,7 @@ else
 
             @if (!string.IsNullOrEmpty(t.Descripcion))
             {
-                <div style="margin-top:8px;font-size:13px;color:var(--text);">
+                <div style="margin-top:8px;padding:10px 12px;background:#f9fafc;border-radius:10px;font-size:12.5px;line-height:1.5;border-left:2px solid #e3e6ee;">
                     @t.Descripcion
                 </div>
             }

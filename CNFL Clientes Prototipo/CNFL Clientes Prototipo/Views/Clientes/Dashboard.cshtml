@@ -5,14 +5,27 @@
     var facturaActual = ViewBag.FacturaActual as CNFL_Clientes_Prototipo.Models.Factura;
     var tramites = (ViewBag.TramitesActivos as List<CNFL_Clientes_Prototipo.Models.TramiteResumenDto>) ?? new List<CNFL_Clientes_Prototipo.Models.TramiteResumenDto>();
 
-    var nombre = Session["Nombre"] as string ?? "Cliente";
+    var nombre = ViewBag.Nombre as string;
+    if (string.IsNullOrWhiteSpace(nombre))
+    {
+        nombre = Session["Nombre"] as string;
+    }
+    if (string.IsNullOrWhiteSpace(nombre))
+    {
+        nombre = Session["NombreUsuario"] as string;
+    }
+    if (string.IsNullOrWhiteSpace(nombre))
+    {
+        nombre = "Cliente";
+    }
+
     var primerNombre = nombre.Split(' ').FirstOrDefault() ?? nombre;
 
     var hora = DateTime.Now.Hour;
     var saludo = hora < 12 ? "Buenos días," : (hora < 19 ? "Buenas tardes," : "Buenas noches,");
 }
 
-<!-- ═══════════ APPBAR ═══════════ -->
+<!-- APPBAR -->
 <div class="appbar">
     <div class="brand">
         <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
@@ -43,18 +56,18 @@
     </div>
 </div>
 
-<!-- ═══════════ SALUDO ═══════════ -->
+<!-- SALUDO -->
 <p class="h-greet">@saludo</p>
 <h1 class="h-name">@primerNombre</h1>
 
-<!-- ═══════════ HERO CARD ═══════════ -->
+<!-- HERO CARD -->
 <div class="hero-card" style="margin-top:14px;">
     <p class="greet">Bienvenido a CNFL</p>
     <h1>Tu energía,<br>en una sola app.</h1>
     <p class="sub">Gestioná tus servicios, reportá averías y pagá tus facturas desde un solo lugar.</p>
 </div>
 
-<!-- ═══════════ FACTURAS PENDIENTES ═══════════ -->
+<!-- FACTURAS PENDIENTES -->
 <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
     <span>💰 Facturas pendientes</span>
     <a href="@Url.Action("MisFacturas", "Clientes")"
@@ -97,7 +110,7 @@ else
     </div>
 }
 
-<!-- ═══════════ TRÁMITES EN PROCESO ═══════════ -->
+<!-- TRÁMITES EN PROCESO -->
 @if (tramites.Any())
 {
     <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
@@ -128,7 +141,7 @@ else
     </div>
 }
 
-<!-- ═══════════ GRÁFICA DE CONSUMO ═══════════ -->
+<!-- GRÁFICA DE CONSUMO -->
 <div class="eyebrow">Consumo kWh · NISE 4021</div>
 
 <div class="chart-card" style="margin-top:0;">
@@ -148,7 +161,7 @@ else
     </div>
 </div>
 
-<!-- ═══════════ RESUMEN DEL MES ═══════════ -->
+<!-- RESUMEN DEL MES -->
 <div class="eyebrow">Resumen del mes</div>
 
 <div class="card">
@@ -178,7 +191,7 @@ else
     </div>
 </div>
 
-<!-- ═══════════ CONTÁCTANOS ═══════════ -->
+<!-- CONTÁCTANOS -->
 <h2 class="section-h">Contactános</h2>
 
 <div class="contact-list">
@@ -221,28 +234,28 @@ else
 
 @section Scripts {
     <script>
-            (function () {
-                var tabs = document.querySelectorAll('.chart-tab');
-                var bars = document.querySelectorAll('#barChart .bar');
+        (function () {
+            var tabs = document.querySelectorAll('.chart-tab');
+            var bars = document.querySelectorAll('#barChart .bar');
 
-                function aplicarModo(modo) {
-                    for (var i = 0; i < bars.length; i++) {
-                        var bar = bars[i];
-                        var v = parseInt(bar.getAttribute('data-' + modo), 10);
-                        if (isNaN(v)) v = 0;
-                        bar.style.height = v + '%';
-                    }
+            function aplicarModo(modo) {
+                for (var i = 0; i < bars.length; i++) {
+                    var bar = bars[i];
+                    var v = parseInt(bar.getAttribute('data-' + modo), 10);
+                    if (isNaN(v)) v = 0;
+                    bar.style.height = v + '%';
                 }
+            }
 
-                for (var i = 0; i < tabs.length; i++) {
-                    tabs[i].addEventListener('click', function () {
-                        for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('active');
-                        this.classList.add('active');
-                        aplicarModo(this.getAttribute('data-mode'));
-                    });
-                }
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].addEventListener('click', function () {
+                    for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('active');
+                    this.classList.add('active');
+                    aplicarModo(this.getAttribute('data-mode'));
+                });
+            }
 
-                aplicarModo('6m');
-            })();
+            aplicarModo('6m');
+        })();
     </script>
 }

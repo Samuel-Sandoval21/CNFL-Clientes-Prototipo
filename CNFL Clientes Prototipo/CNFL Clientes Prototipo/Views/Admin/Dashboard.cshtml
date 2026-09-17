@@ -4,7 +4,7 @@
 
     var nombreAdmin = Session["AdminNombre"] as string ?? "Administrador";
     var hora = DateTime.Now.Hour;
-    var saludo = hora < 12 ? "Buenos días" : (hora < 19 ? "Buenas tardes" : "Buenas noches");
+    var saludo = hora < 12 ? "Buenos días," : (hora < 19 ? "Buenas tardes," : "Buenas noches,");
     var primerNombre = !string.IsNullOrEmpty(nombreAdmin) ? nombreAdmin.Split(' ')[0] : "Admin";
 
     var totalClientes = (int)(ViewBag.TotalClientes ?? 0);
@@ -39,9 +39,9 @@
             }
 
         .welcome-banner {
-            background: linear-gradient(135deg, #1a2b6b 0%, #2b3f8f 100%);
+            background: linear-gradient(135deg, #1a2b6b 0%, #5b3fbf 100%);
             border-radius: 20px;
-            padding: 18px;
+            padding: 20px;
             color: #fff;
             margin-bottom: 16px;
             position: relative;
@@ -54,9 +54,20 @@
                 position: absolute;
                 top: -30px;
                 right: -30px;
-                width: 110px;
-                height: 110px;
+                width: 120px;
+                height: 120px;
                 background: rgba(255, 255, 255, .08);
+                border-radius: 50%;
+            }
+
+            .welcome-banner::after {
+                content: '';
+                position: absolute;
+                bottom: -40px;
+                right: 30px;
+                width: 80px;
+                height: 80px;
+                background: rgba(255, 255, 255, .06);
                 border-radius: 50%;
             }
 
@@ -66,16 +77,16 @@
                 opacity: .75;
                 text-transform: uppercase;
                 letter-spacing: .8px;
-                margin-bottom: 6px;
+                margin-bottom: 8px;
                 position: relative;
                 z-index: 1;
             }
 
             .welcome-banner .title {
-                font-size: 18px;
+                font-size: 20px;
                 font-weight: 900;
                 line-height: 1.2;
-                margin-bottom: 5px;
+                margin-bottom: 6px;
                 position: relative;
                 z-index: 1;
             }
@@ -83,7 +94,7 @@
             .welcome-banner .sub {
                 font-size: 12px;
                 opacity: .85;
-                line-height: 1.45;
+                line-height: 1.5;
                 position: relative;
                 z-index: 1;
             }
@@ -101,7 +112,13 @@
             padding: 14px;
             box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
             position: relative;
+            transition: transform .15s, box-shadow .15s;
         }
+
+            .metric-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(20, 30, 70, .1);
+            }
 
         .metric-icon {
             width: 38px;
@@ -115,28 +132,28 @@
         }
 
             .metric-icon.blue {
-                background: #e6ecff;
-                color: #1a2b6b;
+                background: var(--blue-soft);
+                color: var(--blue);
             }
 
             .metric-icon.green {
-                background: #e0f7e9;
-                color: #00a651;
+                background: var(--green-soft);
+                color: var(--green);
             }
 
             .metric-icon.red {
-                background: #ffe6e6;
-                color: #e53935;
+                background: var(--red-soft);
+                color: var(--red);
             }
 
-            .metric-icon.yellow {
-                background: #fff4d9;
-                color: #c98a00;
+            .metric-icon.gold {
+                background: var(--gold-soft);
+                color: var(--gold);
             }
 
             .metric-icon.purple {
-                background: #efe6ff;
-                color: #7a3fbf;
+                background: var(--purple-soft);
+                color: var(--purple);
             }
 
         .metric-label {
@@ -166,8 +183,8 @@
             position: absolute;
             top: 12px;
             right: 12px;
-            background: #ffe6e6;
-            color: #e53935;
+            background: var(--red-soft);
+            color: var(--red);
             font-size: 10px;
             font-weight: 800;
             padding: 3px 8px;
@@ -179,7 +196,6 @@
                 color: #6b7280;
             }
 
-        /* Gráficos */
         .chart-card {
             background: #fff;
             border-radius: 18px;
@@ -200,6 +216,7 @@
 
             .chart-title i {
                 font-size: 14px;
+                color: var(--purple);
             }
 
         .chart-box {
@@ -207,7 +224,6 @@
             height: 180px;
         }
 
-        /* Botones export */
         .export-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -235,13 +251,13 @@
             }
 
             .export-btn.excel {
-                background: #e0f7e9;
+                background: var(--green-soft);
                 color: #046a38;
                 box-shadow: 0 6px 14px -6px rgba(4, 106, 56, .3);
             }
 
             .export-btn.pdf {
-                background: #ffe6e6;
+                background: var(--red-soft);
                 color: #b71c1c;
                 box-shadow: 0 6px 14px -6px rgba(183, 28, 28, .3);
             }
@@ -252,20 +268,17 @@
     </style>
 }
 
-<!-- Saludo -->
 <div class="greeting">
     <div class="hi">@saludo,</div>
     <div class="name">@primerNombre 👋</div>
 </div>
 
-<!-- Banner bienvenida -->
 <div class="welcome-banner">
     <div class="tag">Panel Administrativo CNFL</div>
     <div class="title">Todo bajo control,<br />desde un solo lugar.</div>
     <div class="sub">Gestioná clientes, averías, trámites y reportes de la app móvil.</div>
 </div>
 
-<!-- Métricas -->
 <div class="metrics-grid">
     <div class="metric-card">
         <div class="metric-icon blue"><i class="fas fa-users"></i></div>
@@ -280,7 +293,7 @@
     </div>
 
     <div class="metric-card">
-        <div class="metric-icon yellow"><i class="fas fa-money-bill-wave"></i></div>
+        <div class="metric-icon gold"><i class="fas fa-money-bill-wave"></i></div>
         @if (montoPendiente > 0)
         {
             <span class="metric-badge">$</span>
@@ -309,7 +322,7 @@
     </div>
 
     <div class="metric-card">
-        <div class="metric-icon yellow"><i class="fas fa-clipboard-list"></i></div>
+        <div class="metric-icon gold"><i class="fas fa-clipboard-list"></i></div>
         <div class="metric-label">Trámites abiertos</div>
         <div class="metric-value">@tramitesAbiertos</div>
     </div>
@@ -321,23 +334,16 @@
     </div>
 </div>
 
-<!-- Gráfico: Averías por estado -->
 <div class="chart-card">
     <div class="chart-title"><i class="fas fa-chart-pie"></i> Averías por estado</div>
-    <div class="chart-box">
-        <canvas id="chartAverias"></canvas>
-    </div>
+    <div class="chart-box"><canvas id="chartAverias"></canvas></div>
 </div>
 
-<!-- Gráfico: Averías últimos 7 días -->
 <div class="chart-card">
     <div class="chart-title"><i class="fas fa-chart-line"></i> Averías últimos 7 días</div>
-    <div class="chart-box">
-        <canvas id="chartSemana"></canvas>
-    </div>
+    <div class="chart-box"><canvas id="chartSemana"></canvas></div>
 </div>
 
-<!-- Exportar -->
 <div class="chart-card">
     <div class="chart-title"><i class="fas fa-download"></i> Descargar reportes</div>
     <div class="export-grid">
@@ -352,11 +358,9 @@
 
 @section Scripts {
     <script>
-        // ═══════ Gráfico: Averías por estado (Doughnut) ═══════
         (function () {
             var ctx = document.getElementById('chartAverias');
             if (!ctx) return;
-
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -388,11 +392,9 @@
             });
         })();
 
-        // ═══════ Gráfico: Averías últimos 7 días (Line) ═══════
         (function () {
             var ctx = document.getElementById('chartSemana');
             if (!ctx) return;
-
             new Chart(ctx, {
                 type: 'line',
                 data: {

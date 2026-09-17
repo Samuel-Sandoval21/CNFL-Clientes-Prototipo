@@ -30,7 +30,7 @@
         }
 
             .summary-card .label {
-                font-size: 10px;
+                font-size: 9.5px;
                 color: var(--muted);
                 font-weight: 800;
                 text-transform: uppercase;
@@ -40,9 +40,21 @@
 
             .summary-card .value {
                 font-size: 12.5px;
-                font-weight: 800;
+                font-weight: 900;
                 color: var(--text);
                 word-break: break-all;
+            }
+
+            .summary-card.gold .value {
+                color: var(--gold);
+            }
+
+            .summary-card.green .value {
+                color: var(--green);
+            }
+
+            .summary-card.red .value {
+                color: var(--red);
             }
 
         .chart-card {
@@ -65,6 +77,7 @@
 
             .section-title i {
                 font-size: 15px;
+                color: var(--purple);
             }
 
         .chart {
@@ -87,7 +100,7 @@
 
             .chart .bar {
                 width: 100%;
-                background: linear-gradient(180deg, var(--blue), #2b3f8f);
+                background: linear-gradient(180deg, #1a2b6b, #5b3fbf);
                 border-radius: 8px 8px 0 0;
                 min-height: 6px;
                 transition: height .3s;
@@ -136,13 +149,13 @@
             }
 
             .export-btn.excel {
-                background: #e0f7e9;
+                background: var(--green-soft);
                 color: #046a38;
                 box-shadow: 0 6px 14px -6px rgba(4, 106, 56, .3);
             }
 
             .export-btn.pdf {
-                background: #ffe6e6;
+                background: var(--red-soft);
                 color: #b71c1c;
                 box-shadow: 0 6px 14px -6px rgba(183, 28, 28, .3);
             }
@@ -154,19 +167,20 @@
 }
 
 <h1 class="page-title">Reportes</h1>
+<p class="page-subtitle">Resumen financiero y descarga de informes.</p>
 
 <div class="summary-grid">
-    <div class="summary-card">
+    <div class="summary-card gold">
         <div class="label">Facturado</div>
         <div class="value">₡@totalFacturado.ToString("N0")</div>
     </div>
-    <div class="summary-card">
+    <div class="summary-card green">
         <div class="label">Cobrado</div>
-        <div class="value" style="color:#00a651;">₡@totalCobrado.ToString("N0")</div>
+        <div class="value">₡@totalCobrado.ToString("N0")</div>
     </div>
-    <div class="summary-card">
+    <div class="summary-card red">
         <div class="label">Pendiente</div>
-        <div class="value" style="color:#e53935;">₡@totalPendiente.ToString("N0")</div>
+        <div class="value">₡@totalPendiente.ToString("N0")</div>
     </div>
 </div>
 

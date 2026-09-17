@@ -7,41 +7,6 @@
 
 @section Styles {
     <style>
-        .filtros {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            margin-bottom: 16px;
-            padding-bottom: 6px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-
-            .filtros::-webkit-scrollbar {
-                display: none;
-            }
-
-        .filtro {
-            padding: 9px 16px;
-            background: #fff;
-            border: 1.5px solid var(--line);
-            border-radius: 22px;
-            font-size: 12.5px;
-            font-weight: 700;
-            color: var(--muted);
-            white-space: nowrap;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: all .18s;
-        }
-
-            .filtro.active {
-                background: var(--blue);
-                color: #fff;
-                border-color: var(--blue);
-                box-shadow: 0 6px 14px -6px rgba(26, 43, 107, .5);
-            }
-
         .averia-card {
             background: #fff;
             border-radius: 18px;
@@ -49,14 +14,24 @@
             margin-bottom: 12px;
             box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
             border-left: 4px solid var(--blue);
+            transition: transform .15s, box-shadow .15s;
         }
 
+            .averia-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(20, 30, 70, .1);
+            }
+
             .averia-card.estado-resuelta {
-                border-left-color: #00a651;
+                border-left-color: var(--green);
             }
 
             .averia-card.estado-proceso {
-                border-left-color: #c98a00;
+                border-left-color: var(--gold);
+            }
+
+            .averia-card.estado-reportada {
+                border-left-color: var(--red);
             }
 
         .averia-top {
@@ -71,26 +46,55 @@
             font-weight: 800;
             font-size: 14.5px;
             color: var(--text);
+            line-height: 1.2;
         }
 
         .averia-info {
             font-size: 12.5px;
             color: var(--muted);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
             .averia-info i {
                 font-size: 12px;
                 color: #aab0be;
                 width: 14px;
+                text-align: center;
             }
+
+        .averia-desc {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f9fafc;
+            border-radius: 10px;
+            font-size: 12.5px;
+            color: var(--text);
+            line-height: 1.5;
+            border-left: 2px solid #e3e6ee;
+        }
     </style>
 }
 
 <h1 class="page-title">Averías</h1>
+<p class="page-subtitle">Supervisá y gestioná todos los reportes de averías.</p>
+
+<div class="stats-row">
+    <div class="stat-mini red">
+        <div class="num">@Model.Count(a => a.Estado != "Resuelta" && a.Estado != "Cerrada")</div>
+        <div class="lbl">Abiertas</div>
+    </div>
+    <div class="stat-mini gold">
+        <div class="num">@Model.Count(a => a.Estado == "En revisión" || a.Estado == "En proceso")</div>
+        <div class="lbl">En proceso</div>
+    </div>
+    <div class="stat-mini green">
+        <div class="num">@Model.Count(a => a.Estado == "Resuelta" || a.Estado == "Cerrada")</div>
+        <div class="lbl">Resueltas</div>
+    </div>
+</div>
 
 <div class="filtros">
     <a href="@Url.Action("Averias", "Admin")" class="filtro @(string.IsNullOrEmpty(estadoActual) ? "active" : "")">Todas</a>
@@ -102,7 +106,7 @@
 @if (Model == null || !Model.Any())
 {
     <div class="empty">
-        <i class="fas fa-bolt" style="font-size:42px;color:#c9ced9;margin-bottom:12px;display:block;"></i>
+        <i class="fas fa-bolt"></i>
         <p>No hay averías para mostrar.</p>
     </div>
 }
@@ -111,9 +115,9 @@ else
     foreach (var a in Model)
     {
         var cssEstado = a.Estado == "Resuelta" || a.Estado == "Cerrada" ? "estado-resuelta" :
-                        (a.Estado == "En revisión" || a.Estado == "En proceso" ? "estado-proceso" : "");
+                        (a.Estado == "En revisión" || a.Estado == "En proceso" ? "estado-proceso" : "estado-reportada");
         var badge = a.Estado == "Resuelta" || a.Estado == "Cerrada" ? "ok" :
-                    (a.Estado == "En revisión" || a.Estado == "En proceso" ? "info" : "warn");
+                    (a.Estado == "En revisión" || a.Estado == "En proceso" ? "gold" : "warn");
 
         <div class="averia-card @cssEstado">
             <div class="averia-top">
@@ -136,7 +140,7 @@ else
 
             @if (!string.IsNullOrEmpty(a.Descripcion))
             {
-                <div class="averia-info" style="margin-top:8px;color:var(--text);font-size:13px;">
+                <div class="averia-desc">
                     @a.Descripcion
                 </div>
             }

@@ -2,20 +2,42 @@
 @{
     ViewBag.Title = "Clientes";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var busqueda = ViewBag.Busqueda as string ?? "";
 }
 
 @section Styles {
     <style>
         .search-box {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            font-size: 14px;
-            font-family: inherit;
-            margin-bottom: 14px;
-            background: #fff;
+            position: relative;
+            margin-bottom: 16px;
         }
+
+            .search-box input {
+                width: 100%;
+                padding: 13px 16px 13px 44px;
+                border: 1.5px solid var(--line);
+                border-radius: 14px;
+                font-family: inherit;
+                font-size: 14px;
+                color: var(--text);
+                background: #fff;
+                outline: none;
+                transition: border-color .18s, box-shadow .18s;
+            }
+
+                .search-box input:focus {
+                    border-color: #1a2b6b;
+                    box-shadow: 0 0 0 3px rgba(26, 43, 107, .08);
+                }
+
+            .search-box i {
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #aab0be;
+                font-size: 14px;
+            }
 
         .cliente-card {
             background: #fff;
@@ -26,20 +48,27 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            transition: transform .15s, box-shadow .15s;
         }
 
+            .cliente-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(20, 30, 70, .1);
+            }
+
         .avatar {
-            width: 44px;
-            height: 44px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
-            background: var(--blue-soft);
-            color: var(--blue);
+            background: linear-gradient(135deg, #1a2b6b, #5b3fbf);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 16px;
             flex-shrink: 0;
+            box-shadow: 0 6px 14px -6px rgba(26, 43, 107, .5);
         }
 
         .info {
@@ -62,23 +91,58 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                margin-top: 2px;
             }
+
+            .info .stats-line {
+                display: flex;
+                gap: 10px;
+                margin-top: 6px;
+                font-size: 10.5px;
+                font-weight: 700;
+                color: var(--muted);
+            }
+
+                .info .stats-line span {
+                    display: flex;
+                    align-items: center;
+                    gap: 3px;
+                }
+
+                .info .stats-line i {
+                    font-size: 9px;
+                    color: #c9ced9;
+                }
     </style>
 }
 
 <h1 class="page-title">Clientes</h1>
+<p class="page-subtitle">Todos los usuarios registrados en la app móvil CNFL.</p>
+
+<div class="stats-row two">
+    <div class="stat-mini blue">
+        <div class="num">@Model.Count</div>
+        <div class="lbl">Registrados</div>
+    </div>
+    <div class="stat-mini purple">
+        <div class="num">@Model.Count(c => c.Activo)</div>
+        <div class="lbl">Activos</div>
+    </div>
+</div>
 
 @using (Html.BeginForm("Clientes", "Admin", FormMethod.Get))
 {
-    <input type="text" name="q" class="search-box"
-           placeholder="Buscar por nombre, cédula o correo..."
-           value="@ViewBag.Busqueda" />
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" name="q" placeholder="Buscar por nombre, cédula o correo..."
+               value="@busqueda" />
+    </div>
 }
 
 @if (Model == null || !Model.Any())
 {
     <div class="empty">
-        <i class="fas fa-users" style="font-size:38px;color:#c9ced9;"></i>
+        <i class="fas fa-users"></i>
         <p>No se encontraron clientes.</p>
     </div>
 }
@@ -92,8 +156,9 @@ else
             <div class="info">
                 <div class="name">@c.Nombre @c.Apellidos</div>
                 <div class="meta">@c.Cedula · @c.Correo</div>
-                <div class="meta" style="margin-top:3px;">
-                    @c.TotalNISEs NISEs · ₡@c.MontoPendiente.ToString("N0") pendiente
+                <div class="stats-line">
+                    <span><i class="fas fa-bolt"></i>@c.TotalNISEs NISEs</span>
+                    <span><i class="fas fa-file-invoice"></i>₡@c.MontoPendiente.ToString("N0")</span>
                 </div>
             </div>
             <span class="badge @(c.Activo ? "ok" : "warn")">

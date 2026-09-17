@@ -13,16 +13,21 @@
             --blue: #1a2b6b;
             --blue-light: #2b3f8f;
             --blue-soft: #eef0ff;
+            --purple: #5b3fbf;
+            --purple-soft: #efe6ff;
+            --gold: #c98a00;
+            --gold-soft: #fff4d9;
             --green: #00a651;
+            --green-soft: #e0f7e9;
             --red: #e53935;
+            --red-soft: #ffe6e6;
             --orange: #ff692d;
             --line: #e3e6ee;
             --text: #1c1f2b;
             --muted: #6b7280;
-            --bg: #e8ecf5;
+            --bg: #f4f6fb;
             --white: #ffffff;
             --radius: 18px;
-            --shadow: 0 4px 20px rgba(20, 30, 70, .06);
         }
 
         * {
@@ -33,7 +38,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg);
+            background: #e8ecf5;
             color: var(--text);
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
@@ -47,7 +52,6 @@
             color: inherit;
         }
 
-        /* ═══════════ MARCO DE CELULAR ═══════════ */
         .phone-frame {
             width: 390px;
             height: 844px;
@@ -83,7 +87,6 @@
             flex-direction: column;
         }
 
-        /* ── Barra de estado iOS ─────────────────── */
         .status-bar {
             height: 48px;
             padding: 0 30px 0 32px;
@@ -104,7 +107,6 @@
                 font-size: 12px;
             }
 
-        /* ── Header con íconos ────────────────────── */
         .app-header {
             padding: 4px 22px 14px;
             display: flex;
@@ -129,12 +131,13 @@
         .admin-tag {
             font-size: 9px;
             font-weight: 800;
-            background: #1a2b6b;
+            background: linear-gradient(135deg, #1a2b6b, #5b3fbf);
             color: #fff;
-            padding: 3px 8px;
+            padding: 3px 9px;
             border-radius: 8px;
             text-transform: uppercase;
-            letter-spacing: .5px;
+            letter-spacing: .6px;
+            box-shadow: 0 4px 10px -4px rgba(91, 63, 191, .5);
         }
 
         .header-icons {
@@ -155,8 +158,9 @@
             font-size: 15px;
             cursor: pointer;
             position: relative;
-            transition: transform .15s, background .15s;
+            transition: transform .15s, background .15s, box-shadow .15s;
             text-decoration: none;
+            box-shadow: 0 2px 6px -2px rgba(20, 30, 70, .08);
         }
 
             .header-icon-btn:active {
@@ -165,6 +169,7 @@
 
             .header-icon-btn:hover {
                 background: #eef0ff;
+                box-shadow: 0 4px 10px -4px rgba(20, 30, 70, .15);
             }
 
             .header-icon-btn .dot {
@@ -176,9 +181,21 @@
                 background: #ff692d;
                 border-radius: 50%;
                 border: 2px solid #fff;
+                animation: pulse 2s ease-in-out infinite;
             }
 
-        /* ── Contenido scrollable ─────────────────── */
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.15);
+                opacity: .8;
+            }
+        }
+
         .app-content {
             flex: 1;
             overflow-y: auto;
@@ -191,7 +208,6 @@
                 display: none;
             }
 
-        /* ── Bottom nav ───────────────────────────── */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -213,15 +229,17 @@
             color: var(--muted);
             font-size: 10px;
             font-weight: 600;
-            transition: color .18s ease;
+            transition: color .18s ease, transform .18s ease;
             cursor: pointer;
             text-align: center;
             line-height: 1.1;
+            position: relative;
         }
 
             .nav-item i {
                 font-size: 19px;
                 margin-bottom: 1px;
+                transition: transform .2s ease;
             }
 
             .nav-item.active {
@@ -229,59 +247,188 @@
                 font-weight: 800;
             }
 
-        /* ── Componentes comunes ─────────────────── */
-        .card {
-            background: #fff;
-            border-radius: var(--radius);
-            padding: 16px;
-            box-shadow: var(--shadow);
-            margin-bottom: 14px;
-        }
+                .nav-item.active i {
+                    transform: scale(1.1);
+                }
+
+                .nav-item.active::before {
+                    content: '';
+                    position: absolute;
+                    top: 2px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 24px;
+                    height: 3px;
+                    background: linear-gradient(90deg, #1a2b6b, #5b3fbf);
+                    border-radius: 3px;
+                }
 
         .page-title {
             font-size: 22px;
-            font-weight: 800;
+            font-weight: 900;
             color: var(--blue);
-            margin: 4px 0 16px;
+            margin: 4px 0 6px;
+            letter-spacing: -.3px;
+        }
+
+        .page-subtitle {
+            font-size: 12.5px;
+            color: var(--muted);
+            margin: 0 0 16px;
+            line-height: 1.4;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            margin-bottom: 14px;
         }
 
         .empty {
             text-align: center;
-            padding: 40px 20px;
+            padding: 48px 20px;
             color: var(--muted);
             font-size: 13px;
         }
 
+            .empty i {
+                font-size: 42px;
+                color: #c9ced9;
+                margin-bottom: 14px;
+                display: block;
+            }
+
         .badge {
             font-size: 10.5px;
             font-weight: 800;
-            padding: 3px 9px;
+            padding: 4px 10px;
             border-radius: 10px;
             white-space: nowrap;
             display: inline-block;
         }
 
             .badge.ok {
-                background: #e0f7e9;
-                color: #00a651;
+                background: var(--green-soft);
+                color: var(--green);
             }
 
             .badge.warn {
-                background: #ffe6e6;
-                color: #e53935;
+                background: var(--red-soft);
+                color: var(--red);
             }
 
             .badge.info {
-                background: #e6ecff;
-                color: #1a2b6b;
+                background: var(--blue-soft);
+                color: var(--blue);
+            }
+
+            .badge.gold {
+                background: var(--gold-soft);
+                color: var(--gold);
             }
 
             .badge.gray {
                 background: #eef0f5;
-                color: #6b7280;
+                color: var(--muted);
             }
 
-        /* ── Responsive: en celular real, sin marco ─ */
+        .filtros {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            padding-bottom: 6px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+            .filtros::-webkit-scrollbar {
+                display: none;
+            }
+
+        .filtro {
+            padding: 9px 16px;
+            background: #fff;
+            border: 1.5px solid var(--line);
+            border-radius: 22px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--muted);
+            white-space: nowrap;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all .18s;
+            text-decoration: none;
+        }
+
+            .filtro:hover {
+                border-color: #c9ced9;
+            }
+
+            .filtro.active {
+                background: linear-gradient(135deg, #1a2b6b, #5b3fbf);
+                color: #fff;
+                border-color: transparent;
+                box-shadow: 0 6px 14px -6px rgba(26, 43, 107, .5);
+            }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+            .stats-row.two {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        .stat-mini {
+            background: #fff;
+            border-radius: 14px;
+            padding: 12px 10px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            text-align: center;
+        }
+
+            .stat-mini .num {
+                font-size: 20px;
+                font-weight: 900;
+                line-height: 1;
+                color: var(--text);
+            }
+
+            .stat-mini .lbl {
+                font-size: 9.5px;
+                color: var(--muted);
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: .4px;
+                margin-top: 5px;
+            }
+
+            .stat-mini.blue .num {
+                color: var(--blue);
+            }
+
+            .stat-mini.purple .num {
+                color: var(--purple);
+            }
+
+            .stat-mini.gold .num {
+                color: var(--gold);
+            }
+
+            .stat-mini.green .num {
+                color: var(--green);
+            }
+
+            .stat-mini.red .num {
+                color: var(--red);
+            }
+
         @@media (max-width: 520px) {
             html, body {
                 display: block;
@@ -318,7 +465,6 @@
         <div class="phone-notch"></div>
         <div class="phone-screen">
 
-            <!-- Barra de estado iOS -->
             <div class="status-bar">
                 <span id="statusHora">9:41</span>
                 <div class="right">
@@ -328,7 +474,6 @@
                 </div>
             </div>
 
-            <!-- Header -->
             <div class="app-header">
                 <div class="logo-wrap">
                     <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
@@ -346,12 +491,10 @@
                 </div>
             </div>
 
-            <!-- Contenido -->
             <main class="app-content">
                 @RenderBody()
             </main>
 
-            <!-- Menú inferior (6 items: Inicio, Clientes, Averías, Trámites, Reportes, Cuenta) -->
             @{
                 var accionActual = (ViewContext.RouteData.Values["action"] ?? "").ToString();
                 Func<string, string> activo = (acc) =>

@@ -73,7 +73,7 @@
                     <path d="M9 21V9l6-6v18M9 13h6" />
                     <path d="M3 21h18" />
                 </svg>
-                <span data-i18n="nav.servicios">Servicios</span>
+                <span data-i18n="nav.servicios" style="font-size:9px; line-height:1.1; text-align:center;">Mis<br>Servicios</span>
             </a>
 
             <a href="@Url.Action("Tramites", "Clientes")"
@@ -231,189 +231,189 @@
     </div>
 
     <script>
-                window.I18N = {
-                    es: {
-                        'nav.inicio': 'Inicio', 'nav.servicios': 'Servicios', 'nav.tramites': 'Trámites',
-                        'nav.productos': 'Productos', 'nav.cuenta': 'Cuenta',
-                        'config.titulo': '⚙️ Configuración', 'config.sub': 'Ajustes rápidos de tu cuenta y la app.',
-                        'config.productos': '🛍️ Productos y Servicios', 'config.productos.sub': 'Servicios, marketplace y subscripciones',
-                        'config.carrito': 'Carrito', 'config.carrito.sub': 'Ver productos',
-                        'config.compras': 'Mis compras', 'config.compras.sub': 'Historial y facturas',
-                        'config.alertas': 'Alertas', 'config.alertas.sub': 'Notificaciones',
-                        'config.metodos': 'Métodos de pago', 'config.metodos.sub': 'Tarjetas, SINPE, IBAN y Token',
-                        'config.zoom': '🔍 Zoom de la app', 'config.zoom.sub': 'Ajustá el tamaño del texto y secciones',
-                        'config.oscuro': 'Modo oscuro', 'config.oscuro.sub': 'Cambiar tema de la app',
-                        'config.idioma': 'Idioma', 'config.cerrar': 'Cerrar',
-                        'idioma.titulo': '🌐 Idioma', 'idioma.sub': 'Elegí el idioma de la app.', 'idioma.cancelar': 'Cancelar'
-                    },
-                    en: {
-                        'nav.inicio': 'Home', 'nav.servicios': 'Services', 'nav.tramites': 'Requests',
-                        'nav.productos': 'Products', 'nav.cuenta': 'Account',
-                        'config.titulo': '⚙️ Settings', 'config.sub': 'Quick settings for your account and the app.',
-                        'config.productos': '🛍️ Products and Services', 'config.productos.sub': 'Services, marketplace and subscriptions',
-                        'config.carrito': 'Cart', 'config.carrito.sub': 'View products',
-                        'config.compras': 'My purchases', 'config.compras.sub': 'History and bills',
-                        'config.alertas': 'Alerts', 'config.alertas.sub': 'Notifications',
-                        'config.metodos': 'Payment methods', 'config.metodos.sub': 'Cards, SINPE, IBAN and Token',
-                        'config.zoom': '🔍 App zoom', 'config.zoom.sub': 'Adjust text and section size',
-                        'config.oscuro': 'Dark mode', 'config.oscuro.sub': 'Change app theme',
-                        'config.idioma': 'Language', 'config.cerrar': 'Close',
-                        'idioma.titulo': '🌐 Language', 'idioma.sub': 'Choose the app language.', 'idioma.cancelar': 'Cancel'
-                    },
-                    fr: {
-                        'nav.inicio': 'Accueil', 'nav.servicios': 'Services', 'nav.tramites': 'Démarches',
-                        'nav.productos': 'Produits', 'nav.cuenta': 'Compte',
-                        'config.titulo': '⚙️ Paramètres', 'config.sub': 'Réglages rapides de votre compte.',
-                        'config.productos': '🛍️ Produits et Services', 'config.productos.sub': 'Services, marketplace et abonnements',
-                        'config.carrito': 'Panier', 'config.carrito.sub': 'Voir les produits',
-                        'config.compras': 'Mes achats', 'config.compras.sub': 'Historique et factures',
-                        'config.alertas': 'Alertes', 'config.alertas.sub': 'Notifications',
-                        'config.metodos': 'Moyens de paiement', 'config.metodos.sub': 'Cartes, SINPE, IBAN et Token',
-                        'config.zoom': '🔍 Zoom', 'config.zoom.sub': 'Ajuster la taille du texte',
-                        'config.oscuro': 'Mode sombre', 'config.oscuro.sub': 'Changer le thème',
-                        'config.idioma': 'Langue', 'config.cerrar': 'Fermer',
-                        'idioma.titulo': '🌐 Langue', 'idioma.sub': 'Choisissez la langue.', 'idioma.cancelar': 'Annuler'
-                    },
-                    pt: {
-                        'nav.inicio': 'Início', 'nav.servicios': 'Serviços', 'nav.tramites': 'Solicitações',
-                        'nav.productos': 'Produtos', 'nav.cuenta': 'Conta',
-                        'config.titulo': '⚙️ Configurações', 'config.sub': 'Ajustes rápidos da sua conta.',
-                        'config.productos': '🛍️ Produtos e Serviços', 'config.productos.sub': 'Serviços, marketplace e assinaturas',
-                        'config.carrito': 'Carrinho', 'config.carrito.sub': 'Ver produtos',
-                        'config.compras': 'Minhas compras', 'config.compras.sub': 'Histórico e faturas',
-                        'config.alertas': 'Alertas', 'config.alertas.sub': 'Notificações',
-                        'config.metodos': 'Métodos de pagamento', 'config.metodos.sub': 'Cartões, SINPE, IBAN e Token',
-                        'config.zoom': '🔍 Zoom', 'config.zoom.sub': 'Ajustar tamanho do texto',
-                        'config.oscuro': 'Modo escuro', 'config.oscuro.sub': 'Mudar tema do app',
-                        'config.idioma': 'Idioma', 'config.cerrar': 'Fechar',
-                        'idioma.titulo': '🌐 Idioma', 'idioma.sub': 'Escolha o idioma.', 'idioma.cancelar': 'Cancelar'
-                    },
-                    zh: {
-                        'nav.inicio': '首页', 'nav.servicios': '服务', 'nav.tramites': '手续',
-                        'nav.productos': '产品', 'nav.cuenta': '账户',
-                        'config.titulo': '⚙️ 设置', 'config.sub': '账户和应用的快捷设置。',
-                        'config.productos': '🛍️ 产品与服务', 'config.productos.sub': '服务、市场和订阅',
-                        'config.carrito': '购物车', 'config.carrito.sub': '查看产品',
-                        'config.compras': '我的购买', 'config.compras.sub': '历史和账单',
-                        'config.alertas': '提醒', 'config.alertas.sub': '通知',
-                        'config.metodos': '支付方式', 'config.metodos.sub': '银行卡、SINPE、IBAN 和 Token',
-                        'config.zoom': '🔍 缩放', 'config.zoom.sub': '调整文字大小',
-                        'config.oscuro': '深色模式', 'config.oscuro.sub': '切换主题',
-                        'config.idioma': '语言', 'config.cerrar': '关闭',
-                        'idioma.titulo': '🌐 语言', 'idioma.sub': '选择应用语言。', 'idioma.cancelar': '取消'
-                    }
-                };
+        window.I18N = {
+            es: {
+                'nav.inicio': 'Inicio', 'nav.servicios': 'Mis Servicios', 'nav.tramites': 'Trámites',
+                'nav.productos': 'Productos', 'nav.cuenta': 'Cuenta',
+                'config.titulo': '⚙️ Configuración', 'config.sub': 'Ajustes rápidos de tu cuenta y la app.',
+                'config.productos': '🛍️ Productos y Servicios', 'config.productos.sub': 'Servicios, marketplace y subscripciones',
+                'config.carrito': 'Carrito', 'config.carrito.sub': 'Ver productos',
+                'config.compras': 'Mis compras', 'config.compras.sub': 'Historial y facturas',
+                'config.alertas': 'Alertas', 'config.alertas.sub': 'Notificaciones',
+                'config.metodos': 'Métodos de pago', 'config.metodos.sub': 'Tarjetas, SINPE, IBAN y Token',
+                'config.zoom': '🔍 Zoom de la app', 'config.zoom.sub': 'Ajustá el tamaño del texto y secciones',
+                'config.oscuro': 'Modo oscuro', 'config.oscuro.sub': 'Cambiar tema de la app',
+                'config.idioma': 'Idioma', 'config.cerrar': 'Cerrar',
+                'idioma.titulo': '🌐 Idioma', 'idioma.sub': 'Elegí el idioma de la app.', 'idioma.cancelar': 'Cancelar'
+            },
+            en: {
+                'nav.inicio': 'Home', 'nav.servicios': 'My Services', 'nav.tramites': 'Requests',
+                'nav.productos': 'Products', 'nav.cuenta': 'Account',
+                'config.titulo': '⚙️ Settings', 'config.sub': 'Quick settings for your account and the app.',
+                'config.productos': '🛍️ Products and Services', 'config.productos.sub': 'Services, marketplace and subscriptions',
+                'config.carrito': 'Cart', 'config.carrito.sub': 'View products',
+                'config.compras': 'My purchases', 'config.compras.sub': 'History and bills',
+                'config.alertas': 'Alerts', 'config.alertas.sub': 'Notifications',
+                'config.metodos': 'Payment methods', 'config.metodos.sub': 'Cards, SINPE, IBAN and Token',
+                'config.zoom': '🔍 App zoom', 'config.zoom.sub': 'Adjust text and section size',
+                'config.oscuro': 'Dark mode', 'config.oscuro.sub': 'Change app theme',
+                'config.idioma': 'Language', 'config.cerrar': 'Close',
+                'idioma.titulo': '🌐 Language', 'idioma.sub': 'Choose the app language.', 'idioma.cancelar': 'Cancel'
+            },
+            fr: {
+                'nav.inicio': 'Accueil', 'nav.servicios': 'Mes Services', 'nav.tramites': 'Démarches',
+                'nav.productos': 'Produits', 'nav.cuenta': 'Compte',
+                'config.titulo': '⚙️ Paramètres', 'config.sub': 'Réglages rapides de votre compte.',
+                'config.productos': '🛍️ Produits et Services', 'config.productos.sub': 'Services, marketplace et abonnements',
+                'config.carrito': 'Panier', 'config.carrito.sub': 'Voir les produits',
+                'config.compras': 'Mes achats', 'config.compras.sub': 'Historique et factures',
+                'config.alertas': 'Alertes', 'config.alertas.sub': 'Notifications',
+                'config.metodos': 'Moyens de paiement', 'config.metodos.sub': 'Cartes, SINPE, IBAN et Token',
+                'config.zoom': '🔍 Zoom', 'config.zoom.sub': 'Ajuster la taille du texte',
+                'config.oscuro': 'Mode sombre', 'config.oscuro.sub': 'Changer le thème',
+                'config.idioma': 'Langue', 'config.cerrar': 'Fermer',
+                'idioma.titulo': '🌐 Langue', 'idioma.sub': 'Choisissez la langue.', 'idioma.cancelar': 'Annuler'
+            },
+            pt: {
+                'nav.inicio': 'Início', 'nav.servicios': 'Meus Serviços', 'nav.tramites': 'Solicitações',
+                'nav.productos': 'Produtos', 'nav.cuenta': 'Conta',
+                'config.titulo': '⚙️ Configurações', 'config.sub': 'Ajustes rápidos da sua conta.',
+                'config.productos': '🛍️ Produtos e Serviços', 'config.productos.sub': 'Serviços, marketplace e assinaturas',
+                'config.carrito': 'Carrinho', 'config.carrito.sub': 'Ver produtos',
+                'config.compras': 'Minhas compras', 'config.compras.sub': 'Histórico e faturas',
+                'config.alertas': 'Alertas', 'config.alertas.sub': 'Notificações',
+                'config.metodos': 'Métodos de pagamento', 'config.metodos.sub': 'Cartões, SINPE, IBAN e Token',
+                'config.zoom': '🔍 Zoom', 'config.zoom.sub': 'Ajustar tamanho do texto',
+                'config.oscuro': 'Modo escuro', 'config.oscuro.sub': 'Mudar tema do app',
+                'config.idioma': 'Idioma', 'config.cerrar': 'Fechar',
+                'idioma.titulo': '🌐 Idioma', 'idioma.sub': 'Escolha o idioma.', 'idioma.cancelar': 'Cancelar'
+            },
+            zh: {
+                'nav.inicio': '首页', 'nav.servicios': '我的服务', 'nav.tramites': '手续',
+                'nav.productos': '产品', 'nav.cuenta': '账户',
+                'config.titulo': '⚙️ 设置', 'config.sub': '账户和应用的快捷设置。',
+                'config.productos': '🛍️ 产品与服务', 'config.productos.sub': '服务、市场和订阅',
+                'config.carrito': '购物车', 'config.carrito.sub': '查看产品',
+                'config.compras': '我的购买', 'config.compras.sub': '历史和账单',
+                'config.alertas': '提醒', 'config.alertas.sub': '通知',
+                'config.metodos': '支付方式', 'config.metodos.sub': '银行卡、SINPE、IBAN 和 Token',
+                'config.zoom': '🔍 缩放', 'config.zoom.sub': '调整文字大小',
+                'config.oscuro': '深色模式', 'config.oscuro.sub': '切换主题',
+                'config.idioma': '语言', 'config.cerrar': '关闭',
+                'idioma.titulo': '🌐 语言', 'idioma.sub': '选择应用语言。', 'idioma.cancelar': '取消'
+            }
+        };
 
-                window.t = function (key) {
-                    var lang = localStorage.getItem('cnfl_idioma') || 'es';
-                    return (window.I18N[lang] && window.I18N[lang][key]) || (window.I18N.es[key] || key);
-                };
+        window.t = function (key) {
+            var lang = localStorage.getItem('cnfl_idioma') || 'es';
+            return (window.I18N[lang] && window.I18N[lang][key]) || (window.I18N.es[key] || key);
+        };
 
-                window.aplicarIdioma = function () {
-                    var elementos = document.querySelectorAll('[data-i18n]');
-                    for (var i = 0; i < elementos.length; i++) {
-                        var key = elementos[i].getAttribute('data-i18n');
-                        elementos[i].textContent = window.t(key);
-                    }
-                };
+        window.aplicarIdioma = function () {
+            var elementos = document.querySelectorAll('[data-i18n]');
+            for (var i = 0; i < elementos.length; i++) {
+                var key = elementos[i].getAttribute('data-i18n');
+                elementos[i].textContent = window.t(key);
+            }
+        };
 
-                (function () {
-                    function actualizarHora() {
-                        var el = document.getElementById('horaActual');
-                        if (!el) return;
-                        var d = new Date();
-                        var h = d.getHours();
-                        var m = d.getMinutes();
-                        el.textContent = h + ':' + (m < 10 ? '0' + m : m);
-                    }
-                    actualizarHora();
-                    setInterval(actualizarHora, 30000);
-                })();
+        (function () {
+            function actualizarHora() {
+                var el = document.getElementById('horaActual');
+                if (!el) return;
+                var d = new Date();
+                var h = d.getHours();
+                var m = d.getMinutes();
+                el.textContent = h + ':' + (m < 10 ? '0' + m : m);
+            }
+            actualizarHora();
+            setInterval(actualizarHora, 30000);
+        })();
 
-                function abrirConfig() {
-                    var modal = document.getElementById('modalConfig');
-                    if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-                }
-                function cerrarConfig() {
-                    var modal = document.getElementById('modalConfig');
-                    if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
-                }
-                var modalConfig = document.getElementById('modalConfig');
-                if (modalConfig) {
-                    modalConfig.addEventListener('click', function (e) { if (e.target === this) cerrarConfig(); });
-                }
+        function abrirConfig() {
+            var modal = document.getElementById('modalConfig');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function cerrarConfig() {
+            var modal = document.getElementById('modalConfig');
+            if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
+        }
+        var modalConfig = document.getElementById('modalConfig');
+        if (modalConfig) {
+            modalConfig.addEventListener('click', function (e) { if (e.target === this) cerrarConfig(); });
+        }
 
-                var ZOOM_KEY = 'cnfl_zoom';
-                var zoomActual = parseInt(localStorage.getItem(ZOOM_KEY) || '100', 10);
-                function aplicarZoom(z) {
-                    if (z < 70) z = 70;
-                    if (z > 140) z = 140;
-                    zoomActual = z;
-                    localStorage.setItem(ZOOM_KEY, z);
-                    var phone = document.querySelector('.phone');
-                    if (phone) phone.style.zoom = (z / 100).toString();
-                    var lbl = document.getElementById('zoomLabel');
-                    if (lbl) lbl.textContent = z + '%';
-                }
-                function cambiarZoom(delta) { aplicarZoom(zoomActual + delta); }
-                function resetZoom() { aplicarZoom(100); }
-                aplicarZoom(zoomActual);
+        var ZOOM_KEY = 'cnfl_zoom';
+        var zoomActual = parseInt(localStorage.getItem(ZOOM_KEY) || '100', 10);
+        function aplicarZoom(z) {
+            if (z < 70) z = 70;
+            if (z > 140) z = 140;
+            zoomActual = z;
+            localStorage.setItem(ZOOM_KEY, z);
+            var phone = document.querySelector('.phone');
+            if (phone) phone.style.zoom = (z / 100).toString();
+            var lbl = document.getElementById('zoomLabel');
+            if (lbl) lbl.textContent = z + '%';
+        }
+        function cambiarZoom(delta) { aplicarZoom(zoomActual + delta); }
+        function resetZoom() { aplicarZoom(100); }
+        aplicarZoom(zoomActual);
 
-                var MODO_KEY = 'cnfl_dark';
-                var modoOscuro = localStorage.getItem(MODO_KEY) === '1';
-                function aplicarModo() {
-                    var lbl = document.getElementById('modoOscuroEstado');
-                    if (lbl) lbl.textContent = modoOscuro ? 'ON' : 'OFF';
-                    if (modoOscuro) {
-                        document.documentElement.style.filter = 'invert(0.92) hue-rotate(180deg)';
-                        var imgs = document.querySelectorAll('img');
-                        for (var i = 0; i < imgs.length; i++) imgs[i].style.filter = 'invert(1) hue-rotate(180deg)';
-                    } else {
-                        document.documentElement.style.filter = '';
-                        var imgs2 = document.querySelectorAll('img');
-                        for (var j = 0; j < imgs2.length; j++) imgs2[j].style.filter = '';
-                    }
-                }
-                function toggleModoOscuro() {
-                    modoOscuro = !modoOscuro;
-                    localStorage.setItem(MODO_KEY, modoOscuro ? '1' : '0');
-                    aplicarModo();
-                }
-                aplicarModo();
+        var MODO_KEY = 'cnfl_dark';
+        var modoOscuro = localStorage.getItem(MODO_KEY) === '1';
+        function aplicarModo() {
+            var lbl = document.getElementById('modoOscuroEstado');
+            if (lbl) lbl.textContent = modoOscuro ? 'ON' : 'OFF';
+            if (modoOscuro) {
+                document.documentElement.style.filter = 'invert(0.92) hue-rotate(180deg)';
+                var imgs = document.querySelectorAll('img');
+                for (var i = 0; i < imgs.length; i++) imgs[i].style.filter = 'invert(1) hue-rotate(180deg)';
+            } else {
+                document.documentElement.style.filter = '';
+                var imgs2 = document.querySelectorAll('img');
+                for (var j = 0; j < imgs2.length; j++) imgs2[j].style.filter = '';
+            }
+        }
+        function toggleModoOscuro() {
+            modoOscuro = !modoOscuro;
+            localStorage.setItem(MODO_KEY, modoOscuro ? '1' : '0');
+            aplicarModo();
+        }
+        aplicarModo();
 
-                function abrirIdiomas() {
-                    var m = document.getElementById('modalIdioma');
-                    if (m) m.style.display = 'flex';
-                }
-                function cerrarIdiomas() {
-                    var m = document.getElementById('modalIdioma');
-                    if (m) m.style.display = 'none';
-                }
-                function cambiarIdioma(codigo) {
-                    localStorage.setItem('cnfl_idioma', codigo);
-                    window.aplicarIdioma();
-                    var nombres = { es: 'Español (Costa Rica)', en: 'English (US)', fr: 'Français', pt: 'Português (BR)', zh: '中文 (简体)' };
-                    var el = document.getElementById('idiomaActual');
-                    if (el) el.textContent = nombres[codigo] || nombres.es;
-                    cerrarIdiomas();
-                }
+        function abrirIdiomas() {
+            var m = document.getElementById('modalIdioma');
+            if (m) m.style.display = 'flex';
+        }
+        function cerrarIdiomas() {
+            var m = document.getElementById('modalIdioma');
+            if (m) m.style.display = 'none';
+        }
+        function cambiarIdioma(codigo) {
+            localStorage.setItem('cnfl_idioma', codigo);
+            window.aplicarIdioma();
+            var nombres = { es: 'Español (Costa Rica)', en: 'English (US)', fr: 'Français', pt: 'Português (BR)', zh: '中文 (简体)' };
+            var el = document.getElementById('idiomaActual');
+            if (el) el.textContent = nombres[codigo] || nombres.es;
+            cerrarIdiomas();
+        }
 
-                (function () {
-                    var lang = localStorage.getItem('cnfl_idioma') || 'es';
-                    var nombres = { es: 'Español (Costa Rica)', en: 'English (US)', fr: 'Français', pt: 'Português (BR)', zh: '中文 (简体)' };
-                    var el = document.getElementById('idiomaActual');
-                    if (el) el.textContent = nombres[lang] || nombres.es;
-                    window.aplicarIdioma();
-                })();
+        (function () {
+            var lang = localStorage.getItem('cnfl_idioma') || 'es';
+            var nombres = { es: 'Español (Costa Rica)', en: 'English (US)', fr: 'Français', pt: 'Português (BR)', zh: '中文 (简体)' };
+            var el = document.getElementById('idiomaActual');
+            if (el) el.textContent = nombres[lang] || nombres.es;
+            window.aplicarIdioma();
+        })();
 
-                (function () {
-                    try {
-                        var items = JSON.parse(localStorage.getItem('cnfl_carrito') || '[]');
-                        var total = items.reduce(function (s, i) { return s + (i.cantidad || 1); }, 0);
-                        var badges = document.querySelectorAll('.badge');
-                        for (var i = 0; i < badges.length; i++) badges[i].textContent = total;
-                    } catch (e) { }
-                })();
+        (function () {
+            try {
+                var items = JSON.parse(localStorage.getItem('cnfl_carrito') || '[]');
+                var total = items.reduce(function (s, i) { return s + (i.cantidad || 1); }, 0);
+                var badges = document.querySelectorAll('.badge');
+                for (var i = 0; i < badges.length; i++) badges[i].textContent = total;
+            } catch (e) { }
+        })();
     </script>
 
     @RenderSection("Scripts", required: false)
