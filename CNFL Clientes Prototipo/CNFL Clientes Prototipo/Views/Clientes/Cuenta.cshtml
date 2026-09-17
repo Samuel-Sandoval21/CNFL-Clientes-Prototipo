@@ -18,14 +18,10 @@
 
     var tieneFoto = !string.IsNullOrWhiteSpace(usuario.FotoPerfil);
 
-    var provincias = ViewBag.Provincias as List<string> ?? new List<string>();
     var actividades = ViewBag.ActividadesEconomicas
                         as List<CNFL_Clientes_Prototipo.Models.ActividadEconomicaDto>
                         ?? new List<CNFL_Clientes_Prototipo.Models.ActividadEconomicaDto>();
 
-    var provinciaPrevia = usuario.Provincia ?? "";
-    var cantonPrevio = usuario.Canton ?? "";
-    var distritoPrevio = usuario.Distrito ?? "";
     var actividadActualId = ViewBag.ActividadActualId as int?;
 }
 
@@ -146,45 +142,6 @@
         </div>
     </div>
 
-    <!-- ═══════════ UBICACIÓN ═══════════ -->
-    <div class="eyebrow">📍 Ubicación</div>
-
-    <div class="reg-card">
-        <div class="reg-field">
-            <label for="Provincia">Provincia</label>
-            <select id="Provincia" name="Provincia" onchange="onProvinciaChange(this);">
-                <option value="">— Seleccioná una provincia —</option>
-                @foreach (var p in provincias)
-                {
-                    <option value="@p" @(p == provinciaPrevia ? "selected" : "")>@p</option>
-                }
-            </select>
-        </div>
-
-        <div class="reg-field">
-            <label for="Canton">Cantón</label>
-            <select id="Canton" name="Canton" onchange="onCantonChange(this);">
-                <option value="">— Primero elegí la provincia —</option>
-            </select>
-        </div>
-
-        <div class="reg-field">
-            <label for="Distrito">Distrito</label>
-            <select id="Distrito" name="Distrito">
-                <option value="">— Primero elegí el cantón —</option>
-            </select>
-        </div>
-
-        <div class="reg-field">
-            <label for="DireccionExacta">Dirección exacta</label>
-            <input type="text"
-                   id="DireccionExacta"
-                   name="DireccionExacta"
-                   value="@usuario.DireccionExacta"
-                   placeholder="Ej: 200m norte de la iglesia, casa azul" />
-        </div>
-    </div>
-
     <!-- ═══════════ FACTURA ELECTRÓNICA ═══════════ -->
     <div class="eyebrow">🧾 Facturación electrónica</div>
 
@@ -300,186 +257,104 @@
 
 @section Scripts {
     <script>
-    (function () {
-        // ═══════════ Preview foto de perfil ═══════════
-        var input = document.getElementById('fotoInput');
-        var preview = document.getElementById('avatarPreview');
+        (function () {
+            // ═══════════ Preview foto de perfil ═══════════
+            var input = document.getElementById('fotoInput');
+            var preview = document.getElementById('avatarPreview');
 
-        if (input && preview) {
-            input.addEventListener('change', function (e) {
-                var file = e.target.files && e.target.files[0];
-                if (!file) return;
+            if (input && preview) {
+                input.addEventListener('change', function (e) {
+                    var file = e.target.files && e.target.files[0];
+                    if (!file) return;
 
-                if (!file.type.match(/^image\//)) {
-                    alert('Solo se permiten archivos de imagen.');
-                    return;
-                }
-                if (file.size > 4 * 1024 * 1024) {
-                    alert('La imagen es muy grande. Máximo 4 MB.');
-                    return;
-                }
-
-                var reader = new FileReader();
-                reader.onload = function (ev) {
-                    preview.innerHTML = '';
-                    preview.style.backgroundImage = 'url(' + ev.target.result + ')';
-                    preview.style.backgroundSize = 'cover';
-                    preview.style.backgroundPosition = 'center';
-                    preview.style.color = 'transparent';
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        var chkFactura = document.getElementById('chkFactura');
-        var wrap = document.getElementById('actividadWrap');
-
-        function aplicarFactura() {
-            if (!wrap || !chkFactura) return;
-            wrap.style.display = chkFactura.checked ? 'block' : 'none';
-        }
-        aplicarFactura();
-    })();
-
-    function toggleFactura(chk) {
-        var wrap = document.getElementById('actividadWrap');
-        if (wrap) wrap.style.display = chk.checked ? 'block' : 'none';
-    }
-
-    // ═══════════ Cascada Provincia → Cantón → Distrito ═══════════
-    var urlCantones = '@Url.Action("GetCantones", "Clientes")';
-    var urlDistritos = '@Url.Action("GetDistritos", "Clientes")';
-
-    function onProvinciaChange(sel) {
-        var selCanton = document.getElementById('Canton');
-        var selDistrito = document.getElementById('Distrito');
-        if (!selCanton || !selDistrito) return;
-
-        selCanton.innerHTML = '<option value="">Cargando...</option>';
-        selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
-        if (!sel.value) {
-            selCanton.innerHTML = '<option value="">— Primero elegí la provincia —</option>';
-            return;
-        }
-        fetch(urlCantones + '?provincia=' + encodeURIComponent(sel.value))
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                var html = '<option value="">— Seleccioná cantón —</option>';
-                data.forEach(function (c) {
-                    html += '<option value="' + c + '">' + c + '</option>';
-                });
-                selCanton.innerHTML = html;
-            });
-    }
-
-    function onCantonChange(sel) {
-        var selProv = document.getElementById('Provincia');
-        var selDistrito = document.getElementById('Distrito');
-        if (!selProv || !selDistrito) return;
-
-        selDistrito.innerHTML = '<option value="">Cargando...</option>';
-        if (!sel.value || !selProv.value) {
-            selDistrito.innerHTML = '<option value="">— Primero elegí el cantón —</option>';
-            return;
-        }
-        fetch(urlDistritos + '?provincia=' + encodeURIComponent(selProv.value) + '&canton=' + encodeURIComponent(sel.value))
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                var html = '<option value="">— Seleccioná distrito —</option>';
-                data.forEach(function (d) {
-                    html += '<option value="' + d + '">' + d + '</option>';
-                });
-                selDistrito.innerHTML = html;
-            });
-    }
-
-    // ═══════════ Buscador de actividades ═══════════
-    function mostrarActividades() {
-        var lista = document.getElementById('listaActividades');
-        if (lista) lista.style.display = 'block';
-        filtrarActividades();
-    }
-
-    function filtrarActividades() {
-        var buscador = document.getElementById('buscadorActividad');
-        var lista = document.getElementById('listaActividades');
-        if (!buscador || !lista) return;
-
-        var q = buscador.value.toLowerCase().trim();
-        var visibles = 0;
-        var items = lista.querySelectorAll('.actividad-item');
-        for (var i = 0; i < items.length; i++) {
-            var it = items[i];
-            var txt = it.getAttribute('data-text') || '';
-            if (!q || txt.indexOf(q) >= 0) {
-                it.style.display = 'block';
-                visibles++;
-            } else {
-                it.style.display = 'none';
-            }
-        }
-        lista.style.display = visibles > 0 ? 'block' : 'none';
-    }
-
-    function seleccionarActividad(id, texto) {
-        var hidden = document.getElementById('ActividadEconomicaId');
-        var textoEl = document.getElementById('actividadTexto');
-        var seleccionada = document.getElementById('actividadSeleccionada');
-        var lista = document.getElementById('listaActividades');
-        var buscador = document.getElementById('buscadorActividad');
-        if (!hidden || !textoEl || !seleccionada || !lista || !buscador) return;
-
-        hidden.value = id;
-        textoEl.textContent = texto;
-        seleccionada.style.display = 'block';
-        lista.style.display = 'none';
-        buscador.value = texto;
-    }
-
-    document.addEventListener('click', function (e) {
-        var buscador = document.getElementById('buscadorActividad');
-        var lista = document.getElementById('listaActividades');
-        if (!buscador || !lista) return;
-        var target = e.target;
-        if (!target) return;
-        if (!buscador.contains(target) && !lista.contains(target)) {
-            lista.style.display = 'none';
-        }
-    });
-
-    // ═══════════ Cargar cantones/distritos si ya hay valores previos ═══════════
-    (function () {
-        var prov = document.getElementById('Provincia');
-        var cant = document.getElementById('Canton');
-        var dist = document.getElementById('Distrito');
-
-        var provinciaPrevia = '@Html.Raw(provinciaPrevia.Replace("'", "\\'"))';
-        var cantonPrevio = '@Html.Raw(cantonPrevio.Replace("'", "\\'"))';
-        var distritoPrevio = '@Html.Raw(distritoPrevio.Replace("'", "\\'"))';
-
-        if (prov && prov.value) {
-            fetch(urlCantones + '?provincia=' + encodeURIComponent(prov.value))
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    var html = '<option value="">— Seleccioná cantón —</option>';
-                    data.forEach(function (c) {
-                        html += '<option value="' + c + '"' + (c === cantonPrevio ? ' selected' : '') + '>' + c + '</option>';
-                    });
-                    cant.innerHTML = html;
-
-                    if (cantonPrevio) {
-                        fetch(urlDistritos + '?provincia=' + encodeURIComponent(prov.value) + '&canton=' + encodeURIComponent(cantonPrevio))
-                            .then(function (r) { return r.json(); })
-                            .then(function (data2) {
-                                var html2 = '<option value="">— Seleccioná distrito —</option>';
-                                data2.forEach(function (d) {
-                                    html2 += '<option value="' + d + '"' + (d === distritoPrevio ? ' selected' : '') + '>' + d + '</option>';
-                                });
-                                dist.innerHTML = html2;
-                            });
+                    if (!file.type.match(/^image\//)) {
+                        alert('Solo se permiten archivos de imagen.');
+                        return;
                     }
+                    if (file.size > 4 * 1024 * 1024) {
+                        alert('La imagen es muy grande. Máximo 4 MB.');
+                        return;
+                    }
+
+                    var reader = new FileReader();
+                    reader.onload = function (ev) {
+                        preview.innerHTML = '';
+                        preview.style.backgroundImage = 'url(' + ev.target.result + ')';
+                        preview.style.backgroundSize = 'cover';
+                        preview.style.backgroundPosition = 'center';
+                        preview.style.color = 'transparent';
+                    };
+                    reader.readAsDataURL(file);
                 });
+            }
+
+            var chkFactura = document.getElementById('chkFactura');
+            var wrap = document.getElementById('actividadWrap');
+
+            function aplicarFactura() {
+                if (!wrap || !chkFactura) return;
+                wrap.style.display = chkFactura.checked ? 'block' : 'none';
+            }
+            aplicarFactura();
+        })();
+
+        function toggleFactura(chk) {
+            var wrap = document.getElementById('actividadWrap');
+            if (wrap) wrap.style.display = chk.checked ? 'block' : 'none';
         }
-    })();
+
+        // ═══════════ Buscador de actividades ═══════════
+        function mostrarActividades() {
+            var lista = document.getElementById('listaActividades');
+            if (lista) lista.style.display = 'block';
+            filtrarActividades();
+        }
+
+        function filtrarActividades() {
+            var buscador = document.getElementById('buscadorActividad');
+            var lista = document.getElementById('listaActividades');
+            if (!buscador || !lista) return;
+
+            var q = buscador.value.toLowerCase().trim();
+            var visibles = 0;
+            var items = lista.querySelectorAll('.actividad-item');
+            for (var i = 0; i < items.length; i++) {
+                var it = items[i];
+                var txt = it.getAttribute('data-text') || '';
+                if (!q || txt.indexOf(q) >= 0) {
+                    it.style.display = 'block';
+                    visibles++;
+                } else {
+                    it.style.display = 'none';
+                }
+            }
+            lista.style.display = visibles > 0 ? 'block' : 'none';
+        }
+
+        function seleccionarActividad(id, texto) {
+            var hidden = document.getElementById('ActividadEconomicaId');
+            var textoEl = document.getElementById('actividadTexto');
+            var seleccionada = document.getElementById('actividadSeleccionada');
+            var lista = document.getElementById('listaActividades');
+            var buscador = document.getElementById('buscadorActividad');
+            if (!hidden || !textoEl || !seleccionada || !lista || !buscador) return;
+
+            hidden.value = id;
+            textoEl.textContent = texto;
+            seleccionada.style.display = 'block';
+            lista.style.display = 'none';
+            buscador.value = texto;
+        }
+
+        document.addEventListener('click', function (e) {
+            var buscador = document.getElementById('buscadorActividad');
+            var lista = document.getElementById('listaActividades');
+            if (!buscador || !lista) return;
+            var target = e.target;
+            if (!target) return;
+            if (!buscador.contains(target) && !lista.contains(target)) {
+                lista.style.display = 'none';
+            }
+        });
     </script>
 }

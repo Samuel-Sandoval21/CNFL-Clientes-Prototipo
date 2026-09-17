@@ -18,7 +18,67 @@
             color: var(--blue);
             font-weight: 700;
             font-size: 13px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            padding: 8px 12px;
+            background: var(--blue-soft);
+            border-radius: 10px;
+            text-decoration: none;
+        }
+
+            .back-link:hover {
+                opacity: .85;
+            }
+
+        .perfil-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .avatar-grande {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a2b6b, #5b3fbf);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 22px;
+            flex-shrink: 0;
+            box-shadow: 0 8px 18px -8px rgba(26, 43, 107, .5);
+        }
+
+        .perfil-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .perfil-nombre {
+            font-size: 16px;
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 3px;
+        }
+
+        .perfil-cedula {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .info-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            margin-bottom: 14px;
         }
 
         .info-row {
@@ -44,6 +104,7 @@
                 color: var(--text);
                 font-weight: 700;
                 text-align: right;
+                word-break: break-word;
             }
 
         .section-title {
@@ -56,8 +117,23 @@
             gap: 8px;
         }
 
+            .section-title i {
+                font-size: 15px;
+                color: var(--purple);
+            }
+
+            .section-title .count {
+                font-size: 11px;
+                font-weight: 800;
+                color: var(--muted);
+                background: #eef0f5;
+                padding: 2px 8px;
+                border-radius: 10px;
+                margin-left: auto;
+            }
+
         .list-item {
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid var(--line);
             font-size: 13px;
         }
@@ -67,43 +143,69 @@
             }
 
             .list-item .title {
-                font-weight: 700;
+                font-weight: 800;
+                color: var(--text);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
             }
 
             .list-item .sub {
                 color: var(--muted);
                 font-size: 12px;
-                margin-top: 2px;
+                margin-top: 4px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
             }
+
+                .list-item .sub i {
+                    font-size: 10px;
+                    color: #c9ced9;
+                }
+
+        .empty-mini {
+            text-align: center;
+            padding: 16px;
+            color: var(--muted);
+            font-size: 12.5px;
+        }
     </style>
 }
 
 <a href="@Url.Action("Clientes", "Admin")" class="back-link">
-    <i class="fas fa-arrow-left"></i> Volver
+    <i class="fas fa-arrow-left"></i> Volver a Clientes
 </a>
 
-<h1 class="page-title">@Model.Nombre @Model.Apellidos</h1>
-
-<div class="card">
-    <div class="info-row">
-        <span class="label">Cédula</span>
-        <span class="value">@Model.Cedula</span>
+<!-- Perfil -->
+<div class="perfil-card">
+    <div class="avatar-grande">
+        @(string.IsNullOrEmpty(Model.Nombre) ? "?" : Model.Nombre.Substring(0, 1).ToUpper())
     </div>
+    <div class="perfil-info">
+        <div class="perfil-nombre">@Model.Nombre @Model.Apellidos</div>
+        <div class="perfil-cedula">@Model.Cedula</div>
+    </div>
+</div>
+
+<!-- Info personal -->
+<div class="info-card">
     <div class="info-row">
         <span class="label">Correo</span>
         <span class="value">@Model.Correo</span>
     </div>
     <div class="info-row">
         <span class="label">Teléfono</span>
-        <span class="value">@Model.Telefono</span>
-    </div>
-    <div class="info-row">
-        <span class="label">Dirección</span>
-        <span class="value">@Model.Provincia, @Model.Canton, @Model.Distrito</span>
+        <span class="value">@(string.IsNullOrEmpty(Model.Telefono) ? "—" : Model.Telefono)</span>
     </div>
     <div class="info-row">
         <span class="label">Estado</span>
-        <span class="value">@(Model.Activo ? "Activo" : "Inactivo")</span>
+        <span class="value">
+            <span class="badge @(Model.Activo ? "ok" : "warn")">
+                @(Model.Activo ? "Activo" : "Inactivo")
+            </span>
+        </span>
     </div>
     <div class="info-row">
         <span class="label">Registro</span>
@@ -111,73 +213,118 @@
     </div>
 </div>
 
-<div class="section-title"><i class="fas fa-bolt"></i> NISEs (@nises.Count)</div>
-<div class="card">
+<!-- NISEs -->
+<div class="section-title">
+    <i class="fas fa-bolt"></i> NISEs
+    <span class="count">@nises.Count</span>
+</div>
+<div class="info-card">
     @if (!nises.Any())
     {
-        <div class="empty" style="padding:16px;">Sin NISEs registrados</div>
+        <div class="empty-mini">Sin NISEs registrados</div>
     }
     else
     {
         foreach (var n in nises)
         {
             <div class="list-item">
-                <div class="title">@n.NumeroNise</div>
-                <div class="sub">@n.Direccion · @n.Estado</div>
+                <div class="title">
+                    @n.NumeroNise
+                    @if (!string.IsNullOrEmpty(n.TipoServicio))
+                    {
+                        <span class="badge info">@n.TipoServicio</span>
+                    }
+                </div>
+                <div class="sub">
+                    <i class="fas fa-map-marker-alt"></i>
+                    @n.Direccion
+                </div>
             </div>
         }
     }
 </div>
 
-<div class="section-title"><i class="fas fa-file-invoice"></i> Facturas (@facturas.Count)</div>
-<div class="card">
+<!-- Facturas -->
+<div class="section-title">
+    <i class="fas fa-file-invoice"></i> Facturas
+    <span class="count">@facturas.Count</span>
+</div>
+<div class="info-card">
     @if (!facturas.Any())
     {
-        <div class="empty" style="padding:16px;">Sin facturas</div>
+        <div class="empty-mini">Sin facturas</div>
     }
     else
     {
         foreach (var f in facturas.Take(10))
         {
             <div class="list-item">
-                <div class="title">₡@f.MontoTotal.ToString("N0")</div>
-                <div class="sub">@f.FechaEmision.ToString("dd/MM/yyyy") · @f.Estado</div>
+                <div class="title">
+                    ₡@f.Monto.ToString("N0")
+                    <span class="badge @(f.Pagada ? "ok" : "warn")">
+                        @(f.Pagada ? "Pagada" : "Pendiente")
+                    </span>
+                </div>
+                <div class="sub">
+                    <i class="fas fa-calendar"></i>
+                    @f.FechaEmision.ToString("dd/MM/yyyy")
+                </div>
             </div>
         }
     }
 </div>
 
-<div class="section-title"><i class="fas fa-exclamation-triangle"></i> Averías (@averias.Count)</div>
-<div class="card">
+<!-- Averías -->
+<div class="section-title">
+    <i class="fas fa-exclamation-triangle"></i> Averías
+    <span class="count">@averias.Count</span>
+</div>
+<div class="info-card">
     @if (!averias.Any())
     {
-        <div class="empty" style="padding:16px;">Sin averías</div>
+        <div class="empty-mini">Sin averías</div>
     }
     else
     {
         foreach (var a in averias.Take(10))
         {
             <div class="list-item">
-                <div class="title">@a.Tipo</div>
-                <div class="sub">@a.FechaReporte.ToString("dd/MM/yyyy") · @a.Estado</div>
+                <div class="title">
+                    @a.Tipo
+                    <span class="badge @(a.Estado == "Resuelta" ? "ok" : "warn")">@a.Estado</span>
+                </div>
+                <div class="sub">
+                    <i class="fas fa-calendar"></i>
+                    @a.FechaReporte.ToString("dd/MM/yyyy")
+                </div>
             </div>
         }
     }
 </div>
 
-<div class="section-title"><i class="fas fa-clipboard-list"></i> Trámites (@tramites.Count)</div>
-<div class="card">
+<!-- Trámites -->
+<div class="section-title">
+    <i class="fas fa-file-alt"></i> Trámites
+    <span class="count">@tramites.Count</span>
+</div>
+<div class="info-card">
     @if (!tramites.Any())
     {
-        <div class="empty" style="padding:16px;">Sin trámites</div>
+        <div class="empty-mini">Sin trámites</div>
     }
     else
     {
         foreach (var t in tramites.Take(10))
         {
             <div class="list-item">
-                <div class="title">@t.Tipo</div>
-                <div class="sub">@t.FechaSolicitud.ToString("dd/MM/yyyy") · @t.Estado</div>
+                <div class="title">
+                    @t.Tipo
+                    <span class="badge @(t.Estado == "Completado" ? "ok" : "info")">@t.Estado</span>
+                </div>
+                <div class="sub">
+                    <i class="fas fa-calendar"></i>
+                    @t.FechaSolicitud.ToString("dd/MM/yyyy")
+                </div>
             </div>
         }
     }

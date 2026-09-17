@@ -223,48 +223,6 @@
             position: relative;
             height: 180px;
         }
-
-        .export-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .export-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px 10px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 800;
-            font-family: inherit;
-            cursor: pointer;
-            text-decoration: none;
-            border: none;
-            transition: transform .15s;
-        }
-
-            .export-btn:active {
-                transform: scale(.97);
-            }
-
-            .export-btn.excel {
-                background: var(--green-soft);
-                color: #046a38;
-                box-shadow: 0 6px 14px -6px rgba(4, 106, 56, .3);
-            }
-
-            .export-btn.pdf {
-                background: var(--red-soft);
-                color: #b71c1c;
-                box-shadow: 0 6px 14px -6px rgba(183, 28, 28, .3);
-            }
-
-            .export-btn i {
-                font-size: 17px;
-            }
     </style>
 }
 
@@ -344,18 +302,6 @@
     <div class="chart-box"><canvas id="chartSemana"></canvas></div>
 </div>
 
-<div class="chart-card">
-    <div class="chart-title"><i class="fas fa-download"></i> Descargar reportes</div>
-    <div class="export-grid">
-        <a href="@Url.Action("ExportarExcel", "Admin")" class="export-btn excel">
-            <i class="fas fa-file-excel"></i> Excel
-        </a>
-        <a href="@Url.Action("ExportarPDF", "Admin")" class="export-btn pdf">
-            <i class="fas fa-file-pdf"></i> PDF
-        </a>
-    </div>
-</div>
-
 @section Scripts {
     <script>
         (function () {
@@ -373,18 +319,14 @@
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '68%',
+                    responsive: true, maintainAspectRatio: false, cutout: '68%',
                     plugins: {
                         legend: {
                             position: 'bottom',
                             labels: {
                                 font: { family: 'Inter', size: 11, weight: '700' },
-                                color: '#6b7280',
-                                padding: 12,
-                                usePointStyle: true,
-                                pointStyle: 'circle'
+                                color: '#6b7280', padding: 12,
+                                usePointStyle: true, pointStyle: 'circle'
                             }
                         }
                     }
@@ -404,29 +346,20 @@
                         data: [2, 4, 3, 5, 4, 1, 2],
                         borderColor: '#1a2b6b',
                         backgroundColor: 'rgba(26, 43, 107, .08)',
-                        fill: true,
-                        tension: .35,
+                        fill: true, tension: .35,
                         pointBackgroundColor: '#1a2b6b',
                         pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        borderWidth: 2.5
+                        pointBorderWidth: 2, pointRadius: 4, borderWidth: 2.5
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#eef0f5', drawBorder: false },
-                            ticks: { color: '#6b7280', font: { family: 'Inter', size: 10 }, stepSize: 1 }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#6b7280', font: { family: 'Inter', size: 10, weight: '700' } }
-                        }
+                        y: { beginAtZero: true, grid: { color: '#eef0f5', drawBorder: false },
+                             ticks: { color: '#6b7280', font: { family: 'Inter', size: 10 }, stepSize: 1 } },
+                        x: { grid: { display: false },
+                             ticks: { color: '#6b7280', font: { family: 'Inter', size: 10, weight: '700' } } }
                     }
                 }
             });

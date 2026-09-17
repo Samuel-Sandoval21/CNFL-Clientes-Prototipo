@@ -748,7 +748,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
 
             ViewBag.NISEs = nises;
-            ViewBag.Provincias = UbicacionCostaRica.Catalogo.Keys.ToList();
             ViewBag.ActividadesEconomicas = _db.ActividadesEconomicas
                 .OrderBy(a => a.Codigo)
                 .Select(a => new ActividadEconomicaDto
@@ -767,9 +766,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult GuardarCuenta(Usuario model, string NombreCompleto,
             bool FacturaElectronica = false, int? ActividadEconomicaId = null,
-            HttpPostedFileBase FotoPerfil = null,
-            string Provincia = null, string Canton = null,
-            string Distrito = null, string DireccionExacta = null)
+            HttpPostedFileBase FotoPerfil = null)
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
@@ -801,11 +798,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             usuario.Telefono = model.Telefono;
             usuario.CorreoSecundario = model.CorreoSecundario;
             usuario.TelefonoSecundario = model.TelefonoSecundario;
-
-            if (!string.IsNullOrWhiteSpace(Provincia)) usuario.Provincia = Provincia;
-            if (!string.IsNullOrWhiteSpace(Canton)) usuario.Canton = Canton;
-            if (!string.IsNullOrWhiteSpace(Distrito)) usuario.Distrito = Distrito;
-            if (!string.IsNullOrWhiteSpace(DireccionExacta)) usuario.DireccionExacta = DireccionExacta;
 
             usuario.FacturaElectronica = FacturaElectronica;
             usuario.ActividadEconomicaId = (FacturaElectronica && ActividadEconomicaId.HasValue)
@@ -840,7 +832,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // AJAX: Provincia → Cantón → Distrito
+        // AJAX: Provincia → Cantón → Distrito (por si los usás en otro lugar)
         // ============================================================
 
         [HttpGet]
