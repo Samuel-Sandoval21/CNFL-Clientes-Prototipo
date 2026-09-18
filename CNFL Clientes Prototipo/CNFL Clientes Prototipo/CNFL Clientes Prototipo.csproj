@@ -275,6 +275,7 @@
     <Content Include="Content\cliente\tienda.css" />
     <Content Include="Content\cliente\tramites.css" />
     <Content Include="Content\img\logo-cnfl.png" />
+    <Content Include="Index.html" />
     <Content Include="Scripts\admin\admin.js" />
     <Content Include="Scripts\admin\averias.js" />
     <Content Include="Scripts\admin\clientes.js" />

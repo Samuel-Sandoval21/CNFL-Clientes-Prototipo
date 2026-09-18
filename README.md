@@ -1,6 +1,6 @@
 # CNFL Clientes · Prototipo App Móvil
 
-Prototipo funcional de una aplicación móvil para la **Compañía Nacional de Fuerza y Luz (CNFL)** de Costa Rica. Incluye módulo de **Cliente** y módulo de **Administrador**, ambos con diseño tipo app móvil (iOS/Android), notificaciones push reales, envío de correos y persistencia en SQL Server.
+Prototipo funcional de una aplicación móvil para la **Compañía Nacional de Fuerza y Luz (CNFL)** de Costa Rica. Incluye módulo de **Cliente** y módulo de **Administrador**, ambos con diseño tipo app móvil (iOS/Android), notificaciones push reales, envío de correos, exportación a Excel/PDF y persistencia en SQL Server.
 
 ---
 
@@ -18,35 +18,42 @@ Ambos módulos están diseñados como **app móvil real**: se visualizan dentro 
 ## 🎯 Funcionalidades principales
 
 ### 🔐 Autenticación
+
 - Login con cédula, correo o nombre de usuario.
+- **Detección automática de rol** (Cliente / Administrador) al iniciar sesión.
 - Registro con validación de cédula única, correo único y nombre de usuario único.
 - Recuperación de contraseña con correo electrónico.
 - Login biométrico (Face ID / Huella) preparado.
 - Roles: **Cliente** y **Administrador**.
 
+---
+
 ### 👤 Módulo Cliente
 
 #### 🏠 Dashboard (Inicio)
+
 - Saludo dinámico según hora (Buenos días / tardes / noches).
 - Hero card con mensaje de bienvenida.
 - Facturas pendientes con monto, NISE y fecha de vencimiento.
 - Gráfica de consumo kWh con 3 modos: **últimos 6 meses · 31 días · lecturas**.
-- Resumen del mes (consumo, promedio, próxima lectura).
-- Contactános (teléfono, correo, web, oficinas).
+- Resumen del mes (consumo actual, anterior, promedio, próxima lectura).
+- **Contáctanos funcional** (teléfono, correo, web, oficinas).
 
 #### 🔌 Mis Servicios
+
 - Lista de NISEs con estado (Normal / Prevención / Incidente).
 - Historial de consumo (kWh y ₡).
 - Consulta al medidor AMI (última lectura, voltaje, costo estimado).
 - Reportes con 3 tipos de avería: alumbrado público, eléctrica propia, eléctrica ajena.
-- Mapa GIS con **Leaflet + OpenStreetMap** mostrando:
+- **Mapa GIS** con Leaflet + OpenStreetMap mostrando:
   - Averías por color según clientes afectados.
   - Estaciones de recarga eléctrica.
   - Puntos verdes.
 - Calculadora energética con persistencia en `localStorage`.
 
 #### 📄 Trámites
-- **Catálogo de 16 trámites** según diagrama:
+
+- **Catálogo de 16 trámites**:
   - Cambio de conexión de voltaje
   - Cambio de nombre de abonado
   - Cambio de servicio provisional a definitivo
@@ -68,12 +75,14 @@ Ambos módulos están diseñados como **app móvil real**: se visualizan dentro 
 - Notificación push + correo al iniciar.
 
 #### 🛍️ Productos y Servicios
-- **Servicios (Hogar 360°)**: eficiencia energética, alarmas, cargadores eléctricos, domótica, mantenimiento de barras, venta e instalación, consumo verde y DERs.
+
+- **Servicios Hogar 360°**: eficiencia energética, alarmas, cargadores eléctricos, domótica, mantenimiento de barras, venta e instalación, consumo verde y DERs.
 - **Marketplace**: 7 categorías (Línea Blanca, Tecnología, Entretenimiento, A/C, Electrodomésticos, Audio, Herramientas) con 14 productos.
 - **Subscripciones**: Seguros Hogar/Incendio, Asistencia, Videovigilancia.
 - **Historial de compras** con subscripciones activas, servicios contratados, créditos abiertos y productos comprados.
 
 #### 🛒 Carrito / Tienda / Mis Compras
+
 - Carrito funcional con persistencia en `localStorage`.
 - Subtotal + IVA 13% + Total.
 - **5 métodos de pago**:
@@ -85,96 +94,114 @@ Ambos módulos están diseñados como **app móvil real**: se visualizan dentro 
 - Confirmación de compra con notificación push.
 
 #### 👤 Cuenta
+
 - Foto de perfil con preview (subida y guardado en servidor).
-- Edición de datos personales, contacto y ubicación.
-- Selects en cascada Provincia → Cantón → Distrito.
+- Edición de datos personales y contacto.
 - Factura electrónica con checkbox + buscador de actividad económica por código o nombre.
 - Seguridad: cambio de contraseña.
 - Cerrar sesión.
 
 #### 🔔 Alertas
-- **4 categorías** según diagrama:
+
+- **4 categorías**:
   1. Averías (Reportada, En proceso, Finalizada + hora estimada)
   2. Suspensiones programadas por NISE (Programada, En Proceso)
   3. Facturas por vencer / Medio de pago vencido
   4. Eventos (Voltaje fuera de rango, consumo fuera de límites)
-- Notificaciones push del navegador con **sonido generado por Web Audio API**.
+- Notificaciones push del navegador con sonido generado por Web Audio API.
 - Envío de correo real vía SMTP.
 - Configuración por tipo de alerta.
+
+---
 
 ### 🛠️ Módulo Admin
 
 #### 📊 Dashboard
+
 - Métricas principales: clientes, NISEs, monto pendiente, ingresos del mes.
 - Métricas secundarias: averías abiertas/resueltas, trámites abiertos, tiempo promedio.
 - Gráficos interactivos con **Chart.js**:
   - Averías por estado (doughnut).
   - Averías últimos 7 días (line).
-- Tasa de resolución con barra de progreso.
+- Banner de bienvenida con saludo dinámico.
 
 #### 👥 Clientes
+
 - Búsqueda por nombre, cédula o correo.
-- Filtro por rol (Cliente / Admin / Todos).
-- Lista mobile con chips de estado.
-- Vista de detalle por cliente.
+- Lista mobile con avatar, chips de estado y estadísticas.
+- Vista de detalle por cliente (NISEs, facturas, averías, trámites).
 
 #### ⚡ Averías
-- Filtros por estado, tipo y búsqueda.
-- Vista de detalle con historial.
-- Cambio de estado con notificación automática al cliente.
+
+- Filtros por estado (Todas, Ingresadas, En revisión, Resueltas).
+- Cards con NISE, fecha y descripción.
+- Estadísticas arriba: abiertas, en proceso, resueltas.
 
 #### 📋 Trámites
-- Filtros por estado y búsqueda.
+
+- Filtros por estado (Todos, Solicitados, En proceso, Completados).
 - Vista con referencia, tipo, cliente y fecha.
-- Cambio de estado con notificación al cliente.
 
 #### 📈 Reportes
-- Rango de fechas configurable.
-- Métricas: facturado, cobrado, averías, trámites.
-- Gráficos de facturación por mes y averías por tipo.
-- Exportación a PDF y Excel (estructura lista).
+
+- Resumen financiero: facturado, cobrado, pendiente.
+- Gráfico de facturación últimos 6 meses.
+- **Exportación real a Excel**:
+  - 10 hojas con datos de Resumen, Clientes, NISEs, Facturas, Averías, Trámites, Actividad.
+  - 3 hojas adicionales con datos listos para insertar gráficos manualmente en Excel.
+- **Exportación real a PDF**:
+  - 6 secciones de tablas: Resumen General, Clientes, NISEs, Facturas, Averías, Trámites.
+  - Estilos con paleta CNFL y encabezados.
 
 #### ⏱️ Actividad de uso
-- Log de actividad de los clientes en la app.
+
+- Top 10 usuarios con más minutos de uso.
 - Gráficos por sección y por día.
-- Últimos 500 registros.
 
-#### 🔧 Configuración
-- Información del sistema (versión, framework, BD).
+#### 🔔 Alertas
+
+- Notificaciones del sistema para el admin.
+- Banners de prioridad (crítico, advertencia, ok).
+
+#### 👤 Cuenta (Admin)
+
+- Perfil con iniciales del administrador.
+- Accesos rápidos: Clientes, Actividad de uso, Configuración, Alertas.
+- Cerrar sesión.
+
+#### ⚙️ Configuración
+
+- Info del sistema (versión, framework, BD).
 - Estadísticas generales.
-
-#### ⚙️ Modal de configuración Admin
-- Zoom del panel (70% - 140%, persistente).
-- Modo oscuro (persistente).
-- Notificaciones push del navegador.
-- Cerrar sesión con confirmación.
 
 ---
 
 ## 🌐 Internacionalización
 
-La app incluye soporte para **5 idiomas**:
+Soporte para **5 idiomas**:
+
 - 🇨🇷 Español (Costa Rica)
 - 🇺🇸 English (US)
 - 🇫🇷 Français
 - 🇧🇷 Português (BR)
 - 🇨🇳 中文 (简体)
 
-El idioma seleccionado se guarda en `localStorage` y se aplica automáticamente a los textos del layout.
+Persistido en `localStorage`.
 
 ---
 
 ## 🎨 Diseño
 
-- **Mobile-first**: la app se ve como un celular real en desktop y ocupa toda la pantalla en móvil.
+- **Mobile-first**: marco de celular en desktop, pantalla completa en móvil.
 - **Paleta CNFL**:
-  - Azul `#1E23E6` (confianza / navegación)
+  - Azul `#1a2b6b` (confianza / navegación)
   - Azul oscuro `#001482` (seguridad)
-  - Naranja `#FF692D` (CTA / conversión)
-  - Verde `#64B95A` (éxito / ahorro)
-  - Ámbar `#F5A623` (prevención)
-  - Rojo `#E5484D` (incidente)
-- **Bottom navigation** en lugar de sidebar (como app móvil real).
+  - Naranja `#ff692d` (CTA / conversión)
+  - Verde `#00a651` (éxito / ahorro)
+  - Dorado `#c98a00` (prevención)
+  - Rojo `#e53935` (incidente)
+  - Morado `#5b3fbf` (acento admin)
+- **Bottom navigation** (no sidebar).
 - **Modo oscuro** persistente.
 - **Zoom** persistente para accesibilidad.
 - **Componentes reutilizables**: cards, chips de estado, trackers, modales.
@@ -184,90 +211,204 @@ El idioma seleccionado se guarda en `localStorage` y se aplica automáticamente 
 ## 🏗️ Arquitectura técnica
 
 ### Stack
+
 | Capa | Tecnología |
 |---|---|
-| **Backend** | ASP.NET MVC 5 · .NET Framework 4.8.1 |
-| **Base de datos** | SQL Server (LocalDB) |
+| **Backend** | ASP.NET MVC 4.8.1 · .NET Framework 4.8.1 |
+| **Base de datos** | SQL Server 2022 (LocalDB) |
 | **ORM** | Entity Framework 6 |
 | **Frontend** | Razor Views · CSS3 · Vanilla JS |
 | **Gráficos** | Chart.js 4.4.1 (CDN) |
 | **Mapas** | Leaflet 1.9.4 + OpenStreetMap |
 | **Notificaciones** | Web Notifications API + Web Audio API |
-| **Correo** | SMTP (Gmail / Office 365 / cualquier proveedor) |
+| **Correo** | SMTP (Gmail / Office 365 / otro) |
+| **Excel** | ClosedXML 0.105.1 |
+| **PDF** | iTextSharp 5.5.13 |
 
 ### Estructura del proyecto
 
-```
-CNFL_Clientes_Prototipo/
+```text
+CNFL Clientes Prototipo/
+│
+├── Index.html                  # Página lanzadora (raíz)
+├── README.md                   # Este archivo
+├── .gitignore
+├── CNFL Clientes Prototipo.sln
+│
+├── App_Data/
+├── App_Start/
+│   ├── BundleConfig.cs
+│   ├── FilterConfig.cs
+│   └── RouteConfig.cs
+│
+├── Content/
+│   ├── admin/
+│   │   ├── admin.css
+│   │   ├── averias.css
+│   │   ├── clientes.css
+│   │   ├── dashboard.css
+│   │   ├── detalle-averia.css
+│   │   ├── detalle-cliente.css
+│   │   └── reportes.css
+│   ├── cliente/
+│   │   ├── app.css
+│   │   ├── calculadora.css
+│   │   ├── carrito.css
+│   │   ├── chat.css
+│   │   ├── cuenta.css
+│   │   ├── dashboard.css
+│   │   ├── detalle-tramite.css
+│   │   ├── editar-datos.css
+│   │   ├── estado-averia.css
+│   │   ├── historial-compras.css
+│   │   ├── mis-facturas.css
+│   │   ├── reportes.css
+│   │   ├── servicios-contratados.css
+│   │   ├── suscripciones.css
+│   │   ├── tienda.css
+│   │   └── tramites.css
+│   ├── img/
+│   │   └── logo-cnfl.png
+│   ├── bootstrap-grid.css
+│   ├── bootstrap-grid.css.map
+│   ├── bootstrap-grid.min.css
+│   ├── bootstrap-grid.min.css.map
+│   ├── bootstrap-grid.rtl.css
+│   └── Site.css
+│
 ├── Controllers/
-│   ├── AdminController.cs         # Panel administrador
-│   ├── ClientesController.cs      # Módulo cliente
-│   ├── CuentaController.cs        # Login/Registro/Recuperar
-│   └── HomeController.cs          # Home público
+│   ├── AdminController.cs
+│   ├── CarritoController.cs
+│   ├── ClientesController.cs
+│   ├── CuentaController.cs
+│   ├── HomeController.cs
+│   ├── PagosController.cs
+│   ├── TiendaController.cs
+│   └── TramitesController.cs
+│
 ├── Data/
-│   └── CNFLDbContext.cs           # DbContext de EF
+│   └── CNFLDbContext.cs
+│
 ├── Filters/
-│   └── SessionAuthorize.cs        # Filtro de autorización por rol
+│   └── SessionAuthorizeAttribute.cs
+│
 ├── Models/
-│   ├── Usuario.cs
-│   ├── NISE.cs
-│   ├── Factura.cs
-│   ├── Averia.cs
-│   ├── Tramite.cs
-│   ├── Notificacion.cs
+│   ├── ActividadEconomica.cs
 │   ├── ActividadUsuario.cs
+│   ├── Averia.cs
+│   ├── DashboardDtos.cs
 │   ├── DescargaUsuario.cs
-│   ├── DashboardDtos.cs           # DTOs compartidos
-│   └── ClienteAdminDto.cs         # DTO para admin
+│   ├── Factura.cs
+│   ├── NISE.cs
+│   ├── Notificacion.cs
+│   ├── Pago.cs
+│   ├── Tramite.cs
+│   ├── Usuario.cs
+│   └── UsuarioRol.cs
+│
+├── Repositories/
+│   ├── AveriaRepository.cs
+│   ├── FacturaRepository.cs
+│   └── NotificacionRepository.cs
+│
+├── Scripts/
+│   ├── admin/
+│   │   ├── admin.js
+│   │   ├── averias.js
+│   │   ├── clientes.js
+│   │   └── reportes.js
+│   ├── cliente/
+│   │   ├── app.js
+│   │   ├── calculadora.js
+│   │   ├── carrito.js
+│   │   ├── chat.js
+│   │   ├── cuenta.js
+│   │   ├── dashboard.js
+│   │   ├── detalle-tramite.js
+│   │   ├── editar-datos.js
+│   │   ├── estado-averia.js
+│   │   ├── mis-facturas.js
+│   │   ├── perfil.js
+│   │   ├── recuperar-clave.js
+│   │   ├── reportar-averia.js
+│   │   ├── reportes.js
+│   │   ├── servicios-contratados.js
+│   │   ├── suscripciones.js
+│   │   ├── tienda.js
+│   │   └── tramites.js
+│   ├── bootstrap.bundle.js
+│   ├── bootstrap.bundle.js.map
+│   ├── bootstrap.bundle.min.js
+│   ├── bootstrap.bundle.min.js.map
+│   ├── registro.js
+│   └── Site.js
+│
+├── Services/
+│   ├── DashboardService.cs
+│   ├── NISEService.cs
+│   ├── NotificationService.cs
+│   ├── PaymentService.cs
+│   ├── SuscripcionService.cs
+│   ├── SuspensionService.cs
+│   ├── TramiteService.cs
+│   └── UsuarioService.cs
+│
 ├── Views/
-│   ├── Admin/                     # Vistas del admin
-│   │   ├── Dashboard.cshtml
-│   │   ├── Clientes.cshtml
-│   │   ├── Averias.cshtml
-│   │   ├── Tramites.cshtml
-│   │   ├── Reportes.cshtml
+│   ├── Admin/
 │   │   ├── Actividad.cshtml
-│   │   └── Configuracion.cshtml
-│   ├── Clientes/                  # Vistas del cliente
-│   │   ├── Dashboard.cshtml
-│   │   ├── MisServicios.cshtml
-│   │   ├── HistorialConsumo.cshtml
-│   │   ├── ConsultaMedidor.cshtml
-│   │   ├── MapaGIS.cshtml
-│   │   ├── Calculadora.cshtml
-│   │   ├── Reportes.cshtml
-│   │   ├── EstadoAveria.cshtml
-│   │   ├── HistorialReportes.cshtml
-│   │   ├── Tramites.cshtml
-│   │   ├── ProductosServicios.cshtml
-│   │   ├── Tienda.cshtml
-│   │   ├── DetalleProducto.cshtml
-│   │   ├── MisCompras.cshtml
-│   │   ├── MetodosPago.cshtml
 │   │   ├── Alertas.cshtml
-│   │   ├── MisFacturas.cshtml
-│   │   └── Cuenta.cshtml
-│   ├── Cuenta/                    # Login, Registro, Recuperar
+│   │   ├── Averias.cshtml
+│   │   ├── Clientes.cshtml
+│   │   ├── Configuracion.cshtml
+│   │   ├── Cuenta.cshtml
+│   │   ├── Dashboard.cshtml
+│   │   ├── DetalleAveria.cshtml
+│   │   ├── DetalleCliente.cshtml
+│   │   ├── Reportes.cshtml
+│   │   └── Tramites.cshtml
+│   ├── Clientes/
+│   │   ├── Alertas.cshtml
+│   │   ├── Calculadora.cshtml
+│   │   ├── ConsultaMedidor.cshtml
+│   │   ├── Cuenta.cshtml
+│   │   ├── Dashboard.cshtml
+│   │   ├── DetalleProducto.cshtml
+│   │   ├── EstadoAveria.cshtml
+│   │   ├── HistorialConsumo.cshtml
+│   │   ├── MisServicios.cshtml
+│   │   ├── ProductosServicios.cshtml
+│   │   ├── Reportes.cshtml
+│   │   ├── Tienda.cshtml
+│   │   └── Tramites.cshtml
+│   ├── Cuenta/
+│   │   ├── _ConsentimientoInformado.cshtml
+│   │   ├── _PoliticaPrivacidad.cshtml
 │   │   ├── Login.cshtml
-│   │   ├── Registro.cshtml
-│   │   └── RecuperarClave.cshtml
+│   │   ├── RecuperarClave.cshtml
+│   │   └── Registro.cshtml
 │   ├── Home/
 │   │   └── Index.cshtml
-│   └── Shared/
-│       ├── _EstilosBase.cshtml    # Estilos compartidos
-│       ├── _LayoutAdmin.cshtml    # Layout admin (mobile)
-│       ├── _LayoutCliente.cshtml  # Layout cliente (mobile)
-│       └── _LayoutPublico.cshtml  # Layout público (sin login)
-├── Content/
-│   ├── img/
-│   │   ├── logo-cnfl.png
-│   │   └── logo-cnfl.jpg
-│   └── uploads/
-│       └── perfiles/              # Fotos de perfil subidas
-├── Scripts/                        # (Opcional) JS externos
-├── Web.config
+│   ├── Shared/
+│   │   ├── _EstilosBase.cshtml
+│   │   ├── _LayoutAdmin.cshtml
+│   │   ├── _LayoutApp.cshtml
+│   │   ├── _LayoutCliente.cshtml
+│   │   ├── _LayoutLogin.cshtml
+│   │   ├── _LayoutPublico.cshtml
+│   │   ├── _LogoCNFL.cshtml
+│   │   └── Error.cshtml
+│   ├── Tramites/
+│   │   ├── Detalle.cshtml
+│   │   ├── Index.cshtml
+│   │   └── MisTramites.cshtml
+│   ├── _ViewStart.cshtml
+│   └── Web.config
+│
+├── favicon.ico
+├── Global.asax
+├── Global.asax.cs
 ├── packages.config
-└── README.md
+└── Web.config
 ```
 
 ---
@@ -275,21 +416,30 @@ CNFL_Clientes_Prototipo/
 ## 🚀 Instalación y ejecución
 
 ### Requisitos previos
-- **Visual Studio 2022** (Community o superior).
+
+- **Visual Studio 2026** (Community o superior).
 - **.NET Framework 4.8.1**.
-- **SQL Server LocalDB** (viene con VS).
+- **SQL Server 2022** (LocalDB o instancia completa).
 - Navegador moderno (Chrome, Edge, Firefox).
+
+### Paquetes NuGet requeridos
+
+- `EntityFramework` 6.x
+- `ClosedXML` 0.105.1 (Excel)
+- `itextsharp` 5.5.13 (PDF)
+- `Newtonsoft.Json`
 
 ### Pasos
 
 1. **Clonar el repositorio**
+
    ```bash
    git clone https://github.com/Samuel-Sandoval21/CNFL.git
    cd CNFL
    ```
 
 2. **Abrir la solución**
-   - Doble clic en `CNFL_Clientes_Prototipo.sln` o abrir desde VS.
+   - Doble clic en `CNFL Clientes Prototipo.sln` o abrir desde VS.
 
 3. **Restaurar paquetes NuGet**
    - Clic derecho en la solución → **Restaurar paquetes NuGet**.
@@ -299,54 +449,54 @@ CNFL_Clientes_Prototipo/
      ```
      Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=CNFL_Clientes;Integrated Security=True
      ```
-   - Si la BD no existe, se puede crear ejecutando los scripts SQL (no incluidos) o ajustar la cadena en `Web.config`.
+   - Si la BD no existe, ejecutá los scripts SQL o ajustá la cadena en `Web.config`.
 
-5. **Configurar SMTP** (opcional, para envío de correos)
-   - En `Web.config`, dentro de `<appSettings>`:
-     ```xml
-     <add key="SmtpHost" value="smtp.gmail.com" />
-     <add key="SmtpPort" value="587" />
-     <add key="SmtpUser" value="tucorreo@gmail.com" />
-     <add key="SmtpPass" value="tu-contraseña-de-aplicacion" />
-     <add key="SmtpFrom" value="tucorreo@gmail.com" />
-     ```
-   - **Nota**: Si usás Gmail, necesitás generar una **contraseña de aplicación** (no tu contraseña normal).
+5. **Configurar SMTP** (opcional, para correos)
+
+   ```xml
+   <add key="SmtpHost" value="smtp.gmail.com" />
+   <add key="SmtpPort" value="587" />
+   <add key="SmtpUser" value="tucorreo@gmail.com" />
+   <add key="SmtpPass" value="tu-contraseña-de-aplicacion" />
+   <add key="SmtpFrom" value="tucorreo@gmail.com" />
+   ```
+   > En Gmail necesitás generar una **contraseña de aplicación**.
 
 6. **Compilar y ejecutar**
    - `Ctrl + Shift + B` → Compilar.
    - `Ctrl + F5` → Ejecutar.
 
 7. **Abrir en el navegador**
-   - La app se abre en `http://localhost:44387` (el puerto puede variar).
+   - App: `http://localhost:44387`
+   - Alternativa: doble clic en `Index.html` (raíz) para una página lanzadora.
 
 ---
 
 ## 👥 Usuarios de prueba
 
-Si cargaste datos de ejemplo en la BD:
-
 | Rol | Cédula | Correo | Contraseña |
 |---|---|---|---|
-| Cliente | `2-0874-0716` | `ssandoval40716@ufide.ac.cr` | `123456` |
-| Admin | `1-1111-1111` | `admin@cnfl.go.cr` | `admin123` |
+| 👤 Cliente | `2-0874-0716` | `ssandoval40716@ufide.ac.cr` | `cliente123` |
+| 🧑‍💼 Admin | `1-1180-0989` | `mimiranda@cnfl.go.cr` | `admin123` |
 
-> ⚠️ Estos son datos de ejemplo. Cambialos según tu base de datos.
+> ⚠️ Datos de ejemplo. Cambialos según tu base de datos.
 
 ---
 
 ## 🔐 Seguridad
 
-- **Contraseñas**: almacenadas en texto plano en este prototipo (en producción usar `BCrypt` o `PasswordHasher`).
-- **Autorización**: filtro `SessionAuthorize` que valida sesión y rol por controlador.
+- **Contraseñas**: en texto plano en este prototipo (en producción usar BCrypt).
+- **Autorización**: `SessionAuthorizeAttribute` valida sesión y rol por controlador.
 - **Anti-forgery**: todos los POST usan `@Html.AntiForgeryToken()`.
-- **SMTP**: las credenciales se leen desde `Web.config`, no del código.
-- **HTTPS**: en producción, forzar HTTPS con `[RequireHttps]`.
+- **SMTP**: credenciales leídas de `Web.config`, no del código.
+- **HTTPS**: forzar con `[RequireHttps]` en producción.
 
 ---
 
 ## 🧪 Pruebas realizadas
 
 - ✅ Login con cédula, correo y nombre de usuario.
+- ✅ Detección automática de rol (Cliente / Admin).
 - ✅ Registro con validaciones de unicidad.
 - ✅ Recuperación de contraseña.
 - ✅ Cascada Provincia → Cantón → Distrito.
@@ -357,45 +507,42 @@ Si cargaste datos de ejemplo en la BD:
 - ✅ Gráficos con Chart.js.
 - ✅ Mapa GIS con Leaflet.
 - ✅ Cambio de idioma (5 idiomas).
-- ✅ Modo oscuro persistente.
-- ✅ Zoom persistente.
-- ✅ Cierre de sesión con confirmación.
-- ✅ Admin: gestión de clientes, averías y trámites.
-- ✅ Admin: exportación de reportes (estructura lista).
+- ✅ Modo oscuro y zoom persistentes.
+- ✅ Admin: gestión de clientes, averías, trámites.
+- ✅ Admin: exportación real a Excel (10 hojas).
+- ✅ Admin: exportación real a PDF (6 secciones).
+- ✅ Contáctanos funcional en público y privado (teléfono, correo, web, oficinas).
 
 ---
 
 ## 📋 Pendientes / Mejoras futuras
 
-- 🔲 Exportación real a **PDF** con iTextSharp o Rotativa.
-- 🔲 Exportación real a **Excel** con EPPlus o ClosedXML.
-- 🔲 **Hashing de contraseñas** con BCrypt.
-- 🔲 **Firebase Cloud Messaging** para push reales multiplataforma.
-- 🔲 **Backend con Supabase / Firebase** para sincronización.
-- 🔲 App nativa en **React Native + Expo** (según diagrama del proyecto).
-- 🔲 **HTTPS obligatorio** en producción.
-- 🔲 **Rate limiting** en endpoints sensibles.
-- 🔲 **Logs** con Serilog o NLog.
+- 🔲 Hashing de contraseñas con BCrypt.
+- 🔲 Firebase Cloud Messaging para push multiplataforma.
+- 🔲 App móvil nativa en Flutter / FlutterFlow / .NET MAUI.
+- 🔲 Exponer el prototipo por API (arquitectura recomendada).
+- 🔲 HTTPS obligatorio en producción.
+- 🔲 Rate limiting en endpoints sensibles.
+- 🔲 Logs con Serilog o NLog.
+- 🔲 Migración a .NET moderno (.NET 8).
 
 ---
 
 ## 📚 Diagrama del proceso
 
-El prototipo sigue el **Diagrama Proceso App CNFL - Propuesto**:
-
-```
+```text
 Cliente → Servicios → Facturas / Historial / AMI / Reportes / Mapa GIS / Calculadora
                     → Alertas → Push + correo
                     → Trámites → Formulario → Proceso CNFL → Notificar
-                    → Productos y Servicios → Servicios / Marketplace / Subscripciones / Historial
+                    → Productos y Servicios → Servicios / Marketplace / Subscripciones
                     → Carrito → Métodos de pago → Confirmación
 
-Admin → Dashboard → Métricas + gráficos
-      → Clientes → Búsqueda + detalle
-      → Averías → Filtros + cambio de estado
-      → Trámites → Filtros + cambio de estado
-      → Reportes → Rango de fechas + export
-      → Actividad → Log de uso por cliente
+Admin   → Dashboard → Métricas + gráficos
+        → Clientes → Búsqueda + detalle
+        → Averías → Filtros + cambio de estado
+        → Trámites → Filtros + cambio de estado
+        → Reportes → Rango de fechas + export Excel/PDF
+        → Actividad → Log de uso por cliente
 ```
 
 ---
@@ -403,15 +550,18 @@ Admin → Dashboard → Métricas + gráficos
 ## 👨‍💻 Autor
 
 - **Samuel Sandoval Ramírez**
+- Cédula: 2-0874-0716
+- Bachillerato en Ingeniería en Sistemas de Computación — Universidad Fidélitas
 - GitHub: [@Samuel-Sandoval21](https://github.com/Samuel-Sandoval21)
 
-Proyecto desarrollado como **prototipo funcional** para la Compañía Nacional de Fuerza y Luz (CNFL) de Costa Rica.
+**Supervisor CNFL:** Michael Miranda Guevara — Área de Inteligencia de Negocios
+**Período:** 24 de agosto al 25 de setiembre de 2026
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto es un **prototipo académico**. Todos los derechos de la marca CNFL pertenecen a la Compañía Nacional de Fuerza y Luz de Costa Rica.
+Prototipo académico desarrollado como parte del **Trabajo Comunal Universitario (TCU)**. Todos los derechos de la marca CNFL pertenecen a la Compañía Nacional de Fuerza y Luz de Costa Rica.
 
 ---
 
@@ -419,7 +569,7 @@ Este proyecto es un **prototipo académico**. Todos los derechos de la marca CNF
 
 - **CNFL** por permitir el desarrollo del prototipo.
 - **Katherine Villalobos** y **Daniel Rodríguez** por la revisión del diagrama de proceso.
-- **Comunidad de desarrolladores** por las librerías open source (Leaflet, Chart.js, etc.).
+- **Comunidad de desarrolladores** por las librerías open source (Leaflet, Chart.js, ClosedXML, iTextSharp, etc.).
 
 ---
 
