@@ -46,33 +46,35 @@
     <div class="aviso ok">@TempData["Mensaje"]</div>
 }
 
+<!-- ═══════════ HEADER CON AVATAR (fuera del form para subida AJAX) ═══════════ -->
+<div class="acct-head" style="flex-direction:column; align-items:center; text-align:center; padding:26px 20px;">
+    <div style="position:relative; margin-bottom:14px;">
+        <div id="avatarPreview" class="avatar"
+             style="width:88px; height:88px; border-radius:28px; font-size:32px; background:rgba(255,255,255,.18); @(tieneFoto ? "background-image:url(" + Url.Content(usuario.FotoPerfil) + "); background-size:cover; background-position:center; color:transparent;" : "")">
+            @iniciales
+        </div>
+        <label for="fotoInput"
+               style="position:absolute; bottom:-6px; right:-6px; width:34px; height:34px; border-radius:12px; background:var(--orange); display:grid; place-items:center; cursor:pointer; box-shadow:0 4px 12px rgba(255,105,45,.5); border:3px solid var(--navy);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+            </svg>
+        </label>
+        <input type="file" id="fotoInput" accept="image/*" style="display:none;" />
+    </div>
+
+    <div class="nm" style="font-size:20px;">@nombreCompleto</div>
+    <div class="em" style="font-size:12px; opacity:.85; margin-top:4px;">
+        @usuario.Cedula · @usuario.Correo
+    </div>
+
+    <div id="fotoEstado" style="display:none; margin-top:10px; font-size:12px; font-weight:800; text-align:center;"></div>
+</div>
+
 @using (Html.BeginForm("GuardarCuenta", "Clientes", FormMethod.Post,
     new { id = "formCuenta", enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-
-    <!-- ═══════════ HEADER CON AVATAR ═══════════ -->
-    <div class="acct-head" style="flex-direction:column; align-items:center; text-align:center; padding:26px 20px;">
-        <div style="position:relative; margin-bottom:14px;">
-            <div id="avatarPreview" class="avatar"
-                 style="width:88px; height:88px; border-radius:28px; font-size:32px; background:rgba(255,255,255,.18); @(tieneFoto ? "background-image:url(" + usuario.FotoPerfil + "); background-size:cover; background-position:center; color:transparent;" : "")">
-                @iniciales
-            </div>
-            <label for="fotoInput"
-                   style="position:absolute; bottom:-6px; right:-6px; width:34px; height:34px; border-radius:12px; background:var(--orange); display:grid; place-items:center; cursor:pointer; box-shadow:0 4px 12px rgba(255,105,45,.5); border:3px solid var(--navy);">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                    <circle cx="12" cy="13" r="4" />
-                </svg>
-            </label>
-            <input type="file" id="fotoInput" name="FotoPerfil" accept="image/*" style="display:none;" />
-        </div>
-
-        <div class="nm" style="font-size:20px;">@nombreCompleto</div>
-        <div class="em" style="font-size:12px; opacity:.85; margin-top:4px;">
-            @usuario.Cedula · @usuario.Correo
-        </div>
-    </div>
 
     <!-- ═══════════ DATOS PERSONALES ═══════════ -->
     <div class="eyebrow">👤 Datos personales</div>
@@ -258,9 +260,10 @@
 @section Scripts {
     <script>
         (function () {
-            // ═══════════ Preview foto de perfil ═══════════
+            // ═══════════ SUBIR FOTO POR AJAX ═══════════
             var input = document.getElementById('fotoInput');
             var preview = document.getElementById('avatarPreview');
+            var estado = document.getElementById('fotoEstado');
 
             if (input && preview) {
                 input.addEventListener('change', function (e) {
@@ -276,6 +279,7 @@
                         return;
                     }
 
+                    // Preview local instantáneo
                     var reader = new FileReader();
                     reader.onload = function (ev) {
                         preview.innerHTML = '';
@@ -285,6 +289,42 @@
                         preview.style.color = 'transparent';
                     };
                     reader.readAsDataURL(file);
+
+                    // Subir al servidor por AJAX
+                    var formData = new FormData();
+                    formData.append('fotoPerfil', file);
+
+                    if (estado) {
+                        estado.style.display = 'block';
+                        estado.style.color = 'var(--muted)';
+                        estado.textContent = 'Subiendo foto...';
+                    }
+
+                    fetch('@Url.Action("SubirFotoPerfil", "Clientes")', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.ok) {
+                            if (estado) {
+                                estado.style.color = '#2f8f3e';
+                                estado.textContent = '✓ ' + data.mensaje;
+                                setTimeout(function () { estado.style.display = 'none'; }, 2500);
+                            }
+                        } else {
+                            if (estado) {
+                                estado.style.color = '#c93a3f';
+                                estado.textContent = '✗ ' + data.mensaje;
+                            }
+                        }
+                    })
+                    .catch(function () {
+                        if (estado) {
+                            estado.style.color = '#c93a3f';
+                            estado.textContent = '✗ Error de conexión';
+                        }
+                    });
                 });
             }
 

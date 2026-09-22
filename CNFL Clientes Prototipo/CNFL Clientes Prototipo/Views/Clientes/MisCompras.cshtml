@@ -41,15 +41,6 @@
         </div>
         <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
     </a>
-
-    <a href="@Url.Action("MisFacturas", "Clientes")" class="row-item" style="text-decoration:none; color:inherit;">
-        <div class="ic" style="background:#eef0ff; font-size:18px; display:grid; place-items:center;">🧾</div>
-        <div class="tx">
-            <div class="t">Ver facturas eléctricas</div>
-            <div class="s">Historial de consumo y pagos</div>
-        </div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
-    </a>
 </div>
 
 <script>
@@ -86,13 +77,13 @@
             div.innerHTML =
                 '<div class="ic" style="background:#eef6ff; font-size:22px; display:grid; place-items:center;">' + emojis + '</div>' +
                 '<div class="tx" style="flex:1;">' +
-                    '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">' +
-                        '<div class="t">Compra #' + (c.items.length) + ' items</div>' +
-                        '<span class="pill st-normal" style="font-size:10px;"><span class="dot"></span>Pagada</span>' +
-                    '</div>' +
-                    '<div class="s">' + fechaStr + '</div>' +
-                    '<div style="font-weight:800; color:var(--orange); font-size:14px; margin-top:6px;">' + c.total + '</div>' +
-                    '<div style="font-size:11px; color:var(--muted); margin-top:2px;">Método: ' + c.metodo + '</div>' +
+                '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">' +
+                '<div class="t">Compra #' + (c.items.length) + ' items</div>' +
+                '<span class="pill st-normal" style="font-size:10px;"><span class="dot"></span>Pagada</span>' +
+                '</div>' +
+                '<div class="s">' + fechaStr + '</div>' +
+                '<div style="font-weight:800; color:var(--orange); font-size:14px; margin-top:6px;">' + c.total + '</div>' +
+                '<div style="font-size:11px; color:var(--muted); margin-top:2px;">Método: ' + c.metodo + '</div>' +
                 '</div>';
             cont.appendChild(div);
         });

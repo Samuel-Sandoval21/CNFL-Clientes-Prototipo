@@ -75,6 +75,53 @@
             line-height: 1.5;
             border-left: 2px solid #e3e6ee;
         }
+
+        /* ═══════════ FILTROS CON SCROLL ═══════════ */
+        .filtros-scroll {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+            overflow-x: auto;
+            padding: 0 4px 8px 0;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+
+            .filtros-scroll::-webkit-scrollbar {
+                height: 4px;
+            }
+
+            .filtros-scroll::-webkit-scrollbar-thumb {
+                background: #d8dde8;
+                border-radius: 4px;
+            }
+
+            .filtros-scroll::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+        .filtro-btn {
+            flex: none;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            text-decoration: none;
+            background: #eef0f7;
+            color: var(--muted);
+            white-space: nowrap;
+            transition: background .15s;
+        }
+
+            .filtro-btn:hover {
+                background: #dde3ff;
+                color: var(--blue);
+            }
+
+            .filtro-btn.active {
+                background: var(--blue);
+                color: #fff;
+            }
     </style>
 }
 
@@ -96,11 +143,19 @@
     </div>
 </div>
 
-<div class="filtros">
-    <a href="@Url.Action("Averias", "Admin")" class="filtro @(string.IsNullOrEmpty(estadoActual) ? "active" : "")">Todas</a>
-    <a href="@Url.Action("Averias", "Admin", new { estado = "Ingresado" })" class="filtro @(estadoActual == "Ingresado" ? "active" : "")">Ingresadas</a>
-    <a href="@Url.Action("Averias", "Admin", new { estado = "En revisión" })" class="filtro @(estadoActual == "En revisión" ? "active" : "")">En revisión</a>
-    <a href="@Url.Action("Averias", "Admin", new { estado = "Resuelta" })" class="filtro @(estadoActual == "Resuelta" ? "active" : "")">Resueltas</a>
+<!-- Filtros con scroll horizontal -->
+<div class="filtros-scroll">
+    <a href="@Url.Action("Averias", "Admin")"
+       class="filtro-btn @(string.IsNullOrEmpty(estadoActual) ? "active" : "")">Todas</a>
+
+    <a href="@Url.Action("Averias", "Admin", new { estado = "Ingresado" })"
+       class="filtro-btn @(estadoActual == "Ingresado" ? "active" : "")">Ingresadas</a>
+
+    <a href="@Url.Action("Averias", "Admin", new { estado = "En revisión" })"
+       class="filtro-btn @(estadoActual == "En revisión" ? "active" : "")">En revisión</a>
+
+    <a href="@Url.Action("Averias", "Admin", new { estado = "Resuelta" })"
+       class="filtro-btn @(estadoActual == "Resuelta" ? "active" : "")">Resueltas</a>
 </div>
 
 @if (Model == null || !Model.Any())

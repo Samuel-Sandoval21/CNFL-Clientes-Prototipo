@@ -4,7 +4,8 @@
 
     var nombreAdmin = Session["AdminNombre"] as string ?? "Administrador";
     var hora = DateTime.Now.Hour;
-    var saludo = hora < 12 ? "Buenos días," : (hora < 19 ? "Buenas tardes," : "Buenas noches,");
+    // ⚠️ SIN coma al final (la coma se agrega en la vista)
+    var saludo = hora < 12 ? "Buenos días" : (hora < 19 ? "Buenas tardes" : "Buenas noches");
     var primerNombre = !string.IsNullOrEmpty(nombreAdmin) ? nombreAdmin.Split(' ')[0] : "Admin";
 
     var totalClientes = (int)(ViewBag.TotalClientes ?? 0);
@@ -226,6 +227,7 @@
     </style>
 }
 
+<!-- ⚠️ Arreglo: aquí se pone la coma, y arriba ya no la tiene -->
 <div class="greeting">
     <div class="hi">@saludo,</div>
     <div class="name">@primerNombre 👋</div>

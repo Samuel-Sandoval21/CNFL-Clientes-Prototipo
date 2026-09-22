@@ -3,323 +3,428 @@
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 
     var tramitesActivos = ViewBag.TramitesActivos as List<CNFL_Clientes_Prototipo.Models.Tramite>
-                          ?? new List<CNFL_Clientes_Prototipo.Models.Tramite>();
-    var catalogo = ViewBag.Catalogo as string[] ?? new string[0];
+                       ?? new List<CNFL_Clientes_Prototipo.Models.Tramite>();
 
-    // Íconos por tipo de trámite (según palabra clave)
-    string IconoPorNombre(string nombre)
+    // Catálogo con imágenes + requisitos por trámite
+    var catalogo = new[]
     {
-        var n = (nombre ?? "").ToLower();
-        if (n.Contains("voltaje") || n.Contains("red")) return "⚡";
-        if (n.Contains("nombre") || n.Contains("traspaso")) return "📋";
-        if (n.Contains("desconexión") || n.Contains("reconexión")) return "🔌";
-        if (n.Contains("tarifa")) return "💰";
-        if (n.Contains("daño")) return "⚠️";
-        if (n.Contains("transformador")) return "⚙️";
-        if (n.Contains("medidor") || n.Contains("medición")) return "📊";
-        if (n.Contains("alumbrado")) return "💡";
-        if (n.Contains("carga") || n.Contains("eventos")) return "🎉";
-        if (n.Contains("diseño")) return "📐";
-        if (n.Contains("inmueble")) return "🏠";
-        return "📄";
-    }
-
-    // Estado → clase CSS
-    string ClaseEstado(string estado)
-    {
-        var e = (estado ?? "").ToLower();
-        if (e.Contains("resuelto") || e.Contains("finalizado")) return "st-normal";
-        if (e.Contains("proceso")) return "st-prev";
-        return "st-inc";
-    }
+        new {
+            Nombre = "Cambio Nombre de Abonado(a)",
+            Imagen = "cambio-nombre-abonado-600.jpg",
+            Descripcion = "Registrá el servicio a nombre de otra persona",
+            Requisitos = new[] {
+                "Original de cédula de identidad (nacionales)",
+                "Documentos de residencia (extranjeros)",
+                "Personería jurídica (no mayor a 1 mes)",
+                "Localización, número de contrato o medidor",
+                "Titularidad del inmueble",
+                "Contrato de arrendamiento (si aplica)",
+                "Servicio al día con sus obligaciones",
+                "Depósito de garantía",
+                "Teléfono, dirección exacta y correo",
+                "Estado civil y ocupación"
+            }
+        },
+        new {
+            Nombre = "Ingreso Tarifa Residencial Prepago T-RP",
+            Imagen = "tarifa_prepago600.jpg",
+            Descripcion = "Pagá tu consumo por adelantado",
+            Requisitos = new[] { "Cédula vigente", "Última factura al día", "Formulario de solicitud" }
+        },
+        new {
+            Nombre = "Solicitud Servicio Nuevo Monofásico o Trifásico",
+            Imagen = "monofasico600.jpg",
+            Descripcion = "Solicitá un nuevo servicio eléctrico",
+            Requisitos = new[] { "Cédula vigente", "Plano catastrado", "Titularidad del inmueble", "Disponibilidad técnica" }
+        },
+        new {
+            Nombre = "Solicitud Traspaso de Servicio Eléctrico",
+            Imagen = "traspaso600.jpg",
+            Descripcion = "Trasladá tu servicio a otro inmueble",
+            Requisitos = new[] { "Cédula vigente", "Estado de cuenta al día", "Contrato de arrendamiento o titularidad" }
+        },
+        new {
+            Nombre = "Solicitud Cambio de Conexión de Voltaje",
+            Imagen = "conexion_voltaje600.jpg",
+            Descripcion = "Cambiá el tipo de conexión",
+            Requisitos = new[] { "Cédula vigente", "Estudio técnico", "Última factura al día" }
+        },
+        new {
+            Nombre = "Solicitud Cambio de Servicio Provisional a Definitivo",
+            Imagen = "provisional_definitivo600.jpg",
+            Descripcion = "Convertí tu servicio provisional en definitivo",
+            Requisitos = new[] { "Cédula vigente", "Comprobante de propiedad", "Certificado de disponibilidad" }
+        },
+        new {
+            Nombre = "Solicitud Desconexión y Reconexión",
+            Imagen = "desconexion-reconexion600.jpg",
+            Descripcion = "Desconectá y reconectá para trabajos internos",
+            Requisitos = new[] { "Cédula vigente", "Solicitud escrita", "Personal calificado para los trabajos" }
+        },
+        new {
+            Nombre = "Solicitud Ingreso a Tarifa Residencial Horaria TRH",
+            Imagen = "ingreso-trh600.jpg",
+            Descripcion = "Accedé a la tarifa por horarios",
+            Requisitos = new[] { "Cédula vigente", "Medidor compatible con TRH", "Última factura" }
+        },
+        new {
+            Nombre = "Solicitud Traslado de Medidor",
+            Imagen = "traslado-medidor600.jpg",
+            Descripcion = "Trasladá tu medidor a otra ubicación",
+            Requisitos = new[] { "Cédula vigente", "Croquis de nueva ubicación", "Autorización de propiedad" }
+        },
+        new {
+            Nombre = "Reclamo por Daños con Responsabilidad Civil",
+            Imagen = "reclamos-responsabilidad-civil600.jpg",
+            Descripcion = "Reclamá daños ocasionados por el servicio",
+            Requisitos = new[] { "Cédula vigente", "Fotografías de los daños", "Facturas o comprobantes", "Denuncia (si aplica)" }
+        },
+        new {
+            Nombre = "Requisitos para Devolución de Dinero",
+            Imagen = "devolucion_de_dinero-600.jpg",
+            Descripcion = "Solicitá devolución de pagos en exceso",
+            Requisitos = new[] { "Cédula vigente", "Comprobante de pago", "Solicitud firmada" }
+        }
+    };
 }
 
-<!-- ═══════════ APPBAR ═══════════ -->
+<!-- APPBAR -->
 <div class="appbar">
-    <div class="brand">
-        <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
-             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
-    </div>
-    <div class="actions">
-        <a href="@Url.Action("Alertas", "Clientes")" class="icon-btn">
-            <span class="badge">3</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
-                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-            </svg>
-        </a>
-    </div>
+    <a href="@Url.Action("Dashboard", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">📋 Trámites</div>
+    <div style="width:40px;"></div>
 </div>
 
-<h1 class="h-name" style="font-size:26px;">Trámites</h1>
+<h1 class="h-name" style="font-size:24px;">Trámites</h1>
 <p class="h-greet" style="margin-top:6px; line-height:1.5;">
     Solicitá servicios y consultá el estado de tus gestiones.
 </p>
 
-<!-- ═══════════ MIS TRÁMITES ACTIVOS ═══════════ -->
+<!-- Trámites activos -->
 @if (tramitesActivos.Any())
 {
-    <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
-        <span>📌 Mis trámites activos</span>
-        <span class="pill st-prev" style="font-size:10px;">
-            <span class="dot"></span>@tramitesActivos.Count
-        </span>
+    <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center; margin-top:22px;">
+        <span>📌 Trámites activos</span>
+        <span style="font-size:11px; color:var(--muted);">@tramitesActivos.Count</span>
     </div>
 
     <div class="rows">
         @foreach (var t in tramitesActivos)
         {
-            <div class="row-item" style="cursor:default; align-items:flex-start;">
-                <div class="ic" style="background:#eef0ff;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <path d="M14 2v6h6M9 13h6M9 17h4" />
-                    </svg>
-                </div>
-                <div class="tx" style="flex:1;">
-                    <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
-                        <div class="t">@t.Tipo</div>
-                        <span class="pill @ClaseEstado(t.Estado)" style="font-size:10px;">
-                            <span class="dot"></span>@t.Estado
-                        </span>
-                    </div>
+            <a href="@Url.Action("DetalleTramite", "Clientes", new { id = t.TramiteId })" class="row-item">
+                <div class="ic" style="background:#eef0ff; font-size:18px; display:grid; place-items:center;">📋</div>
+                <div class="tx">
+                    <div class="t">@t.Tipo</div>
                     <div class="s">@t.NumeroReferencia · @t.FechaSolicitud.ToString("dd/MM/yyyy")</div>
-
-                    <!-- Tracker de estados -->
-                    <div class="track" style="margin-top:14px;">
-                        <div class="step done">
-                            <div class="cir">✓</div>
-                            <div class="lb">Iniciado</div>
-                        </div>
-                        <div class="step @(t.Estado == "En Proceso" ? "now" : (t.Estado == "Resuelto" ? "done" : ""))">
-                            <div class="cir">2</div>
-                            <div class="lb">En Proceso</div>
-                        </div>
-                        <div class="step @(t.Estado == "Resuelto" ? "done" : "")">
-                            <div class="cir">3</div>
-                            <div class="lb">Resuelto</div>
-                        </div>
-                    </div>
                 </div>
-            </div>
+                <span class="pill @(t.Estado == "Aprobado" || t.Estado == "Resuelto" ? "st-normal" : (t.Estado == "Requiere corrección" ? "st-inc" : "st-prev"))" style="font-size:10px;">
+                    <span class="dot"></span>@t.Estado
+                </span>
+            </a>
         }
     </div>
 }
-else
-{
-    <div class="card" style="text-align:center; padding:26px 18px; margin-top:14px;">
-        <div style="font-size:42px; line-height:1;">📋</div>
-        <p style="font-weight:800; font-size:14px; margin-top:10px; color:var(--ink);">Sin trámites activos</p>
-        <p style="font-size:12px; color:var(--muted); margin-top:6px; line-height:1.5;">
-            Elegí uno del catálogo de abajo para iniciar.
-        </p>
-    </div>
-}
 
-<!-- ═══════════ CATÁLOGO ═══════════ -->
-<div class="eyebrow">📚 Catálogo de trámites</div>
+<!-- Catálogo -->
+<div class="eyebrow" style="margin-top:22px;">Catálogo de trámites</div>
 
-<p style="font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:14px;">
+<p style="font-size:12px; color:var(--muted); margin-bottom:14px; line-height:1.5;">
     Tocá cualquier trámite para completar el formulario. Un agente lo procesará y te notificaremos cuando cambie de estado.
 </p>
 
-<div class="rows">
-    @foreach (var nombre in catalogo)
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;" id="catalogoTramites">
+    @for (int i = 0; i < catalogo.Length; i++)
     {
-        <div class="row-item" onclick="abrirFormulario('@Html.Raw(nombre.Replace("'", "\\'"))');" style="cursor:pointer;">
-            <div class="ic" style="background:#eef0ff; font-size:18px; display:grid; place-items:center;">
-                @IconoPorNombre(nombre)
+        var tr = catalogo[i];
+        <div onclick="abrirTramite(@i);"
+             style="background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:var(--shadow-sm); cursor:pointer; transition:transform .15s;"
+             onmouseover="this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.transform='translateY(0)'">
+
+            <div style="height:90px; background:#eef0f7; display:grid; place-items:center; overflow:hidden;">
+                <img src="https://www.cnfl.go.cr/contenido/imagenes/electricos/@tr.Imagen"
+                     alt="@tr.Nombre"
+                     style="width:100%; height:100%; object-fit:cover;"
+                     onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\'font-size:34px;\'>📋</div>';" />
             </div>
-            <div class="tx">
-                <div class="t">@nombre</div>
-                <div class="s">Tocá para solicitar</div>
+
+            <div style="padding:12px;">
+                <div style="font-size:12px; font-weight:800; color:var(--ink); line-height:1.3; min-height:32px; overflow:hidden;">
+                    @tr.Nombre
+                </div>
+                <div style="font-size:10.5px; color:var(--muted); margin-top:6px; line-height:1.4;">
+                    @tr.Descripcion
+                </div>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="m9 6 6 6-6 6" />
-            </svg>
         </div>
     }
 </div>
 
-<!-- ═══════════ MODAL DE FORMULARIO ═══════════ -->
-<div id="modalFormulario"
-     style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.55); z-index:200; align-items:flex-end; justify-content:center; padding:0;">
+<!-- MODAL DE TRÁMITE -->
+<div id="modalTramite"
+     style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.65); backdrop-filter:blur(4px); z-index:400; align-items:flex-end; justify-content:center;">
 
-    <div id="modalContent"
-         style="width:100%; max-width:430px; max-height:88vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:22px 20px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
+    <div id="modalTramiteBox"
+         style="width:100%; max-width:430px; max-height:92vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:0; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
 
-        <!-- Handle visual -->
-        <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:0 auto 18px;"></div>
+        <div style="position:sticky; top:0; z-index:2; background:#fff; border-bottom:1px solid var(--line);">
+            <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:10px auto 12px;"></div>
 
-        <h3 id="modalTitulo" style="font-size:17px; font-weight:800; margin:0 0 6px; color:var(--ink);">
-            Trámite
-        </h3>
-        <p style="font-size:12.5px; color:var(--muted); margin:0 0 20px; line-height:1.5;">
-            Completá los datos para iniciar tu solicitud.
-        </p>
-
-        <div class="reg-card" style="margin-bottom:14px;">
-            <div class="reg-field">
-                <label>Descripción del trámite *</label>
-                <textarea id="formDescripcion"
-                          placeholder="Describí brevemente tu solicitud..."
-                          required
-                          style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; min-height:90px; resize:vertical; outline:none;"></textarea>
+            <div style="padding:0 20px 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+                    <div style="flex:1;">
+                        <h3 id="modalTramiteTitulo" style="font-size:16px; font-weight:800; margin:0 0 4px; color:var(--ink); line-height:1.3;">
+                            Trámite
+                        </h3>
+                        <p style="font-size:11.5px; color:var(--muted); margin:0;">
+                            Completá los requisitos y adjuntá los documentos.
+                        </p>
+                    </div>
+                    <button type="button" onclick="cerrarTramite();"
+                            style="width:32px; height:32px; border-radius:50%; background:#f5f6fa; border:0; cursor:pointer; color:var(--muted); font-size:16px; flex-shrink:0;">
+                        ✕
+                    </button>
+                </div>
             </div>
-
-            <div class="reg-field">
-                <label>NISE asociado (opcional)</label>
-                <input type="text" id="formNise" placeholder="Ej: NISE-002" />
-            </div>
-
-            <div class="reg-field">
-                <label>Teléfono de contacto</label>
-                <input type="tel" id="formTelefono" placeholder="Ej: 8888-8888" value="@(Session["Nombre"])" />
-            </div>
-
-            <label class="reg-check" for="chkNotif" style="margin-top:14px;">
-                <input type="checkbox" id="chkNotif" checked />
-                <span class="txt">
-                    <span class="t">Notificarme por push y correo</span>
-                    <span class="s">Te avisamos cuando cambie el estado.</span>
-                </span>
-            </label>
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:14px;">
-            <button type="button" onclick="cerrarFormulario();"
-                    class="reg-btn"
-                    style="background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;">
-                Cancelar
-            </button>
-            <button type="button" onclick="enviarFormulario();"
-                    class="reg-btn">
-                Enviar solicitud
-            </button>
-        </div>
+        <div style="padding:20px;">
 
-        <div id="formEstado" style="display:none; margin-top:14px; padding:12px 14px; background:#e9f7ec; border-radius:12px; font-size:12.5px; font-weight:800; color:#2f8f3e; text-align:center;">
-            ✓ Solicitud enviada correctamente
+            <!-- Progreso -->
+            <div style="background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="font-size:11.5px; font-weight:800; color:var(--ink);">Progreso del trámite</div>
+                    <span id="progresoTexto" style="font-size:11px; font-weight:800; color:var(--blue);">0%</span>
+                </div>
+                <div style="height:6px; background:#eef0f7; border-radius:999px; overflow:hidden;">
+                    <div id="progresoBarra" style="height:100%; width:0; background:linear-gradient(90deg, var(--blue), #3b6ce0); border-radius:999px; transition:width .3s ease;"></div>
+                </div>
+            </div>
+
+            <!-- Documentos a adjuntar -->
+            <div class="eyebrow" style="margin-top:0;">Documentos requeridos</div>
+            <p style="font-size:11.5px; color:var(--muted); margin-bottom:12px; line-height:1.4;">
+                Marcá cada requisito y adjuntá el archivo correspondiente. Se enviarán al agente para revisión.
+            </p>
+            <div id="listaDocumentos"></div>
+
+            <!-- Comentario adicional -->
+            <div class="eyebrow" style="margin-top:22px;">Comentario adicional (opcional)</div>
+            <div class="reg-card">
+                <div class="reg-field">
+                    <textarea id="tramiteComentario" rows="3" placeholder="Contanos algo más sobre tu solicitud..."
+                              style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; resize:vertical; outline:none;"></textarea>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px; margin-bottom:24px;">
+                <button type="button" id="btnEnviarTramite" onclick="enviarTramite();" class="reg-btn" style="padding:17px;">
+                    📤 Enviar solicitud con documentos
+                </button>
+                <button type="button" onclick="cerrarTramite();" class="reg-btn"
+                        style="background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none; padding:14px;">
+                    Cancelar
+                </button>
+            </div>
+
+            <div id="tramiteEstado" style="display:none; padding:14px; border-radius:12px; text-align:center; font-size:13px; font-weight:800; margin-bottom:24px;"></div>
         </div>
     </div>
 </div>
 
-<script>
-        // ═══════════ Estado ═══════════
-        var tramiteActual = '';
+@section Scripts {
+    <script>
+        var catalogoData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(catalogo));
+        var tramiteActual = null;
 
-        // ═══════════ Abrir / Cerrar modal ═══════════
-        function abrirFormulario(nombre) {
-            tramiteActual = nombre;
-            document.getElementById('modalTitulo').textContent = nombre;
-            document.getElementById('formDescripcion').value = '';
-            document.getElementById('formNise').value = '';
-            document.getElementById('formEstado').style.display = 'none';
+        function abrirTramite(indice) {
+            tramiteActual = catalogoData[indice];
 
-            var modal = document.getElementById('modalFormulario');
-            modal.style.display = 'flex';
+            document.getElementById('modalTramiteTitulo').textContent = tramiteActual.Nombre;
+            document.getElementById('tramiteComentario').value = '';
+            document.getElementById('tramiteEstado').style.display = 'none';
+            document.getElementById('btnEnviarTramite').disabled = false;
+            document.getElementById('btnEnviarTramite').textContent = '📤 Enviar solicitud con documentos';
 
+            renderDocumentos(tramiteActual);
+            actualizarProgreso();
+
+            document.getElementById('modalTramite').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
 
-        function cerrarFormulario() {
-            document.getElementById('modalFormulario').style.display = 'none';
+        function cerrarTramite() {
+            document.getElementById('modalTramite').style.display = 'none';
             document.body.style.overflow = '';
         }
 
-        // Cerrar al tocar fuera del contenido
-        document.getElementById('modalFormulario').addEventListener('click', function (e) {
-            if (e.target === this) cerrarFormulario();
+        document.getElementById('modalTramite').addEventListener('click', function (e) {
+            if (e.target === this) cerrarTramite();
         });
 
-        // ═══════════ Enviar formulario ═══════════
-        function enviarFormulario() {
-            var descripcion = document.getElementById('formDescripcion').value.trim();
-            if (!descripcion) {
-                alert('Escribí una descripción del trámite.');
-                return;
-            }
+        // ═══════════ DOCUMENTOS A ADJUNTAR ═══════════
+        function renderDocumentos(tramite) {
+            var cont = document.getElementById('listaDocumentos');
+            cont.innerHTML = '';
 
-            var nise = document.getElementById('formNise').value.trim();
-            var telefono = document.getElementById('formTelefono').value.trim();
-            var notificar = document.getElementById('chkNotif').checked;
+            tramite.Requisitos.forEach(function (req, i) {
+                var idDoc = 'doc_' + i;
 
-            // Simular envío
-            var token = document.querySelector('input[name="__RequestVerificationToken"]');
-            var tokenValue = token ? token.value : '';
+                var card = document.createElement('div');
+                card.className = 'reg-card';
+                card.style.marginBottom = '10px';
+                card.style.padding = '14px';
 
-            var formData = new FormData();
-            formData.append('tipo', tramiteActual);
-            formData.append('descripcion', descripcion);
-            formData.append('nise', nise);
-            formData.append('telefono', telefono);
-            formData.append('__RequestVerificationToken', tokenValue);
+                card.innerHTML =
+                    '<div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:8px;">' +
+                        '<input type="checkbox" id="chk_' + idDoc + '" data-doc-check="1" ' +
+                               'onchange="toggleDocumento(\'' + idDoc + '\'); actualizarProgreso();" ' +
+                               'style="width:20px; height:20px; accent-color:var(--blue); margin-top:2px; cursor:pointer;" />' +
+                        '<label for="chk_' + idDoc + '" style="font-size:12.5px; font-weight:700; color:var(--ink); line-height:1.3; cursor:pointer; flex:1;">' +
+                            req +
+                        '</label>' +
+                    '</div>' +
+                    '<div id="upload_' + idDoc + '" style="display:none; margin-top:8px;">' +
+                        '<label for="file_' + idDoc + '" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; background:#f5f6fa; border:1.5px dashed var(--line); border-radius:10px; cursor:pointer; font-size:11.5px; font-weight:800; color:var(--blue);">' +
+                            '📎 <span id="label_' + idDoc + '">Adjuntar archivo (PDF, JPG, PNG)</span>' +
+                        '</label>' +
+                        '<input type="file" id="file_' + idDoc + '" accept=".pdf,.jpg,.jpeg,.png" ' +
+                               'data-doc-nombre="' + req + '" ' +
+                               'style="display:none;" onchange="seleccionarArchivo(this, \'' + idDoc + '\');" />' +
+                        '<div id="preview_' + idDoc + '" style="display:none; margin-top:8px; padding:8px 12px; background:#e9f7ec; border-radius:10px; font-size:11.5px; color:#2f8f3e; font-weight:800;"></div>' +
+                    '</div>';
 
-            fetch('/Clientes/CrearTramite', {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin'
-            })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                document.getElementById('formEstado').style.display = 'block';
-                document.getElementById('formEstado').textContent = data.success
-                    ? '✓ Solicitud #' + (data.id || '') + ' enviada correctamente'
-                    : '✗ ' + (data.message || 'Error al enviar');
-
-                // Notificación push si está activada
-                if (notificar) {
-                    mostrarNotificacion(
-                        'CNFL · Trámite iniciado',
-                        tramiteActual + ' · en proceso',
-                        notificar
-                    );
-                }
-
-                setTimeout(function () {
-                    cerrarFormulario();
-                    // Recargar la página para ver el trámite en la lista
-                    if (data.success) window.location.reload();
-                }, 2200);
-            })
-            .catch(function () {
-                document.getElementById('formEstado').style.display = 'block';
-                document.getElementById('formEstado').style.background = '#fdeaea';
-                document.getElementById('formEstado').style.color = '#c93a3f';
-                document.getElementById('formEstado').textContent = '✗ Error de conexión';
+                cont.appendChild(card);
             });
         }
 
-        // ═══════════ Notificación push + sonido ═══════════
-        function mostrarNotificacion(titulo, cuerpo, enviarCorreo) {
-            // Beep
-            try {
-                var ctx = new (window.AudioContext || window.webkitAudioContext)();
-                var osc = ctx.createOscillator();
-                var gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, ctx.currentTime);
-                osc.frequency.setValueAtTime(1200, ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-                osc.start(ctx.currentTime);
-                osc.stop(ctx.currentTime + 0.3);
-            } catch (e) { }
-
-            // Notif nativa
-            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                try {
-                    var notif = new Notification(titulo, {
-                        body: cuerpo,
-                        icon: '/Content/img/logo-cnfl.png',
-                        tag: 'cnfl-tramite-' + Date.now()
-                    });
-                    notif.onclick = function () { window.focus(); notif.close(); };
-                } catch (e) { }
-            } else if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
-                Notification.requestPermission();
+        function toggleDocumento(idDoc) {
+            var chk = document.getElementById('chk_' + idDoc);
+            var upload = document.getElementById('upload_' + idDoc);
+            if (chk && upload) {
+                upload.style.display = chk.checked ? 'block' : 'none';
             }
         }
-</script>
+
+        function seleccionarArchivo(input, idDoc) {
+            var preview = document.getElementById('preview_' + idDoc);
+            var label = document.getElementById('label_' + idDoc);
+
+            if (input.files && input.files[0]) {
+                var file = input.files[0];
+                preview.style.display = 'block';
+                preview.textContent = '✓ ' + file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+                label.textContent = 'Cambiar archivo';
+                actualizarProgreso();
+            }
+        }
+
+        // ═══════════ PROGRESO ═══════════
+        function actualizarProgreso() {
+            var total = 0;
+            var completados = 0;
+
+            if (tramiteActual && tramiteActual.Requisitos) {
+                tramiteActual.Requisitos.forEach(function (r, i) {
+                    total++;
+                    var chk = document.getElementById('chk_doc_' + i);
+                    var file = document.getElementById('file_doc_' + i);
+                    if (chk && chk.checked && file && file.files && file.files[0]) {
+                        completados++;
+                    }
+                });
+            }
+
+            var pct = total > 0 ? Math.round((completados / total) * 100) : 0;
+            document.getElementById('progresoBarra').style.width = pct + '%';
+            document.getElementById('progresoTexto').textContent = pct + '%';
+        }
+
+        // ═══════════ ENVIAR TRÁMITE ═══════════
+        function enviarTramite() {
+            var faltantes = [];
+
+            if (tramiteActual.Requisitos) {
+                tramiteActual.Requisitos.forEach(function (r, i) {
+                    var chk = document.getElementById('chk_doc_' + i);
+                    var file = document.getElementById('file_doc_' + i);
+
+                    if (!chk || !chk.checked) {
+                        faltantes.push('Marcar: ' + r);
+                    } else if (!file || !file.files || !file.files[0]) {
+                        faltantes.push('Adjuntar archivo: ' + r);
+                    }
+                });
+            }
+
+            if (faltantes.length > 0) {
+                alert('Faltan completar:\n\n- ' + faltantes.join('\n- '));
+                return;
+            }
+
+            var comentario = document.getElementById('tramiteComentario').value.trim();
+
+            var formData = new FormData();
+            formData.append('tipo', tramiteActual.Nombre);
+            formData.append('descripcion', comentario);
+            formData.append('nise', '@Session["Nise"]');
+            formData.append('telefono', '@Session["Telefono"]');
+
+            if (tramiteActual.Requisitos) {
+                tramiteActual.Requisitos.forEach(function (r, i) {
+                    var file = document.getElementById('file_doc_' + i);
+                    if (file && file.files && file.files[0]) {
+                        formData.append('archivos', file.files[0]);
+                        formData.append('nombresArchivos', r);
+                    }
+                });
+            }
+
+            var estado = document.getElementById('tramiteEstado');
+            var btn = document.getElementById('btnEnviarTramite');
+
+            estado.style.display = 'block';
+            estado.style.background = '#eef0ff';
+            estado.style.color = 'var(--blue)';
+            estado.textContent = '📤 Enviando solicitud...';
+            btn.disabled = true;
+            btn.textContent = '⏳ Enviando...';
+
+            fetch('@Url.Action("CrearTramiteCompleto", "Clientes")', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.success) {
+                    estado.style.background = '#e9f7ec';
+                    estado.style.color = '#2f8f3e';
+                    estado.textContent = '✓ Trámite enviado · ' + data.id;
+
+                    setTimeout(function () {
+                        cerrarTramite();
+                        location.reload();
+                    }, 2200);
+                } else {
+                    estado.style.background = '#fdeaea';
+                    estado.style.color = '#c93a3f';
+                    estado.textContent = '✗ ' + (data.message || 'Error al enviar');
+                    btn.disabled = false;
+                    btn.textContent = '📤 Enviar solicitud con documentos';
+                }
+            })
+            .catch(function () {
+                estado.style.background = '#fdeaea';
+                estado.style.color = '#c93a3f';
+                estado.textContent = '✗ Error de conexión';
+                btn.disabled = false;
+                btn.textContent = '📤 Enviar solicitud con documentos';
+            });
+        }
+    </script>
+}

@@ -34,29 +34,21 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
             var niseIds = nises.Select(n => n.NiseId).ToList();
 
-            var facturas = _db.Facturas
-                .Where(f => niseIds.Contains(f.NiseId))
-                .OrderByDescending(f => f.FechaEmision)
-                .ToList();
-
-            var pagos = _db.Pagos
+            ViewBag.NISEs = nises;
+            ViewBag.UltimosPagos = _db.Pagos
                 .Include("Factura")
                 .Where(p => p.UsuarioId == usuarioId)
                 .OrderByDescending(p => p.FechaCreacion)
                 .Take(5)
                 .ToList();
 
-            var averiasActivas = _db.Averias
+            ViewBag.AveriasActivas = _db.Averias
                 .Include("NISE")
                 .Where(a => a.UsuarioId == usuarioId
                          && a.Estado != "Problema resuelto"
                          && a.Estado != "Resuelto")
                 .OrderByDescending(a => a.FechaReporte)
                 .ToList();
-
-            ViewBag.NISEs = nises;
-            ViewBag.AveriasActivas = averiasActivas;
-            ViewBag.UltimosPagos = pagos;
 
             return View(usuario);
         }
@@ -290,6 +282,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
             ViewBag.TramitesActivos = tramitesActivos;
             ViewBag.Notificaciones = notificaciones;
 
+            Session["FotoPerfil"] = usuario.FotoPerfil;
+            Session["Correo"] = usuario.Correo;
+            Session["Telefono"] = usuario.Telefono;
+            Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
+
             return View();
         }
 
@@ -308,11 +305,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var facturasPorNise = new Dictionary<int, List<Factura>>();
             foreach (var n in nises)
             {
-                var facturas = _db.Facturas
+                facturasPorNise[n.NiseId] = _db.Facturas
                     .Where(f => f.NiseId == n.NiseId)
                     .OrderByDescending(f => f.FechaEmision)
                     .ToList();
-                facturasPorNise[n.NiseId] = facturas;
             }
 
             ViewBag.FacturasPorNise = facturasPorNise;
@@ -431,7 +427,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // PUSH · Registrar + enviar correo
+        // PUSH
         // ============================================================
 
         [HttpPost]
@@ -471,22 +467,25 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // CREAR TRÁMITE
+        // CREAR TRÁMITE COMPLETO (con documentos adjuntos)
         // ============================================================
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult CrearTramite(string tipo, string descripcion, string nise = null, string telefono = null)
+        public JsonResult CrearTramiteCompleto()
         {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null)
-                return Json(new { success = false, message = "Sesión expirada." });
-
-            if (string.IsNullOrWhiteSpace(tipo) || string.IsNullOrWhiteSpace(descripcion))
-                return Json(new { success = false, message = "Faltan datos obligatorios." });
-
             try
             {
+                var usuarioId = Session["UsuarioId"] as int?;
+                if (usuarioId == null)
+                    return Json(new { success = false, message = "Sesión expirada." });
+
+                var tipo = Request.Form["tipo"];
+                var descripcion = Request.Form["descripcion"] ?? "";
+                var nise = Request.Form["nise"] ?? "";
+                var telefono = Request.Form["telefono"] ?? "";
+
+                if (string.IsNullOrWhiteSpace(tipo))
+                    return Json(new { success = false, message = "Falta el tipo de trámite." });
+
                 var numeroRef = "TR-" + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                 var tramite = new Tramite
@@ -499,17 +498,59 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     FechaActualizacion = DateTime.Now,
                     Descripcion = descripcion,
                     NumeroReferencia = numeroRef,
-                    DatosFormulario = "{\"nise\":\"" + (nise ?? "") + "\",\"telefono\":\"" + (telefono ?? "") + "\"}"
+                    DatosFormulario = "{}"
                 };
 
                 _db.Tramites.Add(tramite);
                 _db.SaveChanges();
 
+                var archivos = Request.Files;
+                var nombresArchivos = Request.Form.GetValues("nombresArchivos") ?? new string[0];
+                int guardados = 0;
+
+                if (archivos != null && archivos.Count > 0)
+                {
+                    var carpeta = Server.MapPath("~/Content/uploads/tramites/");
+                    if (!System.IO.Directory.Exists(carpeta))
+                        System.IO.Directory.CreateDirectory(carpeta);
+
+                    for (int i = 0; i < archivos.Count; i++)
+                    {
+                        var archivo = archivos[i];
+                        if (archivo == null || archivo.ContentLength == 0) continue;
+
+                        var nombreRequisito = i < nombresArchivos.Length ? nombresArchivos[i] : "Documento";
+                        var extension = System.IO.Path.GetExtension(archivo.FileName).ToLower();
+
+                        var extensionesValidas = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
+                        if (Array.IndexOf(extensionesValidas, extension) < 0) continue;
+
+                        var nombreGuardar = "tramite_" + tramite.TramiteId + "_" + i + "_" + DateTime.Now.Ticks + extension;
+                        var rutaCompleta = System.IO.Path.Combine(carpeta, nombreGuardar);
+                        archivo.SaveAs(rutaCompleta);
+
+                        var doc = new TramiteDocumento
+                        {
+                            TramiteId = tramite.TramiteId,
+                            NombreRequisito = nombreRequisito,
+                            NombreArchivo = archivo.FileName,
+                            RutaArchivo = "/Content/uploads/tramites/" + nombreGuardar,
+                            TamanoBytes = archivo.ContentLength,
+                            FechaSubida = DateTime.Now
+                        };
+
+                        _db.TramiteDocumentos.Add(doc);
+                        guardados++;
+                    }
+
+                    _db.SaveChanges();
+                }
+
                 var notif = new Notificacion
                 {
                     UsuarioId = usuarioId.Value,
                     Titulo = "Trámite iniciado",
-                    Mensaje = tipo + " · " + numeroRef + " · Estado: Iniciado",
+                    Mensaje = tipo + " · " + numeroRef + " · Adjuntaste " + guardados + " documento(s).",
                     Fecha = DateTime.Now,
                     Leida = false,
                     Tipo = "Tramite",
@@ -520,13 +561,75 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
                 EnviarCorreoReal(usuarioId.Value,
                     "Trámite iniciado · " + tipo,
-                    "Tu trámite <b>" + tipo + "</b> fue recibido con el número de referencia <b>" + numeroRef + "</b>. Te notificaremos cuando cambie de estado.");
+                    "Tu trámite <b>" + tipo + "</b> fue recibido con el número de referencia <b>" + numeroRef + "</b>. Adjuntaste " + guardados + " documento(s).");
 
-                return Json(new { success = true, id = numeroRef });
+                return Json(new { success = true, id = numeroRef, tramiteId = tramite.TramiteId });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // ============================================================
+        // DETALLE DEL TRÁMITE (CLIENTE)
+        // ============================================================
+        public ActionResult DetalleTramite(int id = 0)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var tramite = _db.Tramites
+                .Include("TramiteDocumentos")
+                .FirstOrDefault(t => t.TramiteId == id && t.UsuarioId == usuarioId);
+
+            if (tramite == null) return HttpNotFound();
+
+            ViewBag.Tramite = tramite;
+            return View();
+        }
+
+        // ============================================================
+        // REGISTRAR ACTIVIDAD (AJAX con tiempo real) ← NUEVO
+        // ============================================================
+        [HttpPost]
+        public JsonResult RegistrarActividad(string seccion, string accion, int segundos, string detalle = null)
+        {
+            try
+            {
+                var usuarioId = Session["UsuarioId"] as int?;
+                if (usuarioId == null)
+                    return Json(new { ok = false, mensaje = "Sesión expirada." });
+
+                // Excluir admins
+                var esAdmin = _db.UsuarioRoles
+                    .Any(ur => ur.UsuarioId == usuarioId.Value && ur.Rol.NombreRol == "Admin");
+                if (esAdmin)
+                    return Json(new { ok = false, mensaje = "Admin no se registra." });
+
+                if (string.IsNullOrWhiteSpace(seccion))
+                    seccion = "Desconocida";
+
+                if (segundos <= 0 || segundos > 7200) segundos = 30;
+
+                var actividad = new ActividadUsuario
+                {
+                    UsuarioId = usuarioId.Value,
+                    Seccion = seccion,
+                    Accion = string.IsNullOrWhiteSpace(accion) ? "Vista" : accion,
+                    Detalle = detalle,
+                    DuracionSegundos = segundos,
+                    Fecha = DateTime.Now
+                };
+
+                _db.ActividadUsuario.Add(actividad);
+                _db.SaveChanges();
+
+                return Json(new { ok = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { ok = false, mensaje = ex.Message });
             }
         }
 
@@ -591,7 +694,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // TRÁMITES
+        // TRÁMITES (INDEX)
         // ============================================================
 
         public ActionResult Tramites()
@@ -604,28 +707,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .OrderByDescending(t => t.FechaSolicitud)
                 .ToList();
 
-            var catalogo = new[]
-            {
-                "Cambio de conexión de voltaje",
-                "Cambio de nombre de abonado",
-                "Cambio de servicio provisional a definitivo",
-                "Desconexión y reconexión",
-                "Solicitud diseño de red eléctrica y DER",
-                "Ingreso a tarifa residencial horaria",
-                "Reclamo por daños con Responsabilidad Civil",
-                "Solicitud de conexión de transformador temporal",
-                "Solicitud de Servicio Nuevo Monofásico o Trifásico",
-                "Solicitud de Traslado de Medidor",
-                "Solicitud de Traspaso de Servicio Eléctrico",
-                "Solicitud de Suministro Eléctrico para Inmuebles",
-                "Solicitud de Suministro Eléctrico Especial",
-                "Solicitud de Alumbrado Público",
-                "Solicitud Servicio Especial de Carga Fija",
-                "Solicitud Servicio Especial Temporal para Eventos"
-            };
-
             ViewBag.TramitesActivos = activos;
-            ViewBag.Catalogo = catalogo;
             return View();
         }
 
@@ -637,11 +719,27 @@ namespace CNFL_Clientes_Prototipo.Controllers
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var usuario = _db.Usuarios.Find(usuarioId.Value);
+            if (usuario != null)
+            {
+                Session["Correo"] = usuario.Correo;
+                Session["Telefono"] = usuario.Telefono;
+                Session["FotoPerfil"] = usuario.FotoPerfil;
+            }
+
+            var nise = _db.NISEs
+                .Where(n => n.UsuarioId == usuarioId.Value)
+                .Select(n => n.NumeroNise)
+                .FirstOrDefault();
+
+            Session["Nise"] = nise ?? "";
+
             return View();
         }
 
         // ============================================================
-        // TIENDA / CARRITO
+        // TIENDA / CARRITO / COMPRAS / PAGOS
         // ============================================================
 
         public ActionResult Tienda()
@@ -659,20 +757,12 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
-        // ============================================================
-        // MIS COMPRAS
-        // ============================================================
-
         public ActionResult MisCompras()
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
             return View();
         }
-
-        // ============================================================
-        // MÉTODOS DE PAGO
-        // ============================================================
 
         public ActionResult MetodosPago()
         {
@@ -682,7 +772,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // REPORTES
+        // REPORTES / AVERÍAS
         // ============================================================
 
         public ActionResult Reportes()
@@ -719,10 +809,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
-        // ============================================================
-        // CALCULADORA
-        // ============================================================
-
         public ActionResult Calculadora()
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -745,9 +831,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             if (usuario == null) return HttpNotFound();
 
-            var nises = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
-
-            ViewBag.NISEs = nises;
+            ViewBag.NISEs = _db.NISEs.Where(n => n.UsuarioId == usuarioId).ToList();
             ViewBag.ActividadesEconomicas = _db.ActividadesEconomicas
                 .OrderBy(a => a.Codigo)
                 .Select(a => new ActividadEconomicaDto
@@ -758,6 +842,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
             ViewBag.ActividadActualId = usuario.ActividadEconomicaId;
+
+            Session["FotoPerfil"] = usuario.FotoPerfil;
+            Session["Correo"] = usuario.Correo;
+            Session["Telefono"] = usuario.Telefono;
+            Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
 
             return View(usuario);
         }
@@ -819,6 +908,15 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     var rutaCompleta = System.IO.Path.Combine(carpeta, nombreArchivo);
                     FotoPerfil.SaveAs(rutaCompleta);
 
+                    if (!string.IsNullOrEmpty(usuario.FotoPerfil))
+                    {
+                        var rutaAnterior = Server.MapPath(usuario.FotoPerfil);
+                        if (System.IO.File.Exists(rutaAnterior))
+                        {
+                            try { System.IO.File.Delete(rutaAnterior); } catch { }
+                        }
+                    }
+
                     usuario.FotoPerfil = "/Content/uploads/perfiles/" + nombreArchivo;
                 }
             }
@@ -826,13 +924,72 @@ namespace CNFL_Clientes_Prototipo.Controllers
             _db.SaveChanges();
             Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
             Session["FotoPerfil"] = usuario.FotoPerfil;
+            Session["Correo"] = usuario.Correo;
+            Session["Telefono"] = usuario.Telefono;
 
             TempData["Mensaje"] = "Datos actualizados correctamente.";
             return RedirectToAction("Cuenta");
         }
 
+        [HttpPost]
+        public JsonResult SubirFotoPerfil(HttpPostedFileBase fotoPerfil)
+        {
+            try
+            {
+                var usuarioId = Session["UsuarioId"] as int?;
+                if (usuarioId == null)
+                    return Json(new { ok = false, mensaje = "Sesión expirada." });
+
+                if (fotoPerfil == null || fotoPerfil.ContentLength == 0)
+                    return Json(new { ok = false, mensaje = "No se seleccionó ninguna imagen." });
+
+                var extensionesPermitidas = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var extension = System.IO.Path.GetExtension(fotoPerfil.FileName).ToLower();
+
+                if (Array.IndexOf(extensionesPermitidas, extension) < 0)
+                    return Json(new { ok = false, mensaje = "Formato no permitido." });
+
+                if (fotoPerfil.ContentLength > 4 * 1024 * 1024)
+                    return Json(new { ok = false, mensaje = "La imagen no puede pesar más de 4 MB." });
+
+                var carpeta = Server.MapPath("~/Content/uploads/perfiles/");
+                if (!System.IO.Directory.Exists(carpeta))
+                    System.IO.Directory.CreateDirectory(carpeta);
+
+                var nombreArchivo = "perfil_" + usuarioId.Value + "_" + DateTime.Now.Ticks + extension;
+                var rutaCompleta = System.IO.Path.Combine(carpeta, nombreArchivo);
+                fotoPerfil.SaveAs(rutaCompleta);
+
+                var rutaRelativa = "/Content/uploads/perfiles/" + nombreArchivo;
+
+                var usuario = _db.Usuarios.Find(usuarioId.Value);
+                if (usuario == null)
+                    return Json(new { ok = false, mensaje = "Usuario no encontrado." });
+
+                if (!string.IsNullOrEmpty(usuario.FotoPerfil))
+                {
+                    var rutaAnterior = Server.MapPath(usuario.FotoPerfil);
+                    if (System.IO.File.Exists(rutaAnterior))
+                    {
+                        try { System.IO.File.Delete(rutaAnterior); } catch { }
+                    }
+                }
+
+                usuario.FotoPerfil = rutaRelativa;
+                _db.SaveChanges();
+
+                Session["FotoPerfil"] = rutaRelativa;
+
+                return Json(new { ok = true, mensaje = "Foto actualizada.", ruta = rutaRelativa });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { ok = false, mensaje = "Error: " + ex.Message });
+            }
+        }
+
         // ============================================================
-        // AJAX: Provincia → Cantón → Distrito (por si los usás en otro lugar)
+        // AJAX: Provincia → Cantón → Distrito
         // ============================================================
 
         [HttpGet]
@@ -842,8 +999,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 !UbicacionCostaRica.Catalogo.ContainsKey(provincia))
                 return Json(new string[0], JsonRequestBehavior.AllowGet);
 
-            var cantones = UbicacionCostaRica.Catalogo[provincia].Keys.ToList();
-            return Json(cantones, JsonRequestBehavior.AllowGet);
+            return Json(UbicacionCostaRica.Catalogo[provincia].Keys.ToList(), JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -855,8 +1011,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 !UbicacionCostaRica.Catalogo[provincia].ContainsKey(canton))
                 return Json(new string[0], JsonRequestBehavior.AllowGet);
 
-            var distritos = UbicacionCostaRica.Catalogo[provincia][canton];
-            return Json(distritos, JsonRequestBehavior.AllowGet);
+            return Json(UbicacionCostaRica.Catalogo[provincia][canton], JsonRequestBehavior.AllowGet);
         }
 
         // ============================================================

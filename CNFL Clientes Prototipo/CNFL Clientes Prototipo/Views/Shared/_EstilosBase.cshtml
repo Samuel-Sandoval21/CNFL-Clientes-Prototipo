@@ -3,6 +3,28 @@
     Se incluye con @Html.Partial("_EstilosBase") dentro del <head>
     ============================================================ *@
 <style>
+    /* ═══════════ TIPOGRAFÍA OFICIAL ═══════════ */
+    @@font-face {
+        font-family: 'AvenirNextLPro';
+        src: url('/Content/fonts/AvenirNextLTPro-Regular.otf') format('opentype');
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    @@font-face {
+        font-family: 'AvenirNextLPro';
+        src: url('/Content/fonts/AvenirNextLTPro-Medium.otf') format('opentype');
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    @@font-face {
+        font-family: 'AvenirNextLPro';
+        src: url('/Content/fonts/AvenirNextLTPro-Bold.otf') format('opentype');
+        font-weight: 700;
+        font-style: normal;
+    }
+
     :root {
         --blue: #1E23E6;
         --navy: #001482;
@@ -31,7 +53,7 @@
     }
 
     html, body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Montserrat", sans-serif;
+        font-family: 'AvenirNextLPro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Montserrat", sans-serif;
         background: #dfe2ec;
         color: var(--ink);
         min-height: 100vh;
@@ -128,7 +150,7 @@
        ═══════════════════════════════════════════ */
     .phone-body {
         flex: 1;
-        min-height: 0; /* ← CLAVE: sin esto, el menú flota */
+        min-height: 0;
         width: 100%;
         overflow-y: auto;
         overflow-x: hidden;

@@ -66,8 +66,18 @@ namespace CNFL_Clientes_Prototipo.Controllers
             // ═══════════════════════════════════════════════════════
             Session["UsuarioId"] = usuario.UsuarioId;
             Session["NombreUsuario"] = usuario.Nombre;
-            Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;   // ← FIX
+            Session["Nombre"] = usuario.Nombre + " " + usuario.Apellidos;
             Session["FotoPerfil"] = usuario.FotoPerfil;
+            Session["Correo"] = usuario.Correo;
+            Session["Telefono"] = usuario.Telefono;
+
+            // Buscar el primer NISE asociado al usuario
+            var niseUsuario = _db.NISEs
+                .Where(n => n.UsuarioId == usuario.UsuarioId)
+                .Select(n => n.NumeroNise)
+                .FirstOrDefault();
+
+            Session["Nise"] = niseUsuario ?? "";
 
             return RedirectToAction("Dashboard", "Clientes");
         }
@@ -147,7 +157,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
-        // REGISTRO (POST) — SIN Sexo ni Ubicación
+        // REGISTRO (POST)
         // ═══════════════════════════════════════════════════════════
         [AllowAnonymous]
         [HttpPost]

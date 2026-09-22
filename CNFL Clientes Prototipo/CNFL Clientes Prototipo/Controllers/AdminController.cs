@@ -11,6 +11,11 @@ using ClosedXML.Excel;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
+// System.Drawing para gráfico
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
+
 namespace CNFL_Clientes_Prototipo.Controllers
 {
     public class AdminController : Controller
@@ -200,14 +205,16 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
-        // TRÁMITES
+        // TRÁMITES (LISTA)
         // ═══════════════════════════════════════════════════════════
         public ActionResult Tramites(string estado = "")
         {
             var redir = RedirigirSiNoEsAdmin();
             if (redir != null) return redir;
 
-            var query = _db.Tramites.AsQueryable();
+            var query = _db.Tramites
+                .Include("Usuario")
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(estado))
                 query = query.Where(t => t.Estado == estado);
@@ -218,7 +225,79 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .ToList();
 
             ViewBag.Estado = estado;
+            ViewBag.TotalSolicitados = _db.Tramites.Count(t => t.Estado == "Iniciado" || t.Estado == "Solicitado");
+            ViewBag.TotalProceso = _db.Tramites.Count(t => t.Estado == "En proceso" || t.Estado == "En revisión");
+            ViewBag.TotalCompletados = _db.Tramites.Count(t => t.Estado == "Completado" || t.Estado == "Cerrado" || t.Estado == "Aprobado" || t.Estado == "Resuelto");
+            ViewBag.TotalCorreccion = _db.Tramites.Count(t => t.Estado == "Requiere corrección");
+
             return View(lista);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // DETALLE TRÁMITE (ADMIN)
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult DetalleTramite(int id = 0)
+        {
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
+
+            var tramite = _db.Tramites
+                .Include("Usuario")
+                .Include("TramiteDocumentos")
+                .FirstOrDefault(t => t.TramiteId == id);
+
+            if (tramite == null) return HttpNotFound();
+
+            return View(tramite);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // CAMBIAR ESTADO DEL TRÁMITE (AJAX)
+        // ═══════════════════════════════════════════════════════════
+        [HttpPost]
+        public JsonResult CambiarEstadoTramite(int tramiteId, string nuevoEstado, string comentario = "")
+        {
+            if (!EsAdmin())
+                return Json(new { ok = false, mensaje = "Sesión expirada." });
+
+            var estadosValidos = new[] { "Iniciado", "En revisión", "En proceso", "Aprobado", "Requiere corrección", "Resuelto", "Completado", "Cerrado" };
+            if (Array.IndexOf(estadosValidos, nuevoEstado) < 0)
+                return Json(new { ok = false, mensaje = "Estado no válido." });
+
+            var tramite = _db.Tramites.Find(tramiteId);
+            if (tramite == null)
+                return Json(new { ok = false, mensaje = "Trámite no encontrado." });
+
+            tramite.Estado = nuevoEstado;
+            tramite.FechaActualizacion = DateTime.Now;
+
+            if (!string.IsNullOrWhiteSpace(comentario))
+            {
+                var actual = tramite.DatosFormulario ?? "{}";
+                if (actual.EndsWith("}"))
+                    actual = actual.Substring(0, actual.Length - 1);
+
+                var comentarioEscapado = comentario.Replace("\\", "\\\\").Replace("\"", "\\\"");
+                tramite.DatosFormulario = actual + ",\"comentarioAdmin\":\"" + comentarioEscapado + "\"}";
+            }
+
+            _db.SaveChanges();
+
+            var notif = new Notificacion
+            {
+                UsuarioId = tramite.UsuarioId,
+                Titulo = "Trámite actualizado · " + nuevoEstado,
+                Mensaje = "Tu trámite <b>" + tramite.Tipo + "</b> cambió a estado <b>" + nuevoEstado + "</b>." +
+                          (string.IsNullOrWhiteSpace(comentario) ? "" : " Comentario: " + comentario),
+                Fecha = DateTime.Now,
+                Leida = false,
+                Tipo = "Tramite",
+                Estado = nuevoEstado
+            };
+            _db.Notificaciones.Add(notif);
+            _db.SaveChanges();
+
+            return Json(new { ok = true, mensaje = "Estado actualizado.", estado = nuevoEstado });
         }
 
         // ═══════════════════════════════════════════════════════════
@@ -267,7 +346,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
-        // EXPORTAR A EXCEL
+        // EXPORTAR A EXCEL (reporte general)
         // ═══════════════════════════════════════════════════════════
         public ActionResult ExportarExcel()
         {
@@ -279,7 +358,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             using (var wb = new XLWorkbook())
             {
-                // ═══ HOJA 1: RESUMEN GENERAL ═══
                 var ws = wb.Worksheets.Add("Resumen General");
                 ws.Cell("A1").Value = "CNFL · Panel Administrativo";
                 ws.Range("A1:B1").Merge().Style.Font.SetBold().Font.SetFontSize(16).Font.FontColor = XLColor.White;
@@ -318,7 +396,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 }
                 ws.Columns().AdjustToContents();
 
-                // ═══ HOJA 2: CLIENTES ═══
                 var wsC = wb.Worksheets.Add("Clientes");
                 wsC.Cell("A1").Value = "LISTADO DE CLIENTES";
                 wsC.Range("A1:G1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Font.FontColor = XLColor.White;
@@ -346,7 +423,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 }
                 wsC.Columns().AdjustToContents();
 
-                // ═══ HOJA 3: NISEs ═══
                 var wsN = wb.Worksheets.Add("NISEs");
                 wsN.Cell("A1").Value = "LISTADO DE NISEs";
                 wsN.Range("A1:H1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Font.FontColor = XLColor.White;
@@ -376,7 +452,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 }
                 wsN.Columns().AdjustToContents();
 
-                // ═══ HOJA 4: FACTURAS ═══
                 var wsF = wb.Worksheets.Add("Facturas");
                 wsF.Cell("A1").Value = "LISTADO DE FACTURAS";
                 wsF.Range("A1:F1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Font.FontColor = XLColor.White;
@@ -407,7 +482,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 }
                 wsF.Columns().AdjustToContents();
 
-                // ═══ HOJA 5: AVERÍAS ═══
                 var wsA = wb.Worksheets.Add("Averías");
                 wsA.Cell("A1").Value = "LISTADO DE AVERÍAS";
                 wsA.Range("A1:G1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Font.FontColor = XLColor.White;
@@ -438,7 +512,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 }
                 wsA.Columns().AdjustToContents();
 
-                // ═══ HOJA 6: TRÁMITES ═══
                 var wsT = wb.Worksheets.Add("Trámites");
                 wsT.Cell("A1").Value = "LISTADO DE TRÁMITES";
                 wsT.Range("A1:F1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Font.FontColor = XLColor.White;
@@ -467,87 +540,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 }
                 wsT.Columns().AdjustToContents();
 
-                // ═══ HOJA 7: ACTIVIDAD DE USO ═══
-                var wsAc = wb.Worksheets.Add("Actividad de uso");
-                wsAc.Cell("A1").Value = "ACTIVIDAD DE USO DE LA APP";
-                wsAc.Range("A1:D1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Font.FontColor = XLColor.White;
-                wsAc.Range("A1:D1").Style.Fill.BackgroundColor = XLColor.FromHtml("#1a2b6b");
-                wsAc.Range("A1:D1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                string[] hAc = { "Usuario", "Correo", "Minutos totales", "Secciones usadas" };
-                for (int i = 0; i < hAc.Length; i++)
-                {
-                    wsAc.Cell(3, i + 1).Value = hAc[i];
-                    wsAc.Cell(3, i + 1).Style.Font.SetBold().Fill.BackgroundColor = XLColor.FromHtml("#eef0ff");
-                }
-                var actividad = _db.ActividadUsuario
-                    .GroupBy(a => a.UsuarioId)
-                    .Select(g => new
-                    {
-                        UsuarioId = g.Key,
-                        Minutos = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60,
-                        Secciones = g.Select(x => x.Seccion).Distinct().Count()
-                    })
-                    .OrderByDescending(x => x.Minutos)
-                    .ToList();
-                int rac = 4;
-                foreach (var a in actividad)
-                {
-                    var cli = _db.Usuarios.FirstOrDefault(u => u.UsuarioId == a.UsuarioId);
-                    wsAc.Cell(rac, 1).Value = cli != null ? (cli.Nombre + " " + cli.Apellidos) : "";
-                    wsAc.Cell(rac, 2).Value = cli != null ? cli.Correo : "";
-                    wsAc.Cell(rac, 3).Value = a.Minutos;
-                    wsAc.Cell(rac, 4).Value = a.Secciones;
-                    rac++;
-                }
-                wsAc.Columns().AdjustToContents();
-
-                // ═══ HOJA 8: DATOS FACTURACIÓN ═══
-                var wsGF = wb.Worksheets.Add("Datos Facturación");
-                wsGF.Cell("A1").Value = "Mes";
-                wsGF.Cell("B1").Value = "Facturado";
-                wsGF.Cell("C1").Value = "Cobrado";
-                wsGF.Range("A1:C1").Style.Font.SetBold().Fill.BackgroundColor = XLColor.FromHtml("#eef0ff");
-
-                for (int i = 5; i >= 0; i--)
-                {
-                    var fecha = hoy.AddMonths(-i);
-                    var inicio = new DateTime(fecha.Year, fecha.Month, 1);
-                    var fin = inicio.AddMonths(1);
-
-                    var facMes = _db.Facturas.Where(f => f.FechaEmision >= inicio && f.FechaEmision < fin).ToList();
-                    var facMesCob = facMes.Where(f => f.Pagada).ToList();
-
-                    int rw = 7 - i;
-                    wsGF.Cell(rw, 1).Value = inicio.ToString("MMM yyyy");
-                    wsGF.Cell(rw, 2).Value = facMes.Sum(f => f.Monto);
-                    wsGF.Cell(rw, 3).Value = facMesCob.Sum(f => f.Monto);
-                }
-                wsGF.Columns().AdjustToContents();
-
-                // ═══ HOJA 9: DATOS CLIENTES ═══
-                var wsGC = wb.Worksheets.Add("Datos Clientes");
-                wsGC.Cell("A1").Value = "Estado";
-                wsGC.Cell("B1").Value = "Cantidad";
-                wsGC.Range("A1:B1").Style.Font.SetBold().Fill.BackgroundColor = XLColor.FromHtml("#eef0ff");
-                wsGC.Cell("A2").Value = "Activos";
-                wsGC.Cell("B2").Value = _db.Usuarios.Count(u => u.Activo);
-                wsGC.Cell("A3").Value = "Inactivos";
-                wsGC.Cell("B3").Value = _db.Usuarios.Count(u => !u.Activo);
-                wsGC.Columns().AdjustToContents();
-
-                // ═══ HOJA 10: DATOS AVERÍAS ═══
-                var wsGA = wb.Worksheets.Add("Datos Averías");
-                wsGA.Cell("A1").Value = "Estado";
-                wsGA.Cell("B1").Value = "Cantidad";
-                wsGA.Range("A1:B1").Style.Font.SetBold().Fill.BackgroundColor = XLColor.FromHtml("#eef0ff");
-                wsGA.Cell("A2").Value = "Abiertas";
-                wsGA.Cell("B2").Value = _db.Averias.Count(a => a.Estado != "Resuelta" && a.Estado != "Cerrada");
-                wsGA.Cell("A3").Value = "Resueltas";
-                wsGA.Cell("B3").Value = _db.Averias.Count(a => a.Estado == "Resuelta" || a.Estado == "Cerrada");
-                wsGA.Columns().AdjustToContents();
-
-                // ═══ GUARDAR Y DEVOLVER ═══
                 using (var ms = new MemoryStream())
                 {
                     wb.SaveAs(ms);
@@ -560,7 +552,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
-        // EXPORTAR A PDF
+        // EXPORTAR A PDF (reporte general)
         // ═══════════════════════════════════════════════════════════
         public ActionResult ExportarPDF()
         {
@@ -576,19 +568,17 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 PdfWriter.GetInstance(doc, ms);
                 doc.Open();
 
-                // Fuentes — CORREGIDO: BaseColor.BLACK y BaseColor.WHITE en MAYÚSCULAS
                 var titulo = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 20, new BaseColor(26, 43, 107));
                 var subtitulo = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 14, new BaseColor(91, 63, 191));
                 var texto = FontFactory.GetFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
                 var textoBold = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
                 var textoBlanco = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
 
-                // HEADER
                 var headerTable = new PdfPTable(1) { WidthPercentage = 100 };
                 var headerCell = new PdfPCell(new Phrase("CNFL · Reporte Administrativo", titulo))
                 {
                     BackgroundColor = new BaseColor(238, 240, 255),
-                    Border = Rectangle.NO_BORDER,
+                    Border = iTextSharp.text.Rectangle.NO_BORDER,
                     Padding = 14,
                     HorizontalAlignment = Element.ALIGN_CENTER
                 };
@@ -599,7 +589,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 doc.Add(new Paragraph("Generado: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), texto));
                 doc.Add(new Paragraph(" "));
 
-                // 1. RESUMEN
                 doc.Add(new Paragraph("1. Resumen General", subtitulo));
                 doc.Add(new Paragraph(" "));
 
@@ -634,7 +623,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 doc.Add(tablaResumen);
                 doc.NewPage();
 
-                // 2. CLIENTES
                 doc.Add(new Paragraph("2. Listado de Clientes", subtitulo));
                 doc.Add(new Paragraph(" "));
 
@@ -657,7 +645,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 doc.Add(tablaC);
                 doc.NewPage();
 
-                // 3. NISEs
                 doc.Add(new Paragraph("3. Listado de NISEs", subtitulo));
                 doc.Add(new Paragraph(" "));
 
@@ -680,7 +667,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 doc.Add(tablaN);
                 doc.NewPage();
 
-                // 4. FACTURAS
                 doc.Add(new Paragraph("4. Listado de Facturas", subtitulo));
                 doc.Add(new Paragraph(" "));
 
@@ -704,7 +690,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 doc.Add(tablaF);
                 doc.NewPage();
 
-                // 5. AVERÍAS
                 doc.Add(new Paragraph("5. Listado de Averías", subtitulo));
                 doc.Add(new Paragraph(" "));
 
@@ -727,7 +712,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 doc.Add(tablaA);
                 doc.NewPage();
 
-                // 6. TRÁMITES
                 doc.Add(new Paragraph("6. Listado de Trámites", subtitulo));
                 doc.Add(new Paragraph(" "));
 
@@ -758,7 +742,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
-        // ACTIVIDAD
+        // ACTIVIDAD (solo clientes, no admin)
         // ═══════════════════════════════════════════════════════════
         public ActionResult Actividad()
         {
@@ -786,7 +770,14 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             ViewBag.Actividad = lista;
 
+            var clientesIds = _db.UsuarioRoles
+                .Where(ur => ur.Rol.NombreRol == "Cliente")
+                .Select(ur => ur.UsuarioId)
+                .Distinct()
+                .ToList();
+
             ViewBag.TiempoUso = _db.ActividadUsuario
+                .Where(a => clientesIds.Contains(a.UsuarioId))
                 .GroupBy(a => a.UsuarioId)
                 .Select(g => new TiempoUsoClienteDto
                 {
@@ -806,6 +797,250 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 .ToList();
 
             return View();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // EXPORTAR ACTIVIDAD A EXCEL (con gráfico generado como imagen)
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult ExportarActividadExcel()
+        {
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
+
+            var clientesIds = _db.UsuarioRoles
+                .Where(ur => ur.Rol.NombreRol == "Cliente")
+                .Select(ur => ur.UsuarioId)
+                .Distinct()
+                .ToList();
+
+            var datos = _db.ActividadUsuario
+                .Where(a => clientesIds.Contains(a.UsuarioId))
+                .GroupBy(a => a.UsuarioId)
+                .Select(g => new
+                {
+                    UsuarioId = g.Key,
+                    Nombre = _db.Usuarios
+                        .Where(u => u.UsuarioId == g.Key)
+                        .Select(u => u.Nombre + " " + u.Apellidos)
+                        .FirstOrDefault(),
+                    Correo = _db.Usuarios
+                        .Where(u => u.UsuarioId == g.Key)
+                        .Select(u => u.Correo)
+                        .FirstOrDefault(),
+                    Minutos = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60,
+                    Secciones = g.Select(x => x.Seccion).Distinct().Count(),
+                    Visitas = g.Count()
+                })
+                .OrderByDescending(x => x.Minutos)
+                .Take(20)
+                .ToList();
+
+            // ═══ GENERAR IMAGEN DEL GRÁFICO CON SYSTEM.DRAWING ═══
+            byte[] chartImageBytes = null;
+
+            if (datos.Any())
+            {
+                int ancho = 600;
+                int alto = 400;
+                int margenIzq = 60;
+                int margenDer = 20;
+                int margenSup = 40;
+                int margenInf = 80;
+
+                using (var bmp = new System.Drawing.Bitmap(ancho, alto))
+                using (var g = System.Drawing.Graphics.FromImage(bmp))
+                {
+                    g.Clear(System.Drawing.Color.White);
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+
+                    var tituloFuente = new System.Drawing.Font("Arial", 14, System.Drawing.FontStyle.Bold);
+                    var ejeFuente = new System.Drawing.Font("Arial", 8);
+                    var pincelTitulo = System.Drawing.Brushes.DarkSlateBlue;
+                    var pincelTexto = System.Drawing.Brushes.Black;
+                    var pincelEje = System.Drawing.Brushes.Gray;
+                    var pincelBarra = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(91, 63, 191));
+
+                    g.DrawString("Top clientes por minutos de uso", tituloFuente, pincelTitulo, new System.Drawing.PointF(margenIzq, 10));
+
+                    int maxMinutos = datos.Max(d => d.Minutos);
+                    if (maxMinutos <= 0) maxMinutos = 1;
+
+                    int anchoDisponible = ancho - margenIzq - margenDer;
+                    int altoDisponible = alto - margenSup - margenInf;
+                    int cantidadBarras = datos.Count;
+                    int espacioEntreBarras = 8;
+                    int anchoBarra = (anchoDisponible - (espacioEntreBarras * (cantidadBarras + 1))) / cantidadBarras;
+                    if (anchoBarra < 5) anchoBarra = 5;
+
+                    g.DrawLine(new System.Drawing.Pen(System.Drawing.Color.LightGray), margenIzq, margenSup, margenIzq, alto - margenInf);
+
+                    for (int i = 0; i < cantidadBarras; i++)
+                    {
+                        var d = datos[i];
+                        double porcentaje = (double)d.Minutos / maxMinutos;
+                        int alturaBarra = (int)(porcentaje * altoDisponible);
+                        if (alturaBarra < 4) alturaBarra = 4;
+
+                        int x = margenIzq + espacioEntreBarras + (i * (anchoBarra + espacioEntreBarras));
+                        int y = alto - margenInf - alturaBarra;
+
+                        g.FillRectangle(pincelBarra, x, y, anchoBarra, alturaBarra);
+
+                        string valor = d.Minutos.ToString();
+                        var tamañoValor = g.MeasureString(valor, ejeFuente);
+                        g.DrawString(valor, ejeFuente, pincelTexto, x + (anchoBarra - tamañoValor.Width) / 2, y - 16);
+
+                        string nombreCorto = d.Nombre;
+                        if (nombreCorto.Length > 10) nombreCorto = nombreCorto.Substring(0, 9) + "…";
+                        var tamañoNombre = g.MeasureString(nombreCorto, ejeFuente);
+                        g.DrawString(nombreCorto, ejeFuente, pincelEje, x + (anchoBarra - tamañoNombre.Width) / 2, alto - margenInf + 5);
+                    }
+
+                    g.DrawRectangle(new System.Drawing.Pen(System.Drawing.Color.LightGray, 1), margenIzq, margenSup, anchoDisponible, altoDisponible);
+
+                    using (var msImg = new MemoryStream())
+                    {
+                        bmp.Save(msImg, ImageFormat.Png);
+                        chartImageBytes = msImg.ToArray();
+                    }
+                }
+            }
+
+            // ═══ CREAR EXCEL ═══
+            using (var wb = new XLWorkbook())
+            {
+                var ws = wb.Worksheets.Add("Actividad");
+
+                ws.Cell("A1").Value = "CNFL · Actividad de uso de la app";
+                ws.Range("A1:E1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Font.FontColor = XLColor.White;
+                ws.Range("A1:E1").Style.Fill.BackgroundColor = XLColor.FromHtml("#1a2b6b");
+                ws.Range("A1:E1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                ws.Cell("A2").Value = "Generado: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                ws.Range("A2:E2").Merge().Style.Font.SetItalic().Font.FontColor = XLColor.Gray;
+
+                string[] headers = { "Cliente", "Correo", "Minutos", "Secciones", "Visitas" };
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    ws.Cell(4, i + 1).Value = headers[i];
+                    ws.Cell(4, i + 1).Style.Font.SetBold().Fill.BackgroundColor = XLColor.FromHtml("#eef0ff");
+                }
+
+                int row = 5;
+                foreach (var d in datos)
+                {
+                    ws.Cell(row, 1).Value = d.Nombre ?? "—";
+                    ws.Cell(row, 2).Value = d.Correo ?? "—";
+                    ws.Cell(row, 3).Value = d.Minutos;
+                    ws.Cell(row, 4).Value = d.Secciones;
+                    ws.Cell(row, 5).Value = d.Visitas;
+                    row++;
+                }
+
+                ws.Columns().AdjustToContents();
+
+                if (chartImageBytes != null)
+                {
+                    using (var msImg = new MemoryStream(chartImageBytes))
+                    {
+                        var imagen = ws.AddPicture(msImg, "GraficoActividad")
+                            .MoveTo(ws.Cell(5, 7));
+
+                        imagen.Width = 600;
+                        imagen.Height = 400;
+                    }
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    wb.SaveAs(ms);
+                    return File(ms.ToArray(),
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        "Actividad_Uso_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // EXPORTAR ACTIVIDAD A PDF (con tabla)
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult ExportarActividadPDF()
+        {
+            var redir = RedirigirSiNoEsAdmin();
+            if (redir != null) return redir;
+
+            var clientesIds = _db.UsuarioRoles
+                .Where(ur => ur.Rol.NombreRol == "Cliente")
+                .Select(ur => ur.UsuarioId)
+                .Distinct()
+                .ToList();
+
+            var datos = _db.ActividadUsuario
+                .Where(a => clientesIds.Contains(a.UsuarioId))
+                .GroupBy(a => a.UsuarioId)
+                .Select(g => new
+                {
+                    UsuarioId = g.Key,
+                    Nombre = _db.Usuarios
+                        .Where(u => u.UsuarioId == g.Key)
+                        .Select(u => u.Nombre + " " + u.Apellidos)
+                        .FirstOrDefault(),
+                    Correo = _db.Usuarios
+                        .Where(u => u.UsuarioId == g.Key)
+                        .Select(u => u.Correo)
+                        .FirstOrDefault(),
+                    Minutos = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60,
+                    Secciones = g.Select(x => x.Seccion).Distinct().Count(),
+                    Visitas = g.Count()
+                })
+                .OrderByDescending(x => x.Minutos)
+                .Take(20)
+                .ToList();
+
+            using (var ms = new MemoryStream())
+            {
+                var doc = new Document(PageSize.A4.Rotate(), 36, 36, 54, 36);
+                PdfWriter.GetInstance(doc, ms);
+                doc.Open();
+
+                var titulo = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, new BaseColor(26, 43, 107));
+                var texto = FontFactory.GetFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+                var textoBold = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
+                var textoBlanco = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
+
+                doc.Add(new Paragraph("CNFL · Actividad de uso de la app", titulo));
+                doc.Add(new Paragraph("Generado: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), texto));
+                doc.Add(new Paragraph(" "));
+
+                var tabla = new PdfPTable(5) { WidthPercentage = 100 };
+                tabla.SetWidths(new float[] { 30, 30, 12, 14, 14 });
+
+                string[] headers = { "Cliente", "Correo", "Minutos", "Secciones", "Visitas" };
+                foreach (var h in headers)
+                {
+                    tabla.AddCell(new PdfPCell(new Phrase(h, textoBlanco))
+                    {
+                        BackgroundColor = new BaseColor(26, 43, 107),
+                        Padding = 8,
+                        HorizontalAlignment = Element.ALIGN_CENTER
+                    });
+                }
+
+                foreach (var d in datos)
+                {
+                    tabla.AddCell(new PdfPCell(new Phrase(d.Nombre ?? "—", texto)) { Padding = 6 });
+                    tabla.AddCell(new PdfPCell(new Phrase(d.Correo ?? "—", texto)) { Padding = 6 });
+                    tabla.AddCell(new PdfPCell(new Phrase(d.Minutos.ToString(), textoBold)) { Padding = 6, HorizontalAlignment = Element.ALIGN_CENTER });
+                    tabla.AddCell(new PdfPCell(new Phrase(d.Secciones.ToString(), texto)) { Padding = 6, HorizontalAlignment = Element.ALIGN_CENTER });
+                    tabla.AddCell(new PdfPCell(new Phrase(d.Visitas.ToString(), texto)) { Padding = 6, HorizontalAlignment = Element.ALIGN_CENTER });
+                }
+
+                doc.Add(tabla);
+                doc.Close();
+
+                return File(ms.ToArray(), "application/pdf",
+                    "Actividad_Uso_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".pdf");
+            }
         }
 
         // ═══════════════════════════════════════════════════════════

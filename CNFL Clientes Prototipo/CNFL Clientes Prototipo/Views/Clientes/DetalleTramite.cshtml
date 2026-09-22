@@ -1,0 +1,193 @@
+﻿@model CNFL_Clientes_Prototipo.Models.Tramite
+@{
+    ViewBag.Title = "Detalle del Trámite";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var estados = new[] { "Iniciado", "En revisión", "En proceso", "Aprobado", "Requiere corrección", "Resuelto", "Completado", "Cerrado" };
+}
+
+<div style="margin-bottom:16px;">
+    <a href="@Url.Action("Tramites", "Admin")"
+       style="color:var(--blue); text-decoration:none; font-size:13px; font-weight:800;">
+        ← Volver a Trámites
+    </a>
+</div>
+
+<h1 class="page-title">📋 Detalle del Trámite</h1>
+<p class="page-subtitle">@Model.Tipo</p>
+
+<!-- Card del cliente -->
+<div class="card" style="margin-top:16px;">
+    <div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px;">
+        Información del cliente
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="font-size:12px; color:var(--muted);">Nombre</span>
+        <span style="font-size:12.5px; font-weight:700;">@(Model.Usuario != null ? (Model.Usuario.Nombre + " " + Model.Usuario.Apellidos) : "—")</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="font-size:12px; color:var(--muted);">Cédula</span>
+        <span style="font-size:12.5px; font-weight:700;">@(Model.Usuario?.Cedula ?? "—")</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="font-size:12px; color:var(--muted);">Correo</span>
+        <span style="font-size:12.5px; font-weight:700;">@(Model.Usuario?.Correo ?? "—")</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:8px 0;">
+        <span style="font-size:12px; color:var(--muted);">Teléfono</span>
+        <span style="font-size:12.5px; font-weight:700;">@(Model.Usuario?.Telefono ?? "—")</span>
+    </div>
+</div>
+
+<!-- Card del trámite -->
+<div class="card" style="margin-top:14px;">
+    <div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px;">
+        Datos del trámite
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="font-size:12px; color:var(--muted);">Tipo</span>
+        <span style="font-size:12.5px; font-weight:700;">@Model.Tipo</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="font-size:12px; color:var(--muted);">Referencia</span>
+        <span style="font-size:12.5px; font-weight:700;">@Model.NumeroReferencia</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
+        <span style="font-size:12px; color:var(--muted);">Fecha solicitud</span>
+        <span style="font-size:12.5px; font-weight:700;">@Model.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding:8px 0; align-items:center;">
+        <span style="font-size:12px; color:var(--muted);">Estado actual</span>
+        <span style="font-size:11px; font-weight:800; padding:6px 12px; border-radius:999px; background:#eef0ff; color:var(--blue);">
+            @Model.Estado
+        </span>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Descripcion))
+    {
+        <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--line);">
+            <div style="font-size:12px; color:var(--muted); font-weight:700; margin-bottom:6px;">Comentario del cliente:</div>
+            <div style="font-size:13px; line-height:1.5; color:var(--ink);">
+                @Model.Descripcion
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Documentos adjuntos -->
+@if (Model.TramiteDocumentos != null && Model.TramiteDocumentos.Any())
+{
+    <div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin:22px 6px 10px;">
+        Documentos adjuntos (@Model.TramiteDocumentos.Count)
+    </div>
+
+    <div class="card">
+        @foreach (var doc in Model.TramiteDocumentos)
+        {
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);">
+                <div style="width:40px; height:40px; border-radius:10px; background:#eef0ff; display:grid; place-items:center; font-size:16px; flex-shrink:0;">
+                    @(doc.NombreArchivo.EndsWith(".pdf") ? "📄" : "🖼️")
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size:12.5px; font-weight:800; color:var(--ink);">
+                        @doc.NombreRequisito
+                    </div>
+                    <div style="font-size:11px; color:var(--muted); margin-top:2px; word-break:break-all;">
+                        @doc.NombreArchivo · @((doc.TamanoBytes / 1024).ToString("N0")) KB
+                    </div>
+                </div>
+                <a href="@Url.Content(doc.RutaArchivo)" target="_blank"
+                   style="padding:8px 14px; background:var(--blue); color:#fff; border-radius:10px; text-decoration:none; font-size:11.5px; font-weight:800; flex-shrink:0;">
+                    Ver
+                </a>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin:22px 6px 10px;">
+        Documentos adjuntos
+    </div>
+    <div class="card" style="text-align:center; padding:24px;">
+        <div style="font-size:32px;">📭</div>
+        <p style="font-size:12.5px; color:var(--muted); margin-top:8px;">Sin documentos adjuntos.</p>
+    </div>
+}
+
+<!-- Acciones -->
+<div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin:22px 6px 10px;">
+    Acciones
+</div>
+
+<div class="card">
+    <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase;">
+            Cambiar estado
+        </label>
+        <select id="nuevoEstado" style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; outline:none;">
+            @foreach (var est in estados)
+            {
+                <option value="@est" @(Model.Estado == est ? "selected" : "")>@est</option>
+            }
+        </select>
+    </div>
+
+    <div style="margin-bottom:14px;">
+        <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase;">
+            Comentario (opcional)
+        </label>
+        <textarea id="comentarioAdmin" rows="3" placeholder="Explicá al cliente qué debe corregir o por qué se aprueba..."
+                  style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; resize:vertical; outline:none;"></textarea>
+    </div>
+
+    <button type="button" onclick="guardarCambioEstado();"
+            style="width:100%; padding:15px; background:var(--blue); color:#fff; border:0; border-radius:14px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; box-shadow:0 8px 18px -8px rgba(30,35,230,.5);">
+        💾 Guardar cambio
+    </button>
+
+    <div id="estadoMensaje" style="display:none; margin-top:12px; padding:12px; border-radius:12px; font-size:12.5px; font-weight:800; text-align:center;"></div>
+</div>
+
+@section Scripts {
+    <script>
+        function guardarCambioEstado() {
+            var nuevoEstado = document.getElementById('nuevoEstado').value;
+            var comentario = document.getElementById('comentarioAdmin').value.trim();
+            var mensaje = document.getElementById('estadoMensaje');
+
+            mensaje.style.display = 'block';
+            mensaje.style.background = '#eef0ff';
+            mensaje.style.color = 'var(--blue)';
+            mensaje.textContent = 'Guardando...';
+
+            fetch('@Url.Action("CambiarEstadoTramite", "Admin")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'tramiteId=@Model.TramiteId&nuevoEstado=' + encodeURIComponent(nuevoEstado) +
+                      '&comentario=' + encodeURIComponent(comentario)
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.ok) {
+                    mensaje.style.background = '#e9f7ec';
+                    mensaje.style.color = '#2f8f3e';
+                    mensaje.textContent = '✓ ' + data.mensaje + ' · ' + data.estado;
+
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("Tramites", "Admin")';
+                    }, 1500);
+                } else {
+                    mensaje.style.background = '#fdeaea';
+                    mensaje.style.color = '#c93a3f';
+                    mensaje.textContent = '✗ ' + data.mensaje;
+                }
+            })
+            .catch(function () {
+                mensaje.style.background = '#fdeaea';
+                mensaje.style.color = '#c93a3f';
+                mensaje.textContent = '✗ Error de conexión';
+            });
+        }
+    </script>
+}

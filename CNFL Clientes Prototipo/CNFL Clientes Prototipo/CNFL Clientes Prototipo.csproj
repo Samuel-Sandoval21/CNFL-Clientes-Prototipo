@@ -231,6 +231,7 @@
     <Compile Include="Models\Suscripcion.cs" />
     <Compile Include="Models\Suspension.cs" />
     <Compile Include="Models\Tramite.cs" />
+    <Compile Include="Models\TramiteDocumento.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Models\UsuarioRol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -401,9 +402,13 @@
     <Content Include="Views\Admin\Alertas.cshtml" />
     <Content Include="Views\Cuenta\_PoliticaPrivacidad.cshtml" />
     <Content Include="Views\Cuenta\_ConsentimientoInformado.cshtml" />
+    <Content Include="Views\Shared\_Contactanos.cshtml" />
+    <Content Include="Views\Clientes\DetalleTramite.cshtml" />
+    <Content Include="Views\Admin\DetalleTramite.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\uploads\tramites\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

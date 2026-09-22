@@ -414,6 +414,77 @@
                 for (var i = 0; i < badges.length; i++) badges[i].textContent = total;
             } catch (e) { }
         })();
+
+        // ═══════════════════════════════════════════════════════════
+        // REGISTRAR ACTIVIDAD (tiempo real del cliente)
+        // ═══════════════════════════════════════════════════════════
+        (function () {
+            var secciones = {
+                'Dashboard': 'Inicio',
+                'MisServicios': 'Mis Servicios',
+                'Tramites': 'Trámites',
+                'ProductosServicios': 'Productos y Servicios',
+                'Tienda': 'Tienda',
+                'MisCompras': 'Mis Compras',
+                'MetodosPago': 'Métodos de Pago',
+                'Cuenta': 'Cuenta',
+                'Alertas': 'Alertas',
+                'MisFacturas': 'Facturas',
+                'HistorialConsumo': 'Historial de Consumo',
+                'ConsultaMedidor': 'Consulta Medidor',
+                'MapaGIS': 'Mapa GIS',
+                'Calculadora': 'Calculadora',
+                'DetalleTramite': 'Detalle Trámite',
+                'EstadoAveria': 'Estado Avería',
+                'HistorialReportes': 'Historial Reportes',
+                'Reportes': 'Reportes'
+            };
+
+            var accionActual = '@(ViewContext.RouteData.Values["action"] as string)';
+            var seccionActual = secciones[accionActual] || accionActual;
+            var tiempoInicio = Date.now();
+            var enviando = false;
+
+            function enviarTiempo() {
+                if (enviando) return;
+                enviando = true;
+
+                var segundos = Math.round((Date.now() - tiempoInicio) / 1000);
+
+                if (segundos < 5) { enviando = false; return; }
+
+                var data = new URLSearchParams();
+                data.append('seccion', seccionActual);
+                data.append('accion', 'Vista');
+                data.append('segundos', segundos);
+                data.append('detalle', 'Vista: ' + seccionActual);
+
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon('@Url.Action("RegistrarActividad", "Clientes")', data);
+                } else {
+                    try {
+                        fetch('@Url.Action("RegistrarActividad", "Clientes")', {
+                            method: 'POST',
+                            body: data,
+                            keepalive: true
+                        });
+                    } catch (e) { }
+                }
+
+                tiempoInicio = Date.now();
+                enviando = false;
+            }
+
+            window.addEventListener('beforeunload', enviarTiempo);
+            window.addEventListener('pagehide', enviarTiempo);
+
+            setInterval(function () {
+                var segundos = Math.round((Date.now() - tiempoInicio) / 1000);
+                if (segundos >= 60) {
+                    enviarTiempo();
+                }
+            }, 30000);
+        })();
     </script>
 
     @RenderSection("Scripts", required: false)

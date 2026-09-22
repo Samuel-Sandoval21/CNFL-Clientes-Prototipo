@@ -16,7 +16,8 @@ namespace CNFL_Clientes_Prototipo.Models
         public string NumeroReferencia { get; set; }
         public string DatosFormulario { get; set; }
 
-        // Navegación — SOLO Usuario
+        // Navegación
         public virtual Usuario Usuario { get; set; }
+        public virtual ICollection<TramiteDocumento> TramiteDocumentos { get; set; }
     }
 }

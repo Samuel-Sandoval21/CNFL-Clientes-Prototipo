@@ -20,6 +20,7 @@ namespace CNFL_Clientes_Prototipo.Data
         public DbSet<Suspension> Suspensiones { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
+        public DbSet<TramiteDocumento> TramiteDocumentos { get; set; }   // ← NUEVO
         public DbSet<Suscripcion> Suscripciones { get; set; }
         public DbSet<Pago> Pagos { get; set; }
 
@@ -44,6 +45,7 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Suspension>().ToTable("Suspensiones");
             modelBuilder.Entity<Notificacion>().ToTable("Notificaciones");
             modelBuilder.Entity<Tramite>().ToTable("Tramites");
+            modelBuilder.Entity<TramiteDocumento>().ToTable("TramiteDocumentos");   // ← NUEVO
             modelBuilder.Entity<Suscripcion>().ToTable("Suscripciones");
             modelBuilder.Entity<Pago>().ToTable("Pagos");
             modelBuilder.Entity<ActividadEconomica>().ToTable("ActividadesEconomicas");
@@ -56,9 +58,10 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<DescargaUsuario>().ToTable("DescargasUsuario");
 
             // ═══════════════════════════════════════════════════════
-            // CLAVES PRIMARIAS (Fluent API)
+            // CLAVES PRIMARIAS
             // ═══════════════════════════════════════════════════════
             modelBuilder.Entity<Tramite>().HasKey(t => t.TramiteId);
+            modelBuilder.Entity<TramiteDocumento>().HasKey(t => t.DocumentoId);   // ← NUEVO
             modelBuilder.Entity<CarritoItem>().HasKey(c => c.CarritoItemId);
             modelBuilder.Entity<OrdenCompra>().HasKey(o => o.OrdenId);
             modelBuilder.Entity<MetodoPago>().HasKey(m => m.MetodoPagoId);
@@ -67,7 +70,7 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<DescargaUsuario>().HasKey(d => d.DescargaId);
 
             // ═══════════════════════════════════════════════════════
-            // MAPEO EXPLÍCITO DE COLUMNAS
+            // MAPEO DE COLUMNAS
             // ═══════════════════════════════════════════════════════
             modelBuilder.Entity<Usuario>()
                 .Property(u => u.DireccionExacta).HasColumnName("DireccionExacta");
@@ -82,6 +85,16 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Tramite>().Property(t => t.Descripcion).HasColumnName("Descripcion");
             modelBuilder.Entity<Tramite>().Property(t => t.NumeroReferencia).HasColumnName("NumeroReferencia");
             modelBuilder.Entity<Tramite>().Property(t => t.DatosFormulario).HasColumnName("DatosFormulario");
+
+            // Mapeo de TramiteDocumento
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.DocumentoId).HasColumnName("DocumentoId");
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.TramiteId).HasColumnName("TramiteId");
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.NombreRequisito).HasColumnName("NombreRequisito");
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.NombreArchivo).HasColumnName("NombreArchivo");
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.RutaArchivo).HasColumnName("RutaArchivo");
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.TamanoBytes).HasColumnName("TamanoBytes");
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.FechaSubida).HasColumnName("FechaSubida");
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.DatosFormulario).HasColumnName("DatosFormulario");
 
             modelBuilder.Entity<CarritoItem>().Property(c => c.CarritoItemId).HasColumnName("CarritoItemId");
             modelBuilder.Entity<CarritoItem>().Property(c => c.UsuarioId).HasColumnName("UsuarioId");
@@ -139,7 +152,6 @@ namespace CNFL_Clientes_Prototipo.Data
             // RELACIONES
             // ============================================================
 
-            // Relaciones principales (con Usuario)
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.UsuarioRoles)
                 .WithRequired(ur => ur.Usuario)
@@ -165,7 +177,6 @@ namespace CNFL_Clientes_Prototipo.Data
                 .WithRequired(s => s.Usuario)
                 .HasForeignKey(s => s.UsuarioId);
 
-            // ⭐ Estas 2 son las que faltaban en el modelo Usuario:
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Tramites)
                 .WithRequired(t => t.Usuario)
@@ -177,13 +188,11 @@ namespace CNFL_Clientes_Prototipo.Data
                 .WithRequired(p => p.Usuario)
                 .HasForeignKey(p => p.UsuarioId);
 
-            // Relaciones de Rol
             modelBuilder.Entity<Rol>()
                 .HasMany(r => r.UsuarioRoles)
                 .WithRequired(ur => ur.Rol)
                 .HasForeignKey(ur => ur.RolId);
 
-            // Relaciones de NISE
             modelBuilder.Entity<NISE>()
                 .HasMany(n => n.Facturas)
                 .WithRequired(f => f.NISE)
@@ -199,11 +208,17 @@ namespace CNFL_Clientes_Prototipo.Data
                 .WithRequired(s => s.NISE)
                 .HasForeignKey(s => s.NiseId);
 
-            // Relaciones de Factura
             modelBuilder.Entity<Factura>()
                 .HasMany(f => f.Pagos)
                 .WithRequired(p => p.Factura)
                 .HasForeignKey(p => p.FacturaId);
+
+            // ⭐ NUEVA RELACIÓN: Trámite → Documentos
+            modelBuilder.Entity<Tramite>()
+                .HasMany(t => t.TramiteDocumentos)
+                .WithRequired(d => d.Tramite)
+                .HasForeignKey(d => d.TramiteId)
+                .WillCascadeOnDelete(true);
 
             // CarritoItem / OrdenCompra / MetodoPago → Usuario
             modelBuilder.Entity<CarritoItem>()
@@ -224,7 +239,6 @@ namespace CNFL_Clientes_Prototipo.Data
                 .HasForeignKey(m => m.UsuarioId)
                 .WillCascadeOnDelete(false);
 
-            // ActividadUsuario / DescargaUsuario
             modelBuilder.Entity<ActividadUsuario>()
                 .HasRequired(a => a.Usuario)
                 .WithMany()
