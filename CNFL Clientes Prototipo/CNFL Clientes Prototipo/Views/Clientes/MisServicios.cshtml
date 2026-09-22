@@ -1,6 +1,11 @@
 ﻿@{
     ViewBag.Title = "Mis Servicios";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    var nises = ViewBag.NISEs as List<CNFL_Clientes_Prototipo.Models.NISE> ?? new List<CNFL_Clientes_Prototipo.Models.NISE>();
+    var facturasPorNise = ViewBag.FacturasPorNise as Dictionary<int, List<CNFL_Clientes_Prototipo.Models.Factura>> ?? new Dictionary<int, List<CNFL_Clientes_Prototipo.Models.Factura>>();
+    var averiasActivas = ViewBag.AveriasActivas as List<CNFL_Clientes_Prototipo.Models.Averia> ?? new List<CNFL_Clientes_Prototipo.Models.Averia>();
+    var totalNises = nises.Count;
 }
 
 <!-- ═══════════ HEADER ═══════════ -->
@@ -25,56 +30,105 @@
     Todo lo relacionado con tus NISEs en un solo lugar.
 </p>
 
-<!-- ═══════════ SERVICIOS ASOCIADOS (NISEs) ═══════════ -->
-<div class="eyebrow">Servicios asociados</div>
-
-<div class="rows">
-    <a href="@Url.Action("HistorialConsumo", "Clientes")" class="nise">
-        <div class="ring" style="background:#e9f7ec;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
-                <path d="M9 21V9l6-6v18M9 13h6" />
-                <path d="M3 21h18" />
-            </svg>
-        </div>
-        <div class="info">
-            <div class="t">NISE-002 · Residencial</div>
-            <div class="s">San Miguel, Santo Domingo, Heredia</div>
-        </div>
-        <span class="pill st-normal"><span class="dot"></span>Normal</span>
-    </a>
-
-    <a href="@Url.Action("HistorialConsumo", "Clientes")" class="nise">
-        <div class="ring" style="background:#fef3e0;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
-                <path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6" />
-            </svg>
-        </div>
-        <div class="info">
-            <div class="t">NISE-014 · Comercial</div>
-            <div class="s">Mantenimiento programado 2:00pm</div>
-        </div>
-        <span class="pill st-prev"><span class="dot"></span>Prevención</span>
-    </a>
-
-    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 1 })" class="nise">
-        <div class="ring" style="background:#fdeaea;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
-                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
-            </svg>
-        </div>
-        <div class="info">
-            <div class="t">NISE-021 · Industrial</div>
-            <div class="s">Avería en la red · atendiéndose</div>
-        </div>
-        <span class="pill st-inc"><span class="dot"></span>Incidente</span>
-    </a>
+<!-- ═══════════ SERVICIOS ASOCIADOS (NISEs dinámicos) ═══════════ -->
+<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
+    <span>Servicios asociados</span>
+    <span style="font-size:11px; color:var(--muted);">@totalNises @(totalNises == 1 ? "NISE" : "NISEs")</span>
 </div>
 
+@if (!nises.Any())
+{
+    <div class="card" style="text-align:center; padding:36px 20px;">
+        <div style="font-size:46px;">🏠</div>
+        <p style="font-weight:800; font-size:15px; margin-top:12px; color:var(--ink);">Sin NISEs registrados</p>
+        <p style="font-size:12.5px; color:var(--muted); margin-top:6px;">
+            Cuando tengas un servicio eléctrico asociado aparecerá aquí.
+        </p>
+    </div>
+}
+else
+{
+    <div class="rows">
+        @foreach (var n in nises)
+        {
+            var facturas = facturasPorNise.ContainsKey(n.NiseId) ? facturasPorNise[n.NiseId] : new List<CNFL_Clientes_Prototipo.Models.Factura>();
+            var facturaPendiente = facturas.FirstOrDefault(f => !f.Pagada);
+            var tieneDeuda = facturaPendiente != null;
+
+            // Estado visual: Normal (verde) / Prevención (ámbar) / Incidente (rojo)
+            var estadoClass = "st-normal";
+            var estadoTexto = "Normal";
+            var ringBg = "#e9f7ec";
+            var ringColor = "var(--green)";
+            var iconPath = "<path d=\"M9 21V9l6-6v18M9 13h6\" /><path d=\"M3 21h18\" />"; // Residencial por defecto
+
+            if (n.TipoServicio == "Comercial")
+            {
+                ringBg = "#fef3e0";
+                ringColor = "var(--amber)";
+                iconPath = "<path d=\"M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6\" />";
+            }
+            else if (n.TipoServicio == "Industrial")
+            {
+                ringBg = "#fdeaea";
+                ringColor = "var(--red)";
+                iconPath = "<path d=\"M13 2 3 14h7l-1 8 10-12h-7z\" />";
+            }
+
+            if (tieneDeuda)
+            {
+                estadoClass = "st-inc";
+                estadoTexto = "Pendiente";
+                ringBg = "#fdeaea";
+                ringColor = "var(--red)";
+            }
+            else if (n.TipoServicio == "Comercial" || n.TipoServicio == "Industrial")
+            {
+                estadoClass = "st-prev";
+                estadoTexto = "Prevención";
+            }
+
+            <a href="@Url.Action("MisFacturas", "Clientes")" class="nise" style="align-items:flex-start;">
+                <div class="ring" style="background:@ringBg;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="@ringColor" stroke-width="2">
+                        @Html.Raw(iconPath)
+                    </svg>
+                </div>
+                <div class="info" style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                        <div class="t">@n.NumeroNise · @n.TipoServicio</div>
+                        <span class="pill @estadoClass" style="font-size:10px; white-space:nowrap;">
+                            <span class="dot"></span>@estadoTexto
+                        </span>
+                    </div>
+                    <div class="s">@n.Direccion</div>
+                    @if (!string.IsNullOrWhiteSpace(n.Provincia))
+                    {
+                        <div class="s" style="color:var(--blue); font-weight:700; margin-top:2px;">
+                            📍 @n.Provincia, @n.Canton, @n.Distrito
+                        </div>
+                    }
+                    @if (tieneDeuda)
+                    {
+                        <div style="margin-top:8px; padding:8px 12px; background:#fdeaea; border-radius:10px; font-size:11.5px; font-weight:800; color:#c93a3f;">
+                            ⚠️ Factura pendiente: ₡@facturaPendiente.Monto.ToString("N0") · Vence @facturaPendiente.FechaVencimiento.ToString("dd/MM/yyyy")
+                        </div>
+                    }
+                </div>
+            </a>
+        }
+    </div>
+}
+
 <!-- ═══════════ REPORTAR AVERÍA ═══════════ -->
-<div class="eyebrow">🚨 Reportar avería</div>
+<div class="eyebrow" style="margin-top:24px;">🚨 Reportar avería</div>
+
+<p style="font-size:12px; color:var(--muted); margin-bottom:12px; line-height:1.5;">
+    Seleccioná el tipo de avería para iniciar el reporte. Podés adjuntar fotos y ubicación GPS.
+</p>
 
 <div class="rows">
-    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 101 })" class="row-item">
+    <a href="@Url.Action("Reportes", "Clientes")?tipo=Alumbrado%20público" class="row-item">
         <div class="ic" style="background:#fef3e0;">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
                 <path d="M12 3v3M12 8a4 4 0 0 0-4 4v5h8v-5a4 4 0 0 0-4-4ZM9 21h6" />
@@ -89,7 +143,7 @@
         </svg>
     </a>
 
-    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 102 })" class="row-item">
+    <a href="@Url.Action("Reportes", "Clientes")?tipo=Eléctrica%20propia" class="row-item">
         <div class="ic" style="background:#fdeaea;">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
                 <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
@@ -104,7 +158,7 @@
         </svg>
     </a>
 
-    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 103 })" class="row-item">
+    <a href="@Url.Action("Reportes", "Clientes")?tipo=Eléctrica%20ajena" class="row-item">
         <div class="ic" style="background:#eef6ff;">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
                 <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" />
@@ -121,58 +175,42 @@
     </a>
 </div>
 
-<!-- ═══════════ AVERÍAS EN SEGUIMIENTO ═══════════ -->
-<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
-    <span>Averías en seguimiento</span>
-    <a href="@Url.Action("HistorialReportes", "Clientes")"
-       style="font-size:11px; color:var(--blue); font-weight:800; text-decoration:none;">
-        Ver todas →
-    </a>
-</div>
+<!-- ═══════════ AVERÍAS EN SEGUIMIENTO (dinámicas) ═══════════ -->
+@if (averiasActivas.Any())
+{
+    <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center; margin-top:24px;">
+        <span>Averías en seguimiento</span>
+        <a href="@Url.Action("HistorialReportes", "Clientes")"
+           style="font-size:11px; color:var(--blue); font-weight:800; text-decoration:none;">
+            Ver todas →
+        </a>
+    </div>
 
-<div class="rows">
-    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 6 })" class="row-item">
-        <div class="ic" style="background:#fff3ec;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2">
-                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
-            </svg>
-        </div>
-        <div class="tx">
-            <div class="t">#6 · Transformador dañado</div>
-            <div class="s">11/09/2026 · 14:08</div>
-        </div>
-        <span class="pill st-prev"><span class="dot"></span>Operador en camino</span>
-    </a>
+    <div class="rows">
+        @foreach (var a in averiasActivas.Take(3))
+        {
+            var pillClass = a.Estado == "Resuelto" ? "st-normal" :
+                            (a.Estado == "Operador en camino" || a.Estado == "En revisión" ? "st-prev" : "st-inc");
+            var pillTexto = string.IsNullOrWhiteSpace(a.Estado) ? "Ingresado" : a.Estado;
 
-    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 3 })" class="row-item">
-        <div class="ic" style="background:#fff3ec;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2">
-                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
-            </svg>
-        </div>
-        <div class="tx">
-            <div class="t">#3 · Transformador dañado</div>
-            <div class="s">11/09/2026 · 14:08</div>
-        </div>
-        <span class="pill st-prev"><span class="dot"></span>Operador en camino</span>
-    </a>
-
-    <a href="@Url.Action("EstadoAveria", "Clientes", new { id = 1 })" class="row-item">
-        <div class="ic" style="background:#e9f7ec;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
-                <path d="M20 6 9 17l-5-5" />
-            </svg>
-        </div>
-        <div class="tx">
-            <div class="t">#1 · Sin energía</div>
-            <div class="s">09/09/2026 · 23:25</div>
-        </div>
-        <span class="pill st-normal"><span class="dot"></span>Resuelto</span>
-    </a>
-</div>
+            <a href="@Url.Action("EstadoAveria", "Clientes", new { id = a.AveriaId })" class="row-item">
+                <div class="ic" style="background:#fff3ec;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2">
+                        <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+                    </svg>
+                </div>
+                <div class="tx">
+                    <div class="t">#@a.AveriaId · @a.Tipo</div>
+                    <div class="s">@a.FechaReporte.ToString("dd/MM/yyyy · HH:mm")</div>
+                </div>
+                <span class="pill @pillClass" style="font-size:10px;"><span class="dot"></span>@pillTexto</span>
+            </a>
+        }
+    </div>
+}
 
 <!-- ═══════════ SECCIONES ═══════════ -->
-<div class="eyebrow">📋 Más secciones</div>
+<div class="eyebrow" style="margin-top:24px;">📋 Más secciones</div>
 
 <div class="rows">
     <a href="@Url.Action("HistorialConsumo", "Clientes")" class="row-item">
@@ -240,7 +278,7 @@
     </a>
 </div>
 
-<!-- ═══════════ TIP ═══════════ -->
+<!-- ═══════════ LEYENDA DE COLORES ═══════════ -->
 <div class="card" style="margin-top:18px; background:#f7f8fc; border-style:dashed;">
     <div style="display:flex; gap:11px; align-items:flex-start;">
         <div style="width:36px; height:36px; border-radius:11px; background:#eef0ff; display:grid; place-items:center; flex:none;">

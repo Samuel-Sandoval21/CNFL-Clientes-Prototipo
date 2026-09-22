@@ -293,7 +293,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         // ============================================================
         // MIS SERVICIOS
         // ============================================================
-
         public ActionResult MisServicios()
         {
             var usuarioId = Session["UsuarioId"] as int?;
@@ -310,8 +309,17 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     .OrderByDescending(f => f.FechaEmision)
                     .ToList();
             }
-
             ViewBag.FacturasPorNise = facturasPorNise;
+
+            // ⭐ Averías activas del usuario (para "Averías en seguimiento")
+            ViewBag.AveriasActivas = _db.Averias
+                .Where(a => a.UsuarioId == usuarioId
+                         && a.Estado != "Resuelto"
+                         && a.Estado != "Problema resuelto"
+                         && a.Estado != "Cerrada")
+                .OrderByDescending(a => a.FechaReporte)
+                .ToList();
+
             return View();
         }
 
@@ -590,7 +598,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // REGISTRAR ACTIVIDAD (AJAX con tiempo real) ← NUEVO
+        // REGISTRAR ACTIVIDAD (AJAX con tiempo real)
         // ============================================================
         [HttpPost]
         public JsonResult RegistrarActividad(string seccion, string accion, int segundos, string detalle = null)
@@ -601,7 +609,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 if (usuarioId == null)
                     return Json(new { ok = false, mensaje = "Sesión expirada." });
 
-                // Excluir admins
                 var esAdmin = _db.UsuarioRoles
                     .Any(ur => ur.UsuarioId == usuarioId.Value && ur.Rol.NombreRol == "Admin");
                 if (esAdmin)
