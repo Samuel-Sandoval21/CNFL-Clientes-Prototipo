@@ -284,6 +284,7 @@
     <Content Include="Content\cliente\tienda.css" />
     <Content Include="Content\cliente\tramites.css" />
     <Content Include="Content\img\fondo-decorativo.png" />
+    <Content Include="Content\img\logo-cnfl-dark.png" />
     <Content Include="Content\img\logo-cnfl.png" />
     <Content Include="Content\planes\plan_bienestar.jpg" />
     <Content Include="Content\planes\plan_consentidos.jpg" />

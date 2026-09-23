@@ -220,6 +220,138 @@
             color: var(--muted);
         }
 
+        /* ═══════════ MODAL CONFIGURACIÓN en oscuro ═══════════ */
+        body.modo-oscuro .config-box {
+            background: #1a1d26;
+            color: var(--ink);
+        }
+
+        body.modo-oscuro .config-header {
+            border-bottom-color: var(--line);
+        }
+
+            body.modo-oscuro .config-header h3 {
+                color: var(--ink);
+            }
+
+            body.modo-oscuro .config-header p {
+                color: var(--muted);
+            }
+
+        body.modo-oscuro .config-close {
+            background: #2a2f3a;
+            color: #8ca0ff;
+        }
+
+            body.modo-oscuro .config-close:hover {
+                background: #353a4a;
+            }
+
+        body.modo-oscuro .config-handle {
+            background: #3a4050;
+        }
+
+        body.modo-oscuro .config-section-title {
+            color: var(--muted);
+        }
+
+        body.modo-oscuro .config-card {
+            background: #22262f;
+            border-color: var(--line);
+        }
+
+            body.modo-oscuro .config-card:hover {
+                border-color: #3a4050;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, .4);
+            }
+
+        body.modo-oscuro .config-card-titulo {
+            color: var(--ink);
+        }
+
+        body.modo-oscuro .config-card-desc {
+            color: var(--muted);
+        }
+
+        body.modo-oscuro .config-row {
+            background: #22262f;
+            border-color: var(--line);
+        }
+
+            body.modo-oscuro .config-row:active {
+                background: #2a2f3a;
+            }
+
+        body.modo-oscuro .config-row-titulo {
+            color: var(--ink);
+        }
+
+        body.modo-oscuro .config-row-desc {
+            color: var(--muted);
+        }
+
+        body.modo-oscuro .config-toggle {
+            background: #3a4050;
+        }
+
+            body.modo-oscuro .config-toggle.on {
+                background: var(--blue);
+            }
+
+        body.modo-oscuro .config-zoom-btn {
+            background: #22262f;
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+            body.modo-oscuro .config-zoom-btn:hover {
+                background: #2a2f3a;
+                border-color: var(--blue);
+            }
+
+        body.modo-oscuro .config-zoom-valor {
+            background: #2a2f3a;
+            color: #8ca0ff;
+        }
+
+        body.modo-oscuro .config-chev {
+            color: #5a5a70;
+        }
+
+        body.modo-oscuro .idioma-opt {
+            background: #22262f;
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+            body.modo-oscuro .idioma-opt:hover {
+                background: #2a2f3a;
+                border-color: var(--blue);
+            }
+
+            body.modo-oscuro .idioma-opt span {
+                color: var(--muted);
+            }
+
+        /* ═══════════ LOGO ADAPTATIVO (claro / oscuro) ═══════════ */
+        /* Modo CLARO (default): mostrar logo normal, ocultar el naranja */
+        img.logo-cnfl-light {
+            display: inline-block !important;
+        }
+
+        img.logo-cnfl-dark {
+            display: none !important;
+        }
+
+        /* Modo OSCURO: invertir */
+        body.modo-oscuro img.logo-cnfl-light {
+            display: none !important;
+        }
+
+        body.modo-oscuro img.logo-cnfl-dark {
+            display: inline-block !important;
+        }
+
     /* ═══════════ MODO ALTO CONTRASTE ═══════════ */
     body.modo-contraste {
         --blue: #0000CC;
@@ -1199,7 +1331,7 @@
             .appbar .brand img {
                 height: 26px;
                 width: auto;
-                display: block;
+                display: inline-block;
             }
 
         .appbar .actions {
@@ -1961,4 +2093,122 @@
             color: var(--orange);
             font-size: 17px;
         }
+
+    /* ═══════════════════════════════════════════
+       CARRITO / TIENDA / PRODUCTOS — MODO OSCURO
+       ═══════════════════════════════════════════ */
+    body.modo-oscuro .carrito-cantidad {
+        background: #22262f;
+        border-color: var(--line);
+    }
+
+        body.modo-oscuro .carrito-cantidad button {
+            background: #2a2f3a;
+            border-color: #3a4050;
+            color: #8ca0ff;
+        }
+
+            body.modo-oscuro .carrito-cantidad button:hover {
+                background: #353a4a;
+            }
+
+    body.modo-oscuro .carrito-eliminar {
+        background: #3a1a1a;
+        color: #f87171;
+    }
+
+        body.modo-oscuro .carrito-eliminar:hover {
+            background: #4a2020;
+        }
+
+    body.modo-oscuro .resumen-linea.total {
+        border-top-color: #2f2f42;
+    }
+
+    body.modo-oscuro .meter-cell {
+        background: #22262f;
+    }
+
+        body.modo-oscuro .meter-cell .k,
+        body.modo-oscuro .meter-cell .v small {
+            color: var(--muted);
+        }
+
+        body.modo-oscuro .meter-cell .v {
+            color: var(--ink);
+        }
+
+    body.modo-oscuro .mcell {
+        background: #22262f;
+    }
+
+        body.modo-oscuro .mcell .k,
+        body.modo-oscuro .mcell .v small {
+            color: var(--muted);
+        }
+
+        body.modo-oscuro .mcell .v {
+            color: var(--ink);
+        }
+
+    body.modo-oscuro .chart-tab {
+        background: #22262f;
+        color: var(--muted);
+    }
+
+        body.modo-oscuro .chart-tab.active {
+            background: var(--blue);
+            color: #fff;
+        }
+
+    body.modo-oscuro .actividad-item:hover {
+        background: #22262f;
+    }
+
+    body.modo-oscuro .reg-actividad {
+        border-top-color: var(--line);
+    }
+
+    body.modo-oscuro .aviso.ok {
+        background: #1a3a26;
+        border-color: #2a5a3a;
+        color: #4ade80;
+    }
+
+    body.modo-oscuro .aviso.err {
+        background: #3a1a1a;
+        border-color: #5a2a2a;
+        color: #f87171;
+    }
+
+    body.modo-oscuro .secbanner {
+        background: #1a3a26;
+        border-color: #2a5a3a;
+    }
+
+        body.modo-oscuro .secbanner .t {
+            color: #4ade80;
+        }
+
+        body.modo-oscuro .secbanner .s {
+            color: #6ee7a0;
+        }
+
+    body.modo-oscuro .contact-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    body.modo-oscuro .contact-item {
+        border-bottom-color: var(--line);
+    }
+
+    body.modo-oscuro .login-field label,
+    body.modo-oscuro .reg-field label {
+        color: var(--muted);
+    }
+
+    body.modo-oscuro .login-field input::placeholder,
+    body.modo-oscuro .reg-field input::placeholder {
+        color: #5a5a70;
+    }
 </style>

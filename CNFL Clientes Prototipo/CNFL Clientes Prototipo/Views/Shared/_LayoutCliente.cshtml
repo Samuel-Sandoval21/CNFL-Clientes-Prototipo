@@ -506,9 +506,9 @@
         <div class="phone-statusbar">
             <span id="horaActual">--:--</span>
             <span class="right">
-                <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#0E1116" /><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#0E1116" /><rect x="9" y="2" width="3" height="10" rx="1" fill="#0E1116" /><rect x="13.5" y="0" width="3" height="12" rx="1" fill="#0E1116" opacity=".3" /></svg>
-                <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.5 2.5 12.7 3.5 14.3 5.1L15.7 3.6C13.7 1.6 11 .5 8 .5S2.3 1.6.3 3.6l1.4 1.5C3.3 3.5 5.5 2.5 8 2.5Z" fill="#0E1116" /><path d="M8 6.5c1.1 0 2.1.4 2.8 1.2l1.4-1.5C11.1 5.1 9.6 4.5 8 4.5s-3.1.6-4.2 1.7l1.4 1.5C5.9 6.9 6.9 6.5 8 6.5Z" fill="#0E1116" /><circle cx="8" cy="10" r="1.6" fill="#0E1116" /></svg>
-                <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="#0E1116" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" /><rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" /></svg>
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="currentColor" /><rect x="4.5" y="4" width="3" height="8" rx="1" fill="currentColor" /><rect x="9" y="2" width="3" height="10" rx="1" fill="currentColor" /><rect x="13.5" y="0" width="3" height="12" rx="1" fill="currentColor" opacity=".3" /></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.5C10.5 2.5 12.7 3.5 14.3 5.1L15.7 3.6C13.7 1.6 11 .5 8 .5S2.3 1.6.3 3.6l1.4 1.5C3.3 3.5 5.5 2.5 8 2.5Z" fill="currentColor" /><path d="M8 6.5c1.1 0 2.1.4 2.8 1.2l1.4-1.5C11.1 5.1 9.6 4.5 8 4.5s-3.1.6-4.2 1.7l1.4 1.5C5.9 6.9 6.9 6.5 8 6.5Z" fill="currentColor" /><circle cx="8" cy="10" r="1.6" fill="currentColor" /></svg>
+                <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="currentColor" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="currentColor" /><rect x="23" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".4" /></svg>
             </span>
         </div>
 
@@ -847,6 +847,9 @@
         window.resetZoom = function () { window.aplicarZoom(100); };
         window.aplicarZoom(zoomActual);
 
+        // ═══════════════════════════════════════════════════════════
+        // MODO OSCURO — APLICADO AL BODY
+        // ═══════════════════════════════════════════════════════════
         var MODO_KEY = 'cnfl_dark';
         var modoOscuro = localStorage.getItem(MODO_KEY) === '1';
 
@@ -862,6 +865,7 @@
             window.aplicarModo();
         };
 
+        // ⚠️ IMPORTANTE: aplicar modo al cargar
         window.aplicarModo();
 
         window.abrirIdiomas = function () {
