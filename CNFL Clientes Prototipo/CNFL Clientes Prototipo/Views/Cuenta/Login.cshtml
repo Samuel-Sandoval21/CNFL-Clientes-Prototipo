@@ -5,240 +5,653 @@
     var bioCedula = Request.QueryString["bio"] ?? "";
 }
 
+@section Styles {
+    <style>
+        /* ═══════════════════════════════════════════
+           LOGIN — REDISEÑADO CON PROTECCIÓN DE TEXTO
+           ═══════════════════════════════════════════ */
+
+        /* Contenedor principal con gradiente blanco que protege el texto del fondo decorativo */
+        .login-wrap {
+            padding-top: 4px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.7) 20%, rgba(255, 255, 255, 0.92) 45%, rgba(255, 255, 255, 0.98) 70%);
+            border-radius: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* Logo */
+        .login-logo-wrap {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+            .login-logo-wrap img {
+                height: 44px;
+                width: auto;
+                display: inline-block;
+            }
+
+        /* Título */
+        .login-hero {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+            .login-hero .login-h {
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+                line-height: 1.2;
+                color: var(--ink);
+                margin: 0;
+            }
+
+            .login-hero .login-p {
+                font-size: 12.5px;
+                color: var(--muted);
+                margin: 8px 0 0;
+                line-height: 1.5;
+            }
+
+        /* Formulario */
+        .login-form {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 16px rgba(16, 20, 40, 0.06);
+            margin-bottom: 14px;
+        }
+
+        .login-field {
+            margin-bottom: 14px;
+        }
+
+            .login-field:last-of-type {
+                margin-bottom: 0;
+            }
+
+            .login-field label {
+                display: block;
+                font-size: 10.5px;
+                font-weight: 800;
+                color: var(--muted);
+                letter-spacing: .05em;
+                text-transform: uppercase;
+                margin-bottom: 6px;
+            }
+
+            .login-field input {
+                width: 100%;
+                padding: 13px 14px;
+                border: 1.5px solid var(--line);
+                border-radius: 12px;
+                font-family: inherit;
+                font-size: 14.5px;
+                outline: none;
+                color: var(--ink);
+                background: #fafbfe;
+                transition: border-color .15s, background .15s, box-shadow .15s;
+            }
+
+                .login-field input:focus {
+                    border-color: var(--blue);
+                    background: #ffffff;
+                    box-shadow: 0 0 0 3px rgba(30, 35, 230, 0.1);
+                }
+
+                .login-field input::placeholder {
+                    color: #b5bcc9;
+                }
+
+        /* Input con ícono */
+        .login-input-icon {
+            position: relative;
+        }
+
+            .login-input-icon input {
+                padding-right: 46px;
+            }
+
+        .login-toggle-pass {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: 0;
+            cursor: pointer;
+            padding: 8px;
+            color: #aab0be;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            transition: color .15s;
+        }
+
+            .login-toggle-pass:hover {
+                color: var(--blue);
+            }
+
+            .login-toggle-pass svg {
+                width: 18px;
+                height: 18px;
+            }
+
+        /* Botón principal */
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 18px;
+            border: 0;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--orange), #ff8a4c);
+            color: #fff;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14.5px;
+            letter-spacing: .01em;
+            cursor: pointer;
+            box-shadow: 0 8px 18px -6px rgba(255, 105, 45, 0.6);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+            .login-btn:hover {
+                box-shadow: 0 10px 22px -6px rgba(255, 105, 45, 0.7);
+            }
+
+            .login-btn:active {
+                transform: scale(0.98);
+            }
+
+        /* Link recuperar */
+        .login-forgot {
+            text-align: center;
+            margin-top: 14px;
+        }
+
+            .login-forgot a {
+                color: var(--blue);
+                font-size: 13px;
+                font-weight: 700;
+                text-decoration: none;
+                transition: opacity .15s;
+            }
+
+                .login-forgot a:hover {
+                    opacity: 0.8;
+                    text-decoration: underline;
+                }
+
+        /* Divisor */
+        .login-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0 18px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+            .login-divider::before,
+            .login-divider::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, var(--line), transparent);
+            }
+
+        /* Card biometría */
+        .login-bio-card {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 16px rgba(16, 20, 40, 0.06);
+            margin-bottom: 18px;
+        }
+
+        .login-bio-title {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--ink);
+            text-align: center;
+            margin: 0 0 14px;
+            line-height: 1.4;
+        }
+
+        .login-bio-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .login-bio-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 10px;
+            background: linear-gradient(135deg, #f5f7ff, #eef0ff);
+            border: 1.5px solid #e0e4f5;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
+
+            .login-bio-btn:hover {
+                background: linear-gradient(135deg, #eef0ff, #e0e4f5);
+                box-shadow: 0 4px 12px -4px rgba(30, 35, 230, 0.2);
+            }
+
+            .login-bio-btn:active {
+                transform: scale(0.97);
+            }
+
+        .login-bio-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--navy));
+            color: #fff;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 6px 14px -4px rgba(30, 35, 230, 0.5);
+        }
+
+            .login-bio-icon svg {
+                width: 24px;
+                height: 24px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .login-bio-label {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--blue);
+            letter-spacing: .02em;
+        }
+
+        /* ═══════════ FOOTER CON PROTECCIÓN ═══════════ */
+        .login-foot-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            padding: 16px 20px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(16, 20, 40, 0.06);
+            margin-bottom: 20px;
+        }
+
+        .login-foot-line1 {
+            font-size: 12.5px;
+            color: var(--muted);
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+            .login-foot-line1 a {
+                color: var(--blue);
+                font-weight: 800;
+                text-decoration: none;
+                transition: opacity .15s;
+            }
+
+                .login-foot-line1 a:hover {
+                    opacity: 0.8;
+                    text-decoration: underline;
+                }
+
+        .login-foot-line2 {
+            font-size: 10.5px;
+            color: var(--muted);
+            opacity: 0.85;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+            .login-foot-line2 span {
+                display: inline-block;
+                padding: 0 4px;
+            }
+
+        /* Overlay biometría */
+        #bioOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 17, 22, 0.65);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+            #bioOverlay.show {
+                display: flex;
+            }
+
+        .bio-modal {
+            background: #fff;
+            border-radius: 24px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.4);
+        }
+
+        .bio-spinner {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 4px solid #eef0ff;
+            border-top-color: var(--blue);
+            margin: 0 auto 18px;
+            animation: bioSpin 0.9s linear infinite;
+        }
+
+        @@keyframes bioSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .bio-modal h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--ink);
+            margin: 0 0 4px;
+        }
+
+        .bio-modal p {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .bio-progress {
+            height: 6px;
+            background: #eef0ff;
+            border-radius: 999px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+            .bio-progress span {
+                display: block;
+                height: 100%;
+                width: 0;
+                background: linear-gradient(90deg, var(--blue), #3b6ce0);
+                border-radius: 999px;
+                transition: width .3s ease;
+            }
+    </style>
+}
+
 <div class="login-wrap">
 
-    <!-- Logo CNFL -->
-    <div style="text-align:center; margin-bottom:18px;">
+    <!-- ═══ LOGO ═══ -->
+    <div class="login-logo-wrap">
         <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
-             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';"
-             style="height:52px; width:auto; display:inline-block;" />
+             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
     </div>
 
-    <div style="text-align:center;">
-        <div class="login-h">Tu energía,<br />en una sola app.</div>
-        <div class="login-p">Ingresá con las credenciales de tu Agencia Virtual.</div>
+    <!-- ═══ TÍTULO ═══ -->
+    <div class="login-hero">
+        <h1 class="login-h">Tu energía,<br />en una sola app.</h1>
+        <p class="login-p">Ingresá con las credenciales de tu Agencia Virtual.</p>
     </div>
 
+    <!-- ═══ AVISOS ═══ -->
     @if (TempData["Mensaje"] != null)
     {
-        <div class="aviso ok" style="margin-top:16px;">@TempData["Mensaje"]</div>
+        <div class="aviso ok" style="margin-bottom:14px;">@TempData["Mensaje"]</div>
     }
 
     @if (ViewBag.Error != null)
     {
-        <div class="aviso err" style="margin-top:16px;">@ViewBag.Error</div>
+        <div class="aviso err" style="margin-bottom:14px;">@ViewBag.Error</div>
     }
 
     @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
     {
-        <div class="aviso err" style="margin-top:16px;">
+        <div class="aviso err" style="margin-bottom:14px;">
             @ViewData.ModelState.Values.SelectMany(v => v.Errors).First().ErrorMessage
         </div>
     }
 
+    <!-- ═══ FORMULARIO ═══ -->
     @using (Html.BeginForm("Login", "Cuenta", FormMethod.Post, new { id = "formLogin" }))
     {
         @Html.AntiForgeryToken()
 
-        <div class="reg-field" style="margin-top:16px;">
-            <label>Cédula o usuario</label>
-            <input type="text"
-                   name="UserName"
-                   id="userNameLogin"
-                   value="@bioCedula"
-                   placeholder="Ej: 2-0874-0716 o tu usuario"
-                   autocomplete="username"
-                   required
-                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
-        </div>
+        <div class="login-form">
 
-        <div class="reg-field">
-            <label>Contraseña</label>
-            <div style="position:relative;">
-                <input type="password"
-                       name="Contraseña"
-                       id="passLogin"
-                       placeholder="Tu contraseña"
-                       autocomplete="current-password"
-                       required
-                       style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
-                <button type="button"
-                        onclick="togglePass('passLogin', this);"
-                        title="Mostrar/ocultar"
-                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
+            <div class="login-field">
+                <label for="userNameLogin">Cédula o usuario</label>
+                <input type="text"
+                       name="UserName"
+                       id="userNameLogin"
+                       value="@bioCedula"
+                       placeholder="Ej: 2-0874-0716 o tu usuario"
+                       autocomplete="username"
+                       required />
             </div>
-        </div>
 
-        <button type="submit"
-                style="margin-top:22px;background:var(--orange);color:#fff;padding:15px 20px;border-radius:14px;border:0;font-family:inherit;font-weight:800;font-size:15px;width:100%;cursor:pointer;box-shadow:0 8px 18px -6px rgba(255,105,45,.7);">
-            Ingresar
-        </button>
+            <div class="login-field">
+                <label for="passLogin">Contraseña</label>
+                <div class="login-input-icon">
+                    <input type="password"
+                           name="Contraseña"
+                           id="passLogin"
+                           placeholder="Tu contraseña"
+                           autocomplete="current-password"
+                           required />
+                    <button type="button"
+                            class="login-toggle-pass"
+                            onclick="togglePass('passLogin', this);"
+                            title="Mostrar/ocultar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">
+                Ingresar
+            </button>
+
+        </div>
     }
 
-    <div style="margin-top:14px; text-align:center;">
-        <a href="@Url.Action("RecuperarClave", "Cuenta")"
-           style="color:var(--blue); font-weight:700; font-size:13px; text-decoration:none;">
+    <!-- ═══ LINK RECUPERAR ═══ -->
+    <div class="login-forgot">
+        <a href="@Url.Action("RecuperarClave", "Cuenta")">
             ¿Olvidaste tu clave?
         </a>
     </div>
 
-    <!-- ═══════════ FACE ID + HUELLA ═══════════ -->
-    <div style="margin-top:28px; display:flex; flex-direction:column; align-items:center; gap:12px;">
-        <div style="display:flex; gap:16px; justify-content:center;">
+    <!-- ═══ DIVISOR ═══ -->
+    <div class="login-divider">
+        <span>o ingresá con</span>
+    </div>
+
+    <!-- ═══ BIOMETRÍA ═══ -->
+    <div class="login-bio-card">
+        <p class="login-bio-title">Acceso rápido y seguro</p>
+
+        <div class="login-bio-btns">
 
             <!-- Face ID -->
             <button type="button"
+                    class="login-bio-btn"
                     onclick="loginBiometrico('face')"
-                    title="Ingresar con Face ID"
-                    style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--navy));border:0;display:grid;place-items:center;cursor:pointer;color:#fff;box-shadow:0 12px 24px -8px rgba(30,35,230,.6);">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
-                    <path d="M9 10v1M15 10v1M12 10v3l-1 1M9 15c1.5 1 4.5 1 6 0" />
-                </svg>
+                    title="Ingresar con Face ID">
+                <div class="login-bio-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+                        <path d="M9 10v1M15 10v1M12 10v3l-1 1M9 15c1.5 1 4.5 1 6 0" />
+                    </svg>
+                </div>
+                <span class="login-bio-label">Face ID</span>
             </button>
 
             <!-- Huella -->
             <button type="button"
+                    class="login-bio-btn"
                     onclick="loginBiometrico('huella')"
-                    title="Ingresar con huella dactilar"
-                    style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--navy));border:0;display:grid;place-items:center;cursor:pointer;color:#fff;box-shadow:0 12px 24px -8px rgba(30,35,230,.6);">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
-                    <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
-                    <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
-                    <path d="M2 12a10 10 0 0 1 18-6" />
-                    <path d="M2 16h.01" />
-                    <path d="M21.8 16c.2-2 .131-5.354 0-6" />
-                    <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
-                    <path d="M8.65 22c.21-.66.45-1.32.57-2" />
-                    <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
-                </svg>
+                    title="Ingresar con huella dactilar">
+                <div class="login-bio-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
+                        <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
+                        <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
+                        <path d="M2 12a10 10 0 0 1 18-6" />
+                        <path d="M2 16h.01" />
+                        <path d="M21.8 16c.2-2 .131-5.354 0-6" />
+                        <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
+                        <path d="M8.65 22c.21-.66.45-1.32.57-2" />
+                        <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
+                    </svg>
+                </div>
+                <span class="login-bio-label">Huella</span>
             </button>
 
         </div>
-        <small style="font-size:12px;color:var(--muted);font-weight:700;">
-            Ingresar con Face ID o huella digital
-        </small>
     </div>
 
-    <div class="login-foot">
-        <span>¿Aún no tenés cuenta?</span>
-        <a href="@Url.Action("Registro", "Cuenta")">Registrate con tu cédula</a><br />
-        <span style="opacity:.7;">Consentimiento informado · Política de privacidad</span>
+    <!-- ═══ FOOTER CON CARD BLANCA (protege el texto) ═══ -->
+    <div class="login-foot-card">
+        <div class="login-foot-line1">
+            ¿Aún no tenés cuenta? <a href="@Url.Action("Registro", "Cuenta")">Registrate con tu cédula</a>
+        </div>
+        <div class="login-foot-line2">
+            <span>Consentimiento informado</span>
+            <span>·</span>
+            <span>Política de privacidad</span>
+        </div>
     </div>
+
 </div>
 
-<!-- Overlay verificación biométrica -->
-<div id="bioOverlay"
-     style="position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:9999;">
-    <div style="background:#fff;border-radius:24px;padding:32px 28px;width:90%;max-width:320px;text-align:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.4);">
-        <div style="width:64px;height:64px;border-radius:50%;border:4px solid #eef0ff;border-top-color:#1E23E6;margin:0 auto 18px;animation:spin 1s linear infinite;"></div>
-        <div style="font-size:15px;font-weight:800;color:#0E1116;">Verificando identidad...</div>
-        <div style="font-size:12px;color:#727A86;margin-top:4px;">Usando datos biométricos guardados</div>
-        <div style="height:6px;background:#eef0ff;border-radius:999px;margin-top:18px;overflow:hidden;">
-            <div id="bioProgressBar" style="height:100%;width:0;background:linear-gradient(90deg,#1E23E6,#3b6ce0);border-radius:999px;transition:width .3s ease;"></div>
+<!-- ═══ OVERLAY BIOMETRÍA ═══ -->
+<div id="bioOverlay">
+    <div class="bio-modal">
+        <div class="bio-spinner"></div>
+        <h3>Verificando identidad...</h3>
+        <p>Usando datos biométricos guardados</p>
+        <div class="bio-progress">
+            <span id="bioProgressBar"></span>
         </div>
     </div>
 </div>
 
-<style>
-    @@keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-</style>
-
-<script>
-    // ═════════ Toggle mostrar/ocultar contraseña ═════════
-    function togglePass(id, btn) {
-        var input = document.getElementById(id);
-        if (!input) return;
-        var esPassword = input.getAttribute('type') === 'password';
-        input.setAttribute('type', esPassword ? 'text' : 'password');
-        btn.innerHTML = esPassword
-            ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
-            : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-    }
-
-    // ═════════ Biometría ═════════
-    var usuarioBiometrico = null;
-    var bioCedulaPendiente = '@Html.Raw(bioCedula)';
-
-    try {
-        var guardado = localStorage.getItem('cnfl_bio_user');
-        if (guardado) usuarioBiometrico = JSON.parse(guardado);
-    } catch (e) { /* silencioso */ }
-
-    if (bioCedulaPendiente && (!usuarioBiometrico || usuarioBiometrico.cedula !== bioCedulaPendiente)) {
-        fetch('@Url.Action("GetUsuarioPorCedula", "Cuenta")?cedula=' + encodeURIComponent(bioCedulaPendiente))
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.success) {
-                    usuarioBiometrico = {
-                        usuarioId: data.usuarioId,
-                        cedula: bioCedulaPendiente,
-                        token: data.token
-                    };
-                    localStorage.setItem('cnfl_bio_user', JSON.stringify(usuarioBiometrico));
-                }
-            })
-            .catch(function () { /* silencioso */ });
-    }
-
-    function loginBiometrico(tipo) {
-        if (!usuarioBiometrico || !usuarioBiometrico.usuarioId) {
-            if (confirm('No hay un usuario biométrico registrado en este dispositivo.\n\n¿Querés iniciar sesión con tu cédula y contraseña?')) {
-                var inputUser = document.getElementById('userNameLogin');
-                if (inputUser) inputUser.focus();
-            }
-            return;
+@section Scripts {
+    <script>
+        // ═══════════ Toggle mostrar/ocultar contraseña ═══════════
+        function togglePass(id, btn) {
+            var input = document.getElementById(id);
+            if (!input) return;
+            var esPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', esPassword ? 'text' : 'password');
+            btn.innerHTML = esPassword
+                ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+                : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
         }
 
-        var overlay = document.getElementById('bioOverlay');
-        var barra = document.getElementById('bioProgressBar');
-        if (!overlay || !barra) return;
+        // ═══════════ Biometría ═══════════
+        var usuarioBiometrico = null;
+        var bioCedulaPendiente = '@Html.Raw(bioCedula)';
 
-        overlay.style.display = 'flex';
-        barra.style.width = '0';
+        try {
+            var guardado = localStorage.getItem('cnfl_bio_user');
+            if (guardado) usuarioBiometrico = JSON.parse(guardado);
+        } catch (e) { /* silencioso */ }
 
-        var pasos = 0;
-        var intervalo = setInterval(function () {
-            pasos += 20;
-            barra.style.width = pasos + '%';
-
-            if (pasos >= 100) {
-                clearInterval(intervalo);
-
-                var formData = new URLSearchParams();
-                formData.append('usuarioId', usuarioBiometrico.usuarioId);
-                formData.append('token', usuarioBiometrico.token);
-                formData.append('tipo', tipo);
-
-                fetch('@Url.Action("LoginBiometrico", "Cuenta")', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
-                })
+        if (bioCedulaPendiente && (!usuarioBiometrico || usuarioBiometrico.cedula !== bioCedulaPendiente)) {
+            fetch('@Url.Action("GetUsuarioPorCedula", "Cuenta")?cedula=' + encodeURIComponent(bioCedulaPendiente))
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
-                    overlay.style.display = 'none';
-                    if (data.success && data.redirectUrl) {
-                        window.location.href = data.redirectUrl;
-                    } else {
-                        alert('❌ ' + (data.message || 'No se pudo autenticar con biometría.'));
+                    if (data.success) {
+                        usuarioBiometrico = {
+                            usuarioId: data.usuarioId,
+                            cedula: bioCedulaPendiente,
+                            token: data.token
+                        };
+                        localStorage.setItem('cnfl_bio_user', JSON.stringify(usuarioBiometrico));
                     }
                 })
-                .catch(function () {
-                    overlay.style.display = 'none';
-                    alert('❌ Error de conexión al verificar biometría.');
-                });
+                .catch(function () { /* silencioso */ });
+        }
+
+        function loginBiometrico(tipo) {
+            if (!usuarioBiometrico || !usuarioBiometrico.usuarioId) {
+                if (confirm('No hay un usuario biométrico registrado en este dispositivo.\n\n¿Querés iniciar sesión con tu cédula y contraseña?')) {
+                    var inputUser = document.getElementById('userNameLogin');
+                    if (inputUser) inputUser.focus();
+                }
+                return;
             }
-        }, 180);
-    }
-</script>
+
+            var overlay = document.getElementById('bioOverlay');
+            var barra = document.getElementById('bioProgressBar');
+            if (!overlay || !barra) return;
+
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            barra.style.width = '0';
+
+            var pasos = 0;
+            var intervalo = setInterval(function () {
+                pasos += 20;
+                barra.style.width = pasos + '%';
+
+                if (pasos >= 100) {
+                    clearInterval(intervalo);
+
+                    var formData = new URLSearchParams();
+                    formData.append('usuarioId', usuarioBiometrico.usuarioId);
+                    formData.append('token', usuarioBiometrico.token);
+                    formData.append('tipo', tipo);
+
+                    fetch('@Url.Action("LoginBiometrico", "Cuenta")', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData.toString()
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        overlay.classList.remove('show');
+                        document.body.style.overflow = '';
+                        if (data.success && data.redirectUrl) {
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            alert('❌ ' + (data.message || 'No se pudo autenticar con biometría.'));
+                        }
+                    })
+                    .catch(function () {
+                        overlay.classList.remove('show');
+                        document.body.style.overflow = '';
+                        alert('❌ Error de conexión al verificar biometría.');
+                    });
+                }
+            }, 180);
+        }
+    </script>
+}

@@ -1,0 +1,896 @@
+﻿@{
+    ViewBag.Title = "Configuración";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    var usuarioNombre = Session["Nombre"] as string ?? "Cliente CNFL";
+    var usuarioCorreo = Session["Correo"] as string ?? "cliente@cnfl.go.cr";
+}
+
+@section Styles {
+    <style>
+        /* ═══════════════════════════════════════════
+           CONFIGURACIÓN — REDISEÑADO
+           ═══════════════════════════════════════════ */
+
+        .config-wrap {
+            padding-top: 4px;
+            padding-bottom: 100px;
+        }
+
+        /* ═══ HEADER ═══ */
+        .config-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .config-header-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--blue), var(--purple, #5b3fbf));
+            display: grid;
+            place-items: center;
+            box-shadow: 0 10px 24px -8px rgba(30, 35, 230, 0.5);
+            color: #fff;
+        }
+
+            .config-header-icon svg {
+                width: 30px;
+                height: 30px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                animation: configSpin 8s linear infinite;
+            }
+
+        @@keyframes configSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .config-header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--ink);
+            margin: 0;
+            letter-spacing: -.02em;
+        }
+
+        .config-header p {
+            font-size: 12.5px;
+            color: var(--muted);
+            margin: 6px 0 0;
+            line-height: 1.5;
+        }
+
+        /* ═══ SECCIONES ═══ */
+        .config-section {
+            margin-bottom: 20px;
+        }
+
+        .config-section-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--muted);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin: 0 0 10px;
+            padding-left: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+            .config-section-title svg {
+                width: 12px;
+                height: 12px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.4;
+            }
+
+        /* ═══ CARD PRINCIPAL (Productos y Servicios) ═══ */
+        .config-featured {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--blue), #3b6ce0);
+            border-radius: 20px;
+            text-decoration: none;
+            color: #fff;
+            box-shadow: 0 14px 28px -12px rgba(30, 35, 230, 0.5);
+            position: relative;
+            overflow: hidden;
+            transition: transform .15s, box-shadow .15s;
+        }
+
+            .config-featured::after {
+                content: "";
+                position: absolute;
+                right: -40px;
+                top: -40px;
+                width: 140px;
+                height: 140px;
+                background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+            }
+
+            .config-featured:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 18px 34px -12px rgba(30, 35, 230, 0.6);
+            }
+
+            .config-featured:active {
+                transform: scale(0.99);
+            }
+
+        .config-featured-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            backdrop-filter: blur(4px);
+        }
+
+            .config-featured-icon svg {
+                width: 24px;
+                height: 24px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .config-featured-txt {
+            flex: 1;
+            min-width: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .config-featured-titulo {
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -.01em;
+        }
+
+        .config-featured-desc {
+            font-size: 11.5px;
+            opacity: 0.88;
+            margin-top: 3px;
+            line-height: 1.4;
+        }
+
+        .config-featured-chev {
+            position: relative;
+            z-index: 2;
+            opacity: 0.8;
+        }
+
+            .config-featured-chev svg {
+                width: 20px;
+                height: 20px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        /* ═══ GRID DE OPCIONES ═══ */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .config-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 4px 14px rgba(16, 20, 40, 0.04);
+            transition: transform .15s, box-shadow .15s, border-color .15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .config-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(16, 20, 40, 0.08);
+                border-color: #d8dde8;
+            }
+
+            .config-card:active {
+                transform: scale(0.98);
+            }
+
+        /* Íconos con fondos de gradiente suave */
+        .config-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+            .config-card-icon svg {
+                width: 22px;
+                height: 22px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            /* Colores por tipo */
+            .config-card-icon.carrito {
+                background: linear-gradient(135deg, #fff4ec, #ffe2d1);
+                color: var(--orange);
+            }
+
+            .config-card-icon.compras {
+                background: linear-gradient(135deg, #eef0ff, #dde3ff);
+                color: var(--blue);
+            }
+
+            .config-card-icon.alertas {
+                background: linear-gradient(135deg, #fef3e0, #fde0a8);
+                color: #c98a00;
+            }
+
+            .config-card-icon.pagos {
+                background: linear-gradient(135deg, #e9f7ec, #d1f0d9);
+                color: var(--green);
+            }
+
+            .config-card-icon.nise {
+                background: linear-gradient(135deg, #eef6ff, #d6ebff);
+                color: #1a73e8;
+            }
+
+            .config-card-icon.facturas {
+                background: linear-gradient(135deg, #f3f0ff, #e4daff);
+                color: #5b3fbf;
+            }
+
+        .config-card-txt {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .config-card-titulo {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.25;
+            margin: 0;
+        }
+
+        .config-card-desc {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* ═══ CARD EXPANDIBLE (Zoom, Modo oscuro, Idioma) ═══ */
+        .config-card-full {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 4px 14px rgba(16, 20, 40, 0.04);
+            margin-bottom: 10px;
+        }
+
+            .config-card-full:last-child {
+                margin-bottom: 0;
+            }
+
+        .config-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .config-row-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+            .config-row-icon svg {
+                width: 21px;
+                height: 21px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .config-row-icon.zoom {
+                background: linear-gradient(135deg, #eef0ff, #dde3ff);
+                color: var(--blue);
+            }
+
+            .config-row-icon.oscuro {
+                background: linear-gradient(135deg, #f3f0ff, #e4daff);
+                color: #5b3fbf;
+            }
+
+            .config-row-icon.idioma {
+                background: linear-gradient(135deg, #eef6ff, #d6ebff);
+                color: #1a73e8;
+            }
+
+            .config-row-icon.acerca {
+                background: linear-gradient(135deg, #e9f7ec, #d1f0d9);
+                color: var(--green);
+            }
+
+        .config-row-txt {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .config-row-titulo {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--ink);
+            margin: 0;
+            line-height: 1.25;
+        }
+
+        .config-row-desc {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 3px;
+            line-height: 1.4;
+        }
+
+        .config-row-right {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Zoom controles */
+        .zoom-porcentaje {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--blue);
+        }
+
+        .zoom-controles {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .zoom-btn {
+            padding: 14px;
+            border: 1.5px solid var(--line);
+            background: #fafbfe;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+            .zoom-btn:hover {
+                border-color: var(--blue);
+                background: #f5f7ff;
+                color: var(--blue);
+            }
+
+            .zoom-btn:active {
+                transform: scale(0.97);
+            }
+
+            .zoom-btn.actual {
+                border-color: var(--blue);
+                background: var(--blue);
+                color: #fff;
+            }
+
+        /* Toggle switch (modo oscuro) */
+        .toggle-switch {
+            position: relative;
+            width: 46px;
+            height: 26px;
+            background: #d8dde8;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background .25s;
+            flex-shrink: 0;
+        }
+
+            .toggle-switch::after {
+                content: "";
+                position: absolute;
+                top: 3px;
+                left: 3px;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+                transition: transform .25s;
+            }
+
+            .toggle-switch.on {
+                background: var(--blue);
+            }
+
+                .toggle-switch.on::after {
+                    transform: translateX(20px);
+                }
+
+        /* Chevron para idioma */
+        .config-chev {
+            color: #c3c8d4;
+            transition: transform .15s;
+        }
+
+            .config-chev svg {
+                width: 18px;
+                height: 18px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        /* ═══ BOTÓN CERRAR ═══ */
+        .config-cerrar {
+            width: 100%;
+            padding: 16px;
+            margin-top: 24px;
+            border: 0;
+            border-radius: 14px;
+            background: #ffffff;
+            color: var(--ink);
+            border: 1.5px solid var(--line);
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background .15s, border-color .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+            .config-cerrar:hover {
+                background: #fafbfe;
+                border-color: #d8dde8;
+            }
+
+            .config-cerrar:active {
+                transform: scale(0.99);
+            }
+
+            .config-cerrar svg {
+                width: 18px;
+                height: 18px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        /* ═══ AVISO INFO ═══ */
+        .config-info {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            background: #eef0ff;
+            border: 1px solid #dde3ff;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-top: 20px;
+        }
+
+        .config-info-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 9px;
+            background: var(--blue);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+            .config-info-icon svg {
+                width: 14px;
+                height: 14px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.4;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .config-info-txt {
+            flex: 1;
+            font-size: 11.5px;
+            color: #2a3a8a;
+            line-height: 1.5;
+        }
+
+            .config-info-txt strong {
+                font-weight: 800;
+                color: var(--blue);
+            }
+    </style>
+}
+
+<div class="config-wrap">
+
+    <!-- ═══ HEADER ═══ -->
+    <div class="config-header">
+        <div class="config-header-icon">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+        </div>
+        <h1>Configuración</h1>
+        <p>Ajustes rápidos de tu cuenta y la app.</p>
+    </div>
+
+    <!-- ═══ PRODUCTOS Y SERVICIOS (destacado) ═══ -->
+    <div class="config-section">
+        <a href="@Url.Action("ProductosServicios", "Clientes")" class="config-featured">
+            <div class="config-featured-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                    <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
+                </svg>
+            </div>
+            <div class="config-featured-txt">
+                <div class="config-featured-titulo">Productos y Servicios</div>
+                <div class="config-featured-desc">Servicios, marketplace y subscripciones</div>
+            </div>
+            <div class="config-featured-chev">
+                <svg viewBox="0 0 24 24">
+                    <path d="m9 6 6 6-6 6" />
+                </svg>
+            </div>
+        </a>
+    </div>
+
+    <!-- ═══ ACCESOS RÁPIDOS ═══ -->
+    <div class="config-section">
+        <div class="config-section-title">
+            <svg viewBox="0 0 24 24">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+            </svg>
+            Accesos rápidos
+        </div>
+
+        <div class="config-grid">
+
+            <!-- Carrito -->
+            <a href="@Url.Action("Tienda", "Clientes")" class="config-card">
+                <div class="config-card-icon carrito">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="9" cy="20" r="1.6" />
+                        <circle cx="18" cy="20" r="1.6" />
+                        <path d="M2 3h3l2.5 12.5a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 2-1.5L22 7H6" />
+                    </svg>
+                </div>
+                <div class="config-card-txt">
+                    <div class="config-card-titulo">Carrito</div>
+                    <div class="config-card-desc">Ver productos</div>
+                </div>
+            </a>
+
+            <!-- Mis compras -->
+            <a href="@Url.Action("MisCompras", "Clientes")" class="config-card">
+                <div class="config-card-icon compras">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
+                    </svg>
+                </div>
+                <div class="config-card-txt">
+                    <div class="config-card-titulo">Mis compras</div>
+                    <div class="config-card-desc">Historial y facturas</div>
+                </div>
+            </a>
+
+            <!-- Alertas -->
+            <a href="@Url.Action("Alertas", "Clientes")" class="config-card">
+                <div class="config-card-icon alertas">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                </div>
+                <div class="config-card-txt">
+                    <div class="config-card-titulo">Alertas</div>
+                    <div class="config-card-desc">Notificaciones</div>
+                </div>
+            </a>
+
+            <!-- Métodos de pago -->
+            <a href="@Url.Action("MetodosPago", "Clientes")" class="config-card">
+                <div class="config-card-icon pagos">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="1" y="4" width="22" height="16" rx="2" />
+                        <line x1="1" y1="10" x2="23" y2="10" />
+                    </svg>
+                </div>
+                <div class="config-card-txt">
+                    <div class="config-card-titulo">Métodos de pago</div>
+                    <div class="config-card-desc">Tarjetas, SINPE, IBAN</div>
+                </div>
+            </a>
+
+            <!-- Mis NISEs -->
+            <a href="@Url.Action("Servicios", "Clientes")" class="config-card">
+                <div class="config-card-icon nise">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 21V9l6-6v18M9 13h6" />
+                        <path d="M3 21h18" />
+                    </svg>
+                </div>
+                <div class="config-card-txt">
+                    <div class="config-card-titulo">Mis servicios</div>
+                    <div class="config-card-desc">NISEs y suministros</div>
+                </div>
+            </a>
+
+            <!-- Facturas -->
+            <a href="@Url.Action("Facturas", "Clientes")" class="config-card">
+                <div class="config-card-icon facturas">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                    </svg>
+                </div>
+                <div class="config-card-txt">
+                    <div class="config-card-titulo">Facturas</div>
+                    <div class="config-card-desc">Historial de pagos</div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- ═══ PREFERENCIAS ═══ -->
+    <div class="config-section">
+        <div class="config-section-title">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+            Preferencias
+        </div>
+
+        <!-- Zoom de la app -->
+        <div class="config-card-full">
+            <div class="config-row">
+                <div class="config-row-icon zoom">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35M11 8v6M8 11h6" />
+                    </svg>
+                </div>
+                <div class="config-row-txt">
+                    <div class="config-row-titulo">Zoom de la app</div>
+                    <div class="config-row-desc">Ajustá el tamaño del texto</div>
+                </div>
+                <div class="config-row-right">
+                    <span class="zoom-porcentaje" id="zoomValor">100%</span>
+                </div>
+            </div>
+
+            <div class="zoom-controles">
+                <button type="button" class="zoom-btn" onclick="cambiarZoom(-10);">A−</button>
+                <button type="button" class="zoom-btn actual" id="zoomActual" onclick="resetZoom();">100%</button>
+                <button type="button" class="zoom-btn" onclick="cambiarZoom(10);">A+</button>
+            </div>
+        </div>
+
+        <!-- Modo oscuro -->
+        <div class="config-card-full">
+            <div class="config-row">
+                <div class="config-row-icon oscuro">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                </div>
+                <div class="config-row-txt">
+                    <div class="config-row-titulo">Modo oscuro</div>
+                    <div class="config-row-desc">Cambiar tema de la app</div>
+                </div>
+                <div class="toggle-switch" id="toggleOscuro" onclick="toggleModoOscuro();"></div>
+            </div>
+        </div>
+
+        <!-- Idioma -->
+        <div class="config-card-full">
+            <div class="config-row">
+                <div class="config-row-icon idioma">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                </div>
+                <div class="config-row-txt">
+                    <div class="config-row-titulo">Idioma</div>
+                    <div class="config-row-desc">Español (Costa Rica)</div>
+                </div>
+                <div class="config-row-right">
+                    <div class="config-chev">
+                        <svg viewBox="0 0 24 24">
+                            <path d="m9 6 6 6-6 6" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ INFORMACIÓN ═══ -->
+    <div class="config-section">
+        <div class="config-section-title">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4M12 8h.01" />
+            </svg>
+            Acerca de
+        </div>
+
+        <div class="config-card-full">
+            <div class="config-row">
+                <div class="config-row-icon acerca">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 16v-4M12 8h.01" />
+                    </svg>
+                </div>
+                <div class="config-row-txt">
+                    <div class="config-row-titulo">Versión de la app</div>
+                    <div class="config-row-desc">CNFL Clientes · v1.0.0</div>
+                </div>
+                <div class="config-row-right">
+                    <div class="config-chev">
+                        <svg viewBox="0 0 24 24">
+                            <path d="m9 6 6 6-6 6" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ BOTÓN CERRAR ═══ -->
+    <button type="button" class="config-cerrar" onclick="cerrarConfig();">
+        <svg viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+        </svg>
+        Cerrar
+    </button>
+
+    <!-- ═══ AVISO ═══ -->
+    <div class="config-info">
+        <div class="config-info-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="m9 12 2 2 4-4" />
+            </svg>
+        </div>
+        <div class="config-info-txt">
+            <strong>Tus preferencias se guardan localmente.</strong>
+            Si cambiás de dispositivo, algunas opciones pueden volver a su valor por defecto.
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // ═══════════ Zoom ═══════════
+        var zoomActual = 100;
+        var zoomMin = 80;
+        var zoomMax = 150;
+
+        function aplicarZoom(valor) {
+            zoomActual = Math.max(zoomMin, Math.min(zoomMax, valor));
+
+            var valorEl = document.getElementById('zoomValor');
+            if (valorEl) valorEl.textContent = zoomActual + '%';
+
+            var btnActual = document.getElementById('zoomActual');
+            if (btnActual) {
+                btnActual.textContent = zoomActual + '%';
+                btnActual.classList.toggle('actual', zoomActual === 100);
+            }
+
+            document.documentElement.style.fontSize = (zoomActual / 100) * 16 + 'px';
+
+            try { localStorage.setItem('cnfl_zoom', zoomActual); } catch (e) { }
+        }
+
+        function cambiarZoom(delta) {
+            aplicarZoom(zoomActual + delta);
+        }
+
+        function resetZoom() {
+            aplicarZoom(100);
+        }
+
+        // Cargar zoom guardado
+        try {
+            var guardado = localStorage.getItem('cnfl_zoom');
+            if (guardado) {
+                aplicarZoom(parseInt(guardado, 10));
+            }
+        } catch (e) { }
+
+        // ═══════════ Modo oscuro ═══════════
+        function toggleModoOscuro() {
+            var toggle = document.getElementById('toggleOscuro');
+            if (!toggle) return;
+            toggle.classList.toggle('on');
+
+            var activo = toggle.classList.contains('on');
+            document.body.classList.toggle('modo-oscuro', activo);
+
+            try { localStorage.setItem('cnfl_modo_oscuro', activo ? '1' : '0'); } catch (e) { }
+        }
+
+        // Cargar modo oscuro guardado
+        try {
+            var modoGuardado = localStorage.getItem('cnfl_modo_oscuro') === '1';
+            if (modoGuardado) {
+                var toggle = document.getElementById('toggleOscuro');
+                if (toggle) toggle.classList.add('on');
+                document.body.classList.add('modo-oscuro');
+            }
+        } catch (e) { }
+
+        // ═══════════ Cerrar configuración ═══════════
+        function cerrarConfig() {
+            window.history.back();
+        }
+    </script>
+}

@@ -14,109 +14,410 @@
 
 @section Styles {
     <style>
-        .legal-link {
-            display: inline-block;
-            margin-top: 6px;
-            font-size: 12.5px;
-            font-weight: 800;
+        /* ═══════════════════════════════════════════
+           AUTORIZACIONES — CHECKBOX MEJORADO
+           ═══════════════════════════════════════════ */
+        .auth-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+            .auth-card h3 {
+                margin: 0 0 14px;
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+        .auth-item {
+            display: block;
+            background: #fafbfe;
+            border: 1.5px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+            .auth-item:last-child {
+                margin-bottom: 0;
+            }
+
+            .auth-item:hover {
+                border-color: #d8dde8;
+            }
+
+            .auth-item.marcado {
+                border-color: var(--blue);
+                background: #f5f7ff;
+            }
+
+        .auth-item-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        /* Checkbox customizado */
+        .auth-check {
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            border: 2px solid var(--line);
+            background: #fff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: all .15s;
+            position: relative;
+        }
+
+            .auth-check svg {
+                width: 14px;
+                height: 14px;
+                stroke: #fff;
+                stroke-width: 3;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                fill: none;
+                opacity: 0;
+                transform: scale(0.5);
+                transition: opacity .15s, transform .15s;
+            }
+
+        .auth-item.marcado .auth-check {
+            background: var(--blue);
+            border-color: var(--blue);
+        }
+
+            .auth-item.marcado .auth-check svg {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+        /* Icono diferenciador */
+        .auth-icono {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: #eef0ff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
             color: var(--blue);
-            text-decoration: underline;
+        }
+
+            .auth-icono svg {
+                width: 19px;
+                height: 19px;
+                stroke: currentColor;
+                stroke-width: 1.8;
+                fill: none;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .auth-item.marcado .auth-icono {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        /* Texto */
+        .auth-txt {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .auth-titulo {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .auth-req {
+            color: var(--red);
+            font-weight: 800;
+        }
+
+        .auth-desc {
+            font-size: 11.5px;
+            color: var(--muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* Link como botón */
+        .auth-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #fff;
+            border: 1.5px solid var(--blue);
+            border-radius: 10px;
+            color: var(--blue);
+            font-size: 11.5px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: background .15s, color .15s;
             cursor: pointer;
         }
 
-            .legal-link:hover {
-                opacity: .8;
+            .auth-link:hover {
+                background: var(--blue);
+                color: #fff;
             }
 
-        /* ═══════════ MODAL LEGAL ═══════════ */
-        .modal-legal {
+            .auth-link svg {
+                width: 13px;
+                height: 13px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        /* ═══════════════════════════════════════════
+           MODAL LEGAL — REDISEÑADO (v2)
+           ═══════════════════════════════════════════ */
+        .modal-legal-overlay {
             position: fixed;
             inset: 0;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
+            background: rgba(14, 17, 22, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 300;
+            display: none;
+            align-items: flex-end;
             justify-content: center;
-            padding: 20px;
+            padding: 0 0 90px 0; /* espacio abajo para el tabbar */
         }
 
-        .modal-legal-backdrop {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,.55);
-            backdrop-filter: blur(4px);
-        }
+            .modal-legal-overlay.show {
+                display: flex;
+            }
 
         .modal-legal-box {
-            position: relative;
-            background: #fff;
-            border-radius: 20px;
-            max-width: 720px;
             width: 100%;
-            max-height: 85vh;
+            max-width: 430px;
+            max-height: 68vh;
+            background: #ffffff;
+            border-radius: 24px 24px 0 0;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0,0,0,.3);
-            overflow: hidden;
-            z-index: 1;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
+            animation: modalLegalUp .3s ease;
         }
 
+        @@keyframes modalLegalUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-legal-handle {
+            width: 44px;
+            height: 4px;
+            background: #d8dde8;
+            border-radius: 2px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+
+        /* Header fijo */
+        .modal-legal-header {
+            padding: 16px 22px 14px;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--line);
+            background: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+            .modal-legal-header h3 {
+                font-size: 16px;
+                font-weight: 800;
+                margin: 0;
+                color: var(--blue);
+                line-height: 1.25;
+            }
+
+            .modal-legal-header p {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin: 4px 0 0;
+                line-height: 1.4;
+            }
+
         .modal-legal-close {
-            position: absolute;
-            top: 12px;
-            right: 14px;
             background: #eef0ff;
-            color: var(--blue);
-            border: none;
-            width: 36px;
-            height: 36px;
+            border: 0;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
+            color: var(--blue);
             font-size: 16px;
             font-weight: 800;
             cursor: pointer;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background .15s;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transition: background .15s, transform .15s;
         }
 
             .modal-legal-close:hover {
                 background: #dde3ff;
             }
 
-        .modal-legal-scroll {
+            .modal-legal-close:active {
+                transform: scale(0.92);
+            }
+
+        /* Contenido scrolleable */
+        .modal-legal-content {
+            flex: 1;
             overflow-y: auto;
-            padding: 32px 28px;
-            font-size: 14px;
-            line-height: 1.7;
-            color: #222;
+            padding: 20px 22px 24px;
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* ═══════════ ESTILOS DEL CONTENIDO LEGAL ═══════════ */
-        .legal-content h2 {
-            font-size: 18px;
-            color: var(--blue);
-            margin: 0 0 18px;
+            .modal-legal-content::-webkit-scrollbar {
+                width: 0;
+            }
+
+            /* Estilos internos del contenido legal */
+            .modal-legal-content h2 {
+                font-size: 15px;
+                color: var(--blue);
+                margin: 0 0 14px;
+                font-weight: 800;
+                line-height: 1.3;
+            }
+
+            .modal-legal-content h3 {
+                font-size: 13px;
+                color: var(--ink);
+                margin: 18px 0 8px;
+                font-weight: 800;
+                line-height: 1.3;
+            }
+
+            .modal-legal-content p {
+                margin: 0 0 12px;
+                font-size: 13px;
+                line-height: 1.7;
+                color: #2a2f38;
+                text-align: justify;
+            }
+
+            .modal-legal-content strong {
+                color: var(--ink);
+                font-weight: 800;
+            }
+
+            .modal-legal-content ul,
+            .modal-legal-content ol {
+                margin: 0 0 12px;
+                padding-left: 20px;
+            }
+
+            .modal-legal-content li {
+                font-size: 13px;
+                line-height: 1.6;
+                color: #2a2f38;
+                margin-bottom: 6px;
+            }
+
+        /* Footer fijo con botón — REDISEÑADO */
+        .modal-legal-footer {
+            padding: 16px 22px 24px;
+            background: #ffffff;
+            border-top: 1px solid var(--line);
+            flex-shrink: 0;
+            box-shadow: 0 -4px 12px -4px rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-legal-btn {
+            width: 100%;
+            padding: 15px 16px;
+            border: 0;
+            border-radius: 14px;
+            background: var(--blue);
+            color: #fff;
+            font-family: inherit;
             font-weight: 800;
-            line-height: 1.3;
+            font-size: 14.5px;
+            cursor: pointer;
+            box-shadow: 0 8px 18px -8px rgba(30, 35, 230, 0.5);
+            transition: transform .15s, background .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .legal-content p {
-            margin: 0 0 12px;
-            font-size: 13.5px;
-            line-height: 1.65;
-            color: #222;
-            text-align: justify;
+            .modal-legal-btn:hover {
+                background: #0d1b9e;
+            }
+
+            .modal-legal-btn:active {
+                transform: scale(0.98);
+            }
+
+        /* Loading state */
+        .modal-legal-loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+            font-size: 13px;
         }
 
-        .legal-content strong {
-            color: var(--text);
-            font-weight: 800;
+            .modal-legal-loading::before {
+                content: "";
+                display: block;
+                width: 32px;
+                height: 32px;
+                margin: 0 auto 12px;
+                border: 3px solid #eef0ff;
+                border-top-color: var(--blue);
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+            }
+
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 }
 
-<div class="reg-hero">
+<!-- ═══════════ LOGO Y TÍTULO ═══════════ -->
+<div class="reg-hero" style="padding-top:20px;">
     <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
          onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';"
          style="height:42px; width:auto; display:inline-block; margin-bottom:10px;" />
@@ -124,6 +425,7 @@
     <p>Registrate con tu cédula para gestionar tus servicios CNFL.</p>
 </div>
 
+<!-- ═══════════ ERRORES DE VALIDACIÓN ═══════════ -->
 @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
 {
     <div class="aviso err">
@@ -146,41 +448,24 @@
 
         <div class="reg-field">
             <label for="Cedula">Cédula *</label>
-            <input type="text"
-                   id="Cedula"
-                   name="Cedula"
-                   placeholder="Ej: 1 2345 6789"
-                   required
-                   maxlength="20"
-                   value="@(Model != null ? Model.Cedula : "")"
-                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+            <input type="text" id="Cedula" name="Cedula" placeholder="Ej: 1 2345 6789" required maxlength="20"
+                   value="@(Model != null ? Model.Cedula : "")" />
             <small class="hint">Sin guiones. Solo números y espacios.</small>
         </div>
 
         <div class="reg-field">
             <label for="NombreCompleto">Nombre completo *</label>
-            <input type="text"
-                   id="NombreCompleto"
-                   name="NombreCompleto"
-                   value="@nombreCompletoPrevio"
-                   placeholder="Ej: Juan Pérez Mora"
-                   autocomplete="name"
-                   required
-                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+            <input type="text" id="NombreCompleto" name="NombreCompleto"
+                   value="@nombreCompletoPrevio" placeholder="Ej: Juan Pérez Mora"
+                   autocomplete="name" required />
             <small class="hint">Escribí nombre y dos apellidos.</small>
         </div>
 
         <div class="reg-field">
             <label for="NombreUsuario">Nombre de usuario *</label>
-            <input type="text"
-                   id="NombreUsuario"
-                   name="NombreUsuario"
-                   placeholder="Ej: juanperez"
-                   required
-                   maxlength="50"
-                   autocomplete="username"
-                   value="@(Model != null ? Model.NombreUsuario : "")"
-                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+            <input type="text" id="NombreUsuario" name="NombreUsuario" placeholder="Ej: juanperez"
+                   required maxlength="50" autocomplete="username"
+                   value="@(Model != null ? Model.NombreUsuario : "")" />
             <small class="hint">Con este nombre vas a poder iniciar sesión (además de la cédula).</small>
         </div>
     </div>
@@ -191,28 +476,17 @@
 
         <div class="reg-field">
             <label for="Correo">Correo principal *</label>
-            <input type="email"
-                   id="Correo"
-                   name="Correo"
-                   placeholder="Ej: tucorreo@dominio.com"
-                   autocomplete="email"
-                   required
-                   value="@(Model != null ? Model.Correo : "")"
-                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+            <input type="email" id="Correo" name="Correo" placeholder="Ej: tucorreo@dominio.com"
+                   autocomplete="email" required
+                   value="@(Model != null ? Model.Correo : "")" />
             <small class="hint">Ahí te enviaremos facturas y notificaciones.</small>
         </div>
 
         <div class="reg-field">
             <label for="Telefono">Teléfono principal *</label>
-            <input type="tel"
-                   id="Telefono"
-                   name="Telefono"
-                   placeholder="Ej: 8888-8888"
-                   autocomplete="tel"
-                   maxlength="15"
-                   required
-                   value="@(Model != null ? Model.Telefono : "")"
-                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+            <input type="tel" id="Telefono" name="Telefono" placeholder="Ej: 8888-8888"
+                   autocomplete="tel" maxlength="15" required
+                   value="@(Model != null ? Model.Telefono : "")" />
             <small class="hint">Formato: 8 dígitos con guion.</small>
         </div>
     </div>
@@ -224,17 +498,10 @@
         <div class="reg-field">
             <label for="Contraseña">Contraseña *</label>
             <div style="position:relative;">
-                <input type="password"
-                       id="Contraseña"
-                       name="Contraseña"
-                       placeholder="Mínimo 6 caracteres"
-                       autocomplete="new-password"
-                       minlength="6"
-                       required
-                       style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
-                <button type="button"
-                        onclick="togglePass('Contraseña', this);"
-                        title="Mostrar/ocultar"
+                <input type="password" id="Contraseña" name="Contraseña" placeholder="Mínimo 6 caracteres"
+                       autocomplete="new-password" minlength="6" required
+                       style="padding-right:44px;" />
+                <button type="button" onclick="togglePass('Contraseña', this);" title="Mostrar/ocultar"
                         style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -248,17 +515,10 @@
         <div class="reg-field">
             <label for="confirmarContraseña">Confirmar contraseña *</label>
             <div style="position:relative;">
-                <input type="password"
-                       id="confirmarContraseña"
-                       name="confirmarContraseña"
-                       placeholder="Repetí la contraseña"
-                       autocomplete="new-password"
-                       minlength="6"
-                       required
-                       style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
-                <button type="button"
-                        onclick="togglePass('confirmarContraseña', this);"
-                        title="Mostrar/ocultar"
+                <input type="password" id="confirmarContraseña" name="confirmarContraseña"
+                       placeholder="Repetí la contraseña" autocomplete="new-password"
+                       minlength="6" required style="padding-right:44px;" />
+                <button type="button" onclick="togglePass('confirmarContraseña', this);" title="Mostrar/ocultar"
                         style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -286,13 +546,11 @@
         <div class="reg-actividad" id="actividadWrap" style="display:@(facturaElectronicaPrevia ? "block" : "none");">
             <div class="reg-field">
                 <label for="buscadorActividad">Actividad económica</label>
-                <input type="text"
-                       id="buscadorActividad"
+                <input type="text" id="buscadorActividad"
                        placeholder="Buscá por código o nombre (ej: 4711, comercio)"
                        autocomplete="off"
                        onfocus="mostrarActividades();"
-                       oninput="filtrarActividades();"
-                       style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
+                       oninput="filtrarActividades();" />
                 <small class="hint">Escribí al menos 3 letras o el código para filtrar.</small>
 
                 <div id="listaActividades" style="margin-top:8px;max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;background:#fff;display:none;">
@@ -320,31 +578,78 @@
     </div>
 
     <!-- AUTORIZACIONES -->
-    <div class="reg-card">
+    <div class="auth-card">
         <h3>⚖️ Autorizaciones</h3>
 
-        <label class="reg-check" for="chkPolitica">
+        <label class="auth-item @(aceptoPoliticaPrevio ? "marcado" : "")" for="chkPolitica" id="authPoliticaItem">
+            <div class="auth-item-header">
+                <div class="auth-check">
+                    <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
+                </div>
+                <div class="auth-icono">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                </div>
+                <div class="auth-txt">
+                    <div class="auth-titulo">
+                        Acepto la Política de Privacidad
+                        <span class="auth-req">*</span>
+                    </div>
+                    <div class="auth-desc">
+                        Autorizo el tratamiento de mis datos personales según la ley 8968.
+                    </div>
+                    <a href="javascript:void(0);"
+                       onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('politica');"
+                       class="auth-link">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                        </svg>
+                        Ver documento
+                    </a>
+                </div>
+            </div>
             <input type="checkbox" id="chkPolitica" name="AceptoPolitica" value="true"
-                   @(aceptoPoliticaPrevio ? "checked" : "") required />
-            <span class="txt">
-                <span class="t">Acepto la Política de Privacidad *</span>
-                <span class="s">Autorizo el tratamiento de mis datos personales según la ley 8968.</span>
-                <a href="javascript:void(0);"
-                   onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('politica');"
-                   class="legal-link">Ver Política de Privacidad</a>
-            </span>
+                   @(aceptoPoliticaPrevio ? "checked" : "")
+                   onchange="toggleAuth(this, 'authPoliticaItem');"
+                   style="position:absolute;opacity:0;pointer-events:none;" />
         </label>
 
-        <label class="reg-check" for="chkConsentimiento">
+        <label class="auth-item @(aceptoConsentimientoPrevio ? "marcado" : "")" for="chkConsentimiento" id="authConsentItem">
+            <div class="auth-item-header">
+                <div class="auth-check">
+                    <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
+                </div>
+                <div class="auth-icono">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                    </svg>
+                </div>
+                <div class="auth-txt">
+                    <div class="auth-titulo">
+                        Acepto el Consentimiento Informado
+                        <span class="auth-req">*</span>
+                    </div>
+                    <div class="auth-desc">
+                        Autorizo el uso de mi información para los servicios CNFL.
+                    </div>
+                    <a href="javascript:void(0);"
+                       onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('consentimiento');"
+                       class="auth-link">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                        </svg>
+                        Ver documento
+                    </a>
+                </div>
+            </div>
             <input type="checkbox" id="chkConsentimiento" name="AceptoConsentimiento" value="true"
-                   @(aceptoConsentimientoPrevio ? "checked" : "") required />
-            <span class="txt">
-                <span class="t">Acepto el Consentimiento Informado *</span>
-                <span class="s">Autorizo el uso de mi información para los servicios CNFL.</span>
-                <a href="javascript:void(0);"
-                   onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('consentimiento');"
-                   class="legal-link">Ver Consentimiento Informado</a>
-            </span>
+                   @(aceptoConsentimientoPrevio ? "checked" : "")
+                   onchange="toggleAuth(this, 'authConsentItem');"
+                   style="position:absolute;opacity:0;pointer-events:none;" />
         </label>
     </div>
 
@@ -355,18 +660,41 @@
     ¿Ya tenés cuenta? <a href="@Url.Action("Login", "Cuenta")">Iniciar sesión</a>
 </div>
 
-<!-- MODAL LEGAL -->
-<div id="modalLegal" class="modal-legal" style="display:none;">
-    <div class="modal-legal-backdrop" onclick="cerrarLegal();"></div>
+<!-- ═══════════════════════════════════════════
+     MODAL LEGAL
+     ═══════════════════════════════════════════ -->
+<div id="modalLegal" class="modal-legal-overlay">
     <div class="modal-legal-box">
-        <button type="button" class="modal-legal-close" onclick="cerrarLegal();">✕</button>
-        <div id="modalLegalContenido" class="modal-legal-scroll"></div>
+
+        <div class="modal-legal-handle"></div>
+
+        <div class="modal-legal-header">
+            <div style="flex:1; min-width:0;">
+                <h3 id="modalLegalTitulo">Documento legal</h3>
+                <p>Leé el contenido completo antes de aceptar.</p>
+            </div>
+            <button type="button" class="modal-legal-close" onclick="cerrarLegal();" title="Cerrar">
+                ✕
+            </button>
+        </div>
+
+        <div id="modalLegalContenido" class="modal-legal-content">
+            <!-- Se carga dinámicamente -->
+        </div>
+
+        <div class="modal-legal-footer">
+            <button type="button" class="modal-legal-btn" onclick="cerrarLegal();">
+                Entendido ✓
+            </button>
+        </div>
+
     </div>
 </div>
 
 @section Scripts {
     <text>
         <script>
+            // ═══════════ Toggle contraseña ═══════════
             function togglePass(id, btn) {
                 var input = document.getElementById(id);
                 if (!input) return;
@@ -377,6 +705,7 @@
                     : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
             }
 
+            // ═══════════ Factura electrónica ═══════════
             function toggleFactura(chk) {
                 var wrap = document.getElementById('actividadWrap');
                 var hidden = document.getElementById('ActividadEconomicaId');
@@ -450,23 +779,42 @@
                 }
             });
 
+            // ═══════════ Toggle de checkboxes de autorización ═══════════
+            function toggleAuth(chk, itemId) {
+                var item = document.getElementById(itemId);
+                if (!item) return;
+                if (chk.checked) {
+                    item.classList.add('marcado');
+                } else {
+                    item.classList.remove('marcado');
+                }
+            }
+
             // ═══════════ Modal legal ═══════════
             var legalCache = {};
 
             function abrirLegal(tipo) {
                 var modal = document.getElementById('modalLegal');
                 var cont = document.getElementById('modalLegalContenido');
+                var titulo = document.getElementById('modalLegalTitulo');
                 if (!modal || !cont) return;
 
                 var urls = {
-                    politica:       '@Html.Raw(Url.Action("PoliticaPrivacidad", "Cuenta"))',
+                    politica: '@Html.Raw(Url.Action("PoliticaPrivacidad", "Cuenta"))',
                     consentimiento: '@Html.Raw(Url.Action("ConsentimientoInformado", "Cuenta"))'
+                };
+
+                var titulos = {
+                    politica: 'Política de Privacidad y Seguridad',
+                    consentimiento: 'Consentimiento Informado'
                 };
 
                 var url = urls[tipo];
                 if (!url) return;
 
-                modal.style.display = 'flex';
+                titulo.textContent = titulos[tipo] || 'Documento legal';
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
 
                 if (legalCache[tipo]) {
                     cont.innerHTML = legalCache[tipo];
@@ -474,7 +822,7 @@
                     return;
                 }
 
-                cont.innerHTML = '<p style="text-align:center;padding:30px;">Cargando…</p>';
+                cont.innerHTML = '<div class="modal-legal-loading">Cargando documento...</div>';
 
                 fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                     .then(function (r) {
@@ -487,14 +835,20 @@
                         cont.scrollTop = 0;
                     })
                     .catch(function () {
-                        cont.innerHTML = '<p style="color:#b00;text-align:center;">No se pudo cargar el documento. Intentá de nuevo.</p>';
+                        cont.innerHTML = '<p style="color:#b00;text-align:center;padding:30px;">No se pudo cargar el documento. Intentá de nuevo.</p>';
                     });
             }
 
             function cerrarLegal() {
                 var modal = document.getElementById('modalLegal');
-                if (modal) modal.style.display = 'none';
+                if (!modal) return;
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
             }
+
+            document.getElementById('modalLegal').addEventListener('click', function (e) {
+                if (e.target === this) cerrarLegal();
+            });
 
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') cerrarLegal();

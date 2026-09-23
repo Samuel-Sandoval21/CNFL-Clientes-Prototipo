@@ -33,18 +33,229 @@
         --green: #64B95A;
         --amber: #F5A623;
         --red: #E5484D;
+        --purple: #5b3fbf;
         --ink: #0E1116;
         --muted: #727A86;
         --line: #EDEFF3;
         --bg: #F5F6FA;
         --card: #FFFFFF;
         --shadow-sm: 0 4px 14px rgba(16,20,40,.06);
+        --shadow-md: 0 8px 24px rgba(16,20,40,.08);
         --safe-top: env(safe-area-inset-top, 0px);
         --safe-bottom: env(safe-area-inset-bottom, 0px);
         --statusbar-h: 48px;
         --tabbar-h: 72px;
     }
 
+    /* ═══════════ MODO OSCURO ═══════════ */
+    body.modo-oscuro {
+        --ink: #e6e8ee;
+        --muted: #9aa3b2;
+        --line: #2a2f3a;
+        --bg: #0f1118;
+        --card: #1a1d26;
+        --shadow-sm: 0 4px 14px rgba(0,0,0,.4);
+        --shadow-md: 0 8px 24px rgba(0,0,0,.5);
+        background: #0a0c12;
+    }
+
+        body.modo-oscuro .phone {
+            background: var(--bg);
+            border: 1px solid #1a1d26;
+        }
+
+            body.modo-oscuro .phone.phone-publico {
+                background: transparent;
+            }
+
+            body.modo-oscuro .phone.phone-logueado {
+                background: var(--bg);
+            }
+
+        body.modo-oscuro .bg-decorativo {
+            opacity: 0.15;
+        }
+
+        /* Cards en modo oscuro */
+        body.modo-oscuro .reg-card,
+        body.modo-oscuro .chart-card,
+        body.modo-oscuro .contact-list,
+        body.modo-oscuro .card,
+        body.modo-oscuro .row-item,
+        body.modo-oscuro .nise,
+        body.modo-oscuro .alert-card,
+        body.modo-oscuro .rec-card,
+        body.modo-oscuro .carrito-item,
+        body.modo-oscuro .config-card,
+        body.modo-oscuro .config-card-full,
+        body.modo-oscuro .config-featured,
+        body.modo-oscuro .contact-card,
+        body.modo-oscuro .info-card,
+        body.modo-oscuro .home-footer-card {
+            background: var(--card);
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        body.modo-oscuro .config-featured {
+            background: linear-gradient(135deg, #1a3a8a, #2b3f8f);
+        }
+
+        body.modo-oscuro .login-form,
+        body.modo-oscuro .login-bio-card,
+        body.modo-oscuro .login-foot-card,
+        body.modo-oscuro .auth-card {
+            background: var(--card);
+            border-color: var(--line);
+        }
+
+        body.modo-oscuro .login-field input,
+        body.modo-oscuro .reg-field input,
+        body.modo-oscuro .reg-field select,
+        body.modo-oscuro .reg-field textarea {
+            background: #22262f;
+            color: var(--ink);
+            border-color: var(--line);
+        }
+
+            body.modo-oscuro .login-field input:focus,
+            body.modo-oscuro .reg-field input:focus,
+            body.modo-oscuro .reg-field select:focus,
+            body.modo-oscuro .reg-field textarea:focus {
+                background: #2a2f3a;
+            }
+
+        body.modo-oscuro .reg-check {
+            background: #22262f;
+            border-color: var(--line);
+        }
+
+        body.modo-oscuro .reg-check .t {
+            color: var(--ink);
+        }
+
+        body.modo-oscuro .reg-check .s {
+            color: var(--muted);
+        }
+
+        body.modo-oscuro .app-tabbar {
+            background: rgba(26, 29, 38, .98);
+            border-top-color: var(--line);
+        }
+
+        body.modo-oscuro .app-tab {
+            color: #6b7280;
+        }
+
+            body.modo-oscuro .app-tab.active {
+                color: #64B9CD;
+            }
+
+        body.modo-oscuro .icon-btn {
+            background: #22262f;
+            border-color: var(--line);
+            color: var(--ink);
+        }
+
+        body.modo-oscuro .contact-card-icon,
+        body.modo-oscuro .config-card-icon,
+        body.modo-oscuro .config-row-icon,
+        body.modo-oscuro .auth-icono,
+        body.modo-oscuro .contact-icon {
+            opacity: 0.9;
+        }
+
+        body.modo-oscuro .auth-item {
+            background: #22262f;
+            border-color: var(--line);
+        }
+
+            body.modo-oscuro .auth-item.marcado {
+                background: #1a237e;
+                border-color: #3b6ce0;
+            }
+
+        body.modo-oscuro .auth-check {
+            background: #2a2f3a;
+            border-color: #3a4050;
+        }
+
+        body.modo-oscuro .modal-legal-box,
+        body.modo-oscuro .modal-servicio-box {
+            background: #1a1d26;
+            border-color: var(--line);
+        }
+
+        body.modo-oscuro .modal-legal-header,
+        body.modo-oscuro .modal-legal-footer,
+        body.modo-oscuro .modal-servicio-header,
+        body.modo-oscuro .modal-servicio-footer {
+            background: #1a1d26;
+            border-color: var(--line);
+        }
+
+        body.modo-oscuro .modal-legal-content,
+        body.modo-oscuro .modal-servicio-content {
+            background: #1a1d26;
+            color: var(--ink);
+        }
+
+        /* Ajustes de texto */
+        body.modo-oscuro h1,
+        body.modo-oscuro h2,
+        body.modo-oscuro h3,
+        body.modo-oscuro h4,
+        body.modo-oscuro .plan-nombre,
+        body.modo-oscuro .plan-titulo,
+        body.modo-oscuro .plan-desc,
+        body.modo-oscuro .login-h,
+        body.modo-oscuro .rec-h,
+        body.modo-oscuro .reg-hero h1 {
+            color: var(--ink);
+        }
+
+        body.modo-oscuro .login-p,
+        body.modo-oscuro .rec-p,
+        body.modo-oscuro .reg-hero p {
+            color: var(--muted);
+        }
+
+    /* ═══════════ MODO ALTO CONTRASTE ═══════════ */
+    body.modo-contraste {
+        --blue: #0000CC;
+        --ink: #000000;
+        --muted: #333333;
+        --line: #888888;
+    }
+
+        body.modo-contraste .card,
+        body.modo-contraste .reg-card,
+        body.modo-contraste .chart-card {
+            border: 2px solid var(--ink);
+        }
+
+        body.modo-contraste .reg-btn,
+        body.modo-contraste .btn-cta {
+            border: 2px solid var(--ink);
+        }
+
+    /* ═══════════ REDUCCIÓN DE MOVIMIENTO ═══════════ */
+    body.reducir-movimiento * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    /* ═══════════ SCROLL SUAVE ═══════════ */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @* @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+    } *@
+
+    /* ═══════════ RESET ═══════════ */
     * {
         box-sizing: border-box;
         margin: 0;
@@ -79,7 +290,16 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        isolation: isolate;
     }
+
+        .phone.phone-publico {
+            background: transparent;
+        }
+
+        .phone.phone-logueado {
+            background: var(--bg);
+        }
 
     .phone-notch {
         display: none;
@@ -106,6 +326,14 @@
             overflow: hidden;
             box-shadow: 0 40px 80px -20px rgba(16,20,60,.35), 0 0 0 11px #12141c, 0 0 0 13px #2a2d3a;
         }
+
+            .phone.phone-publico {
+                background: transparent;
+            }
+
+            .phone.phone-logueado {
+                background: var(--bg);
+            }
 
         .phone-notch {
             display: block;
@@ -146,7 +374,24 @@
     }
 
     /* ═══════════════════════════════════════════
-       CUERPO DEL CELULAR — SOLO ESTO SCROLLEA
+       FONDO DECORATIVO
+       ═══════════════════════════════════════════ */
+    .bg-decorativo {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        background-color: #FFFFFF;
+        background-image: url('@Url.Content("~/Content/img/fondo-decorativo.png")');
+        background-size: cover;
+        background-position: top center;
+        background-repeat: no-repeat;
+    }
+
+    /* ═══════════════════════════════════════════
+       CUERPO DEL CELULAR
        ═══════════════════════════════════════════ */
     .phone-body {
         flex: 1;
@@ -155,7 +400,9 @@
         overflow-y: auto;
         overflow-x: hidden;
         position: relative;
+        z-index: 2;
         -webkit-overflow-scrolling: touch;
+        background: transparent;
     }
 
         .phone-body::-webkit-scrollbar {
@@ -171,6 +418,9 @@
     .app-body {
         width: 100%;
         padding: 14px 16px 24px;
+        background: transparent;
+        position: relative;
+        z-index: 2;
     }
 
         .app-body.with-tabbar {
@@ -178,7 +428,7 @@
         }
 
     /* ═══════════════════════════════════════════
-       BARRA INFERIOR — ABSOLUTA DENTRO DEL PHONE
+       BARRA INFERIOR
        ═══════════════════════════════════════════ */
     .app-tabbar {
         position: absolute;
@@ -240,7 +490,7 @@
                 place-items: center;
                 box-shadow: 0 8px 18px -6px rgba(255,105,45,.7);
                 margin-top: -22px;
-                border: 4px solid var(--bg);
+                border: 4px solid #FFFFFF;
             }
 
                 .app-tab.center .fab svg {
@@ -287,7 +537,8 @@
         .reg-field input[type="email"],
         .reg-field input[type="tel"],
         .reg-field input[type="password"],
-        .reg-field select {
+        .reg-field select,
+        .reg-field textarea {
             width: 100%;
             padding: 12px 14px;
             border: 1.5px solid var(--line);
@@ -301,12 +552,14 @@
         }
 
             .reg-field input:focus,
-            .reg-field select:focus {
+            .reg-field select:focus,
+            .reg-field textarea:focus {
                 border-color: var(--blue);
                 box-shadow: 0 0 0 3px rgba(30,35,230,.1);
             }
 
-        .reg-field input::placeholder {
+        .reg-field input::placeholder,
+        .reg-field textarea::placeholder {
             color: #b5bcc9;
         }
 
@@ -344,7 +597,7 @@
             }
 
     /* ═══════════════════════════════════════════
-       CHECKBOX
+       CHECKBOX / RADIO
        ═══════════════════════════════════════════ */
     .reg-check {
         display: flex;
@@ -367,7 +620,8 @@
             border-color: #d8dde8;
         }
 
-        .reg-check input[type="checkbox"] {
+        .reg-check input[type="checkbox"],
+        .reg-check input[type="radio"] {
             width: 22px;
             height: 22px;
             accent-color: var(--blue);
@@ -398,7 +652,7 @@
         }
 
     /* ═══════════════════════════════════════════
-       ACTIVIDAD ECONÓMICA (autocomplete)
+       ACTIVIDAD ECONÓMICA
        ═══════════════════════════════════════════ */
     .reg-actividad {
         display: none;
@@ -607,7 +861,7 @@
         }
 
     /* ═══════════════════════════════════════════
-       GRÁFICOS SIMPLES (barras CSS) — DINÁMICOS
+       GRÁFICOS SIMPLES (barras CSS)
        ═══════════════════════════════════════════ */
     .chart-card {
         background: #fff;
@@ -1516,5 +1770,138 @@
             color: #4a9a57;
             margin-top: 1px;
             line-height: 1.35;
+        }
+
+    /* ═══════════════════════════════════════════
+       CARRITO — TIENDA
+       ═══════════════════════════════════════════ */
+    .carrito-item {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow: var(--shadow-sm);
+    }
+
+        .carrito-item .ic {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            flex: none;
+            font-size: 24px;
+            background: #eef6ff;
+        }
+
+        .carrito-item .tx {
+            flex: 1;
+            min-width: 0;
+        }
+
+            .carrito-item .tx .t {
+                font-weight: 800;
+                font-size: 13.5px;
+                color: var(--ink);
+                line-height: 1.25;
+            }
+
+            .carrito-item .tx .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 3px;
+            }
+
+            .carrito-item .tx .precio {
+                font-weight: 800;
+                color: var(--orange);
+                font-size: 14px;
+                margin-top: 5px;
+            }
+
+    .carrito-eliminar {
+        background: #fdeaea;
+        border: 0;
+        color: #E5484D;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        transition: background .15s;
+    }
+
+        .carrito-eliminar:hover {
+            background: #fbd5d5;
+        }
+
+    .carrito-cantidad {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f5f6fa;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 4px 8px;
+        margin-top: 6px;
+    }
+
+        .carrito-cantidad button {
+            background: #fff;
+            border: 1px solid var(--line);
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--blue);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+
+            .carrito-cantidad button:hover {
+                background: #eef0ff;
+            }
+
+        .carrito-cantidad span {
+            font-size: 13px;
+            font-weight: 800;
+            min-width: 20px;
+            text-align: center;
+        }
+
+    .resumen-linea {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 13px;
+    }
+
+        .resumen-linea.total {
+            font-size: 15px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--line);
+            margin-top: 8px;
+        }
+
+        .resumen-linea .label {
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .resumen-linea .valor {
+            font-weight: 800;
+        }
+
+        .resumen-linea.total .valor {
+            color: var(--orange);
+            font-size: 17px;
         }
 </style>

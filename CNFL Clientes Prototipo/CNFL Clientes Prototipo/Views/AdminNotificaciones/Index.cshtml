@@ -1,0 +1,609 @@
+﻿@{
+    ViewBag.Title = "Enviar Notificaciones";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var clientes = ViewBag.Clientes as List<CNFL_Clientes_Prototipo.Controllers.ClienteDto>
+                   ?? new List<CNFL_Clientes_Prototipo.Controllers.ClienteDto>();
+    var totalClientes = (int)(ViewBag.TotalClientes ?? 0);
+    var conCorreo = (int)(ViewBag.ClientesConCorreo ?? 0);
+    var enviadas = (int)(ViewBag.NotificacionesEnviadas ?? 0);
+    var ultimasEnviadas = ViewBag.UltimasEnviadas as List<CNFL_Clientes_Prototipo.Models.Notificacion>
+                          ?? new List<CNFL_Clientes_Prototipo.Models.Notificacion>();
+}
+
+@section Styles {
+    <style>
+        .admin-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 16px rgba(16,20,40,.06);
+        }
+
+            .admin-card h3 {
+                font-size: 15px;
+                font-weight: 800;
+                color: var(--text);
+                margin: 0 0 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #eef0ff, #dde3ff);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+            .stat-box .num {
+                font-size: 20px;
+                font-weight: 900;
+                color: var(--blue);
+                line-height: 1;
+            }
+
+            .stat-box .lbl {
+                font-size: 10px;
+                color: var(--muted);
+                font-weight: 800;
+                text-transform: uppercase;
+                margin-top: 4px;
+                letter-spacing: .04em;
+            }
+
+        .form-field {
+            margin-bottom: 14px;
+        }
+
+            .form-field label {
+                display: block;
+                font-size: 11px;
+                font-weight: 800;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: .04em;
+                margin-bottom: 6px;
+            }
+
+            .form-field input,
+            .form-field textarea,
+            .form-field select {
+                width: 100%;
+                padding: 12px 14px;
+                border: 1.5px solid var(--line);
+                border-radius: 12px;
+                font-family: inherit;
+                font-size: 14px;
+                outline: none;
+                background: #fff;
+                transition: border-color .15s, box-shadow .15s;
+                color: var(--text);
+            }
+
+                .form-field input:focus,
+                .form-field textarea:focus,
+                .form-field select:focus {
+                    border-color: var(--blue);
+                    box-shadow: 0 0 0 3px rgba(26,43,107,.1);
+                }
+
+            .form-field textarea {
+                min-height: 100px;
+                resize: vertical;
+            }
+
+        .clientes-lista {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1.5px solid var(--line);
+            border-radius: 12px;
+            padding: 8px;
+            background: #fafbfe;
+        }
+
+        .cliente-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .15s;
+            border: 1px solid transparent;
+            margin-bottom: 4px;
+        }
+
+            .cliente-item:hover {
+                background: #eef0ff;
+            }
+
+            .cliente-item.selected {
+                background: #eef0ff;
+                border-color: var(--blue);
+            }
+
+            .cliente-item input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                accent-color: var(--blue);
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+
+            .cliente-item .info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .cliente-item .nombre {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--text);
+            }
+
+            .cliente-item .correo {
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 1px;
+            }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--blue), #3b6ce0);
+            color: #fff;
+            border: 0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: transform .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+            .btn-primary:active {
+                transform: scale(.98);
+            }
+
+            .btn-primary:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+        .btn-secondary {
+            flex: 1;
+            min-width: 140px;
+            padding: 14px;
+            background: #fff;
+            border: 1.5px solid var(--line);
+            color: var(--text);
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: background .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+            .btn-secondary:hover {
+                background: #fafbfe;
+            }
+
+            .btn-secondary:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+        .tipo-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .tipo-chip {
+            padding: 10px 6px;
+            border-radius: 10px;
+            background: #f5f6fa;
+            border: 1.5px solid var(--line);
+            color: var(--muted);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all .15s;
+            text-align: center;
+        }
+
+            .tipo-chip.active {
+                background: var(--blue);
+                border-color: var(--blue);
+                color: #fff;
+            }
+
+        .notif-item {
+            padding: 12px;
+            background: #fafbfe;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+            .notif-item .titulo {
+                font-size: 12.5px;
+                font-weight: 800;
+                color: var(--text);
+            }
+
+            .notif-item .msg {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 3px;
+                line-height: 1.4;
+            }
+
+            .notif-item .meta {
+                font-size: 10.5px;
+                color: var(--muted);
+                margin-top: 6px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+        .aviso {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: none;
+        }
+
+            .aviso.ok {
+                background: #e9f7ec;
+                border: 1px solid #cdeed4;
+                color: #2f8f3e;
+                display: block;
+            }
+
+            .aviso.err {
+                background: #fdeaea;
+                border: 1px solid #f6cfd0;
+                color: #c93a3f;
+                display: block;
+            }
+    </style>
+}
+
+<h2 class="page-title">📢 Enviar Notificaciones</h2>
+<p class="page-subtitle">Notificá a tus clientes por app y correo.</p>
+
+<!-- ═══════════ ANTI-FORGERY TOKEN (NECESARIO) ═══════════ -->
+@Html.AntiForgeryToken()
+
+<!-- Aviso -->
+<div id="aviso" class="aviso"></div>
+
+<!-- Estadísticas -->
+<div class="stat-grid">
+    <div class="stat-box">
+        <div class="num">@totalClientes</div>
+        <div class="lbl">Clientes</div>
+    </div>
+    <div class="stat-box">
+        <div class="num">@conCorreo</div>
+        <div class="lbl">Con correo</div>
+    </div>
+    <div class="stat-box">
+        <div class="num">@enviadas</div>
+        <div class="lbl">Enviadas</div>
+    </div>
+</div>
+
+<!-- Formulario -->
+<div class="admin-card">
+    <h3>📝 Redactar notificación</h3>
+
+    <div class="form-field">
+        <label>Tipo de notificación</label>
+        <div class="tipo-selector">
+            <button type="button" class="tipo-chip active" data-tipo="General" onclick="seleccionarTipo(this);">📢 General</button>
+            <button type="button" class="tipo-chip" data-tipo="Tramite" onclick="seleccionarTipo(this);">📄 Trámite</button>
+            <button type="button" class="tipo-chip" data-tipo="Averia" onclick="seleccionarTipo(this);">⚡ Avería</button>
+            <button type="button" class="tipo-chip" data-tipo="Pago" onclick="seleccionarTipo(this);">💰 Pago</button>
+        </div>
+    </div>
+
+    <div class="form-field">
+        <label>Título *</label>
+        <input type="text" id="titulo" placeholder="Ej: Actualización de trámite" maxlength="100" required />
+    </div>
+
+    <div class="form-field">
+        <label>Mensaje *</label>
+        <textarea id="mensaje" placeholder="Escribí el mensaje que recibirán los clientes..." maxlength="500" required></textarea>
+    </div>
+
+    <div class="form-field">
+        <label>Destinatarios</label>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <button type="button" class="tipo-chip active" onclick="seleccionarTodos(this);" style="flex:1;">👥 Todos</button>
+            <button type="button" class="tipo-chip" onclick="limpiarSeleccion(this);" style="flex:1;">✂️ Ninguno</button>
+        </div>
+        <input type="text" id="buscador" placeholder="🔍 Buscar cliente por nombre, cédula o correo..." style="margin-bottom:10px;" oninput="filtrarClientes(this.value);" />
+        <div class="clientes-lista" id="clientesLista">
+            @foreach (var c in clientes)
+            {
+                <label class="cliente-item" data-id="@c.UsuarioId" data-buscar="@((c.NombreCompleto + " " + c.Correo).ToLower())">
+                    <input type="checkbox" value="@c.UsuarioId" class="chk-cliente" />
+                    <div class="info">
+                        <div class="nombre">@c.NombreCompleto</div>
+                        <div class="correo">@c.Correo</div>
+                    </div>
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="acciones">
+        <button type="button" class="btn-primary" id="btnEnviar" onclick="enviarSeleccionados();">
+            📤 Enviar a seleccionados
+        </button>
+        <button type="button" class="btn-secondary" id="btnEnviarTodos" onclick="enviarATodos();">
+            👥 Enviar a todos
+        </button>
+    </div>
+</div>
+
+<!-- Últimas enviadas -->
+@if (ultimasEnviadas.Any())
+{
+    <div class="admin-card">
+        <h3>🕐 Últimas notificaciones enviadas</h3>
+        @foreach (var n in ultimasEnviadas)
+        {
+            <div class="notif-item">
+                <div class="titulo">@n.Titulo</div>
+                <div class="msg">@n.Mensaje</div>
+                <div class="meta">
+                    <span>👤 @(n.Usuario != null ? n.Usuario.Nombre + " " + n.Usuario.Apellidos : "Cliente")</span>
+                    <span>@n.Fecha.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // ═══ Seleccionar tipo ═══
+        var tipoActual = 'General';
+        function seleccionarTipo(btn) {
+            document.querySelectorAll('.tipo-chip[data-tipo]').forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            tipoActual = btn.getAttribute('data-tipo');
+        }
+
+        // ═══ Seleccionar todos ═══
+        function seleccionarTodos(btn) {
+            document.querySelectorAll('.chk-cliente').forEach(function (chk) {
+                var item = chk.closest('.cliente-item');
+                if (item.style.display !== 'none') {
+                    chk.checked = true;
+                    item.classList.add('selected');
+                }
+            });
+        }
+
+        function limpiarSeleccion() {
+            document.querySelectorAll('.chk-cliente').forEach(function (chk) {
+                chk.checked = false;
+                var item = chk.closest('.cliente-item');
+                if (item) item.classList.remove('selected');
+            });
+        }
+
+        // ═══ Toggle selección ═══
+        document.querySelectorAll('.cliente-item').forEach(function (item) {
+            var chk = item.querySelector('.chk-cliente');
+            chk.addEventListener('change', function () {
+                item.classList.toggle('selected', this.checked);
+            });
+            item.addEventListener('click', function (e) {
+                if (e.target.tagName !== 'INPUT') {
+                    chk.checked = !chk.checked;
+                    item.classList.toggle('selected', chk.checked);
+                }
+            });
+        });
+
+        // ═══ Buscar ═══
+        function filtrarClientes(q) {
+            q = q.toLowerCase().trim();
+            document.querySelectorAll('.cliente-item').forEach(function (item) {
+                var texto = item.getAttribute('data-buscar') || '';
+                item.style.display = (q === '' || texto.indexOf(q) >= 0) ? 'flex' : 'none';
+            });
+        }
+
+        // ═══ Helper: POST con manejo robusto de errores ═══
+        function postJson(url, formData) {
+            return fetch(url, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(function (response) {
+                var contentType = response.headers.get('content-type') || '';
+
+                // Si NO es JSON → es HTML (login, error 500, etc.)
+                if (contentType.indexOf('application/json') === -1) {
+                    return response.text().then(function (html) {
+                        // Login
+                        if (html.indexOf('Iniciar sesión') >= 0 || html.indexOf('formLogin') >= 0) {
+                            throw new Error('Tu sesión expiró. Cerrá sesión y volvé a entrar como admin.');
+                        }
+                        // Error del servidor
+                        if (html.indexOf('Server Error') >= 0 || html.indexOf('Error de servidor') >= 0 || response.status >= 500) {
+                            throw new Error('Error del servidor (' + response.status + '). Revisá el Output de Visual Studio.');
+                        }
+                        // Otro HTML
+                        throw new Error('El servidor devolvió HTML. Status: ' + response.status);
+                    });
+                }
+
+                // Es JSON
+                return response.json();
+            });
+        }
+
+        // ═══ Enviar a seleccionados ═══
+        function enviarSeleccionados() {
+            var titulo = document.getElementById('titulo').value.trim();
+            var mensaje = document.getElementById('mensaje').value.trim();
+            var seleccionados = [];
+
+            document.querySelectorAll('.chk-cliente:checked').forEach(function (chk) {
+                seleccionados.push(parseInt(chk.value));
+            });
+
+            if (seleccionados.length === 0) {
+                mostrarAviso('err', 'Seleccioná al menos un cliente.');
+                return;
+            }
+            if (!titulo || !mensaje) {
+                mostrarAviso('err', 'Título y mensaje son obligatorios.');
+                return;
+            }
+
+            if (!confirm('¿Enviar a ' + seleccionados.length + ' cliente(s)?')) return;
+
+            var btn = document.getElementById('btnEnviar');
+            var htmlOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+
+            var formData = new FormData();
+            formData.append('titulo', titulo);
+            formData.append('mensaje', mensaje);
+            formData.append('tipo', tipoActual);
+
+            seleccionados.forEach(function (id) {
+                formData.append('usuarioIds', id);
+            });
+
+            var token = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (token) formData.append('__RequestVerificationToken', token.value);
+
+            postJson('@Url.Action("Enviar", "AdminNotificaciones")', formData)
+                .then(function (data) {
+                    btn.disabled = false;
+                    btn.innerHTML = htmlOriginal;
+
+                    if (data.success) {
+                        mostrarAviso('ok', data.message);
+                        limpiarFormulario();
+                    } else {
+                        mostrarAviso('err', data.message || 'Error al enviar.');
+                    }
+                })
+                .catch(function (err) {
+                    btn.disabled = false;
+                    btn.innerHTML = htmlOriginal;
+                    mostrarAviso('err', err.message);
+                    console.error('Error enviar:', err);
+                });
+        }
+
+        // ═══ Enviar a todos ═══
+        function enviarATodos() {
+            var titulo = document.getElementById('titulo').value.trim();
+            var mensaje = document.getElementById('mensaje').value.trim();
+
+            if (!titulo || !mensaje) {
+                mostrarAviso('err', 'Título y mensaje son obligatorios.');
+                return;
+            }
+
+            if (!confirm('¿Enviar a TODOS los clientes?\n\nEsto enviará notificaciones y correos a todos.')) return;
+
+            var btn = document.getElementById('btnEnviarTodos');
+            var htmlOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.textContent = 'Enviando a todos...';
+
+            var formData = new FormData();
+            formData.append('titulo', titulo);
+            formData.append('mensaje', mensaje);
+            formData.append('tipo', tipoActual);
+
+            var token = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (token) formData.append('__RequestVerificationToken', token.value);
+
+            postJson('@Url.Action("EnviarATodos", "AdminNotificaciones")', formData)
+                .then(function (data) {
+                    btn.disabled = false;
+                    btn.innerHTML = htmlOriginal;
+
+                    if (data.success) {
+                        mostrarAviso('ok', data.message);
+                        limpiarFormulario();
+                    } else {
+                        mostrarAviso('err', data.message || 'Error al enviar.');
+                    }
+                })
+                .catch(function (err) {
+                    btn.disabled = false;
+                    btn.innerHTML = htmlOriginal;
+                    mostrarAviso('err', err.message);
+                    console.error('Error enviar a todos:', err);
+                });
+        }
+
+        // ═══ Mostrar aviso ═══
+        function mostrarAviso(tipo, msg) {
+            var aviso = document.getElementById('aviso');
+            aviso.className = 'aviso ' + tipo;
+            aviso.textContent = msg;
+            setTimeout(function () {
+                aviso.className = 'aviso';
+            }, 8000);
+        }
+
+        // ═══ Limpiar form ═══
+        function limpiarFormulario() {
+            document.getElementById('titulo').value = '';
+            document.getElementById('mensaje').value = '';
+            limpiarSeleccion();
+        }
+    </script>
+}

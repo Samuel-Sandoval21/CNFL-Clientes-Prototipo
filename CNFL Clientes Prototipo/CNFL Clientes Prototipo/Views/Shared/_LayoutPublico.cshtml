@@ -16,7 +16,7 @@
         var logueado = Session["UsuarioId"] != null;
     }
 
-    <div class="phone">
+    <div class="phone @(logueado ? "phone-logueado" : "phone-publico")">
         <div class="phone-notch"></div>
         <div class="phone-statusbar">
             <span id="horaActual">--:--</span>
@@ -26,6 +26,12 @@
                 <svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="#0E1116" opacity=".4" /><rect x="2.5" y="2.5" width="16" height="7" rx="1.2" fill="#0E1116" /><rect x="23" y="4" width="2" height="4" rx="1" fill="#0E1116" opacity=".4" /></svg>
             </span>
         </div>
+
+        @* ═══ FONDO DECORATIVO — SOLO PANTALLAS PÚBLICAS (sin loguear) ═══ *@
+        @if (!logueado)
+        {
+            <div class="bg-decorativo" aria-hidden="true"></div>
+        }
 
         <div class="phone-body">
             <div class="app-body with-tabbar">
@@ -100,18 +106,18 @@
     </div>
 
     <script>
-                (function () {
-                    function actualizarHora() {
-                        var el = document.getElementById('horaActual');
-                        if (!el) return;
-                        var d = new Date();
-                        var h = d.getHours();
-                        var m = d.getMinutes();
-                        el.textContent = h + ':' + (m < 10 ? '0' + m : m);
-                    }
-                    actualizarHora();
-                    setInterval(actualizarHora, 30000);
-                })();
+        (function () {
+            function actualizarHora() {
+                var el = document.getElementById('horaActual');
+                if (!el) return;
+                var d = new Date();
+                var h = d.getHours();
+                var m = d.getMinutes();
+                el.textContent = h + ':' + (m < 10 ? '0' + m : m);
+            }
+            actualizarHora();
+            setInterval(actualizarHora, 30000);
+        })();
     </script>
 
     @RenderSection("Scripts", required: false)

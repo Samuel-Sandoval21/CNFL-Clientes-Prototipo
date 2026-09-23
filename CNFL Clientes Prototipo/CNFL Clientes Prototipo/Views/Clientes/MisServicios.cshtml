@@ -6,9 +6,667 @@
     var facturasPorNise = ViewBag.FacturasPorNise as Dictionary<int, List<CNFL_Clientes_Prototipo.Models.Factura>> ?? new Dictionary<int, List<CNFL_Clientes_Prototipo.Models.Factura>>();
     var averiasActivas = ViewBag.AveriasActivas as List<CNFL_Clientes_Prototipo.Models.Averia> ?? new List<CNFL_Clientes_Prototipo.Models.Averia>();
     var totalNises = nises.Count;
+
+    var nisePrincipal = nises.FirstOrDefault();
+    var facturasPrincipal = nisePrincipal != null && facturasPorNise.ContainsKey(nisePrincipal.NiseId)
+        ? facturasPorNise[nisePrincipal.NiseId]
+        : new List<CNFL_Clientes_Prototipo.Models.Factura>();
+    var facturaPendientePrincipal = facturasPrincipal.FirstOrDefault(f => !f.Pagada);
 }
 
-<!-- ═══════════ HEADER ═══════════ -->
+@section Styles {
+    <style>
+        /* ═══════════════════════════════════════════
+           MIS SERVICIOS — REDISEÑADO
+           ═══════════════════════════════════════════ */
+
+        /* HERO del NISE principal */
+        .ms-hero {
+            background: linear-gradient(135deg, #001482 0%, #1E23E6 55%, #3b6ce0 100%);
+            border-radius: 22px;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 18px 34px -12px rgba(30, 35, 230, 0.55);
+            margin-bottom: 16px;
+        }
+
+            .ms-hero::after {
+                content: "";
+                position: absolute;
+                right: -40px;
+                top: -40px;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+            }
+
+        .ms-hero-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 2;
+            gap: 12px;
+        }
+
+        .ms-hero .nise-label {
+            font-size: 10px;
+            font-weight: 800;
+            opacity: 0.85;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .ms-hero .nise-numero {
+            font-size: 22px;
+            font-weight: 900;
+            margin-top: 4px;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .ms-hero .nise-tipo {
+            font-size: 11.5px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .ms-hero .nise-estado {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 5px 10px;
+            border-radius: 999px;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+            .ms-hero .nise-estado .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #64B95A;
+                box-shadow: 0 0 0 2px rgba(100, 185, 90, 0.35);
+                animation: pulseDot 2s infinite;
+            }
+
+            .ms-hero .nise-estado.alerta {
+                background: rgba(245, 166, 35, 0.25);
+                border-color: rgba(245, 166, 35, 0.4);
+            }
+
+                .ms-hero .nise-estado.alerta .dot {
+                    background: #F5A623;
+                    box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.35);
+                }
+
+            .ms-hero .nise-estado.peligro {
+                background: rgba(229, 72, 77, 0.25);
+                border-color: rgba(229, 72, 77, 0.4);
+            }
+
+                .ms-hero .nise-estado.peligro .dot {
+                    background: #E5484D;
+                    box-shadow: 0 0 0 2px rgba(229, 72, 77, 0.35);
+                }
+
+        @@keyframes pulseDot {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: .8;
+            }
+        }
+
+        .ms-hero .direccion {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+            position: relative;
+            z-index: 2;
+        }
+
+            .ms-hero .direccion svg {
+                width: 14px;
+                height: 14px;
+                margin-top: 1px;
+                flex-shrink: 0;
+                opacity: 0.8;
+            }
+
+        /* Stats dentro del hero */
+        .ms-hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ms-hero-stat {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 10px;
+            backdrop-filter: blur(6px);
+        }
+
+            .ms-hero-stat .lbl {
+                font-size: 9.5px;
+                opacity: 0.85;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            .ms-hero-stat .val {
+                font-size: 15px;
+                font-weight: 900;
+                margin-top: 3px;
+                letter-spacing: -0.3px;
+            }
+
+            .ms-hero-stat .sub {
+                font-size: 9.5px;
+                opacity: 0.75;
+                margin-top: 1px;
+            }
+
+        /* Alert de factura pendiente dentro del hero */
+        .ms-hero-alert {
+            margin-top: 14px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 11px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(6px);
+        }
+
+            .ms-hero-alert svg {
+                width: 18px;
+                height: 18px;
+                flex-shrink: 0;
+                stroke: #FFD700;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .ms-hero-alert .txt {
+                flex: 1;
+                font-size: 11.5px;
+                font-weight: 700;
+                line-height: 1.4;
+            }
+
+            .ms-hero-alert .monto {
+                font-weight: 900;
+                font-size: 13px;
+            }
+
+        /* Acciones rápidas */
+        .ms-acciones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .ms-accion {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(16, 20, 40, 0.05);
+            text-decoration: none;
+            color: inherit;
+            transition: transform .15s, box-shadow .15s;
+        }
+
+            .ms-accion:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(16, 20, 40, 0.1);
+            }
+
+            .ms-accion:active {
+                transform: scale(0.98);
+            }
+
+        .ms-accion-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+            .ms-accion-icon svg {
+                width: 20px;
+                height: 20px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .ms-accion-icon.pago {
+                background: linear-gradient(135deg, #e9f7ec, #d1f0d9);
+                color: var(--green);
+            }
+
+            .ms-accion-icon.factura {
+                background: linear-gradient(135deg, #eef0ff, #dde3ff);
+                color: var(--blue);
+            }
+
+            .ms-accion-icon.consumo {
+                background: linear-gradient(135deg, #fef3e0, #fde0a8);
+                color: #c98a00;
+            }
+
+            .ms-accion-icon.medidor {
+                background: linear-gradient(135deg, #fff3ec, #ffe2d1);
+                color: var(--orange);
+            }
+
+        .ms-accion-txt .t {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+
+        .ms-accion-txt .s {
+            font-size: 10.5px;
+            color: var(--muted);
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        /* Secciones */
+        .ms-section {
+            margin-bottom: 20px;
+        }
+
+        .ms-section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .ms-section-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: -0.01em;
+        }
+
+            .ms-section-title svg {
+                width: 14px;
+                height: 14px;
+                stroke: var(--blue);
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .ms-section-link {
+            font-size: 11px;
+            color: var(--blue);
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+            .ms-section-link:hover {
+                text-decoration: underline;
+            }
+
+        /* Cards de opciones */
+        .ms-card {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 14px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(16, 20, 40, 0.04);
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 8px;
+            transition: transform .15s, box-shadow .15s, border-color .15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .ms-card:last-child {
+                margin-bottom: 0;
+            }
+
+            .ms-card:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(16, 20, 40, 0.08);
+                border-color: #d8dde8;
+            }
+
+            .ms-card:active {
+                transform: scale(0.99);
+            }
+
+        .ms-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+            .ms-card-icon svg {
+                width: 22px;
+                height: 22px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .ms-card-icon.amber {
+                background: linear-gradient(135deg, #fef3e0, #fde0a8);
+                color: #c98a00;
+            }
+
+            .ms-card-icon.red {
+                background: linear-gradient(135deg, #fdeaea, #fbd5d5);
+                color: var(--red);
+            }
+
+            .ms-card-icon.sky {
+                background: linear-gradient(135deg, #eef6ff, #d6ebff);
+                color: #1a73e8;
+            }
+
+            .ms-card-icon.green {
+                background: linear-gradient(135deg, #e9f7ec, #d1f0d9);
+                color: var(--green);
+            }
+
+            .ms-card-icon.purple {
+                background: linear-gradient(135deg, #f3f0ff, #e4daff);
+                color: #5b3fbf;
+            }
+
+        .ms-card-txt {
+            flex: 1;
+            min-width: 0;
+        }
+
+            .ms-card-txt .t {
+                font-size: 13.5px;
+                font-weight: 800;
+                color: var(--ink);
+                line-height: 1.25;
+            }
+
+            .ms-card-txt .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 3px;
+                line-height: 1.4;
+            }
+
+        .ms-card-chev {
+            color: #c3c8d4;
+            flex-shrink: 0;
+        }
+
+            .ms-card-chev svg {
+                width: 18px;
+                height: 18px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        /* Averías en seguimiento */
+        .ms-averia {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 14px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(16, 20, 40, 0.04);
+            margin-bottom: 8px;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            transition: transform .15s, box-shadow .15s;
+        }
+
+            .ms-averia:last-child {
+                margin-bottom: 0;
+            }
+
+            .ms-averia:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 16px rgba(16, 20, 40, 0.08);
+            }
+
+            .ms-averia::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: var(--amber);
+            }
+
+            .ms-averia.estado-ingresado::before {
+                background: var(--red);
+            }
+
+            .ms-averia.estado-enproceso::before {
+                background: var(--amber);
+            }
+
+            .ms-averia.estado-finalizado::before {
+                background: var(--green);
+            }
+
+        .ms-averia-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: #fff3ec;
+            color: var(--orange);
+            flex-shrink: 0;
+        }
+
+            .ms-averia-icon svg {
+                width: 20px;
+                height: 20px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .ms-averia-txt {
+            flex: 1;
+            min-width: 0;
+        }
+
+            .ms-averia-txt .t {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                line-height: 1.25;
+            }
+
+            .ms-averia-txt .s {
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 3px;
+            }
+
+        .ms-pill {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 9px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+            .ms-pill .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: currentColor;
+            }
+
+            .ms-pill.p-amber {
+                background: #fef3e0;
+                color: #b9791a;
+            }
+
+            .ms-pill.p-red {
+                background: #fdeaea;
+                color: var(--red);
+            }
+
+            .ms-pill.p-green {
+                background: #e9f7ec;
+                color: var(--green);
+            }
+
+        /* Estado vacío */
+        .ms-empty {
+            text-align: center;
+            padding: 30px 20px;
+            background: #fff;
+            border: 1px dashed var(--line);
+            border-radius: 16px;
+        }
+
+            .ms-empty .ico {
+                font-size: 32px;
+                margin-bottom: 8px;
+            }
+
+            .ms-empty .t {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                margin-bottom: 4px;
+            }
+
+            .ms-empty .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                line-height: 1.4;
+            }
+
+        /* Leyenda */
+        .ms-leyenda {
+            display: flex;
+            gap: 11px;
+            align-items: flex-start;
+            padding: 14px;
+            background: #f7f8fc;
+            border: 1px dashed var(--line);
+            border-radius: 16px;
+            margin-top: 16px;
+            margin-bottom: 100px;
+        }
+
+            .ms-leyenda .ico {
+                width: 36px;
+                height: 36px;
+                border-radius: 11px;
+                background: #eef0ff;
+                display: grid;
+                place-items: center;
+                flex-shrink: 0;
+                color: var(--blue);
+            }
+
+                .ms-leyenda .ico svg {
+                    width: 18px;
+                    height: 18px;
+                    stroke: currentColor;
+                    fill: none;
+                    stroke-width: 2;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+            .ms-leyenda .txt .t {
+                font-size: 12.5px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .ms-leyenda .txt .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 3px;
+                line-height: 1.4;
+            }
+    </style>
+}
+
+<!-- ═══════════ APPBAR ═══════════ -->
 <div class="appbar">
     <div class="brand">
         <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
@@ -16,7 +674,10 @@
     </div>
     <div class="actions">
         <a href="@Url.Action("Alertas", "Clientes")" class="icon-btn">
-            <span class="badge">3</span>
+            @if (averiasActivas.Any())
+            {
+                <span class="badge">@averiasActivas.Count</span>
+            }
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2">
                 <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.7 21a2 2 0 0 1-3.4 0" />
@@ -26,272 +687,437 @@
 </div>
 
 <h1 class="h-name" style="font-size:26px;">Mis Servicios</h1>
-<p class="h-greet" style="margin-top:6px; line-height:1.5;">
+<p class="h-greet" style="margin-top:6px; line-height:1.5; margin-bottom:20px;">
     Todo lo relacionado con tus NISEs en un solo lugar.
 </p>
 
-<!-- ═══════════ SERVICIOS ASOCIADOS (NISEs dinámicos) ═══════════ -->
-<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center;">
-    <span>Servicios asociados</span>
-    <span style="font-size:11px; color:var(--muted);">@totalNises @(totalNises == 1 ? "NISE" : "NISEs")</span>
-</div>
-
-@if (!nises.Any())
+<!-- ═══════════════ HERO DEL NISE PRINCIPAL ═══════════════ -->
+@if (nisePrincipal != null)
 {
-    <div class="card" style="text-align:center; padding:36px 20px;">
-        <div style="font-size:46px;">🏠</div>
-        <p style="font-weight:800; font-size:15px; margin-top:12px; color:var(--ink);">Sin NISEs registrados</p>
-        <p style="font-size:12.5px; color:var(--muted); margin-top:6px;">
-            Cuando tengas un servicio eléctrico asociado aparecerá aquí.
-        </p>
+    var facturaPendiente = facturaPendientePrincipal;
+    var tieneDeuda = facturaPendiente != null;
+
+    var estadoClase = "Normal";
+    if (tieneDeuda) { estadoClase = "Pendiente"; }
+    else if (nisePrincipal.TipoServicio == "Comercial" || nisePrincipal.TipoServicio == "Industrial") { estadoClase = "Prevención"; }
+
+    var estadoClassCss = "nise-estado";
+    var estadoTexto = "Normal";
+    if (tieneDeuda)
+    {
+        estadoClassCss = "nise-estado peligro";
+        estadoTexto = "Pendiente";
+    }
+    else if (nisePrincipal.TipoServicio == "Comercial")
+    {
+        estadoClassCss = "nise-estado alerta";
+        estadoTexto = "Prevención";
+    }
+    else if (nisePrincipal.TipoServicio == "Industrial")
+    {
+        estadoClassCss = "nise-estado peligro";
+        estadoTexto = "Revisión";
+    }
+
+    <div class="ms-hero">
+        <div class="ms-hero-top">
+            <div>
+                <div class="nise-label">Servicio principal</div>
+                <div class="nise-numero">@nisePrincipal.NumeroNise</div>
+                <div class="nise-tipo">@nisePrincipal.TipoServicio</div>
+            </div>
+            <span class="@estadoClassCss">
+                <span class="dot"></span>
+                @estadoTexto
+            </span>
+        </div>
+
+        <div class="direccion">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+                <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span>@nisePrincipal.Provincia, @nisePrincipal.Canton, @nisePrincipal.Distrito</span>
+        </div>
+
+        <div class="ms-hero-stats">
+            <div class="ms-hero-stat">
+                <div class="lbl">Consumo mes</div>
+                <div class="val">312 <span style="font-size:10px;opacity:.8;">kWh</span></div>
+                <div class="sub">-12% vs anterior</div>
+            </div>
+            <div class="ms-hero-stat">
+                <div class="lbl">Próxima lectura</div>
+                <div class="val">15 <span style="font-size:10px;opacity:.8;">set</span></div>
+                <div class="sub">En 5 días</div>
+            </div>
+            <div class="ms-hero-stat">
+                <div class="lbl">Estado</div>
+                <div class="val" style="font-size:13px;">@(tieneDeuda ? "Con deuda" : "Al día")</div>
+                <div class="sub">@(tieneDeuda ? "Ver factura" : "Sin pendientes")</div>
+            </div>
+        </div>
+
+        @if (tieneDeuda)
+        {
+            <div class="ms-hero-alert">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+                </svg>
+                <div class="txt">
+                    Factura <span class="monto">₡@facturaPendiente.Monto.ToString("N0")</span>
+                    · vence @facturaPendiente.FechaVencimiento.ToString("dd/MM/yyyy")
+                </div>
+                <a href="@Url.Action("MisFacturas", "Clientes")"
+                   style="background:#fff; color:#1E23E6; padding:7px 12px; border-radius:9px; font-size:11px; font-weight:800; text-decoration:none;">
+                    Pagar
+                </a>
+            </div>
+        }
     </div>
 }
 else
 {
-    <div class="rows">
-        @foreach (var n in nises)
-        {
-            var facturas = facturasPorNise.ContainsKey(n.NiseId) ? facturasPorNise[n.NiseId] : new List<CNFL_Clientes_Prototipo.Models.Factura>();
-            var facturaPendiente = facturas.FirstOrDefault(f => !f.Pagada);
-            var tieneDeuda = facturaPendiente != null;
-
-            // Estado visual: Normal (verde) / Prevención (ámbar) / Incidente (rojo)
-            var estadoClass = "st-normal";
-            var estadoTexto = "Normal";
-            var ringBg = "#e9f7ec";
-            var ringColor = "var(--green)";
-            var iconPath = "<path d=\"M9 21V9l6-6v18M9 13h6\" /><path d=\"M3 21h18\" />"; // Residencial por defecto
-
-            if (n.TipoServicio == "Comercial")
-            {
-                ringBg = "#fef3e0";
-                ringColor = "var(--amber)";
-                iconPath = "<path d=\"M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6\" />";
-            }
-            else if (n.TipoServicio == "Industrial")
-            {
-                ringBg = "#fdeaea";
-                ringColor = "var(--red)";
-                iconPath = "<path d=\"M13 2 3 14h7l-1 8 10-12h-7z\" />";
-            }
-
-            if (tieneDeuda)
-            {
-                estadoClass = "st-inc";
-                estadoTexto = "Pendiente";
-                ringBg = "#fdeaea";
-                ringColor = "var(--red)";
-            }
-            else if (n.TipoServicio == "Comercial" || n.TipoServicio == "Industrial")
-            {
-                estadoClass = "st-prev";
-                estadoTexto = "Prevención";
-            }
-
-            <a href="@Url.Action("MisFacturas", "Clientes")" class="nise" style="align-items:flex-start;">
-                <div class="ring" style="background:@ringBg;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="@ringColor" stroke-width="2">
-                        @Html.Raw(iconPath)
-                    </svg>
-                </div>
-                <div class="info" style="flex:1;">
-                    <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
-                        <div class="t">@n.NumeroNise · @n.TipoServicio</div>
-                        <span class="pill @estadoClass" style="font-size:10px; white-space:nowrap;">
-                            <span class="dot"></span>@estadoTexto
-                        </span>
-                    </div>
-                    <div class="s">@n.Direccion</div>
-                    @if (!string.IsNullOrWhiteSpace(n.Provincia))
-                    {
-                        <div class="s" style="color:var(--blue); font-weight:700; margin-top:2px;">
-                            📍 @n.Provincia, @n.Canton, @n.Distrito
-                        </div>
-                    }
-                    @if (tieneDeuda)
-                    {
-                        <div style="margin-top:8px; padding:8px 12px; background:#fdeaea; border-radius:10px; font-size:11.5px; font-weight:800; color:#c93a3f;">
-                            ⚠️ Factura pendiente: ₡@facturaPendiente.Monto.ToString("N0") · Vence @facturaPendiente.FechaVencimiento.ToString("dd/MM/yyyy")
-                        </div>
-                    }
-                </div>
-            </a>
-        }
+    <div class="ms-empty" style="margin-bottom:16px;">
+        <div class="ico">🔌</div>
+        <div class="t">Sin servicios asociados</div>
+        <div class="s">Cuando tengas un NISE registrado, aparecerá acá.</div>
     </div>
 }
 
-<!-- ═══════════ REPORTAR AVERÍA ═══════════ -->
-<div class="eyebrow" style="margin-top:24px;">🚨 Reportar avería</div>
-
-<p style="font-size:12px; color:var(--muted); margin-bottom:12px; line-height:1.5;">
-    Seleccioná el tipo de avería para iniciar el reporte. Podés adjuntar fotos y ubicación GPS.
-</p>
-
-<div class="rows">
-    <a href="@Url.Action("Reportes", "Clientes")?tipo=Alumbrado%20público" class="row-item">
-        <div class="ic" style="background:#fef3e0;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2">
-                <path d="M12 3v3M12 8a4 4 0 0 0-4 4v5h8v-5a4 4 0 0 0-4-4ZM9 21h6" />
-            </svg>
-        </div>
-        <div class="tx">
-            <div class="t">Avería en alumbrado público</div>
-            <div class="s">Foto + número de poste</div>
-        </div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 6 6 6-6 6" />
-        </svg>
-    </a>
-
-    <a href="@Url.Action("Reportes", "Clientes")?tipo=Eléctrica%20propia" class="row-item">
-        <div class="ic" style="background:#fdeaea;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
-                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
-            </svg>
-        </div>
-        <div class="tx">
-            <div class="t">Avería eléctrica propia</div>
-            <div class="s">En tu NISE registrado</div>
-        </div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 6 6 6-6 6" />
-        </svg>
-    </a>
-
-    <a href="@Url.Action("Reportes", "Clientes")?tipo=Eléctrica%20ajena" class="row-item">
-        <div class="ic" style="background:#eef6ff;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
-                <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" />
-                <circle cx="12" cy="9" r="2.5" />
-            </svg>
-        </div>
-        <div class="tx">
-            <div class="t">Avería eléctrica ajena</div>
-            <div class="s">Subí fotos y ubicación GPS</div>
-        </div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 6 6 6-6 6" />
-        </svg>
-    </a>
-</div>
-
-<!-- ═══════════ AVERÍAS EN SEGUIMIENTO (dinámicas) ═══════════ -->
-@if (averiasActivas.Any())
-{
-    <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center; margin-top:24px;">
-        <span>Averías en seguimiento</span>
-        <a href="@Url.Action("HistorialReportes", "Clientes")"
-           style="font-size:11px; color:var(--blue); font-weight:800; text-decoration:none;">
-            Ver todas →
+<!-- ═══════════════ ACCIONES RÁPIDAS ═══════════════ -->
+<div class="ms-acciones">
+    @if (facturaPendientePrincipal != null)
+    {
+        <a href="@Url.Action("MisFacturas", "Clientes")" class="ms-accion">
+            <div class="ms-accion-icon pago">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+            </div>
+            <div class="ms-accion-txt">
+                <div class="t">Pagar factura</div>
+                <div class="s">₡@facturaPendientePrincipal.Monto.ToString("N0") pendiente</div>
+            </div>
         </a>
-    </div>
+    }
+    else
+    {
+        <a href="@Url.Action("MisFacturas", "Clientes")" class="ms-accion">
+            <div class="ms-accion-icon pago">
+                <svg viewBox="0 0 24 24">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <path d="m9 11 3 3L22 4" />
+                </svg>
+            </div>
+            <div class="ms-accion-txt">
+                <div class="t">Facturas al día</div>
+                <div class="s">Sin pendientes</div>
+            </div>
+        </a>
+    }
 
-    <div class="rows">
-        @foreach (var a in averiasActivas.Take(3))
-        {
-            var pillClass = a.Estado == "Resuelto" ? "st-normal" :
-                            (a.Estado == "Operador en camino" || a.Estado == "En revisión" ? "st-prev" : "st-inc");
-            var pillTexto = string.IsNullOrWhiteSpace(a.Estado) ? "Ingresado" : a.Estado;
+    <a href="@Url.Action("MisFacturas", "Clientes")" class="ms-accion">
+        <div class="ms-accion-icon factura">
+            <svg viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6M9 13h6M9 17h4" />
+            </svg>
+        </div>
+        <div class="ms-accion-txt">
+            <div class="t">Mis facturas</div>
+            <div class="s">Historial de pagos</div>
+        </div>
+    </a>
 
-            <a href="@Url.Action("EstadoAveria", "Clientes", new { id = a.AveriaId })" class="row-item">
-                <div class="ic" style="background:#fff3ec;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2">
-                        <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
-                    </svg>
-                </div>
-                <div class="tx">
-                    <div class="t">#@a.AveriaId · @a.Tipo</div>
-                    <div class="s">@a.FechaReporte.ToString("dd/MM/yyyy · HH:mm")</div>
-                </div>
-                <span class="pill @pillClass" style="font-size:10px;"><span class="dot"></span>@pillTexto</span>
-            </a>
-        }
-    </div>
-}
-
-<!-- ═══════════ SECCIONES ═══════════ -->
-<div class="eyebrow" style="margin-top:24px;">📋 Más secciones</div>
-
-<div class="rows">
-    <a href="@Url.Action("HistorialConsumo", "Clientes")" class="row-item">
-        <div class="ic" style="background:#eef0ff;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+    <a href="@Url.Action("HistorialConsumo", "Clientes")" class="ms-accion">
+        <div class="ms-accion-icon consumo">
+            <svg viewBox="0 0 24 24">
                 <path d="M3 3v18h18" />
                 <path d="M7 14l4-4 4 4 5-5" />
             </svg>
         </div>
-        <div class="tx">
+        <div class="ms-accion-txt">
+            <div class="t">Consumo</div>
+            <div class="s">kWh y ₡ últimos 6 meses</div>
+        </div>
+    </a>
+
+    <a href="@Url.Action("ConsultaMedidor", "Clientes")" class="ms-accion">
+        <div class="ms-accion-icon medidor">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+            </svg>
+        </div>
+        <div class="ms-accion-txt">
+            <div class="t">Medidor AMI</div>
+            <div class="s">Lectura en tiempo real</div>
+        </div>
+    </a>
+</div>
+
+<!-- ═══════════════ SERVICIOS ASOCIADOS (NISEs) ═══════════════ -->
+@if (nises.Count > 1)
+{
+    <div class="ms-section">
+        <div class="ms-section-head">
+            <div class="ms-section-title">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
+                </svg>
+                Todos mis NISEs
+            </div>
+            <span style="font-size:11px; color:var(--muted); font-weight:700;">@totalNises totales</span>
+        </div>
+
+        @foreach (var n in nises.Skip(1))
+        {
+            var facturas = facturasPorNise.ContainsKey(n.NiseId) ? facturasPorNise[n.NiseId] : new List<CNFL_Clientes_Prototipo.Models.Factura>();
+            var fPendiente = facturas.FirstOrDefault(f => !f.Pagada);
+            var tieneDeudaN = fPendiente != null;
+
+            var iconColor = "var(--green)";
+            var iconBg = "#e9f7ec";
+            var iconPath = "<path d=\"M9 21V9l6-6v18M9 13h6\" /><path d=\"M3 21h18\" />";
+
+            if (n.TipoServicio == "Comercial")
+            {
+                iconBg = "#fef3e0";
+                iconColor = "var(--amber)";
+                iconPath = "<path d=\"M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6\" />";
+            }
+            else if (n.TipoServicio == "Industrial")
+            {
+                iconBg = "#fdeaea";
+                iconColor = "var(--red)";
+                iconPath = "<path d=\"M13 2 3 14h7l-1 8 10-12h-7z\" />";
+            }
+
+            var pillClass = tieneDeudaN ? "p-red" : "p-green";
+            var pillTexto = tieneDeudaN ? "Pendiente" : "Normal";
+
+            <a href="@Url.Action("MisFacturas", "Clientes")" class="ms-card">
+                <div class="ms-card-icon" style="background:@iconBg; color:@iconColor;">
+                    <svg viewBox="0 0 24 24">@Html.Raw(iconPath)</svg>
+                </div>
+                <div class="ms-card-txt">
+                    <div class="t">@n.NumeroNise · @n.TipoServicio</div>
+                    <div class="s">@n.Provincia, @n.Canton, @n.Distrito</div>
+                    @if (tieneDeudaN)
+                    {
+                        <div style="margin-top:6px; font-size:11px; color:var(--red); font-weight:800;">
+                            ⚠️ ₡@fPendiente.Monto.ToString("N0") pendiente
+                        </div>
+                    }
+                </div>
+                <span class="ms-pill @pillClass">
+                    <span class="dot"></span>@pillTexto
+                </span>
+            </a>
+        }
+    </div>
+}
+
+<!-- ═══════════════ REPORTAR AVERÍA ═══════════════ -->
+<div class="ms-section">
+    <div class="ms-section-head">
+        <div class="ms-section-title">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2v3M5.6 5.6l2.1 2.1M2 12h3M19 12h3M16.3 7.7l2.1-2.1M12 22a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9z" />
+            </svg>
+            Reportar avería
+        </div>
+    </div>
+
+    <a href="@Url.Action("Reportes", "Clientes")?tipo=Alumbrado%20público" class="ms-card">
+        <div class="ms-card-icon amber">
+            <svg viewBox="0 0 24 24">
+                <path d="M9 21h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" />
+            </svg>
+        </div>
+        <div class="ms-card-txt">
+            <div class="t">Avería en alumbrado público</div>
+            <div class="s">Foto + número de poste</div>
+        </div>
+        <div class="ms-card-chev">
+            <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+    </a>
+
+    <a href="@Url.Action("Reportes", "Clientes")?tipo=Eléctrica%20propia" class="ms-card">
+        <div class="ms-card-icon red">
+            <svg viewBox="0 0 24 24">
+                <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+            </svg>
+        </div>
+        <div class="ms-card-txt">
+            <div class="t">Avería eléctrica propia</div>
+            <div class="s">En tu NISE registrado</div>
+        </div>
+        <div class="ms-card-chev">
+            <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+    </a>
+
+    <a href="@Url.Action("Reportes", "Clientes")?tipo=Eléctrica%20ajena" class="ms-card">
+        <div class="ms-card-icon sky">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+                <circle cx="12" cy="10" r="3" />
+            </svg>
+        </div>
+        <div class="ms-card-txt">
+            <div class="t">Avería eléctrica ajena</div>
+            <div class="s">Subí fotos y ubicación GPS</div>
+        </div>
+        <div class="ms-card-chev">
+            <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
+    </a>
+</div>
+
+<!-- ═══════════════ AVERÍAS EN SEGUIMIENTO ═══════════════ -->
+@if (averiasActivas.Any())
+{
+    <div class="ms-section">
+        <div class="ms-section-head">
+            <div class="ms-section-title">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                Averías en seguimiento
+            </div>
+            <a href="@Url.Action("HistorialReportes", "Clientes")" class="ms-section-link">
+                Ver todas
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="m9 6 6 6-6 6" />
+                </svg>
+            </a>
+        </div>
+
+        @foreach (var a in averiasActivas.Take(3))
+        {
+            var estadoClass = "estado-enproceso";
+            var pillClass = "p-amber";
+            var estadoTexto = string.IsNullOrWhiteSpace(a.Estado) ? "Ingresado" : a.Estado;
+
+            if (a.Estado == "Ingresado" || a.Estado == "Reportada")
+            {
+                estadoClass = "estado-ingresado";
+                pillClass = "p-red";
+            }
+            else if (a.Estado == "Finalizada" || a.Estado == "Resuelta" || a.Estado == "Resuelto")
+            {
+                estadoClass = "estado-finalizado";
+                pillClass = "p-green";
+            }
+
+            <a href="@Url.Action("EstadoAveria", "Clientes", new { id = a.AveriaId })" class="ms-averia @estadoClass">
+                <div class="ms-averia-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
+                    </svg>
+                </div>
+                <div class="ms-averia-txt">
+                    <div class="t">#@a.AveriaId · @a.Tipo</div>
+                    <div class="s">@a.FechaReporte.ToString("dd/MM/yyyy · HH:mm")</div>
+                </div>
+                <span class="ms-pill @pillClass">
+                    <span class="dot"></span>@estadoTexto
+                </span>
+            </a>
+        }
+    </div>
+}
+
+<!-- ═══════════════ MÁS SECCIONES ═══════════════ -->
+<div class="ms-section">
+    <div class="ms-section-head">
+        <div class="ms-section-title">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4M12 8h.01" />
+            </svg>
+            Más secciones
+        </div>
+    </div>
+
+    <a href="@Url.Action("HistorialConsumo", "Clientes")" class="ms-card">
+        <div class="ms-card-icon sky">
+            <svg viewBox="0 0 24 24">
+                <path d="M3 3v18h18" />
+                <path d="M7 14l4-4 4 4 5-5" />
+            </svg>
+        </div>
+        <div class="ms-card-txt">
             <div class="t">Historial de consumo</div>
             <div class="s">kWh y ₡ · últimos 6 meses</div>
         </div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 6 6 6-6 6" />
-        </svg>
+        <div class="ms-card-chev">
+            <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
     </a>
 
-    <a href="@Url.Action("ConsultaMedidor", "Clientes")" class="row-item">
-        <div class="ic" style="background:#e8f7ec;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
+    <a href="@Url.Action("ConsultaMedidor", "Clientes")" class="ms-card">
+        <div class="ms-card-icon green">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
             </svg>
         </div>
-        <div class="tx">
+        <div class="ms-card-txt">
             <div class="t">Consulta al medidor (AMI)</div>
             <div class="s">Última lectura · voltaje · costo estimado</div>
         </div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 6 6 6-6 6" />
-        </svg>
+        <div class="ms-card-chev">
+            <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
     </a>
 
-    <a href="@Url.Action("MapaGIS", "Clientes")" class="row-item">
-        <div class="ic" style="background:#e8f3ff;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
-                <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" />
-                <circle cx="12" cy="9" r="2.5" />
+    <a href="@Url.Action("MapaGIS", "Clientes")" class="ms-card">
+        <div class="ms-card-icon sky">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+                <circle cx="12" cy="10" r="3" />
             </svg>
         </div>
-        <div class="tx">
+        <div class="ms-card-txt">
             <div class="t">Mapa GIS</div>
             <div class="s">Averías, estaciones de recarga y puntos verdes</div>
         </div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 6 6 6-6 6" />
-        </svg>
+        <div class="ms-card-chev">
+            <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
     </a>
 
-    <a href="@Url.Action("Calculadora", "Clientes")" class="row-item">
-        <div class="ic" style="background:#f3f0ff;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2">
+    <a href="@Url.Action("Calculadora", "Clientes")" class="ms-card">
+        <div class="ms-card-icon purple">
+            <svg viewBox="0 0 24 24">
                 <rect x="4" y="2" width="16" height="20" rx="2" />
                 <path d="M8 6h8M8 10h3M13 10h3M8 14h3M13 14h3M8 18h8" />
             </svg>
         </div>
-        <div class="tx">
+        <div class="ms-card-txt">
             <div class="t">Calculadora energética</div>
             <div class="s">Estimá el costo de tus equipos</div>
         </div>
-        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 6 6 6-6 6" />
-        </svg>
+        <div class="ms-card-chev">
+            <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+        </div>
     </a>
 </div>
 
-<!-- ═══════════ LEYENDA DE COLORES ═══════════ -->
-<div class="card" style="margin-top:18px; background:#f7f8fc; border-style:dashed;">
-    <div style="display:flex; gap:11px; align-items:flex-start;">
-        <div style="width:36px; height:36px; border-radius:11px; background:#eef0ff; display:grid; place-items:center; flex:none;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 16v-4M12 8h.01" />
-            </svg>
-        </div>
-        <div>
-            <div style="font-size:12.5px; font-weight:800; color:var(--ink);">Cambio de color según estado</div>
-            <div style="font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.4;">
-                Verde: normal · Ámbar: prevención (suspensión programada) · Rojo: avería.
-            </div>
-        </div>
+<!-- ═══════════════ LEYENDA DE COLORES ═══════════════ -->
+<div class="ms-leyenda">
+    <div class="ico">
+        <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4M12 8h.01" />
+        </svg>
+    </div>
+    <div class="txt">
+        <div class="t">Cambio de color según estado</div>
+        <div class="s">Verde: normal · Ámbar: prevención (suspensión programada) · Rojo: avería.</div>
     </div>
 </div>

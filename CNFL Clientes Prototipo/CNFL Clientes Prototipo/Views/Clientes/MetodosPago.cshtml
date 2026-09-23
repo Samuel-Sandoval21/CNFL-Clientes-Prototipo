@@ -3,6 +3,172 @@
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
+@section Styles {
+    <style>
+        /* ═══════════ FILTROS ═══════════ */
+        .metodos-filtros {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 18px 0 4px;
+        }
+
+        .filtro-chip {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 7px 13px;
+            border-radius: 999px;
+            background: #eef0f7;
+            color: var(--muted);
+            cursor: pointer;
+            border: 0;
+            font-family: inherit;
+            transition: background .15s, color .15s;
+        }
+
+            .filtro-chip.active {
+                background: var(--blue);
+                color: #fff;
+            }
+
+        /* ═══════════ TARJETA DE MÉTODO ═══════════ */
+        .metodo-card {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            transition: box-shadow .15s;
+        }
+
+            .metodo-card.predeterminado {
+                border-color: var(--blue);
+                box-shadow: 0 4px 16px rgba(30, 35, 230, 0.12);
+            }
+
+        .metodo-ic {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .metodo-tx {
+            flex: 1;
+            min-width: 0;
+        }
+
+            .metodo-tx .t {
+                font-size: 13.5px;
+                font-weight: 800;
+                color: var(--ink);
+                line-height: 1.25;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .metodo-tx .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 3px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+        .metodo-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 9.5px;
+            font-weight: 800;
+            background: var(--blue);
+            color: #fff;
+            padding: 2px 7px;
+            border-radius: 999px;
+            letter-spacing: .04em;
+        }
+
+        .metodo-acciones {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .metodo-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 0;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: background .15s;
+            background: #f5f6fa;
+            color: var(--ink);
+        }
+
+            .metodo-btn:hover {
+                background: #eef0ff;
+                color: var(--blue);
+            }
+
+            .metodo-btn.peligro {
+                background: #fdeaea;
+                color: #E5484D;
+            }
+
+                .metodo-btn.peligro:hover {
+                    background: #fbd5d5;
+                }
+
+            .metodo-btn.destacar {
+                background: #fff8e6;
+                color: #b9791a;
+            }
+
+                .metodo-btn.destacar:hover {
+                    background: #fef3e0;
+                }
+
+        /* ═══════════ AVISO SEGURIDAD ═══════════ */
+        .aviso-seguridad {
+            display: flex;
+            gap: 11px;
+            align-items: flex-start;
+            background: #e9f7ec;
+            border: 1px solid #cdeed4;
+            border-radius: 14px;
+            padding: 13px;
+            margin-top: 16px;
+        }
+
+            .aviso-seguridad .ico {
+                font-size: 20px;
+                flex-shrink: 0;
+            }
+
+            .aviso-seguridad .txt {
+                flex: 1;
+                font-size: 11.5px;
+                color: #2f8f3e;
+                line-height: 1.5;
+            }
+
+                .aviso-seguridad .txt strong {
+                    font-weight: 800;
+                }
+    </style>
+}
+
+<!-- ═══════════ APPBAR ═══════════ -->
 <div class="appbar">
     <a href="@Url.Action("ProductosServicios", "Clientes")" class="icon-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
@@ -18,8 +184,19 @@
     Administrá tus tarjetas, SINPE, IBAN y tokens.
 </p>
 
+<!-- ═══════════ FILTROS ═══════════ -->
+<div id="metodosFiltros" class="metodos-filtros" style="display:none;">
+    <button type="button" class="filtro-chip active" data-filtro="todos" onclick="filtrarMetodos('todos', this);">Todos</button>
+    <button type="button" class="filtro-chip" data-filtro="tarjeta" onclick="filtrarMetodos('tarjeta', this);">💳 Tarjetas</button>
+    <button type="button" class="filtro-chip" data-filtro="sinpe" onclick="filtrarMetodos('sinpe', this);">📱 SINPE</button>
+    <button type="button" class="filtro-chip" data-filtro="iban" onclick="filtrarMetodos('iban', this);">🏦 IBAN</button>
+    <button type="button" class="filtro-chip" data-filtro="token" onclick="filtrarMetodos('token', this);">🔐 Tokens</button>
+</div>
+
+<!-- ═══════════ LISTA DE MÉTODOS ═══════════ -->
 <div id="listaMetodos" class="rows" style="margin-top:14px;"></div>
 
+<!-- ═══════════ ESTADO VACÍO ═══════════ -->
 <div id="metodosVacio" class="card" style="text-align:center; padding:34px 18px; margin-top:14px;">
     <div style="font-size:52px; line-height:1;">💳</div>
     <p style="font-weight:800; font-size:15px; margin-top:12px; color:var(--ink);">Sin métodos guardados</p>
@@ -28,6 +205,7 @@
     </p>
 </div>
 
+<!-- ═══════════ AGREGAR NUEVO ═══════════ -->
 <div class="eyebrow">➕ Agregar nuevo método</div>
 
 <div class="rows">
@@ -68,40 +246,54 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- ═══════════ AVISO DE SEGURIDAD ═══════════ -->
+<div class="aviso-seguridad">
+    <div class="ico">🔒</div>
+    <div class="txt">
+        <strong>Tu información está segura.</strong> Los datos sensibles de tus tarjetas (CVV, PIN de token) no se guardan en la app. Solo almacenamos los últimos 4 dígitos y el nombre del titular para tu referencia.
+    </div>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
 <div id="modalMetodo"
      style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.55); z-index:300; align-items:flex-end; justify-content:center;">
     <div style="width:100%; max-width:430px; max-height:88vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:22px 20px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
         <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:0 auto 18px;"></div>
 
         <h3 id="modalMetodoTitulo" style="font-size:17px; font-weight:800; margin:0 0 6px; color:var(--ink);">Nuevo método</h3>
+        <p id="modalMetodoSub" style="font-size:12.5px; color:var(--muted); margin:0 0 20px; line-height:1.5;">
+            Completá los datos. Podés eliminar el método en cualquier momento.
+        </p>
 
         <div class="reg-card" style="margin-bottom:14px;">
+            <!-- TARJETA -->
             <div id="camposTarjeta" style="display:none;">
                 <div class="reg-field">
                     <label>Número de tarjeta</label>
-                    <input type="text" id="tarjetaNumero" placeholder="0000 0000 0000 0000" maxlength="19" />
+                    <input type="text" id="tarjetaNumero" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" oninput="formatearTarjeta(this);" />
                 </div>
                 <div class="reg-field">
                     <label>Nombre del titular</label>
-                    <input type="text" id="tarjetaTitular" placeholder="Como aparece en la tarjeta" />
+                    <input type="text" id="tarjetaTitular" placeholder="Como aparece en la tarjeta" autocomplete="cc-name" />
                 </div>
                 <div style="display:flex; gap:10px;">
                     <div class="reg-field" style="flex:1;">
                         <label>Vencimiento</label>
-                        <input type="text" id="tarjetaVencimiento" placeholder="MM/AA" maxlength="5" />
+                        <input type="text" id="tarjetaVencimiento" placeholder="MM/AA" maxlength="5" inputmode="numeric" oninput="formatearVencimiento(this);" />
                     </div>
                     <div class="reg-field" style="flex:1;">
                         <label>CVV</label>
-                        <input type="text" id="tarjetaCvv" placeholder="123" maxlength="4" />
+                        <input type="text" id="tarjetaCvv" placeholder="123" maxlength="4" inputmode="numeric" />
+                        <small class="hint">No se guarda.</small>
                     </div>
                 </div>
             </div>
 
+            <!-- SINPE -->
             <div id="camposSinpe" style="display:none;">
                 <div class="reg-field">
                     <label>Teléfono SINPE Móvil</label>
-                    <input type="tel" id="sinpeTelefono" placeholder="8888-8888" />
+                    <input type="tel" id="sinpeTelefono" placeholder="8888-8888" inputmode="numeric" oninput="formatearTelefono(this);" />
                 </div>
                 <div class="reg-field">
                     <label>Nombre del titular</label>
@@ -109,10 +301,12 @@
                 </div>
             </div>
 
+            <!-- IBAN -->
             <div id="camposIban" style="display:none;">
                 <div class="reg-field">
                     <label>IBAN</label>
-                    <input type="text" id="ibanNumero" placeholder="CR00 0000 0000 0000 0000 00" />
+                    <input type="text" id="ibanNumero" placeholder="CR00 0000 0000 0000 0000 00" maxlength="26" autocomplete="off" />
+                    <small class="hint">Formato: CR + 20 dígitos.</small>
                 </div>
                 <div class="reg-field">
                     <label>Banco</label>
@@ -124,6 +318,7 @@
                 </div>
             </div>
 
+            <!-- TOKEN -->
             <div id="camposToken" style="display:none;">
                 <div class="reg-field">
                     <label>Banco emisor del token</label>
@@ -152,7 +347,7 @@
                 </div>
                 <div class="reg-field">
                     <label>PIN de activación</label>
-                    <input type="password" id="tokenPin" placeholder="••••" maxlength="8" />
+                    <input type="password" id="tokenPin" placeholder="••••" maxlength="8" inputmode="numeric" />
                     <small class="hint">Solo se usa para vincular. No se guarda en la app.</small>
                 </div>
             </div>
@@ -161,6 +356,7 @@
                 <input type="checkbox" id="chkPredeterminado" />
                 <span class="txt">
                     <span class="t">Usar como método predeterminado</span>
+                    <span class="s">Se seleccionará automáticamente al pagar.</span>
                 </span>
             </label>
         </div>
@@ -177,62 +373,166 @@
     </div>
 </div>
 
-<script>
+@section Scripts {
+    <script>
         var STORAGE_KEY = 'cnfl_metodos_pago';
         var tipoActual = 'tarjeta';
+        var filtroActual = 'todos';
+        var metodosCache = [];
 
+        // ═══════════ Utilidades ═══════════
         function getMetodos() {
             try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { return []; }
         }
-        function setMetodos(m) { localStorage.setItem(STORAGE_KEY, JSON.stringify(m)); renderMetodos(); }
+        function setMetodos(m) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
+            metodosCache = m;
+            renderMetodos();
+        }
 
+        // ═══════════ Formateo de inputs ═══════════
+        function formatearTarjeta(input) {
+            var v = input.value.replace(/\D/g, '').slice(0, 16);
+            var formatted = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+            input.value = formatted;
+        }
+
+        function formatearVencimiento(input) {
+            var v = input.value.replace(/\D/g, '').slice(0, 4);
+            if (v.length >= 3) {
+                input.value = v.slice(0, 2) + '/' + v.slice(2);
+            } else {
+                input.value = v;
+            }
+        }
+
+        function formatearTelefono(input) {
+            var v = input.value.replace(/\D/g, '').slice(0, 8);
+            if (v.length >= 5) {
+                input.value = v.slice(0, 4) + '-' + v.slice(4);
+            } else {
+                input.value = v;
+            }
+        }
+
+        // ═══════════ Render ═══════════
         function renderMetodos() {
-            var metodos = getMetodos();
             var cont = document.getElementById('listaMetodos');
             var vacio = document.getElementById('metodosVacio');
+            var filtros = document.getElementById('metodosFiltros');
             if (!cont) return;
 
-            cont.innerHTML = '';
-            if (metodos.length === 0) { vacio.style.display = 'block'; return; }
-            vacio.style.display = 'none';
+            var metodos = metodosCache;
 
-            metodos.forEach(function (m, idx) {
+            if (metodos.length === 0) {
+                vacio.style.display = 'block';
+                filtros.style.display = 'none';
+                cont.innerHTML = '';
+                return;
+            }
+
+            vacio.style.display = 'none';
+            filtros.style.display = 'flex';
+
+            var filtrados = metodos;
+            if (filtroActual !== 'todos') {
+                filtrados = metodos.filter(function (m) { return m.tipo === filtroActual; });
+            }
+
+            cont.innerHTML = '';
+
+            if (filtrados.length === 0) {
+                cont.innerHTML =
+                    '<div class="card" style="text-align:center; padding:30px 20px;">' +
+                    '<div style="font-size:38px;">🔍</div>' +
+                    '<p style="font-weight:800; font-size:14px; margin-top:10px; color:var(--ink);">Sin métodos de este tipo</p>' +
+                    '<p style="font-size:12px; color:var(--muted); margin-top:4px;">Agregá uno con el formulario de abajo.</p>' +
+                    '</div>';
+                return;
+            }
+
+            // Ordenar: predeterminado primero
+            filtrados.sort(function (a, b) {
+                if (a.predeterminado && !b.predeterminado) return -1;
+                if (!a.predeterminado && b.predeterminado) return 1;
+                return 0;
+            });
+
+            filtrados.forEach(function (m) {
+                var idx = metodos.indexOf(m);
                 var emoji, bg, titulo, sub;
 
                 if (m.tipo === 'tarjeta') {
                     emoji = '💳'; bg = '#eef0ff';
-                    titulo = 'Tarjeta ****' + (m.numero ? m.numero.slice(-4) : '0000');
-                    sub = (m.titular || '') + ' · ' + (m.vencimiento || '');
+                    titulo = 'Tarjeta •••• ' + (m.numero ? m.numero.replace(/\s/g, '').slice(-4) : '0000');
+                    sub = (m.titular || 'Sin titular') + (m.vencimiento ? ' · Vence ' + m.vencimiento : '');
                 } else if (m.tipo === 'sinpe') {
                     emoji = '📱'; bg = '#e9f7ec';
-                    titulo = 'SINPE ' + (m.telefono || '');
-                    sub = m.titular || '';
+                    titulo = 'SINPE Móvil';
+                    sub = (m.telefono || '') + (m.titular ? ' · ' + m.titular : '');
                 } else if (m.tipo === 'iban') {
                     emoji = '🏦'; bg = '#fef3e0';
-                    titulo = 'IBAN ' + (m.banco || '');
-                    sub = m.titular || '';
+                    titulo = 'Cuenta IBAN';
+                    var ibanCorto = m.numero ? m.numero.slice(0, 8) + '...' + m.numero.slice(-4) : '';
+                    sub = (m.banco || '') + (ibanCorto ? ' · ' + ibanCorto : '');
                 } else {
                     emoji = '🔐'; bg = '#f3f0ff';
                     titulo = 'Token ' + (m.banco || '');
-                    sub = (m.alias || '') + ' · ' + (m.tokenId || '');
+                    sub = (m.alias || 'Token') + (m.tokenId ? ' · ' + m.tokenId : '');
                 }
 
                 var div = document.createElement('div');
-                div.className = 'row-item';
-                div.style.cursor = 'default';
-                div.innerHTML =
-                    '<div class="ic" style="background:' + bg + '; font-size:20px; display:grid; place-items:center;">' + emoji + '</div>' +
-                    '<div class="tx">' +
-                        '<div class="t">' + titulo + (m.predeterminado ? ' ⭐' : '') + '</div>' +
-                        '<div class="s">' + sub + '</div>' +
-                    '</div>' +
-                    '<button type="button" onclick="eliminarMetodo(' + idx + ');" style="background:#fdeaea; border:0; color:#E5484D; width:34px; height:34px; border-radius:10px; cursor:pointer; display:grid; place-items:center; flex-shrink:0;">' +
-                        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>' +
+                div.className = 'metodo-card' + (m.predeterminado ? ' predeterminado' : '');
+
+                var predBadge = m.predeterminado
+                    ? '<span class="metodo-badge">⭐ PREDETERMINADO</span>'
+                    : '';
+
+                var btnDestacar = m.predeterminado
+                    ? ''
+                    : '<button type="button" class="metodo-btn destacar" onclick="marcarPredeterminado(' + idx + ');" title="Marcar como predeterminado">' +
+                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' +
                     '</button>';
+
+                div.innerHTML =
+                    '<div class="metodo-ic" style="background:' + bg + ';">' + emoji + '</div>' +
+                    '<div class="metodo-tx">' +
+                    '<div class="t">' + titulo + ' ' + predBadge + '</div>' +
+                    '<div class="s">' + sub + '</div>' +
+                    '</div>' +
+                    '<div class="metodo-acciones">' +
+                    btnDestacar +
+                    '<button type="button" class="metodo-btn peligro" onclick="eliminarMetodo(' + idx + ');" title="Eliminar">' +
+                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>' +
+                    '</button>' +
+                    '</div>';
                 cont.appendChild(div);
             });
         }
 
+        // ═══════════ Acciones ═══════════
+        function filtrarMetodos(filtro, btn) {
+            filtroActual = filtro;
+            document.querySelectorAll('.filtro-chip').forEach(function (el) { el.classList.remove('active'); });
+            if (btn) btn.classList.add('active');
+            renderMetodos();
+        }
+
+        function marcarPredeterminado(idx) {
+            var metodos = getMetodos();
+            if (!metodos[idx]) return;
+            metodos.forEach(function (m, i) { m.predeterminado = (i === idx); });
+            setMetodos(metodos);
+        }
+
+        function eliminarMetodo(idx) {
+            if (!confirm('¿Eliminar este método de pago?')) return;
+            var metodos = getMetodos();
+            metodos.splice(idx, 1);
+            setMetodos(metodos);
+        }
+
+        // ═══════════ Modal ═══════════
         function abrirFormulario(tipo) {
             tipoActual = tipo;
             document.getElementById('camposTarjeta').style.display = tipo === 'tarjeta' ? 'block' : 'none';
@@ -248,6 +548,13 @@
             };
             document.getElementById('modalMetodoTitulo').textContent = titulos[tipo];
 
+            // Limpiar campos
+            document.querySelectorAll('#modalMetodo input').forEach(function (inp) {
+                if (inp.type !== 'checkbox' && inp.tagName !== 'SELECT') inp.value = '';
+            });
+            document.querySelectorAll('#modalMetodo select').forEach(function (sel) { sel.value = ''; });
+            document.getElementById('chkPredeterminado').checked = (getMetodos().length === 0);
+
             document.getElementById('modalMetodo').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
@@ -261,38 +568,54 @@
             if (e.target === this) cerrarModal();
         });
 
+        // ═══════════ Guardar ═══════════
         function guardarMetodo() {
             var metodos = getMetodos();
             var nuevo = { tipo: tipoActual, predeterminado: document.getElementById('chkPredeterminado').checked };
 
             if (tipoActual === 'tarjeta') {
-                var num = document.getElementById('tarjetaNumero').value.trim();
-                if (num.length < 15) { alert('Ingresá un número de tarjeta válido.'); return; }
+                var num = document.getElementById('tarjetaNumero').value.replace(/\s/g, '').trim();
+                var titular = document.getElementById('tarjetaTitular').value.trim();
+                var venc = document.getElementById('tarjetaVencimiento').value.trim();
+                var cvv = document.getElementById('tarjetaCvv').value.trim();
+
+                if (num.length < 15) { alert('Ingresá un número de tarjeta válido (mínimo 15 dígitos).'); return; }
+                if (!titular) { alert('Ingresá el nombre del titular.'); return; }
+                if (!/^\d{2}\/\d{2}$/.test(venc)) { alert('El vencimiento debe tener formato MM/AA.'); return; }
+                if (!/^\d{3,4}$/.test(cvv)) { alert('El CVV debe tener 3 o 4 dígitos.'); return; }
+
+                // ⚠️ NO guardamos el CVV
                 nuevo.numero = num;
-                nuevo.titular = document.getElementById('tarjetaTitular').value.trim();
-                nuevo.vencimiento = document.getElementById('tarjetaVencimiento').value.trim();
-                nuevo.cvv = document.getElementById('tarjetaCvv').value.trim();
+                nuevo.titular = titular;
+                nuevo.vencimiento = venc;
+
             } else if (tipoActual === 'sinpe') {
-                var tel = document.getElementById('sinpeTelefono').value.trim();
-                if (!tel) { alert('Ingresá un teléfono.'); return; }
-                nuevo.telefono = tel;
+                var tel = document.getElementById('sinpeTelefono').value.replace(/\D/g, '').trim();
+                if (tel.length < 8) { alert('Ingresá un teléfono válido (8 dígitos).'); return; }
+                nuevo.telefono = tel.replace(/(\d{4})(\d{4})/, '$1-$2');
                 nuevo.titular = document.getElementById('sinpeTitular').value.trim();
+
             } else if (tipoActual === 'iban') {
-                var iban = document.getElementById('ibanNumero').value.trim();
-                if (!iban) { alert('Ingresá un IBAN.'); return; }
+                var iban = document.getElementById('ibanNumero').value.replace(/\s/g, '').trim().toUpperCase();
+                var banco = document.getElementById('ibanBanco').value.trim();
+                var tit = document.getElementById('ibanTitular').value.trim();
+                if (iban.length !== 22) { alert('El IBAN debe tener 22 caracteres (CR + 20 dígitos).'); return; }
+                if (!banco) { alert('Ingresá el nombre del banco.'); return; }
+                if (!tit) { alert('Ingresá el nombre del titular.'); return; }
                 nuevo.numero = iban;
-                nuevo.banco = document.getElementById('ibanBanco').value.trim();
-                nuevo.titular = document.getElementById('ibanTitular').value.trim();
+                nuevo.banco = banco;
+                nuevo.titular = tit;
+
             } else if (tipoActual === 'token') {
-                var banco = document.getElementById('tokenBanco').value;
+                var b = document.getElementById('tokenBanco').value;
                 var tid = document.getElementById('tokenId').value.trim();
                 var pin = document.getElementById('tokenPin').value.trim();
-                if (!banco) { alert('Seleccioná el banco emisor.'); return; }
+                if (!b) { alert('Seleccioná el banco emisor.'); return; }
                 if (!tid) { alert('Ingresá el identificador del token.'); return; }
-                if (!pin) { alert('Ingresá el PIN de activación.'); return; }
-                nuevo.banco = banco;
+                if (!pin || pin.length < 4) { alert('Ingresá el PIN de activación (mínimo 4 dígitos).'); return; }
+                nuevo.banco = b;
                 nuevo.tokenId = tid;
-                nuevo.alias = document.getElementById('tokenAlias').value.trim();
+                nuevo.alias = document.getElementById('tokenAlias').value.trim() || 'Token ' + b;
             }
 
             if (nuevo.predeterminado) {
@@ -302,15 +625,10 @@
             metodos.push(nuevo);
             setMetodos(metodos);
             cerrarModal();
-            alert('✓ Método guardado correctamente.');
         }
 
-        function eliminarMetodo(idx) {
-            if (!confirm('¿Eliminar este método de pago?')) return;
-            var metodos = getMetodos();
-            metodos.splice(idx, 1);
-            setMetodos(metodos);
-        }
-
+        // ═══════════ Inicializar ═══════════
+        metodosCache = getMetodos();
         renderMetodos();
-</script>
+    </script>
+}

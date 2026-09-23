@@ -463,6 +463,7 @@
 
     <div class="phone-frame">
         <div class="phone-notch"></div>
+
         <div class="phone-screen">
 
             <div class="status-bar">
@@ -497,33 +498,40 @@
 
             @{
                 var accionActual = (ViewContext.RouteData.Values["action"] ?? "").ToString();
-                Func<string, string> activo = (acc) =>
-                    accionActual.Equals(acc, StringComparison.OrdinalIgnoreCase)
+                var controladorActual = (ViewContext.RouteData.Values["controller"] ?? "").ToString();
+
+                Func<string, string, string> activo = (ctrl, acc) =>
+                    (controladorActual.Equals(ctrl, StringComparison.OrdinalIgnoreCase)
+                     && accionActual.Equals(acc, StringComparison.OrdinalIgnoreCase))
                         ? "nav-item active" : "nav-item";
             }
 
             <nav class="bottom-nav">
-                <a href="@Url.Action("Dashboard", "Admin")" class="@activo("Dashboard")">
+                <a href="@Url.Action("Dashboard", "Admin")" class="@activo("Admin", "Dashboard")">
                     <i class="fas fa-th-large"></i>
                     <span>Inicio</span>
                 </a>
-                <a href="@Url.Action("Clientes", "Admin")" class="@activo("Clientes")">
+                <a href="@Url.Action("Clientes", "Admin")" class="@activo("Admin", "Clientes")">
                     <i class="fas fa-users"></i>
                     <span>Clientes</span>
                 </a>
-                <a href="@Url.Action("Averias", "Admin")" class="@activo("Averias")">
+                <a href="@Url.Action("Index", "AdminNotificaciones")" class="@activo("AdminNotificaciones", "Index")">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Notificar</span>
+                </a>
+                <a href="@Url.Action("Averias", "Admin")" class="@activo("Admin", "Averias")">
                     <i class="fas fa-bolt"></i>
                     <span>Averías</span>
                 </a>
-                <a href="@Url.Action("Tramites", "Admin")" class="@activo("Tramites")">
+                <a href="@Url.Action("Tramites", "Admin")" class="@activo("Admin", "Tramites")">
                     <i class="fas fa-file-alt"></i>
                     <span>Trámites</span>
                 </a>
-                <a href="@Url.Action("Reportes", "Admin")" class="@activo("Reportes")">
+                <a href="@Url.Action("Reportes", "Admin")" class="@activo("Admin", "Reportes")">
                     <i class="fas fa-chart-line"></i>
                     <span>Reportes</span>
                 </a>
-                <a href="@Url.Action("Cuenta", "Admin")" class="@activo("Cuenta")">
+                <a href="@Url.Action("Cuenta", "Admin")" class="@activo("Admin", "Cuenta")">
                     <i class="fas fa-user"></i>
                     <span>Cuenta</span>
                 </a>

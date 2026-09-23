@@ -2,6 +2,7 @@
     ViewBag.Title = "Reportes";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
+    // ═══ Datos de facturación ═══
     var consumos = ViewBag.Consumos as List<CNFL_Clientes_Prototipo.Models.ConsumoMensualDto>
                    ?? new List<CNFL_Clientes_Prototipo.Models.ConsumoMensualDto>();
     var totalFacturado = (decimal)(ViewBag.TotalFacturado ?? 0m);
@@ -10,10 +11,15 @@
 
     var maxMonto = consumos.Any() ? consumos.Max(c => c.monto) : 1m;
     if (maxMonto <= 0) { maxMonto = 1m; }
+
+    // ═══ Datos de ventas ═══
+    var vmVentas = ViewBag.VentasViewModel as CNFL_Clientes_Prototipo.Models.ViewModels.ReporteVentasViewModel
+                   ?? new CNFL_Clientes_Prototipo.Models.ViewModels.ReporteVentasViewModel();
 }
 
 @section Styles {
     <style>
+        /* ═══ Facturación ═══ */
         .summary-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -122,6 +128,169 @@
                 margin-bottom: 4px;
             }
 
+        /* ═══ Divisor ═══ */
+        .ventas-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 24px 0 18px;
+            color: #c98a00;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+        }
+
+            .ventas-divider::before,
+            .ventas-divider::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, #e3e6ee, transparent);
+            }
+
+        /* ═══ KPIs de ventas ═══ */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .kpi {
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+        }
+
+            .kpi .lbl {
+                font-size: 10px;
+                color: #6b7280;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: .4px;
+            }
+
+            .kpi .num {
+                font-size: 20px;
+                font-weight: 900;
+                margin-top: 4px;
+                color: #1a2b6b;
+                letter-spacing: -.5px;
+                word-break: break-all;
+            }
+
+            .kpi.green .num {
+                color: #00a651;
+            }
+
+            .kpi.gold .num {
+                color: #c98a00;
+            }
+
+            .kpi.purple .num {
+                color: #5b3fbf;
+            }
+
+        /* ═══ Barras ═══ */
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+            .bar-row .name {
+                flex: 1;
+                font-size: 12px;
+                font-weight: 700;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .bar-row .bar {
+                flex: 2;
+                height: 8px;
+                background: #eef0f5;
+                border-radius: 4px;
+                overflow: hidden;
+            }
+
+                .bar-row .bar span {
+                    display: block;
+                    height: 100%;
+                    background: linear-gradient(90deg, #1a2b6b, #5b3fbf);
+                }
+
+            .bar-row .val {
+                font-size: 11.5px;
+                font-weight: 800;
+                color: #1a2b6b;
+                white-space: nowrap;
+                min-width: 65px;
+                text-align: right;
+            }
+
+        /* ═══ Tabla ═══ */
+        .tabla-compras {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11.5px;
+        }
+
+            .tabla-compras thead th {
+                text-align: left;
+                padding: 8px 6px;
+                font-weight: 800;
+                color: #6b7280;
+                text-transform: uppercase;
+                font-size: 9.5px;
+                letter-spacing: .4px;
+                border-bottom: 2px solid #e3e6ee;
+            }
+
+            .tabla-compras tbody tr {
+                border-bottom: 1px solid #eef0f5;
+            }
+
+                .tabla-compras tbody tr:last-child {
+                    border-bottom: 0;
+                }
+
+            .tabla-compras td {
+                padding: 9px 6px;
+                vertical-align: top;
+            }
+
+        .metodo-tag {
+            display: inline-block;
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 8px;
+            background: #eef0ff;
+            color: #1a2b6b;
+            white-space: nowrap;
+        }
+
+        .card-empty {
+            text-align: center;
+            padding: 30px 20px;
+            color: #6b7280;
+            font-size: 12.5px;
+        }
+
+            .card-empty i {
+                font-size: 38px;
+                color: #c9ced9;
+                margin-bottom: 10px;
+                display: block;
+            }
+
+        /* ═══ Exportar ═══ */
         .export-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -141,7 +310,7 @@
             cursor: pointer;
             text-decoration: none;
             border: none;
-            transition: transform .15s, box-shadow .15s;
+            transition: transform .15s;
         }
 
             .export-btn:active {
@@ -151,13 +320,11 @@
             .export-btn.excel {
                 background: var(--green-soft);
                 color: #046a38;
-                box-shadow: 0 6px 14px -6px rgba(4, 106, 56, .3);
             }
 
             .export-btn.pdf {
                 background: var(--red-soft);
                 color: #b71c1c;
-                box-shadow: 0 6px 14px -6px rgba(183, 28, 28, .3);
             }
 
             .export-btn i {
@@ -171,12 +338,45 @@
             text-align: center;
             line-height: 1.5;
         }
+
+        /* ═══ Filtros ═══ */
+        .filtros {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 0 0 14px;
+        }
+
+        .filtro {
+            padding: 8px 14px;
+            background: #fff;
+            border: 1.5px solid #e3e6ee;
+            border-radius: 22px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #6b7280;
+            white-space: nowrap;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .18s;
+        }
+
+            .filtro:hover {
+                border-color: #c9ced9;
+            }
+
+            .filtro.active {
+                background: linear-gradient(135deg, #1a2b6b, #5b3fbf);
+                color: #fff;
+                border-color: transparent;
+            }
     </style>
 }
 
 <h1 class="page-title">Reportes</h1>
-<p class="page-subtitle">Resumen financiero y descarga de informes.</p>
+<p class="page-subtitle">Resumen financiero, ventas y descarga de informes.</p>
 
+<!-- ═══ SECCIÓN 1: FACTURACIÓN ═══ -->
 <div class="summary-grid">
     <div class="summary-card gold">
         <div class="label">Facturado</div>
@@ -199,7 +399,7 @@
     </div>
     @if (!consumos.Any())
     {
-        <div class="empty" style="padding:20px;">Sin datos</div>
+        <div class="card-empty"><i class="fas fa-chart-bar"></i>Sin datos de facturación</div>
     }
     else
     {
@@ -218,23 +418,230 @@
     }
 </div>
 
-<div class="chart-card">
-    <div class="section-title">
-        <i class="fas fa-download"></i>
-        Descargar reportes
+<!-- ═══ SECCIÓN 2: VENTAS ═══ -->
+<div class="ventas-divider">
+    <span>🛒 Ventas y compras de clientes</span>
+</div>
+
+<p style="font-size:12px; color:#6b7280; margin:0 0 14px; line-height:1.5;">
+    Todo lo que los clientes han comprado en la app móvil: productos, planes y servicios.
+</p>
+
+<div class="filtros">
+    <a href="?rango=7d" class="filtro @(vmVentas.FiltroRapido == "7d" ? "active" : "")">7 días</a>
+    <a href="?rango=30d" class="filtro @(vmVentas.FiltroRapido == "30d" ? "active" : "")">30 días</a>
+    <a href="?rango=90d" class="filtro @(vmVentas.FiltroRapido == "90d" ? "active" : "")">90 días</a>
+    <a href="?rango=anio" class="filtro @(vmVentas.FiltroRapido == "anio" ? "active" : "")">Este año</a>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi green">
+        <div class="lbl">Ingresos por ventas</div>
+        <div class="num">₡@vmVentas.IngresosTotales.ToString("N0")</div>
     </div>
+    <div class="kpi">
+        <div class="lbl">Compras</div>
+        <div class="num">@vmVentas.TotalCompras</div>
+    </div>
+    <div class="kpi purple">
+        <div class="lbl">Clientes únicos</div>
+        <div class="num">@vmVentas.ClientesUnicos</div>
+    </div>
+    <div class="kpi gold">
+        <div class="lbl">Ticket promedio</div>
+        <div class="num">₡@vmVentas.TicketPromedio.ToString("N0")</div>
+    </div>
+</div>
+
+<div class="chart-card">
+    <div class="section-title"><i class="fas fa-trophy"></i>Top clientes por gasto</div>
+    @if (vmVentas.TopClientes.Any())
+    {
+        var maxCli = vmVentas.TopClientes.Max(c => c.TotalGastado);
+        foreach (var c in vmVentas.TopClientes)
+        {
+            var pct = maxCli > 0 ? (c.TotalGastado / maxCli) * 100 : 0;
+            <div class="bar-row">
+                <div class="name">@c.Nombre</div>
+                <div class="bar"><span style="width:@pct.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%"></span></div>
+                <div class="val">₡@c.TotalGastado.ToString("N0")</div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card-empty"><i class="fas fa-users"></i>Sin clientes con compras en este período</div>
+    }
+</div>
+
+<div class="chart-card">
+    <div class="section-title"><i class="fas fa-credit-card"></i>Métodos de pago usados</div>
+    @if (vmVentas.VentasPorMetodo.Any())
+    {
+        foreach (var m in vmVentas.VentasPorMetodo)
+        {
+            <div class="bar-row">
+                <div class="name">@m.Etiqueta</div>
+                <div class="bar"><span style="width:@m.Porcentaje.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%"></span></div>
+                <div class="val">₡@m.TotalIngresos.ToString("N0")</div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card-empty"><i class="fas fa-credit-card"></i>Sin métodos registrados</div>
+    }
+</div>
+
+<div class="chart-card">
+    <div class="section-title"><i class="fas fa-chart-line"></i>Ventas últimos 6 meses</div>
+    <canvas id="chartVentas" style="max-height:200px;"></canvas>
+</div>
+
+<div class="chart-card">
+    <div class="section-title"><i class="fas fa-receipt"></i>Últimas compras</div>
+    @if (vmVentas.Compras.Any())
+    {
+        <div style="overflow-x:auto;">
+            <table class="tabla-compras">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Método</th>
+                        <th style="text-align:right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in vmVentas.Compras.Take(15))
+                    {
+                        <tr>
+                            <td>
+                                <div style="font-weight:800;">@c.ClienteNombre</div>
+                                <div style="font-size:10px; color:#6b7280;">@c.ClienteCorreo</div>
+                            </td>
+                            <td>
+                                <div>@c.Fecha.ToString("dd/MM/yyyy")</div>
+                                <div style="font-size:10px; color:#6b7280;">@c.Fecha.ToString("HH:mm")</div>
+                            </td>
+                            <td><span class="metodo-tag">@c.MetodoPago</span></td>
+                            <td style="text-align:right; font-weight:900; color:#1a2b6b;">₡@c.Total.ToString("N0")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="card-empty"><i class="fas fa-shopping-cart"></i>Sin compras en este período</div>
+    }
+</div>
+
+<!-- ═══ SECCIÓN 3: EXPORTAR ═══ -->
+<div class="chart-card">
+    <div class="section-title"><i class="fas fa-download"></i>Descargar reportes</div>
     <div class="export-grid">
         <a href="@Url.Action("ExportarExcel", "Admin")" class="export-btn excel">
-            <i class="fas fa-file-excel"></i>
-            Excel
+            <i class="fas fa-file-excel"></i> Excel
         </a>
         <a href="@Url.Action("ExportarPDF", "Admin")" class="export-btn pdf">
-            <i class="fas fa-file-pdf"></i>
-            PDF
+            <i class="fas fa-file-pdf"></i> PDF
         </a>
     </div>
     <p class="export-info">
         <strong>Excel:</strong> 10 hojas con datos + gráficos.<br />
         <strong>PDF:</strong> Reporte completo con tablas.
     </p>
+
+    <button type="button" onclick="exportarVentasExcel()"
+            style="width:100%; margin-top:14px; padding:14px; border:0; border-radius:12px; background:#e0f7e9; color:#00a651; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer;">
+        📥 Descargar ventas a Excel
+    </button>
+    <button type="button" onclick="exportarVentasPDF()"
+            style="width:100%; margin-top:8px; padding:14px; border:0; border-radius:12px; background:#ffe6e6; color:#e53935; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer;">
+        📄 Descargar ventas a PDF
+    </button>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        var datosCompras = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            vmVentas.Compras.Select(c => new {
+                Cliente = c.ClienteNombre,
+                Correo = c.ClienteCorreo,
+                Fecha = c.Fecha.ToString("dd/MM/yyyy HH:mm"),
+                Metodo = c.MetodoPago,
+                Items = c.TotalItems,
+                Total = c.Total
+            })
+        ));
+
+        var datosMes = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            vmVentas.VentasPorMes.Select(v => new {
+                Etiqueta = v.Etiqueta,
+                Total = v.TotalIngresos
+            })
+        ));
+
+        var ctx = document.getElementById('chartVentas');
+        if (ctx && datosMes.length) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: datosMes.map(function (d) { return d.Etiqueta; }),
+                    datasets: [{
+                        label: 'Ventas',
+                        data: datosMes.map(function (d) { return d.Total; }),
+                        backgroundColor: '#5b3fbf',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function exportarVentasExcel() {
+            if (!datosCompras.length) { alert('No hay datos de ventas.'); return; }
+            var ws = XLSX.utils.json_to_sheet(datosCompras);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Ventas');
+            var fecha = new Date().toISOString().slice(0, 10);
+            XLSX.writeFile(wb, 'Ventas_CNFL_' + fecha + '.xlsx');
+        }
+
+        function exportarVentasPDF() {
+            if (!datosCompras.length) { alert('No hay datos de ventas.'); return; }
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.setTextColor(26, 43, 107);
+            doc.text('Reporte de Ventas · CNFL', 14, 20);
+            doc.setFontSize(10);
+            doc.setTextColor(107, 114, 128);
+            doc.text('Generado: ' + new Date().toLocaleString('es-CR'), 14, 28);
+
+            doc.autoTable({
+                startY: 40,
+                head: [['Cliente', 'Correo', 'Fecha', 'Método', 'Total']],
+                body: datosCompras.map(function (d) {
+                    return [d.Cliente, d.Correo, d.Fecha, d.Metodo, '₡' + d.Total.toLocaleString('es-CR')];
+                }),
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [91, 63, 191] }
+            });
+
+            var fecha = new Date().toISOString().slice(0, 10);
+            doc.save('Ventas_CNFL_' + fecha + '.pdf');
+        }
+    </script>
+}

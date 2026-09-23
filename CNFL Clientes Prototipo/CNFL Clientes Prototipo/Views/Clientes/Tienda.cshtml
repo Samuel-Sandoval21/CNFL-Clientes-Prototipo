@@ -3,9 +3,388 @@
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 }
 
+@section Styles {
+    <style>
+        /* ═══════════ MÉTODO DE PAGO GUARDADO ═══════════ */
+        .metodo-pago-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #fafbfe;
+            border: 1.5px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+            .metodo-pago-option:last-child {
+                margin-bottom: 0;
+            }
+
+            .metodo-pago-option:hover {
+                border-color: #d8dde8;
+            }
+
+            .metodo-pago-option.seleccionado {
+                border-color: var(--blue);
+                background: #f5f7ff;
+            }
+
+            .metodo-pago-option input[type="radio"] {
+                width: 22px;
+                height: 22px;
+                accent-color: var(--blue);
+                cursor: pointer;
+                flex-shrink: 0;
+                margin-top: 1px;
+            }
+
+            .metodo-pago-option .txt {
+                flex: 1;
+                display: block;
+            }
+
+            .metodo-pago-option .t {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                line-height: 1.3;
+            }
+
+            .metodo-pago-option .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 3px;
+                display: block;
+                line-height: 1.4;
+            }
+
+        .metodo-pago-badge {
+            font-size: 9px;
+            font-weight: 800;
+            background: var(--blue);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 999px;
+            letter-spacing: .04em;
+        }
+
+        /* ═══════════ AVISO SIN MÉTODOS ═══════════ */
+        .aviso-metodos {
+            display: flex;
+            gap: 11px;
+            align-items: flex-start;
+            background: #fff8e6;
+            border: 1px solid #ffe5a3;
+            border-radius: 14px;
+            padding: 13px;
+            margin-bottom: 14px;
+        }
+
+            .aviso-metodos .ico {
+                font-size: 20px;
+                flex-shrink: 0;
+            }
+
+            .aviso-metodos .txt {
+                flex: 1;
+                font-size: 11.5px;
+                color: #8a5c00;
+                line-height: 1.5;
+            }
+
+            .aviso-metodos a {
+                color: var(--blue);
+                font-weight: 800;
+                text-decoration: underline;
+            }
+
+        /* ═══════════ MODAL CONFIRMACIÓN ═══════════ */
+        .confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 17, 22, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 400;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+            .confirm-overlay.show {
+                display: flex;
+            }
+
+        .confirm-box {
+            background: #fff;
+            border-radius: 22px;
+            width: 100%;
+            max-width: 380px;
+            padding: 26px 22px 22px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: confirmIn .25s ease;
+        }
+
+        @@keyframes confirmIn {
+            from {
+                opacity: 0;
+                transform: scale(.94);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .confirm-box .emoji {
+            font-size: 48px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .confirm-box h3 {
+            font-size: 17px;
+            font-weight: 800;
+            text-align: center;
+            margin: 14px 0 6px;
+            color: var(--ink);
+        }
+
+        .confirm-box p {
+            font-size: 13px;
+            text-align: center;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .confirm-total {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--orange);
+            text-align: center;
+            margin: 12px 0 4px;
+        }
+
+        .confirm-metodo {
+            font-size: 11.5px;
+            text-align: center;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .confirm-acciones {
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .confirm-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            border: 0;
+            transition: .15s;
+        }
+
+            .confirm-btn.cancelar {
+                background: #fff;
+                color: var(--ink);
+                border: 1.5px solid var(--line);
+            }
+
+                .confirm-btn.cancelar:hover {
+                    background: #fafbfe;
+                }
+
+            .confirm-btn.aceptar {
+                background: var(--blue);
+                color: #fff;
+                box-shadow: 0 8px 18px -8px rgba(30, 35, 230, 0.5);
+            }
+
+                .confirm-btn.aceptar:hover {
+                    background: #0d1b9e;
+                }
+
+                .confirm-btn.aceptar:disabled {
+                    background: #9aa1b0;
+                    cursor: not-allowed;
+                    box-shadow: none;
+                }
+
+        /* ═══════════ TOAST ═══════════ */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #0E1116;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-size: 12.5px;
+            font-weight: 700;
+            z-index: 500;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+            transition: .3s;
+            max-width: 340px;
+            text-align: center;
+            opacity: 0;
+        }
+
+            .toast.show {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+
+        /* ═══════════ CARRITO ═══════════ */
+        .carrito-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .carrito-item .ic {
+                width: 52px;
+                height: 52px;
+                border-radius: 14px;
+                display: grid;
+                place-items: center;
+                flex: none;
+                font-size: 24px;
+                background: #eef6ff;
+            }
+
+            .carrito-item .tx {
+                flex: 1;
+                min-width: 0;
+            }
+
+                .carrito-item .tx .t {
+                    font-weight: 800;
+                    font-size: 13.5px;
+                    color: var(--ink);
+                    line-height: 1.25;
+                }
+
+                .carrito-item .tx .s {
+                    font-size: 11.5px;
+                    color: var(--muted);
+                    margin-top: 3px;
+                }
+
+                .carrito-item .tx .precio {
+                    font-weight: 800;
+                    color: var(--orange);
+                    font-size: 14px;
+                    margin-top: 5px;
+                }
+
+        .carrito-eliminar {
+            background: #fdeaea;
+            border: 0;
+            color: #E5484D;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transition: background .15s;
+        }
+
+            .carrito-eliminar:hover {
+                background: #fbd5d5;
+            }
+
+        .carrito-cantidad {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f5f6fa;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 4px 8px;
+            margin-top: 6px;
+        }
+
+            .carrito-cantidad button {
+                background: #fff;
+                border: 1px solid var(--line);
+                width: 24px;
+                height: 24px;
+                border-radius: 7px;
+                font-family: inherit;
+                font-weight: 800;
+                font-size: 14px;
+                color: var(--blue);
+                cursor: pointer;
+                display: grid;
+                place-items: center;
+            }
+
+                .carrito-cantidad button:hover {
+                    background: #eef0ff;
+                }
+
+            .carrito-cantidad span {
+                font-size: 13px;
+                font-weight: 800;
+                min-width: 20px;
+                text-align: center;
+            }
+
+        .resumen-linea {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+
+            .resumen-linea.total {
+                font-size: 15px;
+                padding-top: 12px;
+                border-top: 1px dashed var(--line);
+                margin-top: 8px;
+            }
+
+            .resumen-linea .label {
+                color: var(--muted);
+                font-weight: 700;
+            }
+
+            .resumen-linea .valor {
+                font-weight: 800;
+            }
+
+            .resumen-linea.total .valor {
+                color: var(--orange);
+                font-size: 17px;
+            }
+    </style>
+}
+
 <!-- ═══════════ APPBAR ═══════════ -->
 <div class="appbar">
-    <a href="@Url.Action("ProductosServicios", "Clientes")" class="icon-btn">
+    <a href="@Url.Action("ProductosServicios", "Clientes")" class="icon-btn" title="Volver">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
             <path d="m15 18-6-6 6-6" />
         </svg>
@@ -40,70 +419,84 @@
     <div class="eyebrow">Resumen de compra</div>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; padding:8px 0; font-size:13px;">
-            <span style="color:var(--muted); font-weight:700;">Subtotal</span>
-            <span style="font-weight:800;" id="subtotal">₡0</span>
+        <div class="resumen-linea">
+            <span class="label">Subtotal</span>
+            <span class="valor" id="subtotal">₡0</span>
         </div>
-        <div style="display:flex; justify-content:space-between; padding:8px 0; font-size:13px; border-bottom:1px dashed var(--line); padding-bottom:12px; margin-bottom:12px;">
-            <span style="color:var(--muted); font-weight:700;">Impuesto (13% IVA)</span>
-            <span style="font-weight:800;" id="impuesto">₡0</span>
+        <div class="resumen-linea">
+            <span class="label">Impuesto (13% IVA)</span>
+            <span class="valor" id="impuesto">₡0</span>
         </div>
-        <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:15px;">
-            <span style="font-weight:800;">Total</span>
-            <span style="font-weight:800; color:var(--orange);" id="total">₡0</span>
+        <div class="resumen-linea total">
+            <span class="label" style="color:var(--ink); font-weight:800;">Total</span>
+            <span class="valor" id="total">₡0</span>
+        </div>
+    </div>
+
+    <!-- Aviso si no hay métodos guardados -->
+    <div id="avisoMetodos" class="aviso-metodos" style="display:none;">
+        <div class="ico">💡</div>
+        <div class="txt">
+            <strong>Tip:</strong> Guardá tus métodos de pago para agilizar futuras compras.
+            <a href="@Url.Action("MetodosPago", "Clientes")">Agregar método →</a>
         </div>
     </div>
 
     <!-- Métodos de pago -->
     <div class="eyebrow">💳 Método de pago</div>
 
-    <div class="rows">
-        <label class="reg-check" for="pagoFactura" style="cursor:pointer;">
-            <input type="radio" name="metodoPago" id="pagoFactura" value="factura" checked style="accent-color:var(--blue); width:22px; height:22px;" />
+    <div id="listaMetodosPago">
+        <label class="metodo-pago-option" data-tipo="factura">
+            <input type="radio" name="metodoPago" value="factura" checked />
             <span class="txt">
                 <span class="t">💡 Cargar a factura eléctrica</span>
                 <span class="s">Se agrega al próximo recibo. Sin intereses.</span>
             </span>
         </label>
 
-        <label class="reg-check" for="pagoTarjeta" style="cursor:pointer;">
-            <input type="radio" name="metodoPago" id="pagoTarjeta" value="tarjeta" style="accent-color:var(--blue); width:22px; height:22px;" />
+        <label class="metodo-pago-option" data-tipo="tarjeta">
+            <input type="radio" name="metodoPago" value="tarjeta" />
             <span class="txt">
                 <span class="t">💳 Tarjeta de crédito/débito</span>
-                <span class="s">Visa · Mastercard · American Express (Tilopay)</span>
+                <span class="s" id="tarjetaGuardada">Visa · Mastercard · American Express (Tilopay)</span>
             </span>
         </label>
 
-        <label class="reg-check" for="pagoSinpe" style="cursor:pointer;">
-            <input type="radio" name="metodoPago" id="pagoSinpe" value="sinpe" style="accent-color:var(--blue); width:22px; height:22px;" />
+        <label class="metodo-pago-option" data-tipo="sinpe">
+            <input type="radio" name="metodoPago" value="sinpe" />
             <span class="txt">
                 <span class="t">📱 SINPE Móvil</span>
-                <span class="s">8000-0000 · Compañía Nacional de Fuerza y Luz</span>
+                <span class="s" id="sinpeGuardado">8000-0000 · Compañía Nacional de Fuerza y Luz</span>
             </span>
         </label>
 
-        <label class="reg-check" for="pagoIban" style="cursor:pointer;">
-            <input type="radio" name="metodoPago" id="pagoIban" value="iban" style="accent-color:var(--blue); width:22px; height:22px;" />
+        <label class="metodo-pago-option" data-tipo="iban">
+            <input type="radio" name="metodoPago" value="iban" />
             <span class="txt">
                 <span class="t">🏦 Transferencia IBAN</span>
-                <span class="s">Banco Nacional · CR00 0000 0000 0000 0000 00</span>
+                <span class="s" id="ibanGuardado">Banco Nacional · CR00 0000 0000 0000 0000 00</span>
             </span>
         </label>
 
-        <label class="reg-check" for="pagoToken" style="cursor:pointer;">
-            <input type="radio" name="metodoPago" id="pagoToken" value="token" style="accent-color:var(--blue); width:22px; height:22px;" />
+        <label class="metodo-pago-option" data-tipo="token">
+            <input type="radio" name="metodoPago" value="token" />
             <span class="txt">
                 <span class="t">🔐 Token bancario</span>
-                <span class="s">BN · BCR · BAC · Popular y más</span>
+                <span class="s" id="tokenGuardado">BN · BCR · BAC · Popular y más</span>
             </span>
         </label>
     </div>
 
     <button type="button" id="btnPagar" class="btn btn-cta"
             style="width:100%; padding:17px; margin-top:18px; font-size:15px;"
-            onclick="procesarPago();">
+            onclick="abrirConfirmacion();">
         Confirmar compra
     </button>
+
+    <a href="@Url.Action("ProductosServicios", "Clientes")"
+       style="display:block; text-align:center; margin-top:14px; text-decoration:none; color:var(--blue); font-weight:800; font-size:13px;">
+        ← Seguir comprando
+    </a>
 
     <button type="button" onclick="vaciarCarrito();"
             style="width:100%; padding:14px; margin-top:10px; background:transparent; border:0; color:var(--red); font-family:inherit; font-weight:800; font-size:13px; cursor:pointer;">
@@ -111,136 +504,346 @@
     </button>
 </div>
 
-<script>
-    var STORAGE_KEY = 'cnfl_carrito';
+<!-- ═══════════ MODAL CONFIRMACIÓN ═══════════ -->
+<div id="confirmOverlay" class="confirm-overlay">
+    <div class="confirm-box">
+        <div class="emoji">🛒</div>
+        <h3>Confirmar compra</h3>
+        <p>Estás a punto de realizar tu pedido.</p>
 
-    function getCarrito() {
-        try {
-            var raw = localStorage.getItem(STORAGE_KEY);
-            return raw ? JSON.parse(raw) : [];
-        } catch (e) { return []; }
-    }
+        <div class="confirm-total" id="confirmTotal">₡0</div>
+        <div class="confirm-metodo" id="confirmMetodo">Método: Factura eléctrica</div>
 
-    function setCarrito(items) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-        actualizarBadge();
-    }
+        <div class="confirm-acciones">
+            <button type="button" class="confirm-btn cancelar" onclick="cerrarConfirmacion();">
+                Cancelar
+            </button>
+            <button type="button" class="confirm-btn aceptar" id="btnConfirmar" onclick="procesarPago();">
+                Confirmar
+            </button>
+        </div>
+    </div>
+</div>
 
-    function actualizarBadge() {
-        var badges = document.querySelectorAll('.badge');
-        var total = getCarrito().reduce(function (s, i) { return s + (i.cantidad || 1); }, 0);
-        for (var i = 0; i < badges.length; i++) badges[i].textContent = total;
-    }
+@section Scripts {
+    <script>
+        var STORAGE_CARRITO = 'cnfl_carrito';
+        var STORAGE_METODOS = 'cnfl_metodos_pago';
+        var STORAGE_COMPRAS = 'cnfl_compras';
 
-    function formatearCRC(n) {
-        return '₡' + Math.round(n).toLocaleString('es-CR');
-    }
-
-    function renderCarrito() {
-        var items = getCarrito();
-        var cont = document.getElementById('carritoItems');
-        var vacio = document.getElementById('carritoVacio');
-        var resumen = document.getElementById('resumenCarrito');
-
-        cont.innerHTML = '';
-
-        if (items.length === 0) {
-            vacio.style.display = 'block';
-            resumen.style.display = 'none';
-            return;
+        // ═══════════ Utilidades ═══════════
+        function getCarrito() {
+            try {
+                var raw = localStorage.getItem(STORAGE_CARRITO);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) { return []; }
         }
 
-        vacio.style.display = 'none';
-        resumen.style.display = 'block';
+        function setCarrito(items) {
+            localStorage.setItem(STORAGE_CARRITO, JSON.stringify(items));
+            actualizarBadge();
+        }
 
-        var subtotal = 0;
+        function getMetodosPago() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_METODOS) || '[]'); } catch (e) { return []; }
+        }
 
-        items.forEach(function (item, idx) {
-            var linea = item.precio * (item.cantidad || 1);
-            subtotal += linea;
+        function actualizarBadge() {
+            var badges = document.querySelectorAll('.badge');
+            var total = getCarrito().reduce(function (s, i) { return s + (i.cantidad || 1); }, 0);
+            for (var i = 0; i < badges.length; i++) badges[i].textContent = total;
+        }
 
-            var div = document.createElement('div');
-            div.className = 'row-item';
-            div.style.cursor = 'default';
-            div.innerHTML =
-                '<div class="ic" style="background:#eef6ff; font-size:22px; display:grid; place-items:center;">' + (item.emoji || '📦') + '</div>' +
-                '<div class="tx">' +
-                    '<div class="t">' + item.nombre + '</div>' +
-                    '<div class="s">' + formatearCRC(item.precio) + ' · Cantidad: ' + (item.cantidad || 1) + '</div>' +
-                    '<div style="font-weight:800; color:var(--orange); font-size:13px; margin-top:4px;">' + formatearCRC(linea) + '</div>' +
-                '</div>' +
-                '<button type="button" onclick="eliminarItem(' + idx + ');" style="background:#fdeaea; border:0; color:#E5484D; width:34px; height:34px; border-radius:10px; cursor:pointer; display:grid; place-items:center; flex-shrink:0;">' +
-                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>' +
-                '</button>';
-            cont.appendChild(div);
-        });
+        function formatearCRC(n) {
+            return '₡' + Math.round(n).toLocaleString('es-CR');
+        }
 
-        var iva = subtotal * 0.13;
-        var total = subtotal + iva;
+        function mostrarToast(mensaje) {
+            var toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = mensaje;
+            document.body.appendChild(toast);
+            setTimeout(function () { toast.classList.add('show'); }, 50);
+            setTimeout(function () {
+                toast.classList.remove('show');
+                setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+            }, 2400);
+        }
 
-        document.getElementById('subtotal').textContent = formatearCRC(subtotal);
-        document.getElementById('impuesto').textContent = formatearCRC(iva);
-        document.getElementById('total').textContent = formatearCRC(total);
-    }
+        // ═══════════ Render del carrito ═══════════
+        function renderCarrito() {
+            var items = getCarrito();
+            var cont = document.getElementById('carritoItems');
+            var vacio = document.getElementById('carritoVacio');
+            var resumen = document.getElementById('resumenCarrito');
 
-    function eliminarItem(idx) {
-        var items = getCarrito();
-        items.splice(idx, 1);
-        setCarrito(items);
-        renderCarrito();
-    }
+            cont.innerHTML = '';
 
-    function vaciarCarrito() {
-        if (!confirm('¿Vaciar todo el carrito?')) return;
-        setCarrito([]);
-        renderCarrito();
-    }
-
-    function procesarPago() {
-        var items = getCarrito();
-        if (items.length === 0) return;
-
-        var metodo = document.querySelector('input[name="metodoPago"]:checked');
-        var metodoVal = metodo ? metodo.value : 'factura';
-
-        var mensajes = {
-            factura: 'Se cargará a tu factura eléctrica',
-            tarjeta: 'Serás redirigido a Tilopay (pago seguro)',
-            sinpe: 'Te enviaremos la solicitud SINPE Móvil',
-            iban: 'Te mostraremos los datos de IBAN',
-            token: 'Se solicitará tu token para confirmar el pago'
-        };
-
-        var total = document.getElementById('total').textContent;
-
-        if (confirm('Confirmar compra por ' + total + '?\n\n' + mensajes[metodoVal])) {
-            var compras = [];
-            try { compras = JSON.parse(localStorage.getItem('cnfl_compras') || '[]'); } catch (e) { compras = []; }
-
-            compras.push({
-                fecha: new Date().toISOString(),
-                metodo: metodoVal,
-                total: total,
-                items: items
-            });
-            localStorage.setItem('cnfl_compras', JSON.stringify(compras));
-
-            setCarrito([]);
-
-            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                try {
-                    new Notification('CNFL · Compra realizada', {
-                        body: 'Total: ' + total + ' · ' + mensajes[metodoVal],
-                        icon: '/Content/img/logo-cnfl.png'
-                    });
-                } catch (e) { }
+            if (items.length === 0) {
+                vacio.style.display = 'block';
+                resumen.style.display = 'none';
+                return;
             }
 
-            alert('✓ Compra realizada\n\nTotal: ' + total + '\nMétodo: ' + metodoVal);
-            window.location.href = '@Url.Action("MisCompras", "Clientes")';
-        }
-    }
+            vacio.style.display = 'none';
+            resumen.style.display = 'block';
 
-    renderCarrito();
-    actualizarBadge();
-</script>
+            var subtotal = 0;
+
+            items.forEach(function (item, idx) {
+                var cantidad = item.cantidad || 1;
+                var linea = item.precio * cantidad;
+                subtotal += linea;
+
+                var div = document.createElement('div');
+                div.className = 'carrito-item';
+                div.innerHTML =
+                    '<div class="ic">' + (item.emoji || '📦') + '</div>' +
+                    '<div class="tx">' +
+                        '<div class="t">' + item.nombre + '</div>' +
+                        '<div class="s">' + formatearCRC(item.precio) + ' c/u</div>' +
+                        '<div class="carrito-cantidad">' +
+                            '<button type="button" onclick="cambiarCantidad(' + idx + ', -1);">−</button>' +
+                            '<span>' + cantidad + '</span>' +
+                            '<button type="button" onclick="cambiarCantidad(' + idx + ', 1);">+</button>' +
+                        '</div>' +
+                        '<div class="precio">' + formatearCRC(linea) + '</div>' +
+                    '</div>' +
+                    '<button type="button" class="carrito-eliminar" onclick="eliminarItem(' + idx + ');" title="Eliminar">' +
+                        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>' +
+                    '</button>';
+                cont.appendChild(div);
+            });
+
+            var iva = subtotal * 0.13;
+            var total = subtotal + iva;
+
+            document.getElementById('subtotal').textContent = formatearCRC(subtotal);
+            document.getElementById('impuesto').textContent = formatearCRC(iva);
+            document.getElementById('total').textContent = formatearCRC(total);
+
+            actualizarMetodosPago();
+        }
+
+        // ═══════════ Métodos de pago guardados ═══════════
+        function actualizarMetodosPago() {
+            var metodos = getMetodosPago();
+            var aviso = document.getElementById('avisoMetodos');
+
+            if (metodos.length === 0) {
+                aviso.style.display = 'flex';
+            } else {
+                aviso.style.display = 'none';
+
+                metodos.forEach(function (m) {
+                    if (m.tipo === 'tarjeta' && m.numero) {
+                        var ult4 = m.numero.replace(/\s/g, '').slice(-4);
+                        var el = document.getElementById('tarjetaGuardada');
+                        if (el) el.textContent = '•••• ' + ult4 + (m.titular ? ' · ' + m.titular : '');
+                    } else if (m.tipo === 'sinpe' && m.telefono) {
+                        var elS = document.getElementById('sinpeGuardado');
+                        if (elS) elS.textContent = m.telefono + (m.titular ? ' · ' + m.titular : '');
+                    } else if (m.tipo === 'iban' && m.numero) {
+                        var ibanCorto = m.numero.slice(0, 8) + '...' + m.numero.slice(-4);
+                        var elI = document.getElementById('ibanGuardado');
+                        if (elI) elI.textContent = (m.banco || 'Banco') + ' · ' + ibanCorto;
+                    } else if (m.tipo === 'token') {
+                        var elT = document.getElementById('tokenGuardado');
+                        if (elT) elT.textContent = (m.banco || 'Token') + (m.tokenId ? ' · ' + m.tokenId : '');
+                    }
+                });
+
+                var predeterminado = metodos.filter(function (m) { return m.predeterminado; })[0];
+                if (predeterminado) {
+                    var radio = document.querySelector('input[name="metodoPago"][value="' + predeterminado.tipo + '"]');
+                    if (radio) {
+                        radio.checked = true;
+                        resaltarMetodoSeleccionado();
+                    }
+                }
+            }
+        }
+
+        function resaltarMetodoSeleccionado() {
+            document.querySelectorAll('.metodo-pago-option').forEach(function (opt) {
+                var radio = opt.querySelector('input[type="radio"]');
+                if (radio && radio.checked) {
+                    opt.classList.add('seleccionado');
+                } else {
+                    opt.classList.remove('seleccionado');
+                }
+            });
+        }
+
+        // ═══════════ Acciones del carrito ═══════════
+        function cambiarCantidad(idx, delta) {
+            var items = getCarrito();
+            if (!items[idx]) return;
+
+            items[idx].cantidad = (items[idx].cantidad || 1) + delta;
+
+            if (items[idx].cantidad <= 0) {
+                items.splice(idx, 1);
+            }
+
+            setCarrito(items);
+            renderCarrito();
+        }
+
+        function eliminarItem(idx) {
+            var items = getCarrito();
+            if (!items[idx]) return;
+            if (!confirm('¿Eliminar "' + items[idx].nombre + '" del carrito?')) return;
+
+            items.splice(idx, 1);
+            setCarrito(items);
+            renderCarrito();
+        }
+
+        function vaciarCarrito() {
+            if (!confirm('¿Vaciar todo el carrito?')) return;
+            setCarrito([]);
+            renderCarrito();
+        }
+
+        // ═══════════ Confirmación ═══════════
+        function abrirConfirmacion() {
+            var items = getCarrito();
+            if (items.length === 0) return;
+
+            var metodo = document.querySelector('input[name="metodoPago"]:checked');
+            var metodoVal = metodo ? metodo.value : 'factura';
+
+            var etiquetas = {
+                factura: '💡 Factura eléctrica',
+                tarjeta: '💳 Tarjeta de crédito/débito',
+                sinpe: '📱 SINPE Móvil',
+                iban: '🏦 Transferencia IBAN',
+                token: '🔐 Token bancario'
+            };
+
+            document.getElementById('confirmTotal').textContent = document.getElementById('total').textContent;
+            document.getElementById('confirmMetodo').textContent = etiquetas[metodoVal] || metodoVal;
+
+            document.getElementById('confirmOverlay').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarConfirmacion() {
+            document.getElementById('confirmOverlay').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // ═══════════ Procesar pago ═══════════
+        function procesarPago() {
+            var items = getCarrito();
+            if (items.length === 0) return;
+
+            var metodo = document.querySelector('input[name="metodoPago"]:checked');
+            var metodoVal = metodo ? metodo.value : 'factura';
+
+            // Bloquear botón
+            var btn = document.getElementById('btnConfirmar');
+            btn.disabled = true;
+            btn.textContent = 'Procesando...';
+
+            // Calcular totales numéricos
+            var subtotalNum = items.reduce(function (s, i) { return s + (i.precio * (i.cantidad || 1)); }, 0);
+            var impuestoNum = subtotalNum * 0.13;
+            var totalNum = subtotalNum + impuestoNum;
+
+            // Payload
+            var payload = {
+                detalleJson: JSON.stringify(items),
+                subtotal: subtotalNum,
+                impuesto: impuestoNum,
+                total: totalNum,
+                metodo: metodoVal
+            };
+
+            // Enviar a BD
+            var formBody = Object.keys(payload).map(function (k) {
+                return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k]);
+            }).join('&');
+
+            fetch('@Url.Action("GuardarOrden", "AdminReportes")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formBody
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (resp) {
+                if (resp.success) {
+                    console.log('✓ Orden guardada en BD:', resp.numeroOrden);
+
+                    // Guardar también en localStorage (para MisCompras del cliente)
+                    var compras = [];
+                    try { compras = JSON.parse(localStorage.getItem(STORAGE_COMPRAS) || '[]'); } catch (e) { compras = []; }
+
+                    compras.push({
+                        fecha: new Date().toISOString(),
+                        metodo: metodoVal,
+                        total: formatearCRC(totalNum),
+                        items: items,
+                        numeroOrden: resp.numeroOrden
+                    });
+                    localStorage.setItem(STORAGE_COMPRAS, JSON.stringify(compras));
+
+                    // Limpiar carrito
+                    setCarrito([]);
+                    cerrarConfirmacion();
+
+                    // Notificación
+                    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                        try {
+                            new Notification('CNFL · Compra realizada', {
+                                body: 'Total: ' + formatearCRC(totalNum),
+                                icon: '/Content/img/logo-cnfl.png'
+                            });
+                        } catch (e) { }
+                    }
+
+                    mostrarToast('✓ Compra realizada por ' + formatearCRC(totalNum));
+
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("MisCompras", "Clientes")';
+                    }, 1200);
+                } else {
+                    // Error del servidor
+                    btn.disabled = false;
+                    btn.textContent = 'Confirmar';
+                    alert('❌ No se pudo guardar la compra:\n' + (resp.message || 'Error desconocido'));
+                }
+            })
+            .catch(function (err) {
+                console.error('Error:', err);
+                btn.disabled = false;
+                btn.textContent = 'Confirmar';
+                alert('❌ Error de conexión al guardar la compra.\n\nLa compra se guardará localmente pero no aparecerá en el admin.');
+            });
+        }
+
+        // ═══════════ Inicializar ═══════════
+        document.querySelectorAll('.metodo-pago-option').forEach(function (opt) {
+            opt.addEventListener('click', function () {
+                var radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                    resaltarMetodoSeleccionado();
+                }
+            });
+        });
+
+        document.getElementById('confirmOverlay').addEventListener('click', function (e) {
+            if (e.target === this) cerrarConfirmacion();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') cerrarConfirmacion();
+        });
+
+        renderCarrito();
+        actualizarBadge();
+        resaltarMetodoSeleccionado();
+    </script>
+}

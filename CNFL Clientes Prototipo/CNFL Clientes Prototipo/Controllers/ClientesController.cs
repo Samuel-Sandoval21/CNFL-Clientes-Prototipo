@@ -1,5 +1,6 @@
 ﻿using CNFL_Clientes_Prototipo.Data;
 using CNFL_Clientes_Prototipo.Models;
+using CNFL_Clientes_Prototipo.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,9 +162,11 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 factura.Pagada = true;
                 _db.SaveChanges();
 
+                var usuarioIdNotif = _db.NISEs.Find(factura.NiseId).UsuarioId;
+
                 var notificacion = new Notificacion
                 {
-                    UsuarioId = _db.NISEs.Find(factura.NiseId).UsuarioId,
+                    UsuarioId = usuarioIdNotif,
                     Titulo = "Pago realizado",
                     Mensaje = "Se ha realizado el pago de la factura " + factura.NumeroFactura + " por ₡" + factura.Monto.ToString("N0") + ".",
                     Fecha = DateTime.Now,
@@ -173,6 +176,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 };
                 _db.Notificaciones.Add(notificacion);
                 _db.SaveChanges();
+
+                EnviarCorreoReal(usuarioIdNotif,
+                    "Pago confirmado · " + factura.NumeroFactura,
+                    "Tu pago de <b>₡" + factura.Monto.ToString("N0") + "</b> fue procesado correctamente.");
 
                 return Json(new { success = true, message = "Pago realizado exitosamente." });
             }
@@ -311,7 +318,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             }
             ViewBag.FacturasPorNise = facturasPorNise;
 
-            // ⭐ Averías activas del usuario (para "Averías en seguimiento")
             ViewBag.AveriasActivas = _db.Averias
                 .Where(a => a.UsuarioId == usuarioId
                          && a.Estado != "Resuelto"
@@ -434,6 +440,36 @@ namespace CNFL_Clientes_Prototipo.Controllers
             return View();
         }
 
+        [HttpGet]
+        public JsonResult ContarNotificacionesNuevas(string desde = null)
+        {
+            try
+            {
+                var usuarioId = Session["UsuarioId"] as int?;
+                if (usuarioId == null)
+                    return Json(new { success = false, total = 0 }, JsonRequestBehavior.AllowGet);
+
+                DateTime fechaDesde = DateTime.Now.AddMinutes(-5);
+                if (!string.IsNullOrEmpty(desde))
+                {
+                    DateTime temp;
+                    if (DateTime.TryParse(desde, out temp))
+                        fechaDesde = temp;
+                }
+
+                var total = _db.Notificaciones
+                    .Count(n => n.UsuarioId == usuarioId.Value
+                             && !n.Leida
+                             && n.Fecha > fechaDesde);
+
+                return Json(new { success = true, total = total }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, total = 0, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         // ============================================================
         // PUSH
         // ============================================================
@@ -472,6 +508,235 @@ namespace CNFL_Clientes_Prototipo.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+        }
+
+        // ============================================================
+        // REPORTES / CREAR AVERÍA
+        // ============================================================
+        public ActionResult Reportes()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            // Cargar NISEs del usuario para el formulario
+            var nises = _db.NISEs
+                .Where(n => n.UsuarioId == usuarioId)
+                .OrderBy(n => n.NumeroNise)
+                .ToList();
+
+            ViewBag.NISEs = nises;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CrearAveria(FormCollection form)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            try
+            {
+                var tipoAveria = form["TipoAveria"];
+                var tipoProblema = form["TipoProblema"];
+                var prioridad = form["Prioridad"] ?? "Media";
+                var descripcion = form["Descripcion"];
+                var niseIdStr = form["NiseId"];
+                var numeroPoste = form["NumeroPoste"];
+                var telefono = form["Telefono"];
+                var latStr = form["Latitud"];
+                var lngStr = form["Longitud"];
+
+                // ═══ Validaciones ═══
+                if (string.IsNullOrWhiteSpace(tipoAveria) || string.IsNullOrWhiteSpace(tipoProblema))
+                {
+                    TempData["Error"] = "Faltan datos obligatorios (tipo de avería y problema).";
+                    return RedirectToAction("Reportes");
+                }
+
+                if (string.IsNullOrWhiteSpace(descripcion) || descripcion.Trim().Length < 10)
+                {
+                    TempData["Error"] = "La descripción debe tener al menos 10 caracteres.";
+                    return RedirectToAction("Reportes");
+                }
+
+                // ═══ Determinar NISE ═══
+                int? niseId = null;
+                if (!string.IsNullOrWhiteSpace(niseIdStr))
+                {
+                    int tempNise;
+                    if (int.TryParse(niseIdStr, out tempNise))
+                    {
+                        // Verificar que el NISE pertenezca al usuario
+                        var niseValido = _db.NISEs.Any(n => n.NiseId == tempNise && n.UsuarioId == usuarioId.Value);
+                        if (niseValido) niseId = tempNise;
+                    }
+                }
+
+                // Si es avería propia y no tiene NISE, error
+                if (tipoAveria == "Eléctrica propia" && !niseId.HasValue)
+                {
+                    TempData["Error"] = "Seleccioná el NISE afectado.";
+                    return RedirectToAction("Reportes");
+                }
+
+                // Si es alumbrado público, requiere número de poste
+                if (tipoAveria == "Alumbrado público" && string.IsNullOrWhiteSpace(numeroPoste))
+                {
+                    TempData["Error"] = "Ingresá el número de poste.";
+                    return RedirectToAction("Reportes");
+                }
+
+                // ═══ Coordenadas GPS ═══
+                double? lat = null;
+                double? lng = null;
+                if (!string.IsNullOrWhiteSpace(latStr))
+                {
+                    double tempLat;
+                    if (double.TryParse(latStr, System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out tempLat))
+                        lat = tempLat;
+                }
+                if (!string.IsNullOrWhiteSpace(lngStr))
+                {
+                    double tempLng;
+                    if (double.TryParse(lngStr, System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out tempLng))
+                        lng = tempLng;
+                }
+
+                // ═══ Crear la avería ═══
+                var averia = new Averia
+                {
+                    UsuarioId = usuarioId.Value,
+                    NiseId = niseId ?? 0, // 0 si es ajena/alumbrado público
+                    Tipo = tipoAveria + " · " + tipoProblema,
+                    Descripcion = descripcion.Trim(),
+                    Estado = "Ingresado",
+                    FechaReporte = DateTime.Now,
+                    Direccion = numeroPoste != null ? "Poste #" + numeroPoste : null,
+                    Latitud = lat,
+                    Longitud = lng
+                };
+
+                // Si es "Eléctrica ajena", guardamos la ubicación en la descripción
+                if (tipoAveria == "Eléctrica ajena")
+                {
+                    averia.Descripcion = "[Avería ajena] " + descripcion.Trim();
+                }
+                else if (tipoAveria == "Alumbrado público")
+                {
+                    averia.Descripcion = "[Poste #" + numeroPoste + "] " + descripcion.Trim();
+                }
+
+                _db.Averias.Add(averia);
+                _db.SaveChanges();
+
+                // ═══ Guardar fotos (si vienen) ═══
+                var archivos = Request.Files;
+                int fotosGuardadas = 0;
+
+                if (archivos != null && archivos.Count > 0)
+                {
+                    var carpeta = Server.MapPath("~/Content/uploads/averias/");
+                    if (!System.IO.Directory.Exists(carpeta))
+                        System.IO.Directory.CreateDirectory(carpeta);
+
+                    for (int i = 0; i < archivos.Count; i++)
+                    {
+                        var archivo = archivos[i];
+                        if (archivo == null || archivo.ContentLength == 0) continue;
+
+                        var extension = System.IO.Path.GetExtension(archivo.FileName).ToLower();
+                        var extensionesValidas = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+                        if (Array.IndexOf(extensionesValidas, extension) < 0) continue;
+
+                        // Límite de 5 MB
+                        if (archivo.ContentLength > 5 * 1024 * 1024) continue;
+
+                        var nombreGuardar = "averia_" + averia.AveriaId + "_" + i + "_" + DateTime.Now.Ticks + extension;
+                        var rutaCompleta = System.IO.Path.Combine(carpeta, nombreGuardar);
+                        archivo.SaveAs(rutaCompleta);
+
+                        // La primera foto la guardamos como FotoUrl principal
+                        if (fotosGuardadas == 0)
+                        {
+                            averia.FotoUrl = "/Content/uploads/averias/" + nombreGuardar;
+                        }
+
+                        fotosGuardadas++;
+                    }
+
+                    if (fotosGuardadas > 0)
+                        _db.SaveChanges();
+                }
+
+                // ═══ Crear notificación ═══
+                var notif = new Notificacion
+                {
+                    UsuarioId = usuarioId.Value,
+                    Titulo = "Avería reportada · #" + averia.AveriaId,
+                    Mensaje = tipoAveria + " · " + tipoProblema + " · " + (fotosGuardadas > 0 ? fotosGuardadas + " foto(s) adjunta(s)" : "sin fotos"),
+                    Fecha = DateTime.Now,
+                    Leida = false,
+                    Tipo = "Averia",
+                    Estado = "Ingresado"
+                };
+                _db.Notificaciones.Add(notif);
+                _db.SaveChanges();
+
+                // ═══ Enviar correo ═══
+                EnviarCorreoReal(usuarioId.Value,
+                    "Avería reportada · #" + averia.AveriaId,
+                    "Recibimos tu reporte de <b>" + tipoAveria + "</b> (<b>" + tipoProblema + "</b>). " +
+                    "Un operador está asignado a tu caso. " +
+                    (fotosGuardadas > 0 ? "Adjuntaste " + fotosGuardadas + " foto(s)." : ""));
+
+                // ═══ Éxito ═══
+                TempData["Ok"] = "✓ Reporte enviado correctamente. Un operador te contactará al " + (telefono ?? "teléfono registrado") + ".";
+                return RedirectToAction("EstadoAveria", "Clientes", new { id = averia.AveriaId });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[CrearAveria] Error: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("[CrearAveria] StackTrace: " + ex.StackTrace);
+                TempData["Error"] = "Ocurrió un error al guardar el reporte. Intentá de nuevo.";
+                return RedirectToAction("Reportes");
+            }
+        }
+
+        public ActionResult EstadoAveria(int id = 0)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var averia = _db.Averias.FirstOrDefault(a => a.AveriaId == id && a.UsuarioId == usuarioId);
+
+            ViewBag.AveriaId = id;
+            ViewBag.Averia = averia;
+            return View();
+        }
+
+        public ActionResult HistorialReportes()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            var averias = _db.Averias
+                .Where(a => a.UsuarioId == usuarioId)
+                .OrderByDescending(a => a.FechaReporte)
+                .Take(50)
+                .ToList();
+
+            ViewBag.Averias = averias;
+            return View();
+        }
+
+        public ActionResult Calculadora()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+            return View();
         }
 
         // ============================================================
@@ -641,62 +906,33 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // ENVÍO DE CORREO REAL (SMTP)
+        // ENVÍO DE CORREO REAL (delegado al EmailService)
         // ============================================================
-
         private void EnviarCorreoReal(int usuarioId, string titulo, string mensaje)
         {
-            var usuario = _db.Usuarios.Find(usuarioId);
-            if (usuario == null || string.IsNullOrWhiteSpace(usuario.Correo)) return;
-
             try
             {
-                var smtpHost = System.Configuration.ConfigurationManager.AppSettings["SmtpHost"] ?? "smtp.gmail.com";
-                var smtpPort = int.Parse(System.Configuration.ConfigurationManager.AppSettings["SmtpPort"] ?? "587");
-                var smtpUser = System.Configuration.ConfigurationManager.AppSettings["SmtpUser"] ?? "";
-                var smtpPass = System.Configuration.ConfigurationManager.AppSettings["SmtpPass"] ?? "";
-                var smtpFrom = System.Configuration.ConfigurationManager.AppSettings["SmtpFrom"] ?? smtpUser;
-
-                if (string.IsNullOrWhiteSpace(smtpUser) || string.IsNullOrWhiteSpace(smtpPass))
-                    return;
-
-                using (var smtp = new System.Net.Mail.SmtpClient(smtpHost, smtpPort))
+                var usuario = _db.Usuarios.Find(usuarioId);
+                if (usuario == null || string.IsNullOrWhiteSpace(usuario.Correo))
                 {
-                    smtp.EnableSsl = true;
-                    smtp.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
-
-                    var mail = new System.Net.Mail.MailMessage
-                    {
-                        From = new System.Net.Mail.MailAddress(smtpFrom, "CNFL"),
-                        Subject = "CNFL · " + titulo,
-                        IsBodyHtml = true,
-                        Body = @"
-                            <div style='font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; background: #f5f6fa; border-radius: 16px;'>
-                                <div style='text-align: center; margin-bottom: 20px;'>
-                                    <h1 style='color: #1E23E6; font-size: 22px; margin: 0;'>CNFL</h1>
-                                </div>
-                                <div style='background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 4px 14px rgba(16,20,40,.06);'>
-                                    <h2 style='color: #0E1116; font-size: 18px; margin: 0 0 12px;'>" + titulo + @"</h2>
-                                    <p style='color: #727A86; font-size: 14px; line-height: 1.5; margin: 0 0 20px;'>" + mensaje + @"</p>
-                                    <a href='http://localhost:44387/Clientes/Alertas'
-                                       style='display: inline-block; background: #FF692D; color: #fff; text-decoration: none; padding: 12px 22px; border-radius: 10px; font-weight: 700; font-size: 14px;'>
-                                        Ver en la app
-                                    </a>
-                                </div>
-                                <p style='color: #aab0be; font-size: 11px; text-align: center; margin-top: 18px; line-height: 1.5;'>
-                                    Este correo fue enviado automáticamente por CNFL.<br>
-                                    Si no solicitaste esta notificación, ignoralo.
-                                </p>
-                            </div>"
-                    };
-                    mail.To.Add(usuario.Correo);
-
-                    smtp.Send(mail);
+                    System.Diagnostics.Debug.WriteLine("[ClientesController] Usuario sin correo: " + usuarioId);
+                    return;
                 }
+
+                string asunto = "CNFL · " + titulo;
+                string nombreCompleto = (usuario.Nombre + " " + usuario.Apellidos).Trim();
+
+                EmailService.Enviar(
+                    usuario.Correo,
+                    asunto,
+                    titulo,
+                    mensaje,
+                    nombreCompleto
+                );
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error enviando correo: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("[ClientesController] Error: " + ex.Message);
             }
         }
 
@@ -772,51 +1008,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         public ActionResult MetodosPago()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
-            return View();
-        }
-
-        // ============================================================
-        // REPORTES / AVERÍAS
-        // ============================================================
-
-        public ActionResult Reportes()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
-            return View();
-        }
-
-        public ActionResult EstadoAveria(int id = 0)
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
-
-            var averia = _db.Averias.FirstOrDefault(a => a.AveriaId == id && a.UsuarioId == usuarioId);
-
-            ViewBag.AveriaId = id;
-            ViewBag.Averia = averia;
-            return View();
-        }
-
-        public ActionResult HistorialReportes()
-        {
-            var usuarioId = Session["UsuarioId"] as int?;
-            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
-
-            var averias = _db.Averias
-                .Where(a => a.UsuarioId == usuarioId)
-                .OrderByDescending(a => a.FechaReporte)
-                .Take(50)
-                .ToList();
-
-            ViewBag.Averias = averias;
-            return View();
-        }
-
-        public ActionResult Calculadora()
         {
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null) return RedirectToAction("Login", "Cuenta");

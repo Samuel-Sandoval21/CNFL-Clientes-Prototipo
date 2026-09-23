@@ -191,7 +191,7 @@ else
     </div>
 </div>
 
-<!-- ═══════════ CONTÁCTANOS (reutilizable) ═══════════ -->
+<!-- CONTÁCTANOS -->
 @Html.Partial("_Contactanos")
 
 @section Scripts {
@@ -221,9 +221,10 @@ else
             aplicarModo('6m');
         })();
 
-        // ═══════════ CONFIG MODAL ═══════════
-        function abrirConfig() {
-            window.location.href = '@Url.Action("Cuenta", "Clientes")';
-        }
+        // ═══════════════════════════════════════════════════════════
+        // NOTA: La función abrirConfig() NO está definida aquí.
+        // Se usa la función global definida en el _LayoutCliente.cshtml
+        // que abre el modal de configuración.
+        // ═══════════════════════════════════════════════════════════
     </script>
 }

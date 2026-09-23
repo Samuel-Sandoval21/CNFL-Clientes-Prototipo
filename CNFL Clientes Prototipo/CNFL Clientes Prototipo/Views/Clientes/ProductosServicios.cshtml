@@ -6,6 +6,637 @@
     var usuarioNise = Session["Nise"] as string ?? "";
     var usuarioTelefono = Session["Telefono"] as string ?? "";
     var usuarioNombreCompleto = Session["Nombre"] as string ?? "Cliente CNFL";
+
+    // ═══════════ DATOS DE LOS 5 PLANES CNFL TE ASISTE ═══════════
+    var planes = new List<dynamic>
+{
+        new {
+            Id = "hogar-protegido",
+            Nombre = "Plan Hogar Protegido",
+            DescripcionCorta = "Ideal para quienes quieren proteger su vivienda",
+            Precio = "$5,00 IVAI",
+            PrecioNumerico = 5.00,
+            Imagen = "plan_hogar_protegido.jpg",
+            ColorBorde = "#FF692D",
+            Categorias = new List<string> { "Electroasistencia", "Chequeo Hogar" },
+            Coberturas = new List<string> {
+                "Revisión y diagnóstico general de instalación eléctrica del hogar",
+                "Reemplazo de lámparas",
+                "Reemplazo de fluorescentes",
+                "Reemplazo de tomacorriente",
+                "Reemplazo de enchufe para cocina y/o refrigerador",
+                "Detección y reparación de corto circuitos",
+                "Instalación de breakers",
+                "Limpieza de canoas",
+                "Cerrajero al hogar",
+                "Plomero al hogar",
+                "Instalación de termo duchas",
+                "Otras coberturas adicionales"
+            }
+        },
+        new {
+            Id = "consentidos",
+            Nombre = "Plan Consentidos",
+            DescripcionCorta = "Ideal para familias con mascotas",
+            Precio = "$5,95 IVAI",
+            PrecioNumerico = 5.95,
+            Imagen = "plan_consentidos.jpg",
+            ColorBorde = "#FF692D",
+            Categorias = new List<string> { "Electroasistencia", "Chequeo Hogar", "Asistencia Mascotas" },
+            Coberturas = new List<string> {
+                "Revisión y diagnóstico general de instalación eléctrica del hogar",
+                "Electro Asistencia",
+                "Chequeo hogar",
+                "Asistencia a mascotas",
+                "Movilidad de la mascota en caso de emergencia",
+                "Alojamiento para la mascota por hospitalización del afiliado",
+                "Localización de mejores precios de medicamentos para mascotas",
+                "Creación de material POP para la búsqueda de la mascota en caso de pérdida",
+                "Daños directos del inmueble ocasionados por la mascota",
+                "Asesoría Legal: Trámites de salida del país de la mascota",
+                "Responsabilidad civil relacionada con la mascota",
+                "Demandas sobre el asegurado causados por la mascota",
+                "Otras coberturas adicionales"
+            }
+        },
+        new {
+            Id = "bienestar",
+            Nombre = "Plan Bienestar",
+            DescripcionCorta = "Ideal para cuidar su salud y tranquilidad en el hogar",
+            Precio = "$5,95 IVAI",
+            PrecioNumerico = 5.95,
+            Imagen = "plan_bienestar.jpg",
+            ColorBorde = "#FF692D",
+            Categorias = new List<string> { "Electroasistencia", "Chequeo Hogar", "Asistencia Médica" },
+            Coberturas = new List<string> {
+                "Electro Asistencia",
+                "Chequeo hogar",
+                "Consultas con Médico General al domicilio y/o centro médico",
+                "Traslado médico terrestre en caso de accidente o enfermedad (ambulancia)",
+                "Orientación médica telefónica con especialistas: Médico General - Nutricionista - Fisioterapeuta - Psicólogo - Enfermería",
+                "Hemograma completo",
+                "Perfil Lipídico",
+                "Electro-cardiograma",
+                "Rayos X",
+                "Ultrasonido",
+                "Otras coberturas adicionales"
+            }
+        },
+        new {
+            Id = "vida-premium",
+            Nombre = "Plan Vida Prémium",
+            DescripcionCorta = "Ideal para una cobertura más integral",
+            Precio = "$6,85 IVAI",
+            PrecioNumerico = 6.85,
+            Imagen = "plan_vida_premium.jpg",
+            ColorBorde = "#FF692D",
+            Categorias = new List<string> { "Electroasistencia", "Chequeo Hogar", "Asistencia Médica", "Asistencia Vial" },
+            Coberturas = new List<string> {
+                "Electro Asistencia",
+                "Chequeo hogar",
+                "Servicio de remolque por accidente o avería",
+                "Auxilio vial paso de corriente",
+                "Auxilio vial cambio de llanta",
+                "Auxilio vial envío de combustible",
+                "Servicio de chofer profesional en caso de enfermedad",
+                "Transporte hasta el domicilio a causa del robo total del vehículo",
+                "Otras coberturas adicionales"
+            }
+        },
+        new {
+            Id = "e-movilidad",
+            Nombre = "Plan E-Movilidad Segura",
+            DescripcionCorta = "Ideal para una conducción eléctrica sin preocupaciones",
+            Precio = "₡5 650 IVAI",
+            PrecioNumerico = 5650,
+            Imagen = "plan_e_movilidad.jpg",
+            ColorBorde = "#64B95A",
+            Categorias = new List<string> { "Asistencia Vehicular Eléctrica", "Asistencia Médica", "Electroasistencia" },
+            Coberturas = new List<string> {
+                "⚡ Recarga de emergencia para vehículo eléctrico",
+                "🚙 Traslado en grúa plataforma adaptada para vehículo eléctrico",
+                "🔧 Asistencia mecánica menor en sitio",
+                "🗺️ Asesoría en planificación de rutas con estaciones de carga",
+                "🔋 Desbloqueo por descarga total imprevista",
+                "🔍 Revisión preventiva anual del vehículo eléctrico",
+                "📱 Soporte técnico especializado vía telefónica o digital",
+                "🩺 Asistencia médica familiar",
+                "🔌 Instalación de cargador de vehículo eléctrico, revisión y diagnóstico"
+            }
+        }
+    };
+}
+
+@section Styles {
+    <style>
+        /* ═══════════ TABS DE PRODUCTOS ═══════════ */
+        .prod-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 16px 0 4px;
+        }
+
+        .prod-tab {
+            font-size: 11.5px;
+            font-weight: 800;
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: #eef0f7;
+            color: var(--muted);
+            cursor: pointer;
+            border: 0;
+            font-family: inherit;
+            text-decoration: none;
+            transition: background .15s, color .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+            .prod-tab.active {
+                background: var(--blue);
+                color: #fff;
+            }
+
+        .section-h {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--muted);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin: 22px 0 8px;
+        }
+
+        /* ═══════════════════════════════════════════
+           SERVICIOS — ACORDEÓN
+           ═══════════════════════════════════════════ */
+        .servicios-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+            padding-bottom: 100px;
+        }
+
+        .servicio-item {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(16, 20, 40, 0.04);
+            overflow: hidden;
+            transition: box-shadow .2s, border-color .2s;
+        }
+
+            .servicio-item:hover {
+                box-shadow: 0 4px 14px rgba(16, 20, 40, 0.08);
+            }
+
+            .servicio-item.abierto {
+                border-color: rgba(30, 35, 230, 0.25);
+                box-shadow: 0 6px 20px rgba(30, 35, 230, 0.08);
+            }
+
+        .servicio-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            cursor: pointer;
+            background: #ffffff;
+            transition: background .15s;
+        }
+
+            .servicio-header:hover {
+                background: #fafbfe;
+            }
+
+        .servicio-icono {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #eef0ff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            color: var(--blue);
+            transition: background .15s, color .15s;
+        }
+
+            .servicio-icono svg {
+                width: 22px;
+                height: 22px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .servicio-item.abierto .servicio-icono {
+            background: var(--blue);
+            color: #ffffff;
+        }
+
+        .servicio-texto {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .servicio-titulo {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.25;
+        }
+
+        .servicio-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 3px;
+            line-height: 1.4;
+        }
+
+        .servicio-chev {
+            color: #c3c8d4;
+            flex-shrink: 0;
+            transition: transform .25s ease, color .15s;
+        }
+
+            .servicio-chev svg {
+                width: 20px;
+                height: 20px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .servicio-item.abierto .servicio-chev {
+            transform: rotate(180deg);
+            color: var(--blue);
+        }
+
+        .servicio-contenido {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .35s ease;
+            background: #fafbfe;
+            border-top: 1px solid transparent;
+        }
+
+        .servicio-item.abierto .servicio-contenido {
+            max-height: 800px;
+            border-top-color: var(--line);
+        }
+
+        .servicio-contenido-inner {
+            padding: 16px;
+        }
+
+        .servicio-form .reg-field {
+            margin-bottom: 12px;
+        }
+
+        .servicio-form textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            min-height: 90px;
+            resize: vertical;
+            outline: none;
+            color: var(--ink);
+            background: #fff;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+            .servicio-form textarea:focus {
+                border-color: var(--blue);
+                box-shadow: 0 0 0 3px rgba(30, 35, 230, 0.1);
+            }
+
+        .servicio-btn-enviar {
+            width: 100%;
+            margin-top: 4px;
+            padding: 14px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--orange);
+            color: #fff;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 13.5px;
+            cursor: pointer;
+            box-shadow: 0 6px 14px -6px rgba(255, 105, 45, 0.6);
+            transition: transform .15s, background .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+            .servicio-btn-enviar:hover {
+                background: #e55a20;
+            }
+
+            .servicio-btn-enviar:active {
+                transform: scale(0.98);
+            }
+
+            .servicio-btn-enviar:disabled {
+                background: #9aa1b0;
+                cursor: not-allowed;
+                box-shadow: none;
+            }
+
+        .servicio-estado {
+            display: none;
+            margin-top: 12px;
+            padding: 12px 14px;
+            background: #e9f7ec;
+            border: 1px solid #cdeed4;
+            border-radius: 12px;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #2f8f3e;
+            text-align: center;
+        }
+
+            .servicio-estado.show {
+                display: block;
+            }
+
+        .servicios-cta {
+            width: 100%;
+            padding: 16px;
+            margin-top: 16px;
+            border: 0;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--blue), #3b6ce0);
+            color: #fff;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14.5px;
+            cursor: pointer;
+            box-shadow: 0 10px 22px -8px rgba(30, 35, 230, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform .15s;
+        }
+
+            .servicios-cta:active {
+                transform: scale(0.98);
+            }
+
+        /* ═══════════ INFO EXTRA ═══════════ */
+        .info-extra {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .info-extra h4 {
+                font-size: 12.5px;
+                font-weight: 800;
+                color: var(--ink);
+                margin: 0 0 8px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .info-extra p {
+                font-size: 12px;
+                color: var(--muted);
+                line-height: 1.6;
+                margin: 0 0 8px;
+            }
+
+                .info-extra p:last-child {
+                    margin-bottom: 0;
+                }
+
+        /* ═══════════ PLANES ═══════════ */
+        .planes-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .plan-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+        .plan-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+        }
+
+        .plan-img {
+            width: 84px;
+            height: 84px;
+            border-radius: 14px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid var(--line);
+            background: #f7f8fc;
+        }
+
+        .plan-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .plan-nombre {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.2;
+            letter-spacing: -.01em;
+        }
+
+        .plan-desc {
+            font-size: 11.5px;
+            color: var(--muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .plan-precio {
+            display: inline-block;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #fff;
+            background: var(--orange);
+            padding: 5px 11px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .plan-cats {
+            padding: 0 16px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .plan-cat {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--blue);
+            background: #eef0ff;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .plan-toggle {
+            width: 100%;
+            background: #f7f8fc;
+            border: 0;
+            border-top: 1px solid var(--line);
+            padding: 13px 16px;
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background .15s;
+        }
+
+            .plan-toggle:hover {
+                background: #eef0ff;
+            }
+
+            .plan-toggle .arrow {
+                transition: transform .2s;
+                font-size: 10px;
+            }
+
+            .plan-toggle.open .arrow {
+                transform: rotate(180deg);
+            }
+
+        .plan-coberturas {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .3s ease;
+            background: #fafbfe;
+            border-top: 1px solid var(--line);
+        }
+
+            .plan-coberturas.open {
+                max-height: 900px;
+                overflow-y: auto;
+            }
+
+        .plan-coberturas-inner {
+            padding: 16px;
+        }
+
+        .plan-coberturas h4 {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--ink);
+            margin: 0 0 10px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .plan-coberturas ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .plan-coberturas ul li {
+                font-size: 12.5px;
+                color: var(--ink);
+                line-height: 1.5;
+                padding: 7px 0 7px 22px;
+                position: relative;
+                border-bottom: 1px solid var(--line);
+            }
+
+                .plan-coberturas ul li:last-child {
+                    border-bottom: 0;
+                }
+
+                .plan-coberturas ul li::before {
+                    content: "✓";
+                    position: absolute;
+                    left: 0;
+                    top: 7px;
+                    color: var(--green);
+                    font-weight: 800;
+                    font-size: 13px;
+                }
+
+        .plan-btn-carrito {
+            width: 100%;
+            background: var(--orange);
+            color: #fff;
+            border: 0;
+            padding: 15px 16px;
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+            .plan-btn-carrito:hover {
+                background: #e55a20;
+            }
+
+        /* ═══════════ TOAST ═══════════ */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #0E1116;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-size: 12.5px;
+            font-weight: 700;
+            z-index: 500;
+            box-shadow: 0 10px 24px rgba(0,0,0,.3);
+            transition: .3s;
+            max-width: 340px;
+            text-align: center;
+            opacity: 0;
+        }
+
+            .toast.show {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+    </style>
 }
 
 <!-- ═══════════ APPBAR ═══════════ -->
@@ -54,7 +685,7 @@
 </div>
 
 <!-- ═══════════════════════════════════════════
-     SECCIÓN 1: SERVICIOS
+     SECCIÓN 1: SERVICIOS (ACORDEÓN)
      ═══════════════════════════════════════════ -->
 <div id="tab-servicios" class="tab-panel">
 
@@ -66,76 +697,274 @@
 
     <div class="eyebrow" style="margin-top:22px;">Servicios disponibles</div>
 
-    <div class="rows">
-        <div class="row-item" onclick="abrirServicio('Eficiencia energética', '💡', 'Diagnóstico y optimización del consumo');">
-            <div class="ic" style="background:#e9f7ec; font-size:20px; display:grid; place-items:center;">💡</div>
-            <div class="tx">
-                <div class="t">Eficiencia energética</div>
-                <div class="s">Diagnóstico y optimización del consumo</div>
+    <div class="servicios-lista">
+
+        <!-- Eficiencia energética -->
+        <div class="servicio-item" id="serv-eficiencia">
+            <div class="servicio-header" onclick="toggleServicio('serv-eficiencia');">
+                <div class="servicio-icono">
+                    <svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z" /></svg>
+                </div>
+                <div class="servicio-texto">
+                    <div class="servicio-titulo">Eficiencia energética</div>
+                    <div class="servicio-desc">Diagnóstico y optimización del consumo</div>
+                </div>
+                <div class="servicio-chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></div>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+            <div class="servicio-contenido">
+                <div class="servicio-contenido-inner">
+                    <div class="servicio-form">
+                        <div class="reg-field">
+                            <label>Descripción del servicio *</label>
+                            <textarea placeholder="Contanos qué necesitás..."></textarea>
+                        </div>
+                        <div class="reg-field">
+                            <label>NISE asociado (opcional)</label>
+                            <input type="text" placeholder="Ej: NISE-002" />
+                        </div>
+                        <div class="reg-field">
+                            <label>Teléfono de contacto</label>
+                            <input type="tel" placeholder="Ej: 8888-8888" />
+                        </div>
+                        <button type="button" class="servicio-btn-enviar" onclick="enviarServicio('serv-eficiencia', 'Eficiencia energética');">
+                            📅 Solicitar visita
+                        </button>
+                        <div class="servicio-estado"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="row-item" onclick="abrirServicio('Alarmas', '🚨', 'Monitoreo y respuesta inmediata');">
-            <div class="ic" style="background:#fdeaea; font-size:20px; display:grid; place-items:center;">🚨</div>
-            <div class="tx">
-                <div class="t">Alarmas</div>
-                <div class="s">Monitoreo y respuesta inmediata</div>
+        <!-- Alarmas -->
+        <div class="servicio-item" id="serv-alarmas">
+            <div class="servicio-header" onclick="toggleServicio('serv-alarmas');">
+                <div class="servicio-icono">
+                    <svg viewBox="0 0 24 24"><path d="M12 2v3M5.6 5.6l2.1 2.1M2 12h3M19 12h3M16.3 7.7l2.1-2.1M12 22a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9z" /></svg>
+                </div>
+                <div class="servicio-texto">
+                    <div class="servicio-titulo">Alarmas</div>
+                    <div class="servicio-desc">Monitoreo y respuesta inmediata</div>
+                </div>
+                <div class="servicio-chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></div>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+            <div class="servicio-contenido">
+                <div class="servicio-contenido-inner">
+                    <div class="servicio-form">
+                        <div class="reg-field">
+                            <label>Descripción del servicio *</label>
+                            <textarea placeholder="Contanos qué necesitás..."></textarea>
+                        </div>
+                        <div class="reg-field">
+                            <label>NISE asociado (opcional)</label>
+                            <input type="text" placeholder="Ej: NISE-002" />
+                        </div>
+                        <div class="reg-field">
+                            <label>Teléfono de contacto</label>
+                            <input type="tel" placeholder="Ej: 8888-8888" />
+                        </div>
+                        <button type="button" class="servicio-btn-enviar" onclick="enviarServicio('serv-alarmas', 'Alarmas');">
+                            📅 Solicitar visita
+                        </button>
+                        <div class="servicio-estado"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="row-item" onclick="abrirServicio('Cargadores eléctricos', '🔌', 'Instalación certificada para VE');">
-            <div class="ic" style="background:#eef6ff; font-size:20px; display:grid; place-items:center;">🔌</div>
-            <div class="tx">
-                <div class="t">Cargadores eléctricos</div>
-                <div class="s">Instalación certificada para VE</div>
+        <!-- Cargadores eléctricos -->
+        <div class="servicio-item" id="serv-cargadores">
+            <div class="servicio-header" onclick="toggleServicio('serv-cargadores');">
+                <div class="servicio-icono">
+                    <svg viewBox="0 0 24 24"><path d="M9 2v6M15 2v6M7 8h10v4a5 5 0 0 1-5 5 5 5 0 0 1-5-5V8zM12 17v5" /></svg>
+                </div>
+                <div class="servicio-texto">
+                    <div class="servicio-titulo">Cargadores eléctricos</div>
+                    <div class="servicio-desc">Instalación certificada para VE</div>
+                </div>
+                <div class="servicio-chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></div>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+            <div class="servicio-contenido">
+                <div class="servicio-contenido-inner">
+                    <div class="servicio-form">
+                        <div class="reg-field">
+                            <label>Descripción del servicio *</label>
+                            <textarea placeholder="Contanos qué necesitás..."></textarea>
+                        </div>
+                        <div class="reg-field">
+                            <label>NISE asociado (opcional)</label>
+                            <input type="text" placeholder="Ej: NISE-002" />
+                        </div>
+                        <div class="reg-field">
+                            <label>Teléfono de contacto</label>
+                            <input type="tel" placeholder="Ej: 8888-8888" />
+                        </div>
+                        <button type="button" class="servicio-btn-enviar" onclick="enviarServicio('serv-cargadores', 'Cargadores eléctricos');">
+                            📅 Solicitar visita
+                        </button>
+                        <div class="servicio-estado"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="row-item" onclick="abrirServicio('Domótica', '🏠', 'Automatización inteligente del hogar');">
-            <div class="ic" style="background:#f3f0ff; font-size:20px; display:grid; place-items:center;">🏠</div>
-            <div class="tx">
-                <div class="t">Domótica</div>
-                <div class="s">Automatización inteligente del hogar</div>
+        <!-- Domótica -->
+        <div class="servicio-item" id="serv-domotica">
+            <div class="servicio-header" onclick="toggleServicio('serv-domotica');">
+                <div class="servicio-icono">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" /><path d="M9 22V12h6v10" /></svg>
+                </div>
+                <div class="servicio-texto">
+                    <div class="servicio-titulo">Domótica</div>
+                    <div class="servicio-desc">Automatización inteligente del hogar</div>
+                </div>
+                <div class="servicio-chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></div>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+            <div class="servicio-contenido">
+                <div class="servicio-contenido-inner">
+                    <div class="servicio-form">
+                        <div class="reg-field">
+                            <label>Descripción del servicio *</label>
+                            <textarea placeholder="Contanos qué necesitás..."></textarea>
+                        </div>
+                        <div class="reg-field">
+                            <label>NISE asociado (opcional)</label>
+                            <input type="text" placeholder="Ej: NISE-002" />
+                        </div>
+                        <div class="reg-field">
+                            <label>Teléfono de contacto</label>
+                            <input type="tel" placeholder="Ej: 8888-8888" />
+                        </div>
+                        <button type="button" class="servicio-btn-enviar" onclick="enviarServicio('serv-domotica', 'Domótica');">
+                            📅 Solicitar visita
+                        </button>
+                        <div class="servicio-estado"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="row-item" onclick="abrirServicio('Mantenimiento de barras', '⚙️', 'Revisión preventiva y correctiva');">
-            <div class="ic" style="background:#fef3e0; font-size:20px; display:grid; place-items:center;">⚙️</div>
-            <div class="tx">
-                <div class="t">Mantenimiento de barras</div>
-                <div class="s">Revisión preventiva y correctiva</div>
+        <!-- Mantenimiento de barras -->
+        <div class="servicio-item" id="serv-mantenimiento">
+            <div class="servicio-header" onclick="toggleServicio('serv-mantenimiento');">
+                <div class="servicio-icono">
+                    <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+                </div>
+                <div class="servicio-texto">
+                    <div class="servicio-titulo">Mantenimiento de barras</div>
+                    <div class="servicio-desc">Revisión preventiva y correctiva</div>
+                </div>
+                <div class="servicio-chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></div>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+            <div class="servicio-contenido">
+                <div class="servicio-contenido-inner">
+                    <div class="servicio-form">
+                        <div class="reg-field">
+                            <label>Descripción del servicio *</label>
+                            <textarea placeholder="Contanos qué necesitás..."></textarea>
+                        </div>
+                        <div class="reg-field">
+                            <label>NISE asociado (opcional)</label>
+                            <input type="text" placeholder="Ej: NISE-002" />
+                        </div>
+                        <div class="reg-field">
+                            <label>Teléfono de contacto</label>
+                            <input type="tel" placeholder="Ej: 8888-8888" />
+                        </div>
+                        <button type="button" class="servicio-btn-enviar" onclick="enviarServicio('serv-mantenimiento', 'Mantenimiento de barras');">
+                            📅 Solicitar visita
+                        </button>
+                        <div class="servicio-estado"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="row-item" onclick="abrirServicio('Venta e instalación', '🛠️', 'Equipos y puesta en marcha');">
-            <div class="ic" style="background:#eef0ff; font-size:20px; display:grid; place-items:center;">🛠️</div>
-            <div class="tx">
-                <div class="t">Venta e instalación</div>
-                <div class="s">Equipos y puesta en marcha</div>
+        <!-- Venta e instalación -->
+        <div class="servicio-item" id="serv-venta">
+            <div class="servicio-header" onclick="toggleServicio('serv-venta');">
+                <div class="servicio-icono">
+                    <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+                </div>
+                <div class="servicio-texto">
+                    <div class="servicio-titulo">Venta e instalación</div>
+                    <div class="servicio-desc">Equipos y puesta en marcha</div>
+                </div>
+                <div class="servicio-chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></div>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+            <div class="servicio-contenido">
+                <div class="servicio-contenido-inner">
+                    <div class="servicio-form">
+                        <div class="reg-field">
+                            <label>Descripción del servicio *</label>
+                            <textarea placeholder="Contanos qué necesitás..."></textarea>
+                        </div>
+                        <div class="reg-field">
+                            <label>NISE asociado (opcional)</label>
+                            <input type="text" placeholder="Ej: NISE-002" />
+                        </div>
+                        <div class="reg-field">
+                            <label>Teléfono de contacto</label>
+                            <input type="tel" placeholder="Ej: 8888-8888" />
+                        </div>
+                        <button type="button" class="servicio-btn-enviar" onclick="enviarServicio('serv-venta', 'Venta e instalación');">
+                            📅 Solicitar visita
+                        </button>
+                        <div class="servicio-estado"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="row-item" onclick="abrirServicio('Consumo verde y DERs', '🌱', 'Energías renovables distribuidas');">
-            <div class="ic" style="background:#e9f7ec; font-size:20px; display:grid; place-items:center;">🌱</div>
-            <div class="tx">
-                <div class="t">Consumo verde y DERs</div>
-                <div class="s">Energías renovables distribuidas</div>
+        <!-- Consumo verde y DERs -->
+        <div class="servicio-item" id="serv-consumo">
+            <div class="servicio-header" onclick="toggleServicio('serv-consumo');">
+                <div class="servicio-icono">
+                    <svg viewBox="0 0 24 24"><path d="M12 22c4.97 0 9-4.03 9-9-4.97 0-9 4.03-9 9zM12 22c-4.97 0-9-4.03-9-9 4.97 0 9 4.03 9 9zM12 22V8M12 8a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" /></svg>
+                </div>
+                <div class="servicio-texto">
+                    <div class="servicio-titulo">Consumo verde y DERs</div>
+                    <div class="servicio-desc">Energías renovables distribuidas</div>
+                </div>
+                <div class="servicio-chev"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></div>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
+            <div class="servicio-contenido">
+                <div class="servicio-contenido-inner">
+                    <div class="servicio-form">
+                        <div class="reg-field">
+                            <label>Descripción del servicio *</label>
+                            <textarea placeholder="Contanos qué necesitás..."></textarea>
+                        </div>
+                        <div class="reg-field">
+                            <label>NISE asociado (opcional)</label>
+                            <input type="text" placeholder="Ej: NISE-002" />
+                        </div>
+                        <div class="reg-field">
+                            <label>Teléfono de contacto</label>
+                            <input type="tel" placeholder="Ej: 8888-8888" />
+                        </div>
+                        <button type="button" class="servicio-btn-enviar" onclick="enviarServicio('serv-consumo', 'Consumo verde y DERs');">
+                            📅 Solicitar visita
+                        </button>
+                        <div class="servicio-estado"></div>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
 
-    <button type="button" class="btn btn-cta"
-            style="width:100%; padding:16px; margin-top:16px; font-size:14.5px;"
-            onclick="abrirServicio('Visita y cotización', '📅', 'Un especialista te visitará sin costo');">
-        📅 Solicitar visita técnica
+    <button type="button" class="servicios-cta" onclick="abrirServicioGlobal();">
+        📅 Solicitar visita técnica general
     </button>
+
+    <div class="info-extra" style="margin-bottom: 100px;">
+        <h4>ℹ️ ¿Cómo funciona?</h4>
+        <p>1. Elegí el servicio que necesitás.</p>
+        <p>2. Completá el formulario con la descripción.</p>
+        <p>3. Un asesor técnico te contactará para agendar la visita.</p>
+        <p>4. El costo se cargará directamente a tu factura eléctrica.</p>
+    </div>
+
 </div>
 
 <!-- ═══════════════════════════════════════════
@@ -191,41 +1020,68 @@
      SECCIÓN 3: SUBSCRIPCIONES
      ═══════════════════════════════════════════ -->
 <div id="tab-subscripciones" class="tab-panel" style="display:none;">
+
     <div class="hero-card" style="margin-top:22px; background:linear-gradient(135deg, #64B95A, #4a9a57);">
         <p class="greet">🛡️ CNFL TE ASISTE</p>
         <h1>Protegé lo que<br>más querés</h1>
-        <p class="sub">Seguros, asistencia y videovigilancia con cobertura 24/7.</p>
+        <p class="sub">Asistencia para tu hogar, tu salud, tu vehículo y el bienestar de tus mascotas. Cobertura 24/7.</p>
     </div>
 
     <div class="eyebrow" style="margin-top:22px;">Subscripciones disponibles</div>
 
-    <div class="rows">
-        <div class="row-item" onclick="abrirSubscripcion('Seguros de Hogar e Incendio');">
-            <div class="ic" style="background:#fdeaea; font-size:20px; display:grid; place-items:center;">🏠</div>
-            <div class="tx">
-                <div class="t">Seguros de Hogar e Incendio</div>
-                <div class="s">Cobertura contra daños e imprevistos</div>
-            </div>
-            <span class="pill st-normal" style="font-size:10px;"><span class="dot"></span>Activa</span>
-        </div>
+    <div class="planes-grid">
+        @foreach (var plan in planes)
+        {
+            <div class="plan-card" id="plan-@plan.Id">
+                <div class="plan-head" style="border-left: 4px solid @plan.ColorBorde;">
+                    <img src="@Url.Content("~/Content/img/planes/" + plan.Imagen)"
+                         alt="@plan.Nombre"
+                         class="plan-img"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.style.background='#eef0ff'; this.style.display='none';" />
+                    <div class="plan-info">
+                        <div class="plan-nombre">@plan.Nombre</div>
+                        <div class="plan-desc">@plan.DescripcionCorta</div>
+                        <span class="plan-precio">@plan.Precio</span>
+                    </div>
+                </div>
 
-        <div class="row-item" onclick="abrirSubscripcion('Asistencia');">
-            <div class="ic" style="background:#eef0ff; font-size:20px; display:grid; place-items:center;">🚑</div>
-            <div class="tx">
-                <div class="t">Asistencia</div>
-                <div class="s">Servicios de emergencia 24/7</div>
-            </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
-        </div>
+                <div class="plan-cats">
+                    @foreach (var cat in plan.Categorias)
+                    {
+                        <span class="plan-cat">@cat</span>
+                    }
+                </div>
 
-        <div class="row-item" onclick="abrirSubscripcion('Videovigilancia');">
-            <div class="ic" style="background:#f3f0ff; font-size:20px; display:grid; place-items:center;">📹</div>
-            <div class="tx">
-                <div class="t">Videovigilancia</div>
-                <div class="s">Cámaras con monitoreo 24/7</div>
+                <button type="button" class="plan-toggle" onclick="togglePlan('@plan.Id', this)">
+                    <span>+ Detalles del Plan</span>
+                    <span class="arrow">▼</span>
+                </button>
+
+                <div class="plan-coberturas" id="coberturas-@plan.Id">
+                    <div class="plan-coberturas-inner">
+                        <h4>Categorías de asistencias:</h4>
+                        <ul>
+                            @foreach (var cob in plan.Coberturas)
+                            {
+                                <li>@cob</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                <button type="button" class="plan-btn-carrito" onclick="agregarPlanAlCarrito('@plan.Id', '@plan.Nombre', @plan.PrecioNumerico, '@plan.Precio')">
+                    🛒 Agregar al carrito
+                </button>
             </div>
-            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
-        </div>
+        }
+    </div>
+
+    <div class="info-extra" style="margin-bottom: 100px;">
+        <h4>ℹ️ ¿Cómo afiliarse?</h4>
+        <p>Agregá el plan al carrito y completá tu compra con cualquiera de nuestros métodos de pago disponibles.</p>
+        <p>El cobro se hará mensualmente en la factura del servicio eléctrico. El plan puede ser suscrito únicamente por el titular del servicio.</p>
+        <p>Las asistencias de chequeo al hogar y electro-asistencia solo aplican dentro de la zona servida de la CNFL.</p>
     </div>
 </div>
 
@@ -234,7 +1090,6 @@
      ═══════════════════════════════════════════ -->
 <div id="tab-tarjeta" class="tab-panel" style="display:none;">
 
-    <!-- Tarjeta visual Visa Gold -->
     <div style="
         margin-top: 20px;
         background: linear-gradient(135deg, #7a5c00 0%, #c98a00 45%, #e0a800 100%);
@@ -272,7 +1127,6 @@
         </div>
     </div>
 
-    <!-- Beneficios -->
     <div class="eyebrow" style="margin-top:22px;">Beneficios de tu tarjeta</div>
 
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
@@ -306,11 +1160,9 @@
         </div>
     </div>
 
-    <!-- Formulario -->
     <div class="eyebrow" style="margin-top:22px;">Solicitud de tarjeta</div>
 
     <div class="reg-card" style="margin-top:8px;">
-
         <div class="reg-field">
             <label>Qué tipo de producto necesitás</label>
             <select id="tcProducto">
@@ -388,7 +1240,7 @@
         💳 Solicitar tarjeta Visa Gold
     </button>
 
-    <div id="tcEstado" style="display:none; margin-top:14px; padding:12px 14px; background:#e9f7ec; border-radius:12px; font-size:12.5px; font-weight:800; color:#2f8f3e; text-align:center;">
+    <div id="tcEstado" style="display:none; margin-top:14px; padding:12px 14px; background:#e9f7ec; border-radius:12px; font-size:12.5px; font-weight:800; color:#2f8f3e; text-align:center; margin-bottom: 100px;">
         ✓ Solicitud enviada. Un asesor te contactará.
     </div>
 </div>
@@ -405,7 +1257,7 @@
 
     <div class="eyebrow" style="margin-top:22px;">Resumen general</div>
 
-    <div class="rows">
+    <div class="rows" style="margin-bottom: 100px;">
         <a href="@Url.Action("MisCompras", "Clientes")" class="row-item">
             <div class="ic" style="background:#eef0ff; font-size:18px; display:grid; place-items:center;">📦</div>
             <div class="tx">
@@ -426,221 +1278,259 @@
     </div>
 </div>
 
-<!-- ═══════════ MODAL SERVICIO ═══════════ -->
-<div id="modalServicio"
-     style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.55); z-index:200; align-items:flex-end; justify-content:center;">
-    <div style="width:100%; max-width:430px; max-height:88vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:22px 20px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
-        <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:0 auto 18px;"></div>
-
-        <h3 id="modalServicioTitulo" style="font-size:17px; font-weight:800; margin:0 0 6px; color:var(--ink);">Servicio</h3>
-        <p id="modalServicioSub" style="font-size:12.5px; color:var(--muted); margin:0 0 20px; line-height:1.5;">
-            Solicitá una visita y cotización. Un asesor te contactará.
-        </p>
-
-        <div class="reg-card" style="margin-bottom:14px;">
-            <div class="reg-field">
-                <label>Descripción del servicio *</label>
-                <textarea id="servDescripcion" placeholder="Contanos qué necesitás..." required
-                          style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; min-height:90px; resize:vertical; outline:none;"></textarea>
-            </div>
-
-            <div class="reg-field">
-                <label>NISE asociado (opcional)</label>
-                <input type="text" id="servNise" placeholder="Ej: NISE-002" />
-            </div>
-
-            <div class="reg-field">
-                <label>Teléfono de contacto</label>
-                <input type="tel" id="servTelefono" placeholder="Ej: 8888-8888" />
-            </div>
-        </div>
-
-        <div style="display:flex; gap:10px;">
-            <button type="button" class="reg-btn" onclick="cerrarServicio();"
-                    style="background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;">
-                Cancelar
-            </button>
-            <button type="button" class="reg-btn" onclick="enviarServicio();">
-                Solicitar visita
-            </button>
-        </div>
-
-        <div id="servEstado" style="display:none; margin-top:14px; padding:12px 14px; background:#e9f7ec; border-radius:12px; font-size:12.5px; font-weight:800; color:#2f8f3e; text-align:center;">
-            ✓ Solicitud enviada
-        </div>
-    </div>
-</div>
-
-<script>
-    // ═══════════ Tabs ═══════════
-    var tabsBtns = document.querySelectorAll('.chart-tab[data-tab]');
-    for (var i = 0; i < tabsBtns.length; i++) {
-        tabsBtns[i].addEventListener('click', function () {
-            var id = this.getAttribute('data-tab');
-            for (var j = 0; j < tabsBtns.length; j++) tabsBtns[j].classList.remove('active');
-            this.classList.add('active');
-            var panels = document.querySelectorAll('.tab-panel');
-            for (var k = 0; k < panels.length; k++) panels[k].style.display = 'none';
-            var panel = document.getElementById('tab-' + id);
-            if (panel) panel.style.display = 'block';
-        });
-    }
-
-    // ═══════════ Productos ═══════════
-    var productos = [
-        { cat: 'Línea Blanca', nombre: 'Refrigeradora Samsung 350L', precio: 425000, emoji: '🧊' },
-        { cat: 'Línea Blanca', nombre: 'Lavadora LG 18kg', precio: 349000, emoji: '🧺' },
-        { cat: 'Tecnología', nombre: 'Laptop HP Ryzen 5', precio: 489000, emoji: '💻' },
-        { cat: 'Tecnología', nombre: 'Tablet Lenovo 10"', precio: 189000, emoji: '📱' },
-        { cat: 'Entretenimiento', nombre: 'Smart TV 55" 4K', precio: 389000, emoji: '📺' },
-        { cat: 'Entretenimiento', nombre: 'Barra de sonido JBL', precio: 145000, emoji: '🔊' },
-        { cat: 'A/C', nombre: 'Aire acondicionado Inverter 12.000 BTU', precio: 289000, emoji: '❄️' },
-        { cat: 'A/C', nombre: 'Ventilador de torre', precio: 48000, emoji: '🌀' },
-        { cat: 'Electrodomésticos', nombre: 'Microondas 1.2 pies', precio: 89000, emoji: '🍲' },
-        { cat: 'Electrodomésticos', nombre: 'Cafetera Oster', precio: 42000, emoji: '☕' },
-        { cat: 'Audio', nombre: 'Audífonos Sony WH', precio: 135000, emoji: '🎧' },
-        { cat: 'Audio', nombre: 'Parlante Bluetooth', precio: 56000, emoji: '🔊' },
-        { cat: 'Herramientas', nombre: 'Taladro inalámbrico', precio: 78000, emoji: '🔧' },
-        { cat: 'Herramientas', nombre: 'Multímetro digital', precio: 24000, emoji: '📏' }
-    ];
-
-    function renderProductos(categoria) {
-        var cont = document.getElementById('gridProductos');
-        var titulo = document.getElementById('categoriaTitulo');
-        if (!cont) return;
-
-        var filtrados = categoria
-            ? productos.filter(function (p) { return p.cat === categoria; })
-            : productos;
-
-        titulo.textContent = categoria ? categoria : 'Productos destacados';
-
-        cont.innerHTML = '';
-        filtrados.forEach(function (p) {
-            var div = document.createElement('div');
-            div.style.cssText = 'background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:var(--shadow-sm);';
-            div.innerHTML =
-                '<div style="height:96px; display:grid; place-items:center; font-size:34px; background:#eef6ff;">' + p.emoji + '</div>' +
-                '<div style="padding:11px 12px 13px;">' +
-                '<div style="font-size:12.5px; font-weight:700; line-height:1.25; height:32px; overflow:hidden;">' + p.nombre + '</div>' +
-                '<div style="font-weight:800; font-size:15px; margin-top:6px;">₡' + p.precio.toLocaleString('es-CR') + '</div>' +
-                '<button type="button" onclick="agregarAlCarrito(\'' + p.nombre.replace(/'/g, "\\'") + '\', ' + p.precio + ', \'' + p.emoji + '\')" style="margin-top:9px; width:100%; background:var(--orange); color:#fff; border:0; font-family:inherit; font-weight:800; font-size:11.5px; padding:9px; border-radius:11px; cursor:pointer;">🛒 Agregar al carrito</button>' +
-                '</div>';
-            cont.appendChild(div);
-        });
-    }
-
-    function filtrarCategoria(cat) { renderProductos(cat); }
-
-    function agregarAlCarrito(nombre, precio, emoji) {
-        var STORAGE_KEY = 'cnfl_carrito';
-        var carrito = [];
-        try { carrito = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { carrito = []; }
-
-        var existente = null;
-        for (var i = 0; i < carrito.length; i++) {
-            if (carrito[i].nombre === nombre) { existente = carrito[i]; break; }
+@section Scripts {
+    <script>
+        // ═══════════ Tabs ═══════════
+        var tabsBtns = document.querySelectorAll('.chart-tab[data-tab]');
+        for (var i = 0; i < tabsBtns.length; i++) {
+            tabsBtns[i].addEventListener('click', function () {
+                var id = this.getAttribute('data-tab');
+                for (var j = 0; j < tabsBtns.length; j++) tabsBtns[j].classList.remove('active');
+                this.classList.add('active');
+                var panels = document.querySelectorAll('.tab-panel');
+                for (var k = 0; k < panels.length; k++) panels[k].style.display = 'none';
+                var panel = document.getElementById('tab-' + id);
+                if (panel) panel.style.display = 'block';
+            });
         }
 
-        if (existente) {
-            existente.cantidad = (existente.cantidad || 1) + 1;
-        } else {
-            carrito.push({ nombre: nombre, precio: precio, cantidad: 1, emoji: emoji || '📦' });
+        // ═══════════ Acordeón de Servicios ═══════════
+        function toggleServicio(id) {
+            var item = document.getElementById(id);
+            if (!item) return;
+
+            var abierto = item.classList.contains('abierto');
+
+            document.querySelectorAll('.servicio-item').forEach(function (el) {
+                el.classList.remove('abierto');
+                var cont = el.querySelector('.servicio-contenido');
+                if (cont) cont.style.maxHeight = null;
+            });
+
+            if (!abierto) {
+                item.classList.add('abierto');
+                var contenido = item.querySelector('.servicio-contenido');
+                if (contenido) {
+                    contenido.style.maxHeight = contenido.scrollHeight + 'px';
+                    setTimeout(function () {
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 350);
+                }
+            }
         }
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(carrito));
+        function enviarServicio(id, nombre) {
+            var item = document.getElementById(id);
+            if (!item) return;
 
-        var total = carrito.reduce(function (s, it) { return s + (it.cantidad || 1); }, 0);
-        var badges = document.querySelectorAll('.badge');
-        for (var k = 0; k < badges.length; k++) badges[k].textContent = total;
+            var textarea = item.querySelector('textarea');
+            var estado = item.querySelector('.servicio-estado');
+            var btn = item.querySelector('.servicio-btn-enviar');
 
-        mostrarToast('✓ ' + nombre + ' agregado al carrito');
-    }
+            var desc = textarea ? textarea.value.trim() : '';
+            if (!desc) {
+                alert('Escribí una descripción del servicio.');
+                return;
+            }
 
-    function mostrarToast(mensaje) {
-        var toast = document.createElement('div');
-        toast.style.cssText = 'position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:#0E1116; color:#fff; padding:12px 18px; border-radius:14px; font-size:12.5px; font-weight:700; z-index:500; box-shadow:0 10px 24px rgba(0,0,0,.3); transition:.3s; max-width:340px; text-align:center; opacity:0;';
-        toast.textContent = mensaje;
-        document.body.appendChild(toast);
-        setTimeout(function () { toast.style.transform = 'translateX(-50%) translateY(0)'; toast.style.opacity = '1'; }, 50);
-        setTimeout(function () {
-            toast.style.opacity = '0';
-            setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
-        }, 2200);
-    }
+            if (estado) {
+                estado.textContent = '✓ Solicitud de ' + nombre + ' enviada. Un asesor te contactará pronto.';
+                estado.classList.add('show');
+            }
 
-    renderProductos(null);
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Enviando...';
+            }
 
-    // ═══════════ Modal Servicio ═══════════
-    var servicioActual = '';
+            setTimeout(function () {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '📅 Solicitar visita';
+                }
+                if (textarea) textarea.value = '';
+                var niseInput = item.querySelector('input[type="text"]');
+                if (niseInput) niseInput.value = '';
+                var telInput = item.querySelector('input[type="tel"]');
+                if (telInput) telInput.value = '';
 
-    function abrirServicio(nombre, emoji, subtitulo) {
-        servicioActual = nombre;
-        document.getElementById('modalServicioTitulo').textContent = (emoji || '') + ' ' + nombre;
-        document.getElementById('modalServicioSub').textContent = subtitulo || 'Solicitá una visita y cotización.';
-        document.getElementById('servDescripcion').value = '';
-        document.getElementById('servNise').value = '';
-        document.getElementById('servEstado').style.display = 'none';
-        document.getElementById('modalServicio').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
+                setTimeout(function () {
+                    if (estado) estado.classList.remove('show');
+                    item.classList.remove('abierto');
+                    var contenido = item.querySelector('.servicio-contenido');
+                    if (contenido) contenido.style.maxHeight = null;
+                }, 2000);
+            }, 800);
+        }
 
-    function cerrarServicio() {
-        document.getElementById('modalServicio').style.display = 'none';
-        document.body.style.overflow = '';
-    }
+        function abrirServicioGlobal() {
+            toggleServicio('serv-eficiencia');
+        }
 
-    document.getElementById('modalServicio').addEventListener('click', function (e) {
-        if (e.target === this) cerrarServicio();
-    });
+        // ═══════════ Toggle de detalles de planes ═══════════
+        function togglePlan(id, btn) {
+            var coberturas = document.getElementById('coberturas-' + id);
+            if (!coberturas) return;
 
-    function enviarServicio() {
-        var desc = document.getElementById('servDescripcion').value.trim();
-        if (!desc) { alert('Escribí una descripción.'); return; }
+            var abierto = coberturas.classList.contains('open');
 
-        document.getElementById('servEstado').style.display = 'block';
-        document.getElementById('servEstado').textContent = '✓ Solicitud de ' + servicioActual + ' enviada';
+            document.querySelectorAll('.plan-coberturas').forEach(function (el) { el.classList.remove('open'); });
+            document.querySelectorAll('.plan-toggle').forEach(function (el) {
+                el.classList.remove('open');
+                var txt = el.querySelector('span:first-child');
+                if (txt) txt.textContent = '+ Detalles del Plan';
+            });
 
-        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            try {
-                new Notification('CNFL · Servicio solicitado', {
-                    body: servicioActual + ' · un asesor te contactará',
-                    icon: '/Content/img/logo-cnfl.png'
+            if (!abierto) {
+                coberturas.classList.add('open');
+                btn.classList.add('open');
+                var txt2 = btn.querySelector('span:first-child');
+                if (txt2) txt2.textContent = '− Ocultar detalles';
+            }
+        }
+
+        // ═══════════ Agregar plan al carrito ═══════════
+        function agregarPlanAlCarrito(id, nombre, precioNumerico, precioTexto) {
+            var STORAGE_KEY = 'cnfl_carrito';
+            var carrito = [];
+            try { carrito = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { carrito = []; }
+
+            var existente = null;
+            for (var i = 0; i < carrito.length; i++) {
+                if (carrito[i].id === id) { existente = carrito[i]; break; }
+            }
+
+            if (existente) {
+                existente.cantidad = (existente.cantidad || 1) + 1;
+            } else {
+                carrito.push({
+                    id: id,
+                    nombre: nombre,
+                    precio: precioNumerico,
+                    precioTexto: precioTexto,
+                    cantidad: 1,
+                    tipo: 'plan',
+                    emoji: '🛡️'
                 });
-            } catch (e) { }
-        } else if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
-            Notification.requestPermission();
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(carrito));
+            actualizarBadgeCarrito();
+            mostrarToast('✓ ' + nombre + ' agregado al carrito');
         }
 
-        setTimeout(cerrarServicio, 2200);
-    }
+        function actualizarBadgeCarrito() {
+            var STORAGE_KEY = 'cnfl_carrito';
+            var carrito = [];
+            try { carrito = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { carrito = []; }
 
-    function abrirSubscripcion(nombre) {
-        alert('Solicitud de subscripción: ' + nombre + '\n\nSe cargará automáticamente a tu factura.');
-    }
-
-    // ═══════════ Tarjeta de Crédito ═══════════
-    function enviarSolicitudTarjeta() {
-        var producto = document.getElementById('tcProducto').value;
-        var celular = document.getElementById('tcCelular').value.trim();
-        var fechaDoc = document.getElementById('tcFechaDoc').value;
-        var provinciaTrabajo = document.getElementById('tcProvinciaTrabajo').value;
-        var provinciaVive = document.getElementById('tcProvinciaVive').value;
-
-        if (!producto || !celular || !fechaDoc || !provinciaTrabajo || !provinciaVive) {
-            alert('Completá todos los campos obligatorios.');
-            return;
+            var total = carrito.reduce(function (s, it) { return s + (it.cantidad || 1); }, 0);
+            var badges = document.querySelectorAll('.badge');
+            for (var k = 0; k < badges.length; k++) badges[k].textContent = total;
         }
 
-        document.getElementById('tcEstado').style.display = 'block';
+        // ═══════════ Productos (Marketplace) ═══════════
+        var productos = [
+            { cat: 'Línea Blanca', nombre: 'Refrigeradora Samsung 350L', precio: 425000, emoji: '🧊' },
+            { cat: 'Línea Blanca', nombre: 'Lavadora LG 18kg', precio: 349000, emoji: '🧺' },
+            { cat: 'Tecnología', nombre: 'Laptop HP Ryzen 5', precio: 489000, emoji: '💻' },
+            { cat: 'Tecnología', nombre: 'Tablet Lenovo 10"', precio: 189000, emoji: '📱' },
+            { cat: 'Entretenimiento', nombre: 'Smart TV 55" 4K', precio: 389000, emoji: '📺' },
+            { cat: 'Entretenimiento', nombre: 'Barra de sonido JBL', precio: 145000, emoji: '🔊' },
+            { cat: 'A/C', nombre: 'Aire acondicionado Inverter 12.000 BTU', precio: 289000, emoji: '❄️' },
+            { cat: 'A/C', nombre: 'Ventilador de torre', precio: 48000, emoji: '🌀' },
+            { cat: 'Electrodomésticos', nombre: 'Microondas 1.2 pies', precio: 89000, emoji: '🍲' },
+            { cat: 'Electrodomésticos', nombre: 'Cafetera Oster', precio: 42000, emoji: '☕' },
+            { cat: 'Audio', nombre: 'Audífonos Sony WH', precio: 135000, emoji: '🎧' },
+            { cat: 'Audio', nombre: 'Parlante Bluetooth', precio: 56000, emoji: '🔊' },
+            { cat: 'Herramientas', nombre: 'Taladro inalámbrico', precio: 78000, emoji: '🔧' },
+            { cat: 'Herramientas', nombre: 'Multímetro digital', precio: 24000, emoji: '📏' }
+        ];
 
-        if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            try {
-                new Notification('CNFL · Solicitud de Tarjeta Visa Gold', {
-                    body: 'Un asesor te contactará para completar el proceso.',
-                    icon: '/Content/img/logo-cnfl.png'
-                });
-            } catch (e) { }
+        function renderProductos(categoria) {
+            var cont = document.getElementById('gridProductos');
+            var titulo = document.getElementById('categoriaTitulo');
+            if (!cont) return;
+
+            var filtrados = categoria
+                ? productos.filter(function (p) { return p.cat === categoria; })
+                : productos;
+
+            titulo.textContent = categoria ? categoria : 'Productos destacados';
+
+            cont.innerHTML = '';
+            filtrados.forEach(function (p) {
+                var div = document.createElement('div');
+                div.style.cssText = 'background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden; box-shadow:var(--shadow-sm);';
+                div.innerHTML =
+                    '<div style="height:96px; display:grid; place-items:center; font-size:34px; background:#eef6ff;">' + p.emoji + '</div>' +
+                    '<div style="padding:11px 12px 13px;">' +
+                    '<div style="font-size:12.5px; font-weight:700; line-height:1.25; height:32px; overflow:hidden;">' + p.nombre + '</div>' +
+                    '<div style="font-weight:800; font-size:15px; margin-top:6px;">₡' + p.precio.toLocaleString('es-CR') + '</div>' +
+                    '<button type="button" onclick="agregarAlCarrito(\'' + p.nombre.replace(/'/g, "\\'") + '\', ' + p.precio + ', \'' + p.emoji + '\')" style="margin-top:9px; width:100%; background:var(--orange); color:#fff; border:0; font-family:inherit; font-weight:800; font-size:11.5px; padding:9px; border-radius:11px; cursor:pointer;">🛒 Agregar al carrito</button>' +
+                    '</div>';
+                cont.appendChild(div);
+            });
         }
-    }
-</script>
+
+        function filtrarCategoria(cat) { renderProductos(cat); }
+
+        function agregarAlCarrito(nombre, precio, emoji) {
+            var STORAGE_KEY = 'cnfl_carrito';
+            var carrito = [];
+            try { carrito = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { carrito = []; }
+
+            var existente = null;
+            for (var i = 0; i < carrito.length; i++) {
+                if (carrito[i].nombre === nombre) { existente = carrito[i]; break; }
+            }
+
+            if (existente) {
+                existente.cantidad = (existente.cantidad || 1) + 1;
+            } else {
+                carrito.push({ nombre: nombre, precio: precio, cantidad: 1, emoji: emoji || '📦', tipo: 'producto' });
+            }
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(carrito));
+            actualizarBadgeCarrito();
+            mostrarToast('✓ ' + nombre + ' agregado al carrito');
+        }
+
+        function mostrarToast(mensaje) {
+            var toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = mensaje;
+            document.body.appendChild(toast);
+            setTimeout(function () { toast.classList.add('show'); }, 50);
+            setTimeout(function () {
+                toast.classList.remove('show');
+                setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+            }, 2200);
+        }
+
+        renderProductos(null);
+        actualizarBadgeCarrito();
+
+        // ═══════════ Tarjeta de Crédito ═══════════
+        function enviarSolicitudTarjeta() {
+            var producto = document.getElementById('tcProducto').value;
+            var celular = document.getElementById('tcCelular').value.trim();
+            var fechaDoc = document.getElementById('tcFechaDoc').value;
+            var provinciaTrabajo = document.getElementById('tcProvinciaTrabajo').value;
+            var provinciaVive = document.getElementById('tcProvinciaVive').value;
+
+            if (!producto || !celular || !fechaDoc || !provinciaTrabajo || !provinciaVive) {
+                alert('Completá todos los campos obligatorios.');
+                return;
+            }
+
+            document.getElementById('tcEstado').style.display = 'block';
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // NOTA: La función abrirConfig() NO está definida aquí.
+        // Se usa la función global definida en el _LayoutCliente.cshtml
+        // que abre el modal de configuración.
+        // ═══════════════════════════════════════════════════════════
+    </script>
+}

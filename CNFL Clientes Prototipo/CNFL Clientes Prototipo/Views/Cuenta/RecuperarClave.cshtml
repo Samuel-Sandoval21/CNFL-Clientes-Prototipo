@@ -1,119 +1,455 @@
 ﻿@{
-    ViewBag.Title = "Recuperar contraseña";
+    ViewBag.Title = "Recuperar clave";
     Layout = "~/Views/Shared/_LayoutPublico.cshtml";
 }
 
-<div class="login-wrap">
+@section Styles {
+    <style>
+        /* ═══════════════════════════════════════════
+           RECUPERAR CLAVE — REDISEÑADO
+           ═══════════════════════════════════════════ */
 
-    <!-- Logo CNFL -->
-    <div style="text-align:center; margin-bottom:18px;">
+        /* Contenedor principal con fondo blanco para proteger el texto */
+        .recuperar-wrap {
+            padding-top: 4px;
+            /* Fondo blanco semi-transparente para que el texto no choque con el decorativo */
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.85) 15%, rgba(255, 255, 255, 0.95) 30%);
+            border-radius: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* Logo */
+        .rec-logo-wrap {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+            .rec-logo-wrap img {
+                height: 44px;
+                width: auto;
+                display: inline-block;
+            }
+
+        /* Título */
+        .rec-hero {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+            .rec-hero .rec-h {
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+                line-height: 1.2;
+                color: var(--ink);
+                margin: 0;
+            }
+
+            .rec-hero .rec-p {
+                font-size: 12.5px;
+                color: var(--muted);
+                margin: 8px 0 0;
+                line-height: 1.5;
+                padding: 0 8px;
+            }
+
+        /* Formulario en card blanca */
+        .rec-form {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 16px rgba(16, 20, 40, 0.06);
+            margin-bottom: 14px;
+        }
+
+        .rec-field {
+            margin-bottom: 14px;
+        }
+
+            .rec-field:last-of-type {
+                margin-bottom: 0;
+            }
+
+            .rec-field label {
+                display: block;
+                font-size: 10.5px;
+                font-weight: 800;
+                color: var(--muted);
+                letter-spacing: .05em;
+                text-transform: uppercase;
+                margin-bottom: 6px;
+            }
+
+            .rec-field input {
+                width: 100%;
+                padding: 13px 14px;
+                border: 1.5px solid var(--line);
+                border-radius: 12px;
+                font-family: inherit;
+                font-size: 14.5px;
+                outline: none;
+                color: var(--ink);
+                background: #fafbfe;
+                transition: border-color .15s, background .15s, box-shadow .15s;
+            }
+
+                .rec-field input:focus {
+                    border-color: var(--blue);
+                    background: #ffffff;
+                    box-shadow: 0 0 0 3px rgba(30, 35, 230, 0.1);
+                }
+
+                .rec-field input::placeholder {
+                    color: #b5bcc9;
+                }
+
+        /* Input con ícono */
+        .rec-input-icon {
+            position: relative;
+        }
+
+            .rec-input-icon input {
+                padding-right: 46px;
+            }
+
+        .rec-toggle-pass {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: 0;
+            cursor: pointer;
+            padding: 8px;
+            color: #aab0be;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            transition: color .15s;
+        }
+
+            .rec-toggle-pass:hover {
+                color: var(--blue);
+            }
+
+            .rec-toggle-pass svg {
+                width: 18px;
+                height: 18px;
+            }
+
+        /* Aviso de seguridad */
+        .rec-aviso {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            background: #eef0ff;
+            border: 1px solid #dde3ff;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-top: 14px;
+        }
+
+        .rec-aviso-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: var(--blue);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+            .rec-aviso-icon svg {
+                width: 16px;
+                height: 16px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .rec-aviso-txt {
+            flex: 1;
+            font-size: 11.5px;
+            color: #2a3a8a;
+            line-height: 1.5;
+        }
+
+            .rec-aviso-txt strong {
+                display: block;
+                font-weight: 800;
+                color: var(--blue);
+                margin-bottom: 2px;
+                font-size: 12px;
+            }
+
+        /* Botón principal */
+        .rec-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 18px;
+            border: 0;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--orange), #ff8a4c);
+            color: #fff;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14.5px;
+            letter-spacing: .01em;
+            cursor: pointer;
+            box-shadow: 0 8px 18px -6px rgba(255, 105, 45, 0.6);
+            transition: transform .15s, box-shadow .15s;
+        }
+
+            .rec-btn:hover {
+                box-shadow: 0 10px 22px -6px rgba(255, 105, 45, 0.7);
+            }
+
+            .rec-btn:active {
+                transform: scale(0.98);
+            }
+
+        /* Divisor */
+        .rec-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0 16px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+            .rec-divider::before,
+            .rec-divider::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, var(--line), transparent);
+            }
+
+        /* Botón volver */
+        .rec-volver {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 16px;
+            background: #ffffff;
+            border: 1.5px solid var(--line);
+            border-radius: 13px;
+            color: var(--blue);
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(16, 20, 40, 0.04);
+            transition: background .15s, transform .15s, border-color .15s;
+            margin-bottom: 20px;
+        }
+
+            .rec-volver:hover {
+                background: #f5f7ff;
+                border-color: #c3caff;
+                transform: translateX(-2px);
+            }
+
+            .rec-volver:active {
+                transform: scale(0.98);
+            }
+
+            .rec-volver svg {
+                width: 16px;
+                height: 16px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.4;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        /* Footer legal con fondo blanco para que no choque el texto */
+        .rec-footer {
+            text-align: center;
+            font-size: 10.5px;
+            color: var(--muted);
+            line-height: 1.6;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 14px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            margin-top: 8px;
+            margin-bottom: 20px;
+        }
+
+            .rec-footer span {
+                display: inline-block;
+                padding: 0 4px;
+            }
+    </style>
+}
+
+<div class="recuperar-wrap">
+
+    <!-- ═══ LOGO ═══ -->
+    <div class="rec-logo-wrap">
         <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
-             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';"
-             style="height:52px; width:auto; display:inline-block;" />
+             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
     </div>
 
-    <div style="text-align:center;">
-        <div class="login-h">Recuperá tu clave</div>
-        <div class="login-p">Ingresá tus datos y elegí una nueva contraseña.</div>
+    <!-- ═══ TÍTULO ═══ -->
+    <div class="rec-hero">
+        <h1 class="rec-h">Recuperá tu clave</h1>
+        <p class="rec-p">Ingresá tus datos y elegí una nueva contraseña.</p>
     </div>
 
+    <!-- ═══ AVISOS ═══ -->
     @if (ViewBag.Mensaje != null)
     {
-        <div class="aviso ok" style="margin-top:16px;">
-            @ViewBag.Mensaje
-        </div>
+        <div class="aviso ok" style="margin-bottom:14px;">@ViewBag.Mensaje</div>
     }
 
     @if (ViewBag.Error != null)
     {
-        <div class="aviso err" style="margin-top:16px;">
-            @ViewBag.Error
-        </div>
+        <div class="aviso err" style="margin-bottom:14px;">@ViewBag.Error</div>
     }
 
-    @using (Html.BeginForm("RecuperarClave", "Cuenta", FormMethod.Post))
+    <!-- ═══ FORMULARIO ═══ -->
+    @using (Html.BeginForm("RecuperarClave", "Cuenta", FormMethod.Post, new { id = "formRecuperar" }))
     {
         @Html.AntiForgeryToken()
 
-        <div class="reg-field" style="margin-top:16px;">
-            <label>Cédula o correo</label>
-            <input type="text"
-                   name="cedula"
-                   placeholder="Ej: 2-0874-0716 o tucorreo@dominio.com"
-                   required
-                   style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
-        </div>
+        <div class="rec-form">
 
-        <div class="reg-field" style="margin-top:14px;">
-            <label>Nueva contraseña</label>
-            <div style="position:relative;">
-                <input type="password"
-                       id="nuevaPass"
-                       name="nuevaContrasena"
-                       placeholder="Mínimo 6 caracteres"
-                       minlength="6"
-                       required
-                       style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
-                <button type="button"
-                        onclick="togglePass('nuevaPass', this);"
-                        title="Mostrar/ocultar"
-                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
+            <div class="rec-field">
+                <label for="cedulaRecuperar">Cédula o correo</label>
+                <input type="text"
+                       name="cedula"
+                       id="cedulaRecuperar"
+                       placeholder="Ej: 2-0874-0716 o tu correo"
+                       autocomplete="username"
+                       required />
             </div>
-        </div>
 
-        <div class="reg-field" style="margin-top:14px;">
-            <label>Confirmar contraseña</label>
-            <div style="position:relative;">
-                <input type="password"
-                       id="confirmarPass"
-                       name="confirmarContrasena"
-                       placeholder="Repetí la contraseña"
-                       minlength="6"
-                       required
-                       style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:15px;outline:none;color:var(--ink);background:#fff;" />
-                <button type="button"
-                        onclick="togglePass('confirmarPass', this);"
-                        title="Mostrar/ocultar"
-                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
+            <div class="rec-field">
+                <label for="nuevaContrasena">Nueva contraseña</label>
+                <div class="rec-input-icon">
+                    <input type="password"
+                           name="nuevaContrasena"
+                           id="nuevaContrasena"
+                           placeholder="Mínimo 6 caracteres"
+                           autocomplete="new-password"
+                           minlength="6"
+                           required />
+                    <button type="button"
+                            class="rec-toggle-pass"
+                            onclick="togglePass('nuevaContrasena', this);"
+                            title="Mostrar/ocultar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <button type="submit"
-                style="margin-top:22px;background:var(--orange);color:#fff;padding:15px 20px;border-radius:14px;border:0;font-family:inherit;font-weight:800;font-size:15px;width:100%;cursor:pointer;box-shadow:0 8px 18px -6px rgba(255,105,45,.7);">
-            Cambiar contraseña
-        </button>
+            <div class="rec-field">
+                <label for="confirmarContrasena">Confirmar contraseña</label>
+                <div class="rec-input-icon">
+                    <input type="password"
+                           name="confirmarContrasena"
+                           id="confirmarContrasena"
+                           placeholder="Repetí la contraseña"
+                           autocomplete="new-password"
+                           minlength="6"
+                           required />
+                    <button type="button"
+                            class="rec-toggle-pass"
+                            onclick="togglePass('confirmarContrasena', this);"
+                            title="Mostrar/ocultar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Aviso de seguridad -->
+            <div class="rec-aviso">
+                <div class="rec-aviso-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <path d="m9 12 2 2 4-4" />
+                    </svg>
+                </div>
+                <div class="rec-aviso-txt">
+                    <strong>Tu seguridad es primero</strong>
+                    Usá una contraseña única que no uses en otros sitios.
+                </div>
+            </div>
+
+            <button type="submit" class="rec-btn">
+                Cambiar contraseña
+            </button>
+
+        </div>
     }
 
-    <div style="margin-top:18px; text-align:center;">
-        <a href="@Url.Action("Login", "Cuenta")"
-           style="color:var(--blue); font-weight:700; font-size:13px; text-decoration:none;">
-            ← Volver al inicio de sesión
-        </a>
+    <!-- ═══ DIVISOR ═══ -->
+    <div class="rec-divider">
+        <span>¿recordaste tu clave?</span>
     </div>
 
-    <div class="login-foot" style="margin-top:22px;">
-        <span style="opacity:.7;">Consentimiento informado · Política de privacidad</span>
+    <!-- ═══ BOTÓN VOLVER ═══ -->
+    <a href="@Url.Action("Login", "Cuenta")" class="rec-volver">
+        <svg viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+        Volver al inicio de sesión
+    </a>
+
+    <!-- ═══ FOOTER LEGAL ═══ -->
+    <div class="rec-footer">
+        <span>Consentimiento informado</span>
+        <span>·</span>
+        <span>Política de privacidad</span>
     </div>
+
 </div>
 
-<script>
-    function togglePass(id, btn) {
-        var input = document.getElementById(id);
-        if (!input) return;
-        var esPassword = input.getAttribute('type') === 'password';
-        input.setAttribute('type', esPassword ? 'text' : 'password');
-        btn.innerHTML = esPassword
-            ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
-            : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-    }
-</script>
+@section Scripts {
+    <script>
+        function togglePass(id, btn) {
+            var input = document.getElementById(id);
+            if (!input) return;
+            var esPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', esPassword ? 'text' : 'password');
+            btn.innerHTML = esPassword
+                ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+                : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+        }
+
+        // Validación
+        document.getElementById('formRecuperar').addEventListener('submit', function (e) {
+            var pass = document.getElementById('nuevaContrasena').value;
+            var conf = document.getElementById('confirmarContrasena').value;
+            if (pass.length < 6) {
+                e.preventDefault();
+                alert('La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+            if (pass !== conf) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden.');
+                return;
+            }
+        });
+    </script>
+}

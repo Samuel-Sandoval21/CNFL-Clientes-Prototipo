@@ -8,6 +8,472 @@
 
     @Html.Partial("_EstilosBase")
     @RenderSection("Styles", required: false)
+
+    <style>
+        /* ═══════════════════════════════════════════
+           MODAL CONFIGURACIÓN — REDISEÑADO
+           ═══════════════════════════════════════════ */
+        .config-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 17, 22, 0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 300;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0 0 90px 0;
+        }
+
+            .config-overlay.show {
+                display: flex;
+            }
+
+        .config-box {
+            width: 100%;
+            max-width: 430px;
+            max-height: 78vh;
+            background: #ffffff;
+            border-radius: 24px 24px 0 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
+            animation: configUp .3s ease;
+        }
+
+        @@keyframes configUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .config-handle {
+            width: 44px;
+            height: 4px;
+            background: #d8dde8;
+            border-radius: 2px;
+            margin: 12px auto 0;
+            flex-shrink: 0;
+        }
+
+        .config-header {
+            padding: 16px 22px 14px;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+            .config-header h3 {
+                font-size: 17px;
+                font-weight: 800;
+                margin: 0;
+                color: var(--ink);
+                line-height: 1.2;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+                .config-header h3 svg {
+                    width: 20px;
+                    height: 20px;
+                    stroke: var(--blue);
+                    fill: none;
+                    stroke-width: 2;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+            .config-header p {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin: 4px 0 0;
+                line-height: 1.4;
+            }
+
+        .config-close {
+            background: #eef0ff;
+            border: 0;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            color: var(--blue);
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transition: background .15s, transform .15s;
+        }
+
+            .config-close:hover {
+                background: #dde3ff;
+            }
+
+            .config-close:active {
+                transform: scale(0.92);
+            }
+
+        .config-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 22px 24px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+            .config-content::-webkit-scrollbar {
+                width: 0;
+            }
+
+        /* Sección */
+        .config-section {
+            margin-bottom: 18px;
+        }
+
+            .config-section:last-child {
+                margin-bottom: 0;
+            }
+
+        .config-section-title {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: var(--muted);
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            margin: 0 0 10px;
+            padding-left: 2px;
+        }
+
+        /* Card destacada */
+        .config-featured {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--blue), #3b6ce0);
+            border-radius: 16px;
+            text-decoration: none;
+            color: #fff;
+            box-shadow: 0 10px 24px -10px rgba(30, 35, 230, 0.5);
+            position: relative;
+            overflow: hidden;
+            transition: transform .15s;
+        }
+
+            .config-featured::after {
+                content: "";
+                position: absolute;
+                right: -40px;
+                top: -40px;
+                width: 140px;
+                height: 140px;
+                background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+            }
+
+            .config-featured:active {
+                transform: scale(0.98);
+            }
+
+        .config-featured-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            background: rgba(255, 255, 255, 0.2);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            backdrop-filter: blur(4px);
+        }
+
+            .config-featured-icon svg {
+                width: 22px;
+                height: 22px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .config-featured-txt {
+            flex: 1;
+            min-width: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .config-featured-titulo {
+            font-size: 14px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .config-featured-desc {
+            font-size: 11px;
+            opacity: 0.88;
+            margin-top: 3px;
+            line-height: 1.4;
+        }
+
+        /* Grid de accesos */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .config-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 14px;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform .15s, box-shadow .15s, border-color .15s;
+        }
+
+            .config-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(16, 20, 40, 0.08);
+                border-color: #d8dde8;
+            }
+
+            .config-card:active {
+                transform: scale(0.98);
+            }
+
+        .config-card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+            .config-card-icon svg {
+                width: 19px;
+                height: 19px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .config-card-icon.carrito {
+                background: linear-gradient(135deg, #fff4ec, #ffe2d1);
+                color: var(--orange);
+            }
+
+            .config-card-icon.compras {
+                background: linear-gradient(135deg, #eef0ff, #dde3ff);
+                color: var(--blue);
+            }
+
+            .config-card-icon.alertas {
+                background: linear-gradient(135deg, #fef3e0, #fde0a8);
+                color: #c98a00;
+            }
+
+            .config-card-icon.pagos {
+                background: linear-gradient(135deg, #e9f7ec, #d1f0d9);
+                color: var(--green);
+            }
+
+        .config-card-titulo {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+
+        .config-card-desc {
+            font-size: 10.5px;
+            color: var(--muted);
+            margin-top: 2px;
+            line-height: 1.35;
+        }
+
+        /* Fila compacta */
+        .config-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+            .config-row:last-child {
+                margin-bottom: 0;
+            }
+
+            .config-row:active {
+                background: #fafbfe;
+            }
+
+        .config-row-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+            .config-row-icon svg {
+                width: 18px;
+                height: 18px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 1.8;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .config-row-icon.zoom {
+                background: linear-gradient(135deg, #eef0ff, #dde3ff);
+                color: var(--blue);
+            }
+
+            .config-row-icon.oscuro {
+                background: linear-gradient(135deg, #f3f0ff, #e4daff);
+                color: var(--purple);
+            }
+
+            .config-row-icon.idioma {
+                background: linear-gradient(135deg, #e8f3ff, #d6ebff);
+                color: #1a73e8;
+            }
+
+        .config-row-txt {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .config-row-titulo {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+
+        .config-row-desc {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* Zoom */
+        .config-zoom-controles {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .config-zoom-btn {
+            padding: 12px;
+            border: 1.5px solid var(--line);
+            background: #fafbfe;
+            border-radius: 11px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .config-zoom-btn:hover {
+                border-color: var(--blue);
+                background: #f5f7ff;
+                color: var(--blue);
+            }
+
+            .config-zoom-btn:active {
+                transform: scale(0.97);
+            }
+
+        .config-zoom-valor {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--blue);
+            background: #eef0ff;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        /* Toggle switch */
+        .config-toggle {
+            position: relative;
+            width: 42px;
+            height: 24px;
+            background: #d8dde8;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background .25s;
+            flex-shrink: 0;
+        }
+
+            .config-toggle::after {
+                content: "";
+                position: absolute;
+                top: 3px;
+                left: 3px;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: #fff;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+                transition: transform .25s;
+            }
+
+            .config-toggle.on {
+                background: var(--blue);
+            }
+
+                .config-toggle.on::after {
+                    transform: translateX(18px);
+                }
+
+        .config-chev {
+            color: #c3c8d4;
+            flex-shrink: 0;
+        }
+
+            .config-chev svg {
+                width: 16px;
+                height: 16px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+    </style>
 </head>
 <body>
 
@@ -86,8 +552,7 @@
             </a>
 
             <a href="@Url.Action("ProductosServicios", "Clientes")"
-               class="app-tab @(tabProductos ? "active" : "")"
-               title="Productos y Servicios">
+               class="app-tab @(tabProductos ? "active" : "")">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                     <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
@@ -107,201 +572,226 @@
     </div>
 
     <!-- ═══════════ MODAL CONFIGURACIÓN ═══════════ -->
-    <div id="modalConfig"
-         style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.55); z-index:300; align-items:flex-end; justify-content:center; padding:0;">
-        <div id="modalConfigContent"
-             style="width:100%; max-width:430px; max-height:88vh; overflow-y:auto; background:#f5f6fa; border-radius:24px 24px 0 0; padding:22px 20px 26px; box-shadow:0 -10px 40px rgba(0,0,0,.3);">
-            <div style="width:44px; height:4px; background:#d8dde8; border-radius:2px; margin:0 auto 18px;"></div>
+    <div id="modalConfig" class="config-overlay">
+        <div class="config-box">
 
-            <h3 style="font-size:17px; font-weight:800; margin:0 0 4px; color:var(--ink);">
-                <span data-i18n="config.titulo">⚙️ Configuración</span>
-            </h3>
-            <p style="font-size:12.5px; color:var(--muted); margin:0 0 20px; line-height:1.5;" data-i18n="config.sub">
-                Ajustes rápidos de tu cuenta y la app.
-            </p>
+            <div class="config-handle"></div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px;">
-                <a href="@Url.Action("ProductosServicios", "Clientes")"
-                   style="grid-column: span 2; background:linear-gradient(135deg, #1E23E6, #3b6ce0); color:#fff; border-radius:16px; padding:16px; text-decoration:none; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 8px 20px -8px rgba(30,35,230,.5);">
-                    <div>
-                        <div style="font-size:14px; font-weight:800;" data-i18n="config.productos">🛍️ Productos y Servicios</div>
-                        <div style="font-size:11.5px; opacity:.9; margin-top:2px;" data-i18n="config.productos.sub">Servicios, marketplace y subscripciones</div>
-                    </div>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="m9 6 6 6-6 6" /></svg>
-                </a>
-
-                <a href="@Url.Action("Tienda", "Clientes")" style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
-                    <div style="width:40px; height:40px; border-radius:12px; background:#fff3ec; display:grid; place-items:center; font-size:18px;">🛒</div>
-                    <div>
-                        <div style="font-size:13px; font-weight:800; color:var(--ink);" data-i18n="config.carrito">Carrito</div>
-                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.carrito.sub">Ver productos</div>
-                    </div>
-                </a>
-
-                <a href="@Url.Action("MisCompras", "Clientes")" style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
-                    <div style="width:40px; height:40px; border-radius:12px; background:#eef0ff; display:grid; place-items:center; font-size:18px;">📦</div>
-                    <div>
-                        <div style="font-size:13px; font-weight:800; color:var(--ink);" data-i18n="config.compras">Mis compras</div>
-                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.compras.sub">Historial y facturas</div>
-                    </div>
-                </a>
-
-                <a href="@Url.Action("Alertas", "Clientes")" style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
-                    <div style="width:40px; height:40px; border-radius:12px; background:#fef3e0; display:grid; place-items:center; font-size:18px;">🔔</div>
-                    <div>
-                        <div style="font-size:13px; font-weight:800; color:var(--ink);" data-i18n="config.alertas">Alertas</div>
-                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.alertas.sub">Notificaciones</div>
-                    </div>
-                </a>
-
-                <a href="@Url.Action("MetodosPago", "Clientes")" style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:8px;">
-                    <div style="width:40px; height:40px; border-radius:12px; background:#e9f7ec; display:grid; place-items:center; font-size:18px;">💳</div>
-                    <div>
-                        <div style="font-size:13px; font-weight:800; color:var(--ink);" data-i18n="config.metodos">Métodos de pago</div>
-                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.metodos.sub">Tarjetas, SINPE, IBAN y Token</div>
-                    </div>
-                </a>
+            <div class="config-header">
+                <div style="flex:1; min-width:0;">
+                    <h3>
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        </svg>
+                        Configuración
+                    </h3>
+                    <p>Ajustes rápidos de tu cuenta y la app.</p>
+                </div>
+                <button type="button" class="config-close" onclick="cerrarConfig();" title="Cerrar">✕</button>
             </div>
 
-            <div style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:14px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <div>
-                        <div style="font-size:13.5px; font-weight:800; color:var(--ink);" data-i18n="config.zoom">🔍 Zoom de la app</div>
-                        <div style="font-size:11px; color:var(--muted); margin-top:2px;" data-i18n="config.zoom.sub">Ajustá el tamaño del texto y secciones</div>
-                    </div>
-                    <span id="zoomLabel" style="font-size:13px; font-weight:800; color:var(--blue);">100%</span>
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button type="button" onclick="cambiarZoom(-10);" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:16px; color:var(--ink); cursor:pointer;">A−</button>
-                    <button type="button" onclick="resetZoom();" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:12px; color:var(--muted); cursor:pointer;">100%</button>
-                    <button type="button" onclick="cambiarZoom(10);" style="flex:1; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-family:inherit; font-weight:800; font-size:16px; color:var(--ink); cursor:pointer;">A+</button>
-                </div>
-            </div>
+            <div class="config-content">
 
-            <div style="background:#fff; border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:14px;">
-                <div class="row-item" style="border:0; border-bottom:1px solid var(--line); border-radius:0;" onclick="toggleModoOscuro();">
-                    <div class="ic" style="background:#f3f0ff; font-size:18px; display:grid; place-items:center;">🌙</div>
-                    <div class="tx">
-                        <div class="t" data-i18n="config.oscuro">Modo oscuro</div>
-                        <div class="s" data-i18n="config.oscuro.sub">Cambiar tema de la app</div>
-                    </div>
-                    <span id="modoOscuroEstado" style="font-size:11px; font-weight:800; color:var(--muted);">OFF</span>
+                <!-- ═══ PRODUCTOS Y SERVICIOS ═══ -->
+                <div class="config-section">
+                    <a href="@Url.Action("ProductosServicios", "Clientes")" class="config-featured">
+                        <div class="config-featured-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                                <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
+                            </svg>
+                        </div>
+                        <div class="config-featured-txt">
+                            <div class="config-featured-titulo">Productos y Servicios</div>
+                            <div class="config-featured-desc">Servicios, marketplace y subscripciones</div>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="position:relative;z-index:2;opacity:.85"><path d="m9 6 6 6-6 6" /></svg>
+                    </a>
                 </div>
-                <div class="row-item" style="border:0; border-radius:0;" onclick="abrirIdiomas();">
-                    <div class="ic" style="background:#e8f3ff; font-size:18px; display:grid; place-items:center;">🌐</div>
-                    <div class="tx">
-                        <div class="t" data-i18n="config.idioma">Idioma</div>
-                        <div class="s" id="idiomaActual">Español (Costa Rica)</div>
-                    </div>
-                    <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6" /></svg>
-                </div>
-            </div>
 
-            <button type="button" onclick="cerrarConfig();" class="reg-btn" style="background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none;" data-i18n="config.cerrar">Cerrar</button>
+                <!-- ═══ ACCESOS RÁPIDOS ═══ -->
+                <div class="config-section">
+                    <div class="config-section-title">Accesos rápidos</div>
+
+                    <div class="config-grid">
+
+                        <a href="@Url.Action("Tienda", "Clientes")" class="config-card">
+                            <div class="config-card-icon carrito">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="9" cy="20" r="1.6" />
+                                    <circle cx="18" cy="20" r="1.6" />
+                                    <path d="M2 3h3l2.5 12.5a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 2-1.5L22 7H6" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="config-card-titulo">Carrito</div>
+                                <div class="config-card-desc">Ver productos</div>
+                            </div>
+                        </a>
+
+                        <a href="@Url.Action("MisCompras", "Clientes")" class="config-card">
+                            <div class="config-card-icon compras">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                    <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="config-card-titulo">Mis compras</div>
+                                <div class="config-card-desc">Historial y facturas</div>
+                            </div>
+                        </a>
+
+                        <a href="@Url.Action("Alertas", "Clientes")" class="config-card">
+                            <div class="config-card-icon alertas">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="config-card-titulo">Alertas</div>
+                                <div class="config-card-desc">Notificaciones</div>
+                            </div>
+                        </a>
+
+                        <a href="@Url.Action("MetodosPago", "Clientes")" class="config-card">
+                            <div class="config-card-icon pagos">
+                                <svg viewBox="0 0 24 24">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" />
+                                    <line x1="1" y1="10" x2="23" y2="10" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="config-card-titulo">Métodos de pago</div>
+                                <div class="config-card-desc">Tarjetas, SINPE, IBAN</div>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+
+                <!-- ═══ ZOOM ═══ -->
+                <div class="config-section">
+                    <div class="config-section-title">Preferencias</div>
+
+                    <div class="config-row" style="cursor:default;">
+                        <div class="config-row-icon zoom">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.35-4.35M11 8v6M8 11h6" />
+                            </svg>
+                        </div>
+                        <div class="config-row-txt">
+                            <div class="config-row-titulo">Zoom de la app</div>
+                            <div class="config-row-desc">Ajustá el tamaño del texto</div>
+                        </div>
+                        <span id="zoomLabel" class="config-zoom-valor">100%</span>
+                    </div>
+
+                    <div class="config-zoom-controles">
+                        <button type="button" class="config-zoom-btn" onclick="cambiarZoom(-10);">A−</button>
+                        <button type="button" class="config-zoom-btn" onclick="resetZoom();">100%</button>
+                        <button type="button" class="config-zoom-btn" onclick="cambiarZoom(10);">A+</button>
+                    </div>
+                </div>
+
+                <!-- ═══ MODO OSCURO + IDIOMA ═══ -->
+                <div class="config-section">
+
+                    <div class="config-row" onclick="toggleModoOscuro();">
+                        <div class="config-row-icon oscuro">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                            </svg>
+                        </div>
+                        <div class="config-row-txt">
+                            <div class="config-row-titulo">Modo oscuro</div>
+                            <div class="config-row-desc">Cambiar tema de la app</div>
+                        </div>
+                        <div id="toggleOscuro" class="config-toggle"></div>
+                    </div>
+
+                    <div class="config-row" onclick="abrirIdiomas();">
+                        <div class="config-row-icon idioma">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="2" y1="12" x2="22" y2="12" />
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                            </svg>
+                        </div>
+                        <div class="config-row-txt">
+                            <div class="config-row-titulo">Idioma</div>
+                            <div class="config-row-desc" id="idiomaActual">Español (Costa Rica)</div>
+                        </div>
+                        <div class="config-chev">
+                            <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
     </div>
 
-    <!-- ═══════════ SUB-MODAL IDIOMAS ═══════════ -->
+    <!-- ═══════════ MODAL IDIOMAS ═══════════ -->
     <div id="modalIdioma"
          style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.7); z-index:400; align-items:center; justify-content:center; padding:20px;">
-        <div style="width:100%; max-width:340px; background:#fff; border-radius:20px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.4);">
-            <h3 style="font-size:16px; font-weight:800; margin:0 0 4px; color:var(--ink);" data-i18n="idioma.titulo">🌐 Idioma</h3>
-            <p style="font-size:12px; color:var(--muted); margin:0 0 16px;" data-i18n="idioma.sub">Elegí el idioma de la app.</p>
+        <div style="width:100%; max-width:340px; background:#fff; border-radius:20px; padding:22px; box-shadow:0 20px 50px rgba(0,0,0,.4);">
+            <h3 style="font-size:16px; font-weight:800; margin:0 0 4px; color:var(--ink);">🌐 Idioma</h3>
+            <p style="font-size:12px; color:var(--muted); margin:0 0 16px;">Elegí el idioma de la app.</p>
 
             <div style="display:flex; flex-direction:column; gap:8px;">
-                <button type="button" onclick="cambiarIdioma('es');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
-                    <span>🇨🇷 Español</span><span style="font-size:11px; color:var(--muted);">CR</span>
-                </button>
-                <button type="button" onclick="cambiarIdioma('en');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
-                    <span>🇺🇸 English</span><span style="font-size:11px; color:var(--muted);">US</span>
-                </button>
-                <button type="button" onclick="cambiarIdioma('fr');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
-                    <span>🇫🇷 Français</span><span style="font-size:11px; color:var(--muted);">FR</span>
-                </button>
-                <button type="button" onclick="cambiarIdioma('pt');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
-                    <span>🇧🇷 Português</span><span style="font-size:11px; color:var(--muted);">BR</span>
-                </button>
-                <button type="button" onclick="cambiarIdioma('zh');" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; background:#f5f6fa; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13.5px; text-align:left; color:var(--ink);">
-                    <span>🇨🇳 中文 (简体)</span><span style="font-size:11px; color:var(--muted);">中文</span>
-                </button>
+                <button type="button" onclick="cambiarIdioma('es');" class="idioma-opt">🇨🇷 Español <span>CR</span></button>
+                <button type="button" onclick="cambiarIdioma('en');" class="idioma-opt">🇺🇸 English <span>US</span></button>
+                <button type="button" onclick="cambiarIdioma('fr');" class="idioma-opt">🇫🇷 Français <span>FR</span></button>
+                <button type="button" onclick="cambiarIdioma('pt');" class="idioma-opt">🇧🇷 Português <span>BR</span></button>
+                <button type="button" onclick="cambiarIdioma('zh');" class="idioma-opt">🇨🇳 中文 <span>中文</span></button>
             </div>
 
-            <button type="button" onclick="cerrarIdiomas();" style="width:100%; margin-top:14px; padding:12px; background:transparent; border:0; color:var(--muted); font-family:inherit; font-weight:800; font-size:13px; cursor:pointer;" data-i18n="idioma.cancelar">Cancelar</button>
+            <button type="button" onclick="cerrarIdiomas();" style="width:100%; margin-top:14px; padding:12px; background:transparent; border:0; color:var(--muted); font-family:inherit; font-weight:800; font-size:13px; cursor:pointer;">Cancelar</button>
         </div>
     </div>
+
+    <style>
+        .idioma-opt {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 14px;
+            background: #f5f6fa;
+            border: 1.5px solid var(--line);
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 13.5px;
+            text-align: left;
+            color: var(--ink);
+            transition: all .15s;
+        }
+
+            .idioma-opt:hover {
+                background: #eef0ff;
+                border-color: var(--blue);
+            }
+
+            .idioma-opt span {
+                font-size: 11px;
+                color: var(--muted);
+            }
+    </style>
 
     <script>
         window.I18N = {
-            es: {
-                'nav.inicio': 'Inicio', 'nav.servicios': 'Mis Servicios', 'nav.tramites': 'Trámites',
-                'nav.productos': 'Productos', 'nav.cuenta': 'Cuenta',
-                'config.titulo': '⚙️ Configuración', 'config.sub': 'Ajustes rápidos de tu cuenta y la app.',
-                'config.productos': '🛍️ Productos y Servicios', 'config.productos.sub': 'Servicios, marketplace y subscripciones',
-                'config.carrito': 'Carrito', 'config.carrito.sub': 'Ver productos',
-                'config.compras': 'Mis compras', 'config.compras.sub': 'Historial y facturas',
-                'config.alertas': 'Alertas', 'config.alertas.sub': 'Notificaciones',
-                'config.metodos': 'Métodos de pago', 'config.metodos.sub': 'Tarjetas, SINPE, IBAN y Token',
-                'config.zoom': '🔍 Zoom de la app', 'config.zoom.sub': 'Ajustá el tamaño del texto y secciones',
-                'config.oscuro': 'Modo oscuro', 'config.oscuro.sub': 'Cambiar tema de la app',
-                'config.idioma': 'Idioma', 'config.cerrar': 'Cerrar',
-                'idioma.titulo': '🌐 Idioma', 'idioma.sub': 'Elegí el idioma de la app.', 'idioma.cancelar': 'Cancelar'
-            },
-            en: {
-                'nav.inicio': 'Home', 'nav.servicios': 'My Services', 'nav.tramites': 'Requests',
-                'nav.productos': 'Products', 'nav.cuenta': 'Account',
-                'config.titulo': '⚙️ Settings', 'config.sub': 'Quick settings for your account and the app.',
-                'config.productos': '🛍️ Products and Services', 'config.productos.sub': 'Services, marketplace and subscriptions',
-                'config.carrito': 'Cart', 'config.carrito.sub': 'View products',
-                'config.compras': 'My purchases', 'config.compras.sub': 'History and bills',
-                'config.alertas': 'Alerts', 'config.alertas.sub': 'Notifications',
-                'config.metodos': 'Payment methods', 'config.metodos.sub': 'Cards, SINPE, IBAN and Token',
-                'config.zoom': '🔍 App zoom', 'config.zoom.sub': 'Adjust text and section size',
-                'config.oscuro': 'Dark mode', 'config.oscuro.sub': 'Change app theme',
-                'config.idioma': 'Language', 'config.cerrar': 'Close',
-                'idioma.titulo': '🌐 Language', 'idioma.sub': 'Choose the app language.', 'idioma.cancelar': 'Cancel'
-            },
-            fr: {
-                'nav.inicio': 'Accueil', 'nav.servicios': 'Mes Services', 'nav.tramites': 'Démarches',
-                'nav.productos': 'Produits', 'nav.cuenta': 'Compte',
-                'config.titulo': '⚙️ Paramètres', 'config.sub': 'Réglages rapides de votre compte.',
-                'config.productos': '🛍️ Produits et Services', 'config.productos.sub': 'Services, marketplace et abonnements',
-                'config.carrito': 'Panier', 'config.carrito.sub': 'Voir les produits',
-                'config.compras': 'Mes achats', 'config.compras.sub': 'Historique et factures',
-                'config.alertas': 'Alertes', 'config.alertas.sub': 'Notifications',
-                'config.metodos': 'Moyens de paiement', 'config.metodos.sub': 'Cartes, SINPE, IBAN et Token',
-                'config.zoom': '🔍 Zoom', 'config.zoom.sub': 'Ajuster la taille du texte',
-                'config.oscuro': 'Mode sombre', 'config.oscuro.sub': 'Changer le thème',
-                'config.idioma': 'Langue', 'config.cerrar': 'Fermer',
-                'idioma.titulo': '🌐 Langue', 'idioma.sub': 'Choisissez la langue.', 'idioma.cancelar': 'Annuler'
-            },
-            pt: {
-                'nav.inicio': 'Início', 'nav.servicios': 'Meus Serviços', 'nav.tramites': 'Solicitações',
-                'nav.productos': 'Produtos', 'nav.cuenta': 'Conta',
-                'config.titulo': '⚙️ Configurações', 'config.sub': 'Ajustes rápidos da sua conta.',
-                'config.productos': '🛍️ Produtos e Serviços', 'config.productos.sub': 'Serviços, marketplace e assinaturas',
-                'config.carrito': 'Carrinho', 'config.carrito.sub': 'Ver produtos',
-                'config.compras': 'Minhas compras', 'config.compras.sub': 'Histórico e faturas',
-                'config.alertas': 'Alertas', 'config.alertas.sub': 'Notificações',
-                'config.metodos': 'Métodos de pagamento', 'config.metodos.sub': 'Cartões, SINPE, IBAN e Token',
-                'config.zoom': '🔍 Zoom', 'config.zoom.sub': 'Ajustar tamanho do texto',
-                'config.oscuro': 'Modo escuro', 'config.oscuro.sub': 'Mudar tema do app',
-                'config.idioma': 'Idioma', 'config.cerrar': 'Fechar',
-                'idioma.titulo': '🌐 Idioma', 'idioma.sub': 'Escolha o idioma.', 'idioma.cancelar': 'Cancelar'
-            },
-            zh: {
-                'nav.inicio': '首页', 'nav.servicios': '我的服务', 'nav.tramites': '手续',
-                'nav.productos': '产品', 'nav.cuenta': '账户',
-                'config.titulo': '⚙️ 设置', 'config.sub': '账户和应用的快捷设置。',
-                'config.productos': '🛍️ 产品与服务', 'config.productos.sub': '服务、市场和订阅',
-                'config.carrito': '购物车', 'config.carrito.sub': '查看产品',
-                'config.compras': '我的购买', 'config.compras.sub': '历史和账单',
-                'config.alertas': '提醒', 'config.alertas.sub': '通知',
-                'config.metodos': '支付方式', 'config.metodos.sub': '银行卡、SINPE、IBAN 和 Token',
-                'config.zoom': '🔍 缩放', 'config.zoom.sub': '调整文字大小',
-                'config.oscuro': '深色模式', 'config.oscuro.sub': '切换主题',
-                'config.idioma': '语言', 'config.cerrar': '关闭',
-                'idioma.titulo': '🌐 语言', 'idioma.sub': '选择应用语言。', 'idioma.cancelar': '取消'
-            }
+            es: { 'nav.inicio': 'Inicio', 'nav.servicios': 'Mis Servicios', 'nav.tramites': 'Trámites', 'nav.productos': 'Productos', 'nav.cuenta': 'Cuenta' },
+            en: { 'nav.inicio': 'Home', 'nav.servicios': 'My Services', 'nav.tramites': 'Requests', 'nav.productos': 'Products', 'nav.cuenta': 'Account' },
+            fr: { 'nav.inicio': 'Accueil', 'nav.servicios': 'Mes Services', 'nav.tramites': 'Démarches', 'nav.productos': 'Produits', 'nav.cuenta': 'Compte' },
+            pt: { 'nav.inicio': 'Início', 'nav.servicios': 'Meus Serviços', 'nav.tramites': 'Solicitações', 'nav.productos': 'Produtos', 'nav.cuenta': 'Conta' },
+            zh: { 'nav.inicio': '首页', 'nav.servicios': '我的服务', 'nav.tramites': '手续', 'nav.productos': '产品', 'nav.cuenta': '账户' }
         };
 
         window.t = function (key) {
@@ -330,73 +820,90 @@
             setInterval(actualizarHora, 30000);
         })();
 
-        function abrirConfig() {
+        // ═══════════════════════════════════════════════
+        // CONFIGURACIÓN
+        // ═══════════════════════════════════════════════
+        window.abrirConfig = function () {
             var modal = document.getElementById('modalConfig');
-            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-        }
-        function cerrarConfig() {
-            var modal = document.getElementById('modalConfig');
-            if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
-        }
-        var modalConfig = document.getElementById('modalConfig');
-        if (modalConfig) {
-            modalConfig.addEventListener('click', function (e) { if (e.target === this) cerrarConfig(); });
-        }
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        };
 
+        window.cerrarConfig = function () {
+            var modal = document.getElementById('modalConfig');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        };
+
+        document.getElementById('modalConfig').addEventListener('click', function (e) {
+            if (e.target === this) window.cerrarConfig();
+        });
+
+        // ═══════════════════════════════════════════════
+        // ZOOM
+        // ═══════════════════════════════════════════════
         var ZOOM_KEY = 'cnfl_zoom';
         var zoomActual = parseInt(localStorage.getItem(ZOOM_KEY) || '100', 10);
-        function aplicarZoom(z) {
+
+        window.aplicarZoom = function (z) {
             if (z < 70) z = 70;
             if (z > 140) z = 140;
             zoomActual = z;
             localStorage.setItem(ZOOM_KEY, z);
-            var phone = document.querySelector('.phone');
-            if (phone) phone.style.zoom = (z / 100).toString();
+            document.documentElement.style.fontSize = (z / 100) * 16 + 'px';
             var lbl = document.getElementById('zoomLabel');
             if (lbl) lbl.textContent = z + '%';
-        }
-        function cambiarZoom(delta) { aplicarZoom(zoomActual + delta); }
-        function resetZoom() { aplicarZoom(100); }
-        aplicarZoom(zoomActual);
+        };
 
+        window.cambiarZoom = function (delta) { window.aplicarZoom(zoomActual + delta); };
+        window.resetZoom = function () { window.aplicarZoom(100); };
+        window.aplicarZoom(zoomActual);
+
+        // ═══════════════════════════════════════════════
+        // MODO OSCURO
+        // ═══════════════════════════════════════════════
         var MODO_KEY = 'cnfl_dark';
         var modoOscuro = localStorage.getItem(MODO_KEY) === '1';
-        function aplicarModo() {
-            var lbl = document.getElementById('modoOscuroEstado');
-            if (lbl) lbl.textContent = modoOscuro ? 'ON' : 'OFF';
-            if (modoOscuro) {
-                document.documentElement.style.filter = 'invert(0.92) hue-rotate(180deg)';
-                var imgs = document.querySelectorAll('img');
-                for (var i = 0; i < imgs.length; i++) imgs[i].style.filter = 'invert(1) hue-rotate(180deg)';
-            } else {
-                document.documentElement.style.filter = '';
-                var imgs2 = document.querySelectorAll('img');
-                for (var j = 0; j < imgs2.length; j++) imgs2[j].style.filter = '';
-            }
-        }
-        function toggleModoOscuro() {
+
+        window.aplicarModo = function () {
+            var toggle = document.getElementById('toggleOscuro');
+            if (toggle) toggle.classList.toggle('on', modoOscuro);
+            document.body.classList.toggle('modo-oscuro', modoOscuro);
+        };
+
+        window.toggleModoOscuro = function () {
             modoOscuro = !modoOscuro;
             localStorage.setItem(MODO_KEY, modoOscuro ? '1' : '0');
-            aplicarModo();
-        }
-        aplicarModo();
+            window.aplicarModo();
+        };
 
-        function abrirIdiomas() {
+        window.aplicarModo();
+
+        // ═══════════════════════════════════════════════
+        // IDIOMAS
+        // ═══════════════════════════════════════════════
+        window.abrirIdiomas = function () {
             var m = document.getElementById('modalIdioma');
             if (m) m.style.display = 'flex';
-        }
-        function cerrarIdiomas() {
+        };
+
+        window.cerrarIdiomas = function () {
             var m = document.getElementById('modalIdioma');
             if (m) m.style.display = 'none';
-        }
-        function cambiarIdioma(codigo) {
+        };
+
+        window.cambiarIdioma = function (codigo) {
             localStorage.setItem('cnfl_idioma', codigo);
             window.aplicarIdioma();
             var nombres = { es: 'Español (Costa Rica)', en: 'English (US)', fr: 'Français', pt: 'Português (BR)', zh: '中文 (简体)' };
             var el = document.getElementById('idiomaActual');
             if (el) el.textContent = nombres[codigo] || nombres.es;
-            cerrarIdiomas();
-        }
+            window.cerrarIdiomas();
+        };
 
         (function () {
             var lang = localStorage.getItem('cnfl_idioma') || 'es';
@@ -406,6 +913,9 @@
             window.aplicarIdioma();
         })();
 
+        // ═══════════════════════════════════════════════
+        // BADGE DEL CARRITO
+        // ═══════════════════════════════════════════════
         (function () {
             try {
                 var items = JSON.parse(localStorage.getItem('cnfl_carrito') || '[]');
@@ -415,29 +925,19 @@
             } catch (e) { }
         })();
 
-        // ═══════════════════════════════════════════════════════════
-        // REGISTRAR ACTIVIDAD (tiempo real del cliente)
-        // ═══════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════
+        // REGISTRAR ACTIVIDAD
+        // ═══════════════════════════════════════════════
         (function () {
             var secciones = {
-                'Dashboard': 'Inicio',
-                'MisServicios': 'Mis Servicios',
-                'Tramites': 'Trámites',
-                'ProductosServicios': 'Productos y Servicios',
-                'Tienda': 'Tienda',
-                'MisCompras': 'Mis Compras',
-                'MetodosPago': 'Métodos de Pago',
-                'Cuenta': 'Cuenta',
-                'Alertas': 'Alertas',
-                'MisFacturas': 'Facturas',
-                'HistorialConsumo': 'Historial de Consumo',
-                'ConsultaMedidor': 'Consulta Medidor',
-                'MapaGIS': 'Mapa GIS',
-                'Calculadora': 'Calculadora',
-                'DetalleTramite': 'Detalle Trámite',
-                'EstadoAveria': 'Estado Avería',
-                'HistorialReportes': 'Historial Reportes',
-                'Reportes': 'Reportes'
+                'Dashboard': 'Inicio', 'MisServicios': 'Mis Servicios', 'Tramites': 'Trámites',
+                'ProductosServicios': 'Productos y Servicios', 'Tienda': 'Tienda',
+                'MisCompras': 'Mis Compras', 'MetodosPago': 'Métodos de Pago',
+                'Cuenta': 'Cuenta', 'Alertas': 'Alertas', 'MisFacturas': 'Facturas',
+                'HistorialConsumo': 'Historial de Consumo', 'ConsultaMedidor': 'Consulta Medidor',
+                'MapaGIS': 'Mapa GIS', 'Calculadora': 'Calculadora',
+                'DetalleTramite': 'Detalle Trámite', 'EstadoAveria': 'Estado Avería',
+                'HistorialReportes': 'Historial Reportes', 'Reportes': 'Reportes'
             };
 
             var accionActual = '@(ViewContext.RouteData.Values["action"] as string)';
@@ -450,7 +950,6 @@
                 enviando = true;
 
                 var segundos = Math.round((Date.now() - tiempoInicio) / 1000);
-
                 if (segundos < 5) { enviando = false; return; }
 
                 var data = new URLSearchParams();
@@ -464,9 +963,7 @@
                 } else {
                     try {
                         fetch('@Url.Action("RegistrarActividad", "Clientes")', {
-                            method: 'POST',
-                            body: data,
-                            keepalive: true
+                            method: 'POST', body: data, keepalive: true
                         });
                     } catch (e) { }
                 }
@@ -480,9 +977,7 @@
 
             setInterval(function () {
                 var segundos = Math.round((Date.now() - tiempoInicio) / 1000);
-                if (segundos >= 60) {
-                    enviarTiempo();
-                }
+                if (segundos >= 60) enviarTiempo();
             }, 30000);
         })();
     </script>
