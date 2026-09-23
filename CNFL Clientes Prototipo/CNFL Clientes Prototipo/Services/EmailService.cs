@@ -9,6 +9,7 @@ namespace CNFL_Clientes_Prototipo.Services
     /// <summary>
     /// Servicio centralizado de envío de correos.
     /// Usado desde ClientesController y AdminNotificacionesController.
+    /// Tipografía oficial: AvenirNextLPro (con fallback para clientes de correo).
     /// </summary>
     public static class EmailService
     {
@@ -50,10 +51,6 @@ namespace CNFL_Clientes_Prototipo.Services
                 if (!string.IsNullOrEmpty(smtpPass) && smtpPass.Length > 4)
                 {
                     System.Diagnostics.Debug.WriteLine("  → Pass preview: " + smtpPass.Substring(0, 4) + "****");
-                }
-                else if (!string.IsNullOrEmpty(smtpPass))
-                {
-                    System.Diagnostics.Debug.WriteLine("  → Pass preview: (muy corta: " + smtpPass.Length + " caracteres)");
                 }
 
                 // Validación de credenciales placeholder
@@ -129,12 +126,17 @@ namespace CNFL_Clientes_Prototipo.Services
         }
 
         /// <summary>
-        /// HTML bonito y responsive del correo.
+        /// HTML bonito y responsive del correo con tipografía AvenirNextLPro.
+        /// NOTA: Los clientes de correo (Outlook, Gmail, etc.) bloquean @font-face
+        /// por seguridad. Por eso se incluye la fuente declarada + fallbacks robustos.
         /// </summary>
         private static string ConstruirHtml(string titulo, string mensajeHtml, string nombre)
         {
             var tituloEncoded = HttpUtility.HtmlEncode(titulo);
             var nombreEncoded = HttpUtility.HtmlEncode(nombre);
+
+            // Definir la familia tipográfica como variable para reutilizar
+            var fontFamily = "'AvenirNextLPro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 
             return @"
 <!DOCTYPE html>
@@ -143,40 +145,46 @@ namespace CNFL_Clientes_Prototipo.Services
 <meta charset='UTF-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 <title>CNFL</title>
+<style>
+    /* Fuente oficial CNFL con fallbacks robustos para clientes de correo */
+    body, table, td, div, p, h1, h2, h3, a, span, strong, em {
+        font-family: 'AvenirNextLPro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+    }
+</style>
 </head>
-<body style='margin:0; padding:0; background:#eef0f5; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;'>
+<body style='margin:0; padding:0; background:#eef0f5; font-family: " + fontFamily + @";'>
 
-<table role='presentation' width='100%' cellpadding='0' cellspacing='0' border='0' style='background:#eef0f5; padding:32px 12px;'>
+<table role='presentation' width='100%' cellpadding='0' cellspacing='0' border='0' style='background:#eef0f5; padding:32px 12px; font-family: " + fontFamily + @";'>
 <tr>
 <td align='center'>
 
 <!-- CARD PRINCIPAL -->
-<table role='presentation' width='600' cellpadding='0' cellspacing='0' border='0' style='max-width:600px; width:100%; background:#ffffff; border-radius:20px; overflow:hidden; box-shadow:0 8px 32px rgba(16,20,40,0.10);'>
+<table role='presentation' width='600' cellpadding='0' cellspacing='0' border='0' style='max-width:600px; width:100%; background:#ffffff; border-radius:20px; overflow:hidden; box-shadow:0 8px 32px rgba(16,20,40,0.10); font-family: " + fontFamily + @";'>
 
 <!-- HEADER -->
 <tr>
-<td style='background: linear-gradient(135deg, #001482 0%, #1E23E6 60%, #3b6ce0 100%); padding:40px 32px; text-align:center; position:relative;'>
-<div style='color:#ffffff; font-size:32px; font-weight:900; letter-spacing:-1px; margin:0; line-height:1;'>CNFL</div>
-<div style='color:rgba(255,255,255,0.75); font-size:11px; font-weight:700; margin-top:8px; letter-spacing:3px;'>AGENCIA VIRTUAL</div>
+<td style='background: linear-gradient(135deg, #001482 0%, #1E23E6 60%, #3b6ce0 100%); padding:40px 32px; text-align:center; position:relative; font-family: " + fontFamily + @";'>
+<div style='color:#ffffff; font-size:32px; font-weight:900; letter-spacing:-1px; margin:0; line-height:1; font-family: " + fontFamily + @";'>CNFL</div>
+<div style='color:rgba(255,255,255,0.75); font-size:11px; font-weight:700; margin-top:8px; letter-spacing:3px; font-family: " + fontFamily + @";'>AGENCIA VIRTUAL</div>
 </td>
 </tr>
 
 <!-- BODY -->
 <tr>
-<td style='padding:40px 32px;'>
+<td style='padding:40px 32px; font-family: " + fontFamily + @";'>
 
 <!-- BADGE -->
-<div style='margin-bottom:20px;'>
-<span style='display:inline-block; background:#eef0ff; color:#1E23E6; font-size:11px; font-weight:800; padding:7px 14px; border-radius:999px; letter-spacing:0.5px;'>
+<div style='margin-bottom:20px; font-family: " + fontFamily + @";'>
+<span style='display:inline-block; background:#eef0ff; color:#1E23E6; font-size:11px; font-weight:800; padding:7px 14px; border-radius:999px; letter-spacing:0.5px; font-family: " + fontFamily + @";'>
 NUEVA NOTIFICACIÓN
 </span>
 </div>
 
 <!-- TÍTULO -->
-<h1 style='color:#0E1116; font-size:22px; font-weight:800; margin:0 0 20px; line-height:1.35; letter-spacing:-0.3px;'>" + tituloEncoded + @"</h1>
+<h1 style='color:#0E1116; font-size:22px; font-weight:800; margin:0 0 20px; line-height:1.35; letter-spacing:-0.3px; font-family: " + fontFamily + @";'>" + tituloEncoded + @"</h1>
 
 <!-- MENSAJE -->
-<div style='color:#4a5361; font-size:15px; line-height:1.7; margin:0 0 28px;'>
+<div style='color:#4a5361; font-size:15px; line-height:1.7; margin:0 0 28px; font-family: " + fontFamily + @";'>
 " + mensajeHtml + @"
 </div>
 
@@ -184,15 +192,15 @@ NUEVA NOTIFICACIÓN
 <div style='height:1px; background:#EDEFF3; margin:0 0 24px;'></div>
 
 <!-- SALUDO -->
-<p style='color:#727A86; font-size:13px; line-height:1.6; margin:0 0 24px;'>
-Hola <strong style='color:#0E1116;'>" + nombreEncoded + @"</strong>, este aviso te llega porque tenés activadas las notificaciones en CNFL Clientes.
+<p style='color:#727A86; font-size:13px; line-height:1.6; margin:0 0 24px; font-family: " + fontFamily + @";'>
+Hola <strong style='color:#0E1116; font-weight:800; font-family: " + fontFamily + @";'>" + nombreEncoded + @"</strong>, este aviso te llega porque tenés activadas las notificaciones en CNFL Clientes.
 </p>
 
 <!-- BOTÓN CTA -->
-<table role='presentation' cellpadding='0' cellspacing='0' border='0' style='margin:0 auto;'>
+<table role='presentation' cellpadding='0' cellspacing='0' border='0' style='margin:0 auto; font-family: " + fontFamily + @";'>
 <tr>
-<td align='center' style='background: linear-gradient(135deg, #FF692D 0%, #ff8a4c 100%); border-radius:14px;'>
-<a href='http://localhost:44387/Clientes/Alertas' target='_blank' style='display:inline-block; color:#ffffff; text-decoration:none; padding:16px 36px; font-size:15px; font-weight:800; letter-spacing:0.2px;'>
+<td align='center' style='background: linear-gradient(135deg, #FF692D 0%, #ff8a4c 100%); border-radius:14px; font-family: " + fontFamily + @";'>
+<a href='http://localhost:44387/Clientes/Alertas' target='_blank' style='display:inline-block; color:#ffffff; text-decoration:none; padding:16px 36px; font-size:15px; font-weight:800; letter-spacing:0.2px; font-family: " + fontFamily + @";'>
 Ver todas las alertas
 </a>
 </td>
@@ -204,13 +212,13 @@ Ver todas las alertas
 
 <!-- FOOTER -->
 <tr>
-<td style='background:#f8f9fc; padding:28px 32px; text-align:center; border-top:1px solid #EDEFF3;'>
-<p style='color:#0E1116; font-size:12px; font-weight:800; margin:0 0 6px; letter-spacing:0.3px;'>Compañía Nacional de Fuerza y Luz S.A.</p>
-<p style='color:#9aa3b2; font-size:11px; margin:0 0 14px; line-height:1.6;'>
-<a href='https://www.cnfl.go.cr' style='color:#1E23E6; text-decoration:none; font-weight:700;'>www.cnfl.go.cr</a>
+<td style='background:#f8f9fc; padding:28px 32px; text-align:center; border-top:1px solid #EDEFF3; font-family: " + fontFamily + @";'>
+<p style='color:#0E1116; font-size:12px; font-weight:800; margin:0 0 6px; letter-spacing:0.3px; font-family: " + fontFamily + @";'>Compañía Nacional de Fuerza y Luz S.A.</p>
+<p style='color:#9aa3b2; font-size:11px; margin:0 0 14px; line-height:1.6; font-family: " + fontFamily + @";'>
+<a href='https://www.cnfl.go.cr' style='color:#1E23E6; text-decoration:none; font-weight:700; font-family: " + fontFamily + @";'>www.cnfl.go.cr</a>
 &nbsp;·&nbsp; 800-ENERGIA (800-3637442)
 </p>
-<p style='color:#b5bcc9; font-size:10.5px; margin:0; line-height:1.6;'>
+<p style='color:#b5bcc9; font-size:10.5px; margin:0; line-height:1.6; font-family: " + fontFamily + @";'>
 Si no querés recibir estas notificaciones,<br>desactivalas desde la app CNFL Clientes.
 </p>
 </td>
@@ -219,7 +227,7 @@ Si no querés recibir estas notificaciones,<br>desactivalas desde la app CNFL Cl
 </table>
 
 <!-- COPYRIGHT -->
-<p style='color:#9aa3b2; font-size:11px; text-align:center; margin:20px 0 0; line-height:1.6;'>
+<p style='color:#9aa3b2; font-size:11px; text-align:center; margin:20px 0 0; line-height:1.6; font-family: " + fontFamily + @";'>
 © " + DateTime.Now.Year + @" Compañía Nacional de Fuerza y Luz S.A.<br>
 Todos los derechos reservados.
 </p>
