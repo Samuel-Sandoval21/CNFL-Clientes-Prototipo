@@ -1,0 +1,256 @@
+﻿@{
+    ViewBag.Title = "Beneficios";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+@section Styles {
+    <style>
+        .bt-hero {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 22px;
+            padding: 24px 20px;
+            color: #1a1a1a;
+            box-shadow: 0 18px 34px -12px rgba(255, 215, 0, 0.5);
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .bt-hero::after {
+                content: "";
+                position: absolute;
+                right: -60px;
+                top: -60px;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(255,255,255,.3), transparent 70%);
+            }
+
+            .bt-hero h1 {
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+                line-height: 1.2;
+                margin: 0;
+                position: relative;
+                z-index: 2;
+            }
+
+            .bt-hero p {
+                font-size: 12.5px;
+                opacity: 0.85;
+                margin-top: 8px;
+                line-height: 1.5;
+                position: relative;
+                z-index: 2;
+            }
+
+        .bt-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 14px;
+        }
+
+            .bt-card h3 {
+                margin: 0 0 14px;
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+        .bt-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+            .bt-item:last-child {
+                border-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .bt-item:first-child {
+                padding-top: 0;
+            }
+
+            .bt-item .ico {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                background: #fff4ec;
+                color: var(--orange);
+                display: grid;
+                place-items: center;
+                flex-shrink: 0;
+                font-size: 20px;
+            }
+
+            .bt-item .tx {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .bt-item .t {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                line-height: 1.3;
+            }
+
+            .bt-item .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 4px;
+                line-height: 1.5;
+            }
+
+            .bt-item .destacado {
+                display: inline-block;
+                font-size: 10px;
+                font-weight: 800;
+                color: #fff;
+                background: var(--orange);
+                padding: 2px 8px;
+                border-radius: 999px;
+                margin-left: 6px;
+                vertical-align: middle;
+            }
+    </style>
+}
+
+<!-- APPBAR -->
+<div class="appbar">
+    <a href="@Url.Action("ProductosServicios", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">🎁 Beneficios</div>
+    <div style="width:40px;"></div>
+</div>
+
+<!-- HERO -->
+<div class="bt-hero">
+    <h1>Beneficios exclusivos</h1>
+    <p>Descubrí todo lo que tu tarjeta CNFL Gold tiene para vos.</p>
+</div>
+
+<!-- BENEFICIOS -->
+<div class="bt-card">
+    <h3>💎 Beneficios de tu Tarjeta Gold</h3>
+
+    <div class="bt-item">
+        <div class="ico">💰</div>
+        <div class="tx">
+            <div class="t">0% de interés<span class="destacado">TOP</span></div>
+            <div class="s">Financiá tus compras a 3, 6, 9 o 12 meses sin intereses en comercios afiliados a la red CNFL.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">💵</div>
+        <div class="tx">
+            <div class="t">5% de cashback en tu factura</div>
+            <div class="s">Recibí un 5% de vuelta en todas tus compras con la tarjeta, aplicado directamente a tu factura eléctrica.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">🏪</div>
+        <div class="tx">
+            <div class="t">Descuentos exclusivos en comercios</div>
+            <div class="s">Hasta un 25% de descuento en supermercados, restaurantes, cines, gasolineras y tiendas afiliadas.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">⚡</div>
+        <div class="tx">
+            <div class="t">Pago automático de tu factura</div>
+            <div class="s">Programá el pago automático de tu factura CNFL y evitá recargos por mora. Sin costo adicional.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">🛡️</div>
+        <div class="tx">
+            <div class="t">Seguro de compra gratis</div>
+            <div class="s">Protección ante robo, hurto o daño accidental en tus compras por 60 días. Cobertura hasta ₡500.000.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">✈️</div>
+        <div class="tx">
+            <div class="t">Acceso a salas VIP</div>
+            <div class="s">Ingreso gratuito a más de 1.200 salas VIP en aeropuertos de todo el mundo con tu tarjeta CNFL Gold.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">💳</div>
+        <div class="tx">
+            <div class="t">Aceptada en todo el mundo</div>
+            <div class="s">Comprá en millones de comercios físicos y en línea en más de 200 países. Red Visa Internacional.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">📱</div>
+        <div class="tx">
+            <div class="t">Pago sin contacto</div>
+            <div class="s">Pagá con un solo toque usando tu tarjeta, tu celular (Apple Pay / Google Pay) o tu smartwatch.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">🎁</div>
+        <div class="tx">
+            <div class="t">Programa de puntos CNFL</div>
+            <div class="s">Acumulá puntos con cada compra y canjealos por pagos de factura, productos del marketplace o servicios CNFL.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">🔄</div>
+        <div class="tx">
+            <div class="t">Pago flexible</div>
+            <div class="s">Elegí pagar el total, el mínimo o una cantidad personalizada cada mes. Sin comisiones ocultas.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">🛟</div>
+        <div class="tx">
+            <div class="t">Asistencia 24/7</div>
+            <div class="s">Bloqueá tu tarjeta, reportá robos o consultá movimientos desde la app CNFL o llamando al 800-ENERGIA.</div>
+        </div>
+    </div>
+
+    <div class="bt-item">
+        <div class="ico">📊</div>
+        <div class="tx">
+            <div class="t">Control total desde la app</div>
+            <div class="s">Consultá tus consumos, movimientos, estados de cuenta y pagos desde la app CNFL Clientes.</div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="bt-card" style="background:#f0f7ff; border-color:#cce4ff; text-align:center; margin-bottom:100px;">
+    <p style="font-size:12.5px; color:var(--ink); margin:0; font-weight:700;">
+        💡 ¿Querés solicitar tu tarjeta Gold CNFL?
+    </p>
+    <a href="@Url.Action("ProductosServicios", "Clientes")"
+       style="display:inline-block; margin-top:14px; padding:12px 24px; background:var(--blue); color:#fff; border-radius:12px; text-decoration:none; font-size:13px; font-weight:800;">
+        Solicitar Tarjeta
+    </a>
+</div>

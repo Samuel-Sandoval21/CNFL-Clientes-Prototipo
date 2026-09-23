@@ -86,6 +86,9 @@
     <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.3.0.1\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="RBush, Version=4.0.0.0, Culture=neutral, PublicKeyToken=c77e27b81f4d0187, processorArchitecture=MSIL">
       <HintPath>..\packages\RBush.Signed.4.0.0\lib\net47\RBush.dll</HintPath>
@@ -181,9 +184,6 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -207,17 +207,18 @@
     <Compile Include="Controllers\AdminNotificacionesController.cs" />
     <Compile Include="Controllers\AdminReportesController.cs" />
     <Compile Include="Controllers\CarritoController.cs" />
+    <Compile Include="Controllers\ChatbotController.cs" />
     <Compile Include="Controllers\CuentaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PagosController.cs" />
     <Compile Include="Controllers\TiendaController.cs" />
-    <Compile Include="Controllers\TramitesController.cs" />
     <Compile Include="Data\CNFLDbContext.cs" />
     <Compile Include="Filters\SessionAuthorizeAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ActividadEconomica.cs" />
+    <Compile Include="Models\ActividadSeccionDto.cs" />
     <Compile Include="Models\ActividadUsuario.cs" />
     <Compile Include="Models\Averia.cs" />
     <Compile Include="Models\DashboardDtos.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="Models\Suspension.cs" />
     <Compile Include="Models\Tramite.cs" />
     <Compile Include="Models\TramiteDocumento.cs" />
+    <Compile Include="Models\TramiteListadoDto.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Models\UsuarioRol.cs" />
     <Compile Include="Models\ViewModels\ReporteVentasViewModel.cs" />
@@ -241,8 +243,10 @@
     <Compile Include="Repositories\AveriaRepository.cs" />
     <Compile Include="Repositories\FacturaRepository.cs" />
     <Compile Include="Repositories\NotificacionRepository.cs" />
+    <Compile Include="Services\AiService.cs" />
     <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\EmailService.cs" />
+    <Compile Include="Services\IAiService.cs" />
     <Compile Include="Services\NISEService.cs" />
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\PaymentService.cs" />
@@ -382,17 +386,12 @@
     <Content Include="Views\Cuenta\Registro.cshtml" />
     <Content Include="Views\Clientes\Dashboard.cshtml" />
     <Content Include="Views\Cuenta\RecuperarClave.cshtml" />
-    <Content Include="Views\Admin\Averias.cshtml" />
-    <Content Include="Views\Admin\DetalleAveria.cshtml" />
     <Content Include="Views\Admin\DetalleCliente.cshtml" />
     <Content Include="Views\Clientes\EstadoAveria.cshtml" />
     <Content Include="Views\Shared\_LayoutApp.cshtml" />
     <Content Include="Views\Clientes\MisFacturas.cshtml" />
     <Content Include="Views\Clientes\DetalleProducto.cshtml" />
     <Content Include="Views\Clientes\HistorialReportes.cshtml" />
-    <Content Include="Views\Tramites\Index.cshtml" />
-    <Content Include="Views\Tramites\Detalle.cshtml" />
-    <Content Include="Views\Tramites\MisTramites.cshtml" />
     <Content Include="Views\Clientes\MisServicios.cshtml" />
     <Content Include="Views\Clientes\HistorialConsumo.cshtml" />
     <Content Include="Views\Clientes\ConsultaMedidor.cshtml" />
@@ -405,19 +404,17 @@
     <Content Include="Views\Shared\_LogoCNFL.cshtml" />
     <Content Include="Views\Clientes\MetodosPago.cshtml" />
     <Content Include="Views\Clientes\MisCompras.cshtml" />
-    <Content Include="Views\Admin\Tramites.cshtml" />
-    <Content Include="Views\Admin\Actividad.cshtml" />
-    <Content Include="Views\Admin\Configuracion.cshtml" />
     <Content Include="Views\Admin\Cuenta.cshtml" />
-    <Content Include="Views\Admin\Alertas.cshtml" />
     <Content Include="Views\Cuenta\_PoliticaPrivacidad.cshtml" />
     <Content Include="Views\Cuenta\_ConsentimientoInformado.cshtml" />
     <Content Include="Views\Shared\_Contactanos.cshtml" />
     <Content Include="Views\Clientes\DetalleTramite.cshtml" />
-    <Content Include="Views\Admin\DetalleTramite.cshtml" />
     <Content Include="Views\AdminReportes\ReportesVentas.cshtml" />
     <Content Include="Views\Clientes\Configuracion.cshtml" />
     <Content Include="Views\AdminNotificaciones\Index.cshtml" />
+    <Content Include="Views\Shared\_ChatbotWidget.cshtml" />
+    <Content Include="Views\Home\Contacto.cshtml" />
+    <Content Include="Views\Clientes\BeneficiosTarjeta.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

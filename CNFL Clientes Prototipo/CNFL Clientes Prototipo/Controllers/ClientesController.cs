@@ -248,17 +248,21 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
+            // ═══ CAMBIO: TramiteResumenDto → TramiteListadoDto ═══
             var tramitesActivos = _db.Tramites
                 .Where(t => t.UsuarioId == usuarioId && t.Estado != "Resuelto")
                 .OrderByDescending(t => t.FechaSolicitud)
-                .Select(t => new TramiteResumenDto
+                .Select(t => new TramiteListadoDto
                 {
                     TramiteId = t.TramiteId,
                     Tipo = t.Tipo,
                     Categoria = t.Categoria,
-                    Estado = t.Estado,
-                    FechaSolicitud = t.FechaSolicitud,
                     NumeroReferencia = t.NumeroReferencia,
+                    NumeroNise = t.NumeroNise,
+                    FechaSolicitud = t.FechaSolicitud,
+                    FechaEstimadaFinalizacion = t.FechaEstimadaFinalizacion,
+                    Estado = t.Estado,
+                    Progreso = t.Progreso,
                     Descripcion = t.Descripcion
                 })
                 .ToList();
@@ -518,7 +522,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
-            // Cargar NISEs del usuario para el formulario
             var nises = _db.NISEs
                 .Where(n => n.UsuarioId == usuarioId)
                 .OrderBy(n => n.NumeroNise)
@@ -547,7 +550,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 var latStr = form["Latitud"];
                 var lngStr = form["Longitud"];
 
-                // ═══ Validaciones ═══
                 if (string.IsNullOrWhiteSpace(tipoAveria) || string.IsNullOrWhiteSpace(tipoProblema))
                 {
                     TempData["Error"] = "Faltan datos obligatorios (tipo de avería y problema).";
@@ -560,34 +562,29 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     return RedirectToAction("Reportes");
                 }
 
-                // ═══ Determinar NISE ═══
                 int? niseId = null;
                 if (!string.IsNullOrWhiteSpace(niseIdStr))
                 {
                     int tempNise;
                     if (int.TryParse(niseIdStr, out tempNise))
                     {
-                        // Verificar que el NISE pertenezca al usuario
                         var niseValido = _db.NISEs.Any(n => n.NiseId == tempNise && n.UsuarioId == usuarioId.Value);
                         if (niseValido) niseId = tempNise;
                     }
                 }
 
-                // Si es avería propia y no tiene NISE, error
                 if (tipoAveria == "Eléctrica propia" && !niseId.HasValue)
                 {
                     TempData["Error"] = "Seleccioná el NISE afectado.";
                     return RedirectToAction("Reportes");
                 }
 
-                // Si es alumbrado público, requiere número de poste
                 if (tipoAveria == "Alumbrado público" && string.IsNullOrWhiteSpace(numeroPoste))
                 {
                     TempData["Error"] = "Ingresá el número de poste.";
                     return RedirectToAction("Reportes");
                 }
 
-                // ═══ Coordenadas GPS ═══
                 double? lat = null;
                 double? lng = null;
                 if (!string.IsNullOrWhiteSpace(latStr))
@@ -605,11 +602,10 @@ namespace CNFL_Clientes_Prototipo.Controllers
                         lng = tempLng;
                 }
 
-                // ═══ Crear la avería ═══
                 var averia = new Averia
                 {
                     UsuarioId = usuarioId.Value,
-                    NiseId = niseId ?? 0, // 0 si es ajena/alumbrado público
+                    NiseId = niseId ?? 0,
                     Tipo = tipoAveria + " · " + tipoProblema,
                     Descripcion = descripcion.Trim(),
                     Estado = "Ingresado",
@@ -619,7 +615,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     Longitud = lng
                 };
 
-                // Si es "Eléctrica ajena", guardamos la ubicación en la descripción
                 if (tipoAveria == "Eléctrica ajena")
                 {
                     averia.Descripcion = "[Avería ajena] " + descripcion.Trim();
@@ -632,7 +627,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 _db.Averias.Add(averia);
                 _db.SaveChanges();
 
-                // ═══ Guardar fotos (si vienen) ═══
                 var archivos = Request.Files;
                 int fotosGuardadas = 0;
 
@@ -651,14 +645,12 @@ namespace CNFL_Clientes_Prototipo.Controllers
                         var extensionesValidas = new[] { ".jpg", ".jpeg", ".png", ".webp" };
                         if (Array.IndexOf(extensionesValidas, extension) < 0) continue;
 
-                        // Límite de 5 MB
                         if (archivo.ContentLength > 5 * 1024 * 1024) continue;
 
                         var nombreGuardar = "averia_" + averia.AveriaId + "_" + i + "_" + DateTime.Now.Ticks + extension;
                         var rutaCompleta = System.IO.Path.Combine(carpeta, nombreGuardar);
                         archivo.SaveAs(rutaCompleta);
 
-                        // La primera foto la guardamos como FotoUrl principal
                         if (fotosGuardadas == 0)
                         {
                             averia.FotoUrl = "/Content/uploads/averias/" + nombreGuardar;
@@ -671,7 +663,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                         _db.SaveChanges();
                 }
 
-                // ═══ Crear notificación ═══
                 var notif = new Notificacion
                 {
                     UsuarioId = usuarioId.Value,
@@ -685,14 +676,12 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 _db.Notificaciones.Add(notif);
                 _db.SaveChanges();
 
-                // ═══ Enviar correo ═══
                 EnviarCorreoReal(usuarioId.Value,
                     "Avería reportada · #" + averia.AveriaId,
                     "Recibimos tu reporte de <b>" + tipoAveria + "</b> (<b>" + tipoProblema + "</b>). " +
                     "Un operador está asignado a tu caso. " +
                     (fotosGuardadas > 0 ? "Adjuntaste " + fotosGuardadas + " foto(s)." : ""));
 
-                // ═══ Éxito ═══
                 TempData["Ok"] = "✓ Reporte enviado correctamente. Un operador te contactará al " + (telefono ?? "teléfono registrado") + ".";
                 return RedirectToAction("EstadoAveria", "Clientes", new { id = averia.AveriaId });
             }
@@ -764,13 +753,16 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 var tramite = new Tramite
                 {
                     UsuarioId = usuarioId.Value,
+                    NumeroNise = nise,
                     Tipo = tipo,
                     Categoria = "General",
-                    Estado = "Iniciado",
+                    Estado = "Activo",
                     FechaSolicitud = DateTime.Now,
                     FechaActualizacion = DateTime.Now,
+                    FechaEstimadaFinalizacion = DateTime.Now.AddDays(7),
                     Descripcion = descripcion,
                     NumeroReferencia = numeroRef,
+                    Progreso = 10,
                     DatosFormulario = "{}"
                 };
 
@@ -808,6 +800,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                             NombreRequisito = nombreRequisito,
                             NombreArchivo = archivo.FileName,
                             RutaArchivo = "/Content/uploads/tramites/" + nombreGuardar,
+                            TipoArchivo = extension,
                             TamanoBytes = archivo.ContentLength,
                             FechaSubida = DateTime.Now
                         };
@@ -827,7 +820,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     Fecha = DateTime.Now,
                     Leida = false,
                     Tipo = "Tramite",
-                    Estado = "Iniciado"
+                    Estado = "Activo"
                 };
                 _db.Notificaciones.Add(notif);
                 _db.SaveChanges();
@@ -854,12 +847,13 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             var tramite = _db.Tramites
                 .Include("TramiteDocumentos")
+                .Include("Usuario")
+                .Include("NISE")
                 .FirstOrDefault(t => t.TramiteId == id && t.UsuarioId == usuarioId);
 
             if (tramite == null) return HttpNotFound();
 
-            ViewBag.Tramite = tramite;
-            return View();
+            return View(tramite);
         }
 
         // ============================================================
@@ -945,12 +939,67 @@ namespace CNFL_Clientes_Prototipo.Controllers
             var usuarioId = Session["UsuarioId"] as int?;
             if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
 
-            var activos = _db.Tramites
+            var estadosActivos = new[]
+            {
+                "Activo",
+                "Inactivo",
+                "Inactivo con liquidación",
+                "Suspendido",
+                "Suspendido con reconexión"
+            };
+
+            // ═══ CAMBIO: TramiteResumenDto → TramiteListadoDto ═══
+            var tramites = _db.Tramites
                 .Where(t => t.UsuarioId == usuarioId)
+                .Where(t => estadosActivos.Contains(t.Estado))
                 .OrderByDescending(t => t.FechaSolicitud)
+                .Select(t => new TramiteListadoDto
+                {
+                    TramiteId = t.TramiteId,
+                    Tipo = t.Tipo,
+                    Categoria = t.Categoria,
+                    NumeroReferencia = t.NumeroReferencia,
+                    NumeroNise = t.NumeroNise,
+                    FechaSolicitud = t.FechaSolicitud,
+                    FechaEstimadaFinalizacion = t.FechaEstimadaFinalizacion,
+                    Estado = t.Estado,
+                    Progreso = t.Progreso,
+                    Descripcion = t.Descripcion
+                })
                 .ToList();
 
-            ViewBag.TramitesActivos = activos;
+            ViewBag.TramitesActivos = tramites;
+            return View();
+        }
+
+        // ============================================================
+        // HISTORIAL DE TRÁMITES
+        // ============================================================
+        public ActionResult HistorialTramites()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            // ═══ CAMBIO: TramiteResumenDto → TramiteListadoDto ═══
+            var tramites = _db.Tramites
+                .Where(t => t.UsuarioId == usuarioId)
+                .OrderByDescending(t => t.FechaSolicitud)
+                .Select(t => new TramiteListadoDto
+                {
+                    TramiteId = t.TramiteId,
+                    Tipo = t.Tipo,
+                    Categoria = t.Categoria,
+                    NumeroReferencia = t.NumeroReferencia,
+                    NumeroNise = t.NumeroNise,
+                    FechaSolicitud = t.FechaSolicitud,
+                    FechaEstimadaFinalizacion = t.FechaEstimadaFinalizacion,
+                    FechaFinalizacion = t.FechaFinalizacion,
+                    Estado = t.Estado,
+                    Progreso = t.Progreso
+                })
+                .ToList();
+
+            ViewBag.TramitesHistorial = tramites;
             return View();
         }
 
@@ -979,6 +1028,71 @@ namespace CNFL_Clientes_Prototipo.Controllers
             Session["Nise"] = nise ?? "";
 
             return View();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // BENEFICIOS DE LA TARJETA DE CRÉDITO
+        // GET: /Clientes/BeneficiosTarjeta
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult BeneficiosTarjeta()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+            return View();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SOLICITAR TARJETA DE CRÉDITO
+        // GET: /Clientes/SolicitarTarjeta
+        // ═══════════════════════════════════════════════════════════
+        public ActionResult SolicitarTarjeta()
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+            return View();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // POST: /Clientes/SolicitarTarjeta
+        // ═══════════════════════════════════════════════════════════
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SolicitarTarjeta(string tipoTarjeta, decimal ingresoMensual, string ocupacion, string comentario)
+        {
+            var usuarioId = Session["UsuarioId"] as int?;
+            if (usuarioId == null) return RedirectToAction("Login", "Cuenta");
+
+            try
+            {
+                var usuario = _db.Usuarios.Find(usuarioId.Value);
+                if (usuario == null) return HttpNotFound();
+
+                var notif = new Notificacion
+                {
+                    UsuarioId = usuarioId.Value,
+                    Titulo = "Solicitud de tarjeta recibida",
+                    Mensaje = "Solicitaste una tarjeta " + tipoTarjeta + ". Un asesor te contactará pronto.",
+                    Fecha = DateTime.Now,
+                    Leida = false,
+                    Tipo = "Tarjeta",
+                    Estado = "Pendiente"
+                };
+                _db.Notificaciones.Add(notif);
+                _db.SaveChanges();
+
+                EnviarCorreoReal(usuarioId.Value,
+                    "Solicitud de tarjeta recibida",
+                    "Recibimos tu solicitud de <b>" + tipoTarjeta + "</b>. Un asesor te contactará a la brevedad.");
+
+                TempData["Mensaje"] = "Solicitud enviada correctamente. Te contactaremos pronto.";
+                return RedirectToAction("ProductosServicios");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[SolicitarTarjeta] Error: " + ex.Message);
+                TempData["Error"] = "Ocurrió un error al enviar la solicitud. Intentá de nuevo.";
+                return RedirectToAction("SolicitarTarjeta");
+            }
         }
 
         // ============================================================

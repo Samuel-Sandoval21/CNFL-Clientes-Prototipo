@@ -2,28 +2,16 @@
     ViewBag.Title = "Trámites";
     Layout = "~/Views/Shared/_LayoutCliente.cshtml";
 
-    var tramitesActivos = ViewBag.TramitesActivos as List<CNFL_Clientes_Prototipo.Models.Tramite>
-                       ?? new List<CNFL_Clientes_Prototipo.Models.Tramite>();
+    var tramitesActivos = ViewBag.TramitesActivos as List<CNFL_Clientes_Prototipo.Models.TramiteListadoDto>
+                       ?? new List<CNFL_Clientes_Prototipo.Models.TramiteListadoDto>();
 
-    // Catálogo con imágenes + requisitos por trámite
     var catalogo = new[]
     {
         new {
             Nombre = "Cambio Nombre de Abonado(a)",
             Imagen = "cambio-nombre-abonado-600.jpg",
             Descripcion = "Registrá el servicio a nombre de otra persona",
-            Requisitos = new[] {
-                "Original de cédula de identidad (nacionales)",
-                "Documentos de residencia (extranjeros)",
-                "Personería jurídica (no mayor a 1 mes)",
-                "Localización, número de contrato o medidor",
-                "Titularidad del inmueble",
-                "Contrato de arrendamiento (si aplica)",
-                "Servicio al día con sus obligaciones",
-                "Depósito de garantía",
-                "Teléfono, dirección exacta y correo",
-                "Estado civil y ocupación"
-            }
+            Requisitos = new[] { "Cédula vigente", "Titularidad del inmueble", "Contrato de arrendamiento (si aplica)" }
         },
         new {
             Nombre = "Ingreso Tarifa Residencial Prepago T-RP",
@@ -88,6 +76,297 @@
     };
 }
 
+@section Styles {
+    <style>
+        /* ═══════════ MIS SOLICITUDES ACTIVAS ═══════════ */
+        .tr-solicitud {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 14px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(16, 20, 40, 0.04);
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .tr-solicitud:last-child {
+                margin-bottom: 0;
+            }
+
+            .tr-solicitud::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 4px;
+                background: var(--green);
+            }
+
+            .tr-solicitud.estado-activo::before {
+                background: var(--green);
+            }
+
+            .tr-solicitud.estado-inactivo::before {
+                background: #9aa1b0;
+            }
+
+            .tr-solicitud.estado-inactivo-liquidacion::before {
+                background: var(--amber);
+            }
+
+            .tr-solicitud.estado-suspendido::before {
+                background: var(--orange);
+            }
+
+            .tr-solicitud.estado-suspendido-reconexion::before {
+                background: var(--red);
+            }
+
+        .tr-solicitud-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tr-solicitud-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .tr-solicitud-titulo {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1.25;
+            margin: 0;
+        }
+
+        .tr-solicitud-ref {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 3px;
+            font-weight: 600;
+        }
+
+        .tr-pill {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 9px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+        }
+
+            .tr-pill .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: currentColor;
+            }
+
+            .tr-pill.p-activo {
+                background: #e9f7ec;
+                color: #2f8f3e;
+            }
+
+            .tr-pill.p-inactivo {
+                background: #f0f1f4;
+                color: #6b7280;
+            }
+
+            .tr-pill.p-inactivo-liquidacion {
+                background: #fef3e0;
+                color: #b9791a;
+            }
+
+            .tr-pill.p-suspendido {
+                background: #fff3ec;
+                color: #c95a1a;
+            }
+
+            .tr-pill.p-suspendido-reconexion {
+                background: #fdeaea;
+                color: #c93a3f;
+            }
+
+        .tr-progress {
+            height: 6px;
+            background: #eef0f7;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+            .tr-progress > span {
+                display: block;
+                height: 100%;
+                background: linear-gradient(90deg, var(--blue), var(--sky));
+                border-radius: 999px;
+                transition: width .35s ease;
+            }
+
+        .tr-solicitud.estado-activo .tr-progress > span {
+            background: linear-gradient(90deg, #64B95A, #8ed08a);
+        }
+
+        .tr-solicitud.estado-inactivo .tr-progress > span {
+            background: linear-gradient(90deg, #9aa1b0, #c3c8d4);
+        }
+
+        .tr-solicitud.estado-inactivo-liquidacion .tr-progress > span {
+            background: linear-gradient(90deg, #F5A623, #f9c46b);
+        }
+
+        .tr-solicitud.estado-suspendido .tr-progress > span {
+            background: linear-gradient(90deg, #FF692D, #ff8a4c);
+        }
+
+        .tr-solicitud.estado-suspendido-reconexion .tr-progress > span {
+            background: linear-gradient(90deg, #E5484D, #f47a7f);
+        }
+
+        .tr-solicitud-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .tr-solicitud-fecha {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+            .tr-solicitud-fecha svg {
+                width: 13px;
+                height: 13px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .tr-solicitud-chev {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: #f0f1f4;
+            color: var(--blue);
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: background .15s;
+        }
+
+            .tr-solicitud-chev:hover {
+                background: #eef0ff;
+            }
+
+            .tr-solicitud-chev svg {
+                width: 14px;
+                height: 14px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2.4;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .tr-empty {
+            text-align: center;
+            padding: 30px 20px;
+            background: #fff;
+            border: 1px dashed var(--line);
+            border-radius: 16px;
+        }
+
+            .tr-empty .ico {
+                font-size: 32px;
+                margin-bottom: 8px;
+            }
+
+            .tr-empty .t {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                margin-bottom: 4px;
+            }
+
+            .tr-empty .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                line-height: 1.4;
+            }
+
+        .tr-leyenda {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 14px;
+        }
+
+        .tr-leyenda-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #f7f8fc;
+            border: 1px solid var(--line);
+            color: var(--muted);
+        }
+
+            .tr-leyenda-item .dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+            }
+
+            .tr-leyenda-item.l-activo .dot {
+                background: var(--green);
+            }
+
+            .tr-leyenda-item.l-inactivo .dot {
+                background: #9aa1b0;
+            }
+
+            .tr-leyenda-item.l-inactivo-liquidacion .dot {
+                background: var(--amber);
+            }
+
+            .tr-leyenda-item.l-suspendido .dot {
+                background: var(--orange);
+            }
+
+            .tr-leyenda-item.l-suspendido-reconexion .dot {
+                background: var(--red);
+            }
+    </style>
+}
+
 <!-- APPBAR -->
 <div class="appbar">
     <a href="@Url.Action("Dashboard", "Clientes")" class="icon-btn">
@@ -104,32 +383,95 @@
     Solicitá servicios y consultá el estado de tus gestiones.
 </p>
 
-<!-- Trámites activos -->
+<!-- ═══════════════════════════════════════════════════════════
+     MIS SOLICITUDES ACTIVAS — ESTADO DEL TRÁMITE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center; margin-top:22px;">
+    <span>📌 Mis solicitudes activas</span>
+    @if (tramitesActivos.Any())
+    {
+        <span style="font-size:11px; color:var(--muted);">@tramitesActivos.Count</span>
+    }
+</div>
+
 @if (tramitesActivos.Any())
 {
-    <div class="eyebrow" style="display:flex; justify-content:space-between; align-items:center; margin-top:22px;">
-        <span>📌 Trámites activos</span>
-        <span style="font-size:11px; color:var(--muted);">@tramitesActivos.Count</span>
-    </div>
+    foreach (var t in tramitesActivos)
+    {
+        var estadoRaw = (t.Estado ?? "Activo").Trim().ToLowerInvariant();
+        var estadoClass = "estado-activo";
+        var pillClass = "p-activo";
+        var estadoTexto = "Activo";
 
-    <div class="rows">
-        @foreach (var t in tramitesActivos)
+        switch (estadoRaw)
         {
-            <a href="@Url.Action("DetalleTramite", "Clientes", new { id = t.TramiteId })" class="row-item">
-                <div class="ic" style="background:#eef0ff; font-size:18px; display:grid; place-items:center;">📋</div>
-                <div class="tx">
-                    <div class="t">@t.Tipo</div>
-                    <div class="s">@t.NumeroReferencia · @t.FechaSolicitud.ToString("dd/MM/yyyy")</div>
-                </div>
-                <span class="pill @(t.Estado == "Aprobado" || t.Estado == "Resuelto" ? "st-normal" : (t.Estado == "Requiere corrección" ? "st-inc" : "st-prev"))" style="font-size:10px;">
-                    <span class="dot"></span>@t.Estado
-                </span>
-            </a>
+            case "inactivo":
+                estadoClass = "estado-inactivo"; pillClass = "p-inactivo"; estadoTexto = "Inactivo"; break;
+            case "inactivo con liquidación":
+            case "inactivo con liquidacion":
+                estadoClass = "estado-inactivo-liquidacion"; pillClass = "p-inactivo-liquidacion"; estadoTexto = "Inactivo con liquidación"; break;
+            case "suspendido":
+                estadoClass = "estado-suspendido"; pillClass = "p-suspendido"; estadoTexto = "Suspendido"; break;
+            case "suspendido con reconexión":
+            case "suspendido con reconexion":
+                estadoClass = "estado-suspendido-reconexion"; pillClass = "p-suspendido-reconexion"; estadoTexto = "Suspendido con reconexión"; break;
         }
+
+        var fechaEstimada = t.FechaEstimadaFinalizacion ?? t.FechaSolicitud.AddDays(7);
+
+        <a href="@Url.Action("DetalleTramite", "Clientes", new { id = t.TramiteId })"
+           class="tr-solicitud @estadoClass">
+
+            <div class="tr-solicitud-head">
+                <div class="tr-solicitud-info">
+                    <h3 class="tr-solicitud-titulo">@t.Tipo</h3>
+                    <div class="tr-solicitud-ref">@t.NumeroReferencia · Solicitado el @t.FechaSolicitud.ToString("dd/MM/yyyy")</div>
+                </div>
+                <span class="tr-pill @pillClass">
+                    <span class="dot"></span>@estadoTexto
+                </span>
+            </div>
+
+            <div class="tr-progress">
+                <span style="width:@(t.Progreso)%;"></span>
+            </div>
+
+            <div class="tr-solicitud-foot">
+                <div class="tr-solicitud-fecha">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <path d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
+                    Finaliza aprox. @fechaEstimada.ToString("dd 'de' MMMM, yyyy",
+        new System.Globalization.CultureInfo("es-CR"))
+                </div>
+                <span class="tr-solicitud-chev">
+                    <svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></svg>
+                </span>
+            </div>
+        </a>
+    }
+
+    <div class="tr-leyenda">
+        <span class="tr-leyenda-item l-activo"><span class="dot"></span>Activo</span>
+        <span class="tr-leyenda-item l-inactivo"><span class="dot"></span>Inactivo</span>
+        <span class="tr-leyenda-item l-inactivo-liquidacion"><span class="dot"></span>Inactivo con liquidación</span>
+        <span class="tr-leyenda-item l-suspendido"><span class="dot"></span>Suspendido</span>
+        <span class="tr-leyenda-item l-suspendido-reconexion"><span class="dot"></span>Suspendido con reconexión</span>
+    </div>
+}
+else
+{
+    <div class="tr-empty">
+        <div class="ico">📋</div>
+        <div class="t">No tenés solicitudes activas</div>
+        <div class="s">Cuando inicies un trámite, aparecerá acá con su estado y fecha estimada.</div>
     </div>
 }
 
-<!-- Catálogo -->
+<!-- ═══════════════════════════════════════════════════════════
+     CATÁLOGO DE TRÁMITES
+     ═══════════════════════════════════════════════════════════ -->
 <div class="eyebrow" style="margin-top:22px;">Catálogo de trámites</div>
 
 <p style="font-size:12px; color:var(--muted); margin-bottom:14px; line-height:1.5;">
@@ -164,7 +506,7 @@
     }
 </div>
 
-<!-- MODAL DE TRÁMITE -->
+<!-- ═══ MODAL DE TRÁMITE ═══ -->
 <div id="modalTramite"
      style="display:none; position:fixed; inset:0; background:rgba(14,17,22,.65); backdrop-filter:blur(4px); z-index:400; align-items:flex-end; justify-content:center;">
 
@@ -194,7 +536,6 @@
 
         <div style="padding:20px;">
 
-            <!-- Progreso -->
             <div style="background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:16px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <div style="font-size:11.5px; font-weight:800; color:var(--ink);">Progreso del trámite</div>
@@ -205,14 +546,12 @@
                 </div>
             </div>
 
-            <!-- Documentos a adjuntar -->
             <div class="eyebrow" style="margin-top:0;">Documentos requeridos</div>
             <p style="font-size:11.5px; color:var(--muted); margin-bottom:12px; line-height:1.4;">
-                Marcá cada requisito y adjuntá el archivo correspondiente. Se enviarán al agente para revisión.
+                Marcá cada requisito y adjuntá el archivo correspondiente.
             </p>
             <div id="listaDocumentos"></div>
 
-            <!-- Comentario adicional -->
             <div class="eyebrow" style="margin-top:22px;">Comentario adicional (opcional)</div>
             <div class="reg-card">
                 <div class="reg-field">
@@ -221,7 +560,6 @@
                 </div>
             </div>
 
-            <!-- Botones -->
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px; margin-bottom:24px;">
                 <button type="button" id="btnEnviarTramite" onclick="enviarTramite();" class="reg-btn" style="padding:17px;">
                     📤 Enviar solicitud con documentos
@@ -244,16 +582,13 @@
 
         function abrirTramite(indice) {
             tramiteActual = catalogoData[indice];
-
             document.getElementById('modalTramiteTitulo').textContent = tramiteActual.Nombre;
             document.getElementById('tramiteComentario').value = '';
             document.getElementById('tramiteEstado').style.display = 'none';
             document.getElementById('btnEnviarTramite').disabled = false;
             document.getElementById('btnEnviarTramite').textContent = '📤 Enviar solicitud con documentos';
-
             renderDocumentos(tramiteActual);
             actualizarProgreso();
-
             document.getElementById('modalTramite').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
@@ -267,38 +602,25 @@
             if (e.target === this) cerrarTramite();
         });
 
-        // ═══════════ DOCUMENTOS A ADJUNTAR ═══════════
         function renderDocumentos(tramite) {
             var cont = document.getElementById('listaDocumentos');
             cont.innerHTML = '';
-
             tramite.Requisitos.forEach(function (req, i) {
                 var idDoc = 'doc_' + i;
-
                 var card = document.createElement('div');
                 card.className = 'reg-card';
                 card.style.marginBottom = '10px';
                 card.style.padding = '14px';
-
                 card.innerHTML =
-                    '<div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:8px;">' +
-                        '<input type="checkbox" id="chk_' + idDoc + '" data-doc-check="1" ' +
-                               'onchange="toggleDocumento(\'' + idDoc + '\'); actualizarProgreso();" ' +
-                               'style="width:20px; height:20px; accent-color:var(--blue); margin-top:2px; cursor:pointer;" />' +
-                        '<label for="chk_' + idDoc + '" style="font-size:12.5px; font-weight:700; color:var(--ink); line-height:1.3; cursor:pointer; flex:1;">' +
-                            req +
-                        '</label>' +
+                    '<div style="display:flex; gap:10px; margin-bottom:8px;">' +
+                        '<input type="checkbox" id="chk_' + idDoc + '" onchange="toggleDocumento(\'' + idDoc + '\');actualizarProgreso();" style="width:20px;height:20px;" />' +
+                        '<label for="chk_' + idDoc + '" style="font-size:12.5px;font-weight:700;flex:1;cursor:pointer;">' + req + '</label>' +
                     '</div>' +
-                    '<div id="upload_' + idDoc + '" style="display:none; margin-top:8px;">' +
-                        '<label for="file_' + idDoc + '" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; background:#f5f6fa; border:1.5px dashed var(--line); border-radius:10px; cursor:pointer; font-size:11.5px; font-weight:800; color:var(--blue);">' +
-                            '📎 <span id="label_' + idDoc + '">Adjuntar archivo (PDF, JPG, PNG)</span>' +
-                        '</label>' +
-                        '<input type="file" id="file_' + idDoc + '" accept=".pdf,.jpg,.jpeg,.png" ' +
-                               'data-doc-nombre="' + req + '" ' +
-                               'style="display:none;" onchange="seleccionarArchivo(this, \'' + idDoc + '\');" />' +
-                        '<div id="preview_' + idDoc + '" style="display:none; margin-top:8px; padding:8px 12px; background:#e9f7ec; border-radius:10px; font-size:11.5px; color:#2f8f3e; font-weight:800;"></div>' +
+                    '<div id="upload_' + idDoc + '" style="display:none;margin-top:8px;">' +
+                        '<label for="file_' + idDoc + '" style="display:flex;justify-content:center;padding:10px;background:#f5f6fa;border:1.5px dashed var(--line);border-radius:10px;cursor:pointer;font-size:11.5px;font-weight:800;color:var(--blue);">📎 <span id="label_' + idDoc + '">Adjuntar archivo</span></label>' +
+                        '<input type="file" id="file_' + idDoc + '" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="seleccionarArchivo(this,\'' + idDoc + '\');" />' +
+                        '<div id="preview_' + idDoc + '" style="display:none;margin-top:8px;padding:8px;background:#e9f7ec;border-radius:10px;font-size:11.5px;color:#2f8f3e;font-weight:800;"></div>' +
                     '</div>';
-
                 cont.appendChild(card);
             });
         }
@@ -306,15 +628,12 @@
         function toggleDocumento(idDoc) {
             var chk = document.getElementById('chk_' + idDoc);
             var upload = document.getElementById('upload_' + idDoc);
-            if (chk && upload) {
-                upload.style.display = chk.checked ? 'block' : 'none';
-            }
+            if (chk && upload) upload.style.display = chk.checked ? 'block' : 'none';
         }
 
         function seleccionarArchivo(input, idDoc) {
             var preview = document.getElementById('preview_' + idDoc);
             var label = document.getElementById('label_' + idDoc);
-
             if (input.files && input.files[0]) {
                 var file = input.files[0];
                 preview.style.display = 'block';
@@ -324,107 +643,76 @@
             }
         }
 
-        // ═══════════ PROGRESO ═══════════
         function actualizarProgreso() {
-            var total = 0;
-            var completados = 0;
-
+            var total = 0, completados = 0;
             if (tramiteActual && tramiteActual.Requisitos) {
                 tramiteActual.Requisitos.forEach(function (r, i) {
                     total++;
                     var chk = document.getElementById('chk_doc_' + i);
                     var file = document.getElementById('file_doc_' + i);
-                    if (chk && chk.checked && file && file.files && file.files[0]) {
-                        completados++;
-                    }
+                    if (chk && chk.checked && file && file.files && file.files[0]) completados++;
                 });
             }
-
             var pct = total > 0 ? Math.round((completados / total) * 100) : 0;
             document.getElementById('progresoBarra').style.width = pct + '%';
             document.getElementById('progresoTexto').textContent = pct + '%';
         }
 
-        // ═══════════ ENVIAR TRÁMITE ═══════════
         function enviarTramite() {
             var faltantes = [];
-
             if (tramiteActual.Requisitos) {
                 tramiteActual.Requisitos.forEach(function (r, i) {
                     var chk = document.getElementById('chk_doc_' + i);
                     var file = document.getElementById('file_doc_' + i);
-
-                    if (!chk || !chk.checked) {
-                        faltantes.push('Marcar: ' + r);
-                    } else if (!file || !file.files || !file.files[0]) {
-                        faltantes.push('Adjuntar archivo: ' + r);
-                    }
+                    if (!chk || !chk.checked) faltantes.push('Marcar: ' + r);
+                    else if (!file || !file.files || !file.files[0]) faltantes.push('Adjuntar: ' + r);
                 });
             }
-
-            if (faltantes.length > 0) {
-                alert('Faltan completar:\n\n- ' + faltantes.join('\n- '));
-                return;
-            }
-
-            var comentario = document.getElementById('tramiteComentario').value.trim();
+            if (faltantes.length > 0) { alert('Faltan:\n- ' + faltantes.join('\n- ')); return; }
 
             var formData = new FormData();
             formData.append('tipo', tramiteActual.Nombre);
-            formData.append('descripcion', comentario);
+            formData.append('descripcion', document.getElementById('tramiteComentario').value.trim());
             formData.append('nise', '@Session["Nise"]');
             formData.append('telefono', '@Session["Telefono"]');
 
-            if (tramiteActual.Requisitos) {
-                tramiteActual.Requisitos.forEach(function (r, i) {
-                    var file = document.getElementById('file_doc_' + i);
-                    if (file && file.files && file.files[0]) {
-                        formData.append('archivos', file.files[0]);
-                        formData.append('nombresArchivos', r);
-                    }
-                });
-            }
+            tramiteActual.Requisitos.forEach(function (r, i) {
+                var file = document.getElementById('file_doc_' + i);
+                if (file && file.files && file.files[0]) {
+                    formData.append('archivos', file.files[0]);
+                    formData.append('nombresArchivos', r);
+                }
+            });
 
             var estado = document.getElementById('tramiteEstado');
             var btn = document.getElementById('btnEnviarTramite');
-
             estado.style.display = 'block';
             estado.style.background = '#eef0ff';
             estado.style.color = 'var(--blue)';
-            estado.textContent = '📤 Enviando solicitud...';
+            estado.textContent = '📤 Enviando...';
             btn.disabled = true;
-            btn.textContent = '⏳ Enviando...';
 
-            fetch('@Url.Action("CrearTramiteCompleto", "Clientes")', {
-                method: 'POST',
-                body: formData
-            })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.success) {
-                    estado.style.background = '#e9f7ec';
-                    estado.style.color = '#2f8f3e';
-                    estado.textContent = '✓ Trámite enviado · ' + data.id;
-
-                    setTimeout(function () {
-                        cerrarTramite();
-                        location.reload();
-                    }, 2200);
-                } else {
+            fetch('@Url.Action("CrearTramiteCompleto", "Clientes")', { method: 'POST', body: formData })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        estado.style.background = '#e9f7ec';
+                        estado.style.color = '#2f8f3e';
+                        estado.textContent = '✓ Trámite enviado · ' + data.id;
+                        setTimeout(function () { cerrarTramite(); location.reload(); }, 2200);
+                    } else {
+                        estado.style.background = '#fdeaea';
+                        estado.style.color = '#c93a3f';
+                        estado.textContent = '✗ ' + (data.message || 'Error');
+                        btn.disabled = false;
+                    }
+                })
+                .catch(function () {
                     estado.style.background = '#fdeaea';
                     estado.style.color = '#c93a3f';
-                    estado.textContent = '✗ ' + (data.message || 'Error al enviar');
+                    estado.textContent = '✗ Error de conexión';
                     btn.disabled = false;
-                    btn.textContent = '📤 Enviar solicitud con documentos';
-                }
-            })
-            .catch(function () {
-                estado.style.background = '#fdeaea';
-                estado.style.color = '#c93a3f';
-                estado.textContent = '✗ Error de conexión';
-                btn.disabled = false;
-                btn.textContent = '📤 Enviar solicitud con documentos';
-            });
+                });
         }
     </script>
 }

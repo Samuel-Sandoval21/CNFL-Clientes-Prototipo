@@ -33,7 +33,6 @@
             font-display: swap;
         }
 
-        /* Fallback si no hay Bold, usamos el Medium como 800/900 */
         @@font-face {
             font-family: 'AvenirNextLPro';
             src: url('/Content/fonts/AvenirNextLTPro-Bold.otf') format('opentype');
@@ -179,62 +178,6 @@
             text-transform: uppercase;
             letter-spacing: .6px;
             box-shadow: 0 4px 10px -4px rgba(91, 63, 191, .5);
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .header-icon-btn {
-            width: 38px;
-            height: 38px;
-            border-radius: 11px;
-            background: #fff;
-            border: 1px solid #e3e6ee;
-            color: #1c1f2b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            cursor: pointer;
-            position: relative;
-            transition: transform .15s, background .15s, box-shadow .15s;
-            text-decoration: none;
-            box-shadow: 0 2px 6px -2px rgba(20, 30, 70, .08);
-        }
-
-            .header-icon-btn:active {
-                transform: scale(.92);
-            }
-
-            .header-icon-btn:hover {
-                background: #eef0ff;
-                box-shadow: 0 4px 10px -4px rgba(20, 30, 70, .15);
-            }
-
-            .header-icon-btn .dot {
-                position: absolute;
-                top: 7px;
-                right: 7px;
-                width: 8px;
-                height: 8px;
-                background: #ff692d;
-                border-radius: 50%;
-                border: 2px solid #fff;
-                animation: pulse 2s ease-in-out infinite;
-            }
-
-        @@keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            50% {
-                transform: scale(1.15);
-                opacity: .8;
-            }
         }
 
         .app-content {
@@ -522,15 +465,7 @@
                          onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
                     <span class="admin-tag">Admin</span>
                 </div>
-                <div class="header-icons">
-                    <a href="@Url.Action("Configuracion", "Admin")" class="header-icon-btn" title="Configuración">
-                        <i class="fas fa-cog"></i>
-                    </a>
-                    <a href="@Url.Action("Alertas", "Admin")" class="header-icon-btn" title="Alertas">
-                        <i class="fas fa-bell"></i>
-                        <span class="dot"></span>
-                    </a>
-                </div>
+                <!-- ═══ Header sin botones (Configuración y Alertas eliminados) ═══ -->
             </div>
 
             <main class="app-content">
@@ -559,14 +494,6 @@
                 <a href="@Url.Action("Index", "AdminNotificaciones")" class="@activo("AdminNotificaciones", "Index")">
                     <i class="fas fa-bullhorn"></i>
                     <span>Notificar</span>
-                </a>
-                <a href="@Url.Action("Averias", "Admin")" class="@activo("Admin", "Averias")">
-                    <i class="fas fa-bolt"></i>
-                    <span>Averías</span>
-                </a>
-                <a href="@Url.Action("Tramites", "Admin")" class="@activo("Admin", "Tramites")">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Trámites</span>
                 </a>
                 <a href="@Url.Action("Reportes", "Admin")" class="@activo("Admin", "Reportes")">
                     <i class="fas fa-chart-line"></i>

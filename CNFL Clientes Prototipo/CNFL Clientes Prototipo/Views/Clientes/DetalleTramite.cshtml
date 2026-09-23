@@ -1,193 +1,356 @@
 ﻿@model CNFL_Clientes_Prototipo.Models.Tramite
-@{
-    ViewBag.Title = "Detalle del Trámite";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
-    var estados = new[] { "Iniciado", "En revisión", "En proceso", "Aprobado", "Requiere corrección", "Resuelto", "Completado", "Cerrado" };
+@{
+    ViewBag.Title = "Detalle del trámite";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+
+    var estadoRaw = (Model.Estado ?? "Activo").Trim().ToLowerInvariant();
+    var pillClass = "p-activo";
+    var estadoTexto = "Activo";
+
+    switch (estadoRaw)
+    {
+        case "inactivo":
+            pillClass = "p-inactivo"; estadoTexto = "Inactivo"; break;
+        case "inactivo con liquidación":
+        case "inactivo con liquidacion":
+            pillClass = "p-inactivo-liquidacion"; estadoTexto = "Inactivo con liquidación"; break;
+        case "suspendido":
+            pillClass = "p-suspendido"; estadoTexto = "Suspendido"; break;
+        case "suspendido con reconexión":
+        case "suspendido con reconexion":
+            pillClass = "p-suspendido-reconexion"; estadoTexto = "Suspendido con reconexión"; break;
+    }
 }
 
-<div style="margin-bottom:16px;">
-    <a href="@Url.Action("Tramites", "Admin")"
-       style="color:var(--blue); text-decoration:none; font-size:13px; font-weight:800;">
-        ← Volver a Trámites
-    </a>
+@section Styles {
+    <style>
+        .dt-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--blue);
+            text-decoration: none;
+            margin-bottom: 14px;
+        }
+
+            .dt-back:hover {
+                text-decoration: underline;
+            }
+
+        .dt-hero {
+            background: linear-gradient(135deg, var(--blue), #2a4fd6);
+            border-radius: 22px;
+            padding: 22px 20px;
+            color: #fff;
+            box-shadow: 0 12px 30px -12px rgba(16,20,60,.45);
+            margin-bottom: 16px;
+        }
+
+            .dt-hero .ref {
+                font-size: 11px;
+                opacity: 0.85;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .dt-hero h1 {
+                font-size: 19px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+                line-height: 1.2;
+                margin: 6px 0 0;
+            }
+
+            .dt-hero .fecha {
+                font-size: 12px;
+                opacity: 0.9;
+                margin-top: 8px;
+            }
+
+        .dt-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .dt-card h3 {
+                margin: 0 0 14px;
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+        .dt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px;
+        }
+
+            .dt-row:last-child {
+                border-bottom: 0;
+            }
+
+            .dt-row .k {
+                color: var(--muted);
+                font-weight: 700;
+            }
+
+            .dt-row .v {
+                color: var(--ink);
+                font-weight: 800;
+                text-align: right;
+            }
+
+        .dt-pill {
+            font-size: 12px;
+            font-weight: 800;
+            padding: 7px 14px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+            .dt-pill .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: currentColor;
+            }
+
+            .dt-pill.p-activo {
+                background: #e9f7ec;
+                color: #2f8f3e;
+            }
+
+            .dt-pill.p-inactivo {
+                background: #f0f1f4;
+                color: #6b7280;
+            }
+
+            .dt-pill.p-inactivo-liquidacion {
+                background: #fef3e0;
+                color: #b9791a;
+            }
+
+            .dt-pill.p-suspendido {
+                background: #fff3ec;
+                color: #c95a1a;
+            }
+
+            .dt-pill.p-suspendido-reconexion {
+                background: #fdeaea;
+                color: #c93a3f;
+            }
+
+        .dt-progress {
+            height: 8px;
+            background: #eef0f7;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+            .dt-progress > span {
+                display: block;
+                height: 100%;
+                background: linear-gradient(90deg, var(--blue), var(--sky));
+                border-radius: 999px;
+            }
+
+        .dt-doc {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f7f8fc;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+            .dt-doc:last-child {
+                margin-bottom: 0;
+            }
+
+            .dt-doc .ic {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                background: #eef0ff;
+                color: var(--blue);
+                display: grid;
+                place-items: center;
+                flex-shrink: 0;
+                font-size: 18px;
+            }
+
+            .dt-doc .tx {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .dt-doc .t {
+                font-size: 12.5px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .dt-doc .s {
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 2px;
+                word-break: break-all;
+            }
+
+            .dt-doc .btn {
+                padding: 8px 14px;
+                background: var(--blue);
+                color: #fff;
+                border-radius: 10px;
+                text-decoration: none;
+                font-size: 11.5px;
+                font-weight: 800;
+                flex-shrink: 0;
+            }
+    </style>
+}
+
+<!-- ═══ BOTÓN VOLVER ═══ -->
+<a href="@Url.Action("Tramites", "Clientes")" class="dt-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="m15 18-6-6 6-6" />
+    </svg>
+    Volver a trámites
+</a>
+
+<!-- ═══ HERO ═══ -->
+<div class="dt-hero">
+    <div class="ref">@Model.NumeroReferencia</div>
+    <h1>@Model.Tipo</h1>
+    <div class="fecha">
+        Solicitado el @Model.FechaSolicitud.ToString("dd 'de' MMMM, yyyy",
+new System.Globalization.CultureInfo("es-CR"))
+    </div>
 </div>
 
-<h1 class="page-title">📋 Detalle del Trámite</h1>
-<p class="page-subtitle">@Model.Tipo</p>
+<!-- ═══ ESTADO ═══ -->
+<div class="dt-card">
+    <h3>📊 Estado del trámite</h3>
 
-<!-- Card del cliente -->
-<div class="card" style="margin-top:16px;">
-    <div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px;">
-        Información del cliente
-    </div>
-    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
-        <span style="font-size:12px; color:var(--muted);">Nombre</span>
-        <span style="font-size:12.5px; font-weight:700;">@(Model.Usuario != null ? (Model.Usuario.Nombre + " " + Model.Usuario.Apellidos) : "—")</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
-        <span style="font-size:12px; color:var(--muted);">Cédula</span>
-        <span style="font-size:12.5px; font-weight:700;">@(Model.Usuario?.Cedula ?? "—")</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
-        <span style="font-size:12px; color:var(--muted);">Correo</span>
-        <span style="font-size:12.5px; font-weight:700;">@(Model.Usuario?.Correo ?? "—")</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; padding:8px 0;">
-        <span style="font-size:12px; color:var(--muted);">Teléfono</span>
-        <span style="font-size:12.5px; font-weight:700;">@(Model.Usuario?.Telefono ?? "—")</span>
-    </div>
-</div>
-
-<!-- Card del trámite -->
-<div class="card" style="margin-top:14px;">
-    <div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px;">
-        Datos del trámite
-    </div>
-    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
-        <span style="font-size:12px; color:var(--muted);">Tipo</span>
-        <span style="font-size:12.5px; font-weight:700;">@Model.Tipo</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
-        <span style="font-size:12px; color:var(--muted);">Referencia</span>
-        <span style="font-size:12.5px; font-weight:700;">@Model.NumeroReferencia</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line);">
-        <span style="font-size:12px; color:var(--muted);">Fecha solicitud</span>
-        <span style="font-size:12.5px; font-weight:700;">@Model.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; padding:8px 0; align-items:center;">
-        <span style="font-size:12px; color:var(--muted);">Estado actual</span>
-        <span style="font-size:11px; font-weight:800; padding:6px 12px; border-radius:999px; background:#eef0ff; color:var(--blue);">
-            @Model.Estado
+    <div style="text-align:center; margin-bottom:14px;">
+        <span class="dt-pill @pillClass">
+            <span class="dot"></span>@estadoTexto
         </span>
     </div>
 
-    @if (!string.IsNullOrEmpty(Model.Descripcion))
+    <div class="dt-progress">
+        <span style="width:@(Model.Progreso)%;"></span>
+    </div>
+    <p style="font-size:11.5px; color:var(--muted); margin-top:8px; text-align:center;">
+        Progreso: @Model.Progreso%
+    </p>
+</div>
+
+<!-- ═══ INFO ═══ -->
+<div class="dt-card">
+    <h3>📋 Información del trámite</h3>
+
+    <div class="dt-row">
+        <span class="k">Referencia</span>
+        <span class="v">@Model.NumeroReferencia</span>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Categoria))
     {
-        <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--line);">
-            <div style="font-size:12px; color:var(--muted); font-weight:700; margin-bottom:6px;">Comentario del cliente:</div>
-            <div style="font-size:13px; line-height:1.5; color:var(--ink);">
-                @Model.Descripcion
-            </div>
+        <div class="dt-row">
+            <span class="k">Categoría</span>
+            <span class="v">@Model.Categoria</span>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.NumeroNise))
+    {
+        <div class="dt-row">
+            <span class="k">NISE</span>
+            <span class="v">@Model.NumeroNise</span>
+        </div>
+    }
+
+    <div class="dt-row">
+        <span class="k">Fecha de solicitud</span>
+        <span class="v">@Model.FechaSolicitud.ToString("dd/MM/yyyy HH:mm")</span>
+    </div>
+
+    @if (Model.FechaEstimadaFinalizacion.HasValue)
+    {
+        <div class="dt-row">
+            <span class="k">Fecha estimada de finalización</span>
+            <span class="v">@Model.FechaEstimadaFinalizacion.Value.ToString("dd/MM/yyyy")</span>
+        </div>
+    }
+
+    @if (Model.FechaFinalizacion.HasValue)
+    {
+        <div class="dt-row">
+            <span class="k">Fecha de finalización</span>
+            <span class="v">@Model.FechaFinalizacion.Value.ToString("dd/MM/yyyy HH:mm")</span>
         </div>
     }
 </div>
 
-<!-- Documentos adjuntos -->
+<!-- ═══ DESCRIPCIÓN ═══ -->
+@if (!string.IsNullOrWhiteSpace(Model.Descripcion))
+{
+    <div class="dt-card">
+        <h3>📝 Descripción</h3>
+        <p style="font-size:12.5px; line-height:1.6; color:var(--ink);">
+            @Model.Descripcion
+        </p>
+    </div>
+}
+
+<!-- ═══ DOCUMENTOS ═══ -->
 @if (Model.TramiteDocumentos != null && Model.TramiteDocumentos.Any())
 {
-    <div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin:22px 6px 10px;">
-        Documentos adjuntos (@Model.TramiteDocumentos.Count)
-    </div>
+    <div class="dt-card">
+        <h3>📎 Documentos adjuntos (@Model.TramiteDocumentos.Count)</h3>
 
-    <div class="card">
         @foreach (var doc in Model.TramiteDocumentos)
         {
-            <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line);">
-                <div style="width:40px; height:40px; border-radius:10px; background:#eef0ff; display:grid; place-items:center; font-size:16px; flex-shrink:0;">
-                    @(doc.NombreArchivo.EndsWith(".pdf") ? "📄" : "🖼️")
+            <div class="dt-doc">
+                <div class="ic">
+                    @if (!string.IsNullOrEmpty(doc.NombreArchivo) && doc.NombreArchivo.ToLower().EndsWith(".pdf"))
+                    {
+                        <text>📄</text>
+                    }
+                    else
+                    {
+                        <text>🖼️</text>
+                    }
                 </div>
-                <div style="flex:1; min-width:0;">
-                    <div style="font-size:12.5px; font-weight:800; color:var(--ink);">
-                        @doc.NombreRequisito
-                    </div>
-                    <div style="font-size:11px; color:var(--muted); margin-top:2px; word-break:break-all;">
-                        @doc.NombreArchivo · @((doc.TamanoBytes / 1024).ToString("N0")) KB
-                    </div>
+                <div class="tx">
+                    <div class="t">@doc.NombreRequisito</div>
+                    <div class="s">@doc.NombreArchivo · @((doc.TamanoBytes / 1024).ToString("N0")) KB</div>
                 </div>
-                <a href="@Url.Content(doc.RutaArchivo)" target="_blank"
-                   style="padding:8px 14px; background:var(--blue); color:#fff; border-radius:10px; text-decoration:none; font-size:11.5px; font-weight:800; flex-shrink:0;">
-                    Ver
-                </a>
+                @if (!string.IsNullOrEmpty(doc.RutaArchivo))
+                {
+                    <a href="@Url.Content(doc.RutaArchivo)" target="_blank" class="btn">Ver</a>
+                }
             </div>
         }
     </div>
-}
-else
-{
-    <div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin:22px 6px 10px;">
-        Documentos adjuntos
-    </div>
-    <div class="card" style="text-align:center; padding:24px;">
-        <div style="font-size:32px;">📭</div>
-        <p style="font-size:12.5px; color:var(--muted); margin-top:8px;">Sin documentos adjuntos.</p>
-    </div>
-}
-
-<!-- Acciones -->
-<div style="font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; margin:22px 6px 10px;">
-    Acciones
-</div>
-
-<div class="card">
-    <div style="margin-bottom:14px;">
-        <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase;">
-            Cambiar estado
-        </label>
-        <select id="nuevoEstado" style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; outline:none;">
-            @foreach (var est in estados)
-            {
-                <option value="@est" @(Model.Estado == est ? "selected" : "")>@est</option>
-            }
-        </select>
-    </div>
-
-    <div style="margin-bottom:14px;">
-        <label style="display:block; font-size:11px; font-weight:800; color:var(--muted); margin-bottom:6px; letter-spacing:.04em; text-transform:uppercase;">
-            Comentario (opcional)
-        </label>
-        <textarea id="comentarioAdmin" rows="3" placeholder="Explicá al cliente qué debe corregir o por qué se aprueba..."
-                  style="width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14px; resize:vertical; outline:none;"></textarea>
-    </div>
-
-    <button type="button" onclick="guardarCambioEstado();"
-            style="width:100%; padding:15px; background:var(--blue); color:#fff; border:0; border-radius:14px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; box-shadow:0 8px 18px -8px rgba(30,35,230,.5);">
-        💾 Guardar cambio
-    </button>
-
-    <div id="estadoMensaje" style="display:none; margin-top:12px; padding:12px; border-radius:12px; font-size:12.5px; font-weight:800; text-align:center;"></div>
-</div>
-
-@section Scripts {
-    <script>
-        function guardarCambioEstado() {
-            var nuevoEstado = document.getElementById('nuevoEstado').value;
-            var comentario = document.getElementById('comentarioAdmin').value.trim();
-            var mensaje = document.getElementById('estadoMensaje');
-
-            mensaje.style.display = 'block';
-            mensaje.style.background = '#eef0ff';
-            mensaje.style.color = 'var(--blue)';
-            mensaje.textContent = 'Guardando...';
-
-            fetch('@Url.Action("CambiarEstadoTramite", "Admin")', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'tramiteId=@Model.TramiteId&nuevoEstado=' + encodeURIComponent(nuevoEstado) +
-                      '&comentario=' + encodeURIComponent(comentario)
-            })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.ok) {
-                    mensaje.style.background = '#e9f7ec';
-                    mensaje.style.color = '#2f8f3e';
-                    mensaje.textContent = '✓ ' + data.mensaje + ' · ' + data.estado;
-
-                    setTimeout(function () {
-                        window.location.href = '@Url.Action("Tramites", "Admin")';
-                    }, 1500);
-                } else {
-                    mensaje.style.background = '#fdeaea';
-                    mensaje.style.color = '#c93a3f';
-                    mensaje.textContent = '✗ ' + data.mensaje;
-                }
-            })
-            .catch(function () {
-                mensaje.style.background = '#fdeaea';
-                mensaje.style.color = '#c93a3f';
-                mensaje.textContent = '✗ Error de conexión';
-            });
-        }
-    </script>
 }

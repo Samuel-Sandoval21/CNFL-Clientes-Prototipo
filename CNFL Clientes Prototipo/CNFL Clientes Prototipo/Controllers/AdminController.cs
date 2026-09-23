@@ -302,7 +302,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ═══════════════════════════════════════════════════════════
-        // REPORTES (Facturación + Ventas)
+        // REPORTES (Facturación + Ventas + Actividad de uso)
         // ═══════════════════════════════════════════════════════════
         public ActionResult Reportes(string rango = "30d")
         {
@@ -316,16 +316,19 @@ namespace CNFL_Clientes_Prototipo.Controllers
             for (int i = 5; i >= 0; i--)
             {
                 var fecha = hoy.AddMonths(-i);
-                var inicio = new DateTime(fecha.Year, fecha.Month, 1);
-                var fin = inicio.AddMonths(1);
+                var inicioMesFact = new DateTime(fecha.Year, fecha.Month, 1);
+                var finMesFact = inicioMesFact.AddMonths(1);
+
+                var inicioLocal = inicioMesFact;
+                var finLocal = finMesFact;
 
                 var facturasMes = _db.Facturas
-                    .Where(f => f.FechaEmision >= inicio && f.FechaEmision < fin)
+                    .Where(f => f.FechaEmision >= inicioLocal && f.FechaEmision < finLocal)
                     .ToList();
 
                 consumos.Add(new ConsumoMensualDto
                 {
-                    mes = inicio.ToString("MMM"),
+                    mes = inicioMesFact.ToString("MMM"),
                     monto = facturasMes.Sum(f => f.Monto),
                     kwh = 0
                 });
@@ -384,7 +387,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     }
                 }
 
-                // ═══ Top clientes ═══
+                // ═══ Top clientes por gasto ═══
                 string sqlTopCli = @"
                     SELECT TOP 10 
                         u.UsuarioId, u.Nombre + ' ' + u.Apellidos AS Nombre, u.Correo,
@@ -531,6 +534,123 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
             ViewBag.VentasViewModel = vmVentas;
 
+            // ═══════════════════════════════════════════════════════════
+            // SECCIÓN 3: ACTIVIDAD DE USO DE LA APP
+            // ═══════════════════════════════════════════════════════════
+            var actividadQuery = _db.ActividadUsuario.AsQueryable();
+
+            // ✅ Calcular fechas fuera del Where (EF no traduce AddDays)
+            DateTime? actividadDesde = null;
+            if (rango == "7d") actividadDesde = hoy.AddDays(-7);
+            else if (rango == "30d") actividadDesde = hoy.AddDays(-30);
+            else if (rango == "90d") actividadDesde = hoy.AddDays(-90);
+            else if (rango == "anio") actividadDesde = new DateTime(hoy.Year, 1, 1);
+
+            if (actividadDesde.HasValue)
+            {
+                var desde = actividadDesde.Value;
+                actividadQuery = actividadQuery.Where(a => a.Fecha >= desde);
+            }
+
+            // ═══ Secciones más usadas ═══
+            var actividadSecciones = actividadQuery
+                .GroupBy(a => a.Seccion)
+                .Select(g => new ActividadSeccionDto
+                {
+                    Seccion = g.Key,
+                    MinutosTotales = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60,
+                    Sesiones = g.Count()
+                })
+                .OrderByDescending(a => a.MinutosTotales)
+                .ToList();
+
+            ViewBag.ActividadSecciones = actividadSecciones;
+            ViewBag.TotalSesiones = actividadQuery.Count();
+            ViewBag.TotalMinutosApp = actividadQuery.Any()
+                ? (actividadQuery.Sum(a => a.DuracionSegundos) ?? 0) / 60
+                : 0;
+            ViewBag.PromedioMinutosPorSesion = actividadQuery.Any()
+                ? (double)(actividadQuery.Average(a => a.DuracionSegundos ?? 0)) / 60.0
+                : 0.0;
+
+            // ═══ Actividad por mes (últimos 6 meses) ═══
+            var actividadMeses = new List<ActividadMesDto>();
+            var nombresMeses = new[] { "", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
+
+            for (int i = 5; i >= 0; i--)
+            {
+                var fecha = hoy.AddMonths(-i);
+                var inicioMes = new DateTime(fecha.Year, fecha.Month, 1);
+                var finMes = inicioMes.AddMonths(1);
+
+                // ✅ Variables locales para que EF las traduzca
+                var inicioLocal = inicioMes;
+                var finLocal = finMes;
+
+                var datosMes = actividadQuery
+                    .Where(a => a.Fecha >= inicioLocal && a.Fecha < finLocal)
+                    .ToList();
+
+                actividadMeses.Add(new ActividadMesDto
+                {
+                    Etiqueta = nombresMeses[inicioMes.Month],
+                    Anio = inicioMes.Year,
+                    Mes = inicioMes.Month,
+                    MinutosTotales = (datosMes.Sum(a => a.DuracionSegundos) ?? 0) / 60,
+                    Sesiones = datosMes.Count
+                });
+            }
+
+            ViewBag.ActividadMeses = actividadMeses;
+
+            // ═══ Top 10 usuarios por uso de la app ═══
+            var topUsuarios = actividadQuery
+                .GroupBy(a => a.UsuarioId)
+                .Select(g => new TopUsuarioUsoDto
+                {
+                    UsuarioId = g.Key,
+                    Nombre = _db.Usuarios
+                        .Where(u => u.UsuarioId == g.Key)
+                        .Select(u => u.Nombre + " " + u.Apellidos)
+                        .FirstOrDefault(),
+                    Correo = _db.Usuarios
+                        .Where(u => u.UsuarioId == g.Key)
+                        .Select(u => u.Correo)
+                        .FirstOrDefault(),
+                    MinutosTotales = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60,
+                    Secciones = g.Select(x => x.Seccion).Distinct().Count(),
+                    Visitas = g.Count()
+                })
+                .OrderByDescending(u => u.MinutosTotales)
+                .Take(10)
+                .ToList();
+
+            ViewBag.TopUsuarios = topUsuarios;
+
+            // ═══ Actividad semanal (últimos 7 días: facturas + averías + trámites) ═══
+            var actividadSemanal = new List<ActividadSemanalDto>();
+            for (int i = 6; i >= 0; i--)
+            {
+                var dia = hoy.AddDays(-i);
+                var inicioDia = dia.Date;
+                var finDia = inicioDia.AddDays(1);
+
+                // ✅ Variables locales
+                var inicioLocal = inicioDia;
+                var finLocal = finDia;
+
+                actividadSemanal.Add(new ActividadSemanalDto
+                {
+                    dia = dia.ToString("ddd"),
+                    facturas = _db.Facturas.Count(f => f.FechaEmision >= inicioLocal && f.FechaEmision < finLocal),
+                    reportes = _db.Averias.Count(a => a.FechaReporte >= inicioLocal && a.FechaReporte < finLocal),
+                    tramites = _db.Tramites.Count(t => t.FechaSolicitud >= inicioLocal && t.FechaSolicitud < finLocal),
+                    perfil = 0
+                });
+            }
+
+            ViewBag.ActividadSemanal = actividadSemanal;
+
             return View();
         }
 
@@ -585,8 +705,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 }
                 ws.Columns().AdjustToContents();
 
-                // (resto de hojas: Clientes, NISEs, Facturas, Averías, Trámites — igual que ya tienes)
-
                 using (var ms = new MemoryStream())
                 {
                     wb.SaveAs(ms);
@@ -624,213 +742,6 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 doc.Close();
                 return File(ms.ToArray(), "application/pdf",
                     "CNFL_Reporte_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".pdf");
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // ACTIVIDAD
-        // ═══════════════════════════════════════════════════════════
-        public ActionResult Actividad()
-        {
-            var redir = RedirigirSiNoEsAdmin();
-            if (redir != null) return redir;
-
-            var hoy = DateTime.Now;
-            var lista = new List<ActividadSemanalDto>();
-
-            for (int i = 6; i >= 0; i--)
-            {
-                var dia = hoy.AddDays(-i);
-                var inicio = dia.Date;
-                var fin = inicio.AddDays(1);
-
-                lista.Add(new ActividadSemanalDto
-                {
-                    dia = dia.ToString("ddd"),
-                    facturas = _db.Facturas.Count(f => f.FechaEmision >= inicio && f.FechaEmision < fin),
-                    reportes = _db.Averias.Count(a => a.FechaReporte >= inicio && a.FechaReporte < fin),
-                    tramites = _db.Tramites.Count(t => t.FechaSolicitud >= inicio && t.FechaSolicitud < fin),
-                    perfil = 0
-                });
-            }
-
-            ViewBag.Actividad = lista;
-
-            var clientesIds = _db.UsuarioRoles
-                .Where(ur => ur.Rol.NombreRol == "Cliente")
-                .Select(ur => ur.UsuarioId)
-                .Distinct()
-                .ToList();
-
-            ViewBag.TiempoUso = _db.ActividadUsuario
-                .Where(a => clientesIds.Contains(a.UsuarioId))
-                .GroupBy(a => a.UsuarioId)
-                .Select(g => new TiempoUsoClienteDto
-                {
-                    UsuarioId = g.Key,
-                    Nombre = _db.Usuarios
-                        .Where(u => u.UsuarioId == g.Key)
-                        .Select(u => u.Nombre + " " + u.Apellidos)
-                        .FirstOrDefault(),
-                    Correo = _db.Usuarios
-                        .Where(u => u.UsuarioId == g.Key)
-                        .Select(u => u.Correo)
-                        .FirstOrDefault(),
-                    MinutosTotales = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60
-                })
-                .OrderByDescending(t => t.MinutosTotales)
-                .Take(10)
-                .ToList();
-
-            return View();
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // EXPORTAR ACTIVIDAD A EXCEL
-        // ═══════════════════════════════════════════════════════════
-        public ActionResult ExportarActividadExcel()
-        {
-            var redir = RedirigirSiNoEsAdmin();
-            if (redir != null) return redir;
-
-            var clientesIds = _db.UsuarioRoles
-                .Where(ur => ur.Rol.NombreRol == "Cliente")
-                .Select(ur => ur.UsuarioId)
-                .Distinct()
-                .ToList();
-
-            var datos = _db.ActividadUsuario
-                .Where(a => clientesIds.Contains(a.UsuarioId))
-                .GroupBy(a => a.UsuarioId)
-                .Select(g => new
-                {
-                    UsuarioId = g.Key,
-                    Nombre = _db.Usuarios
-                        .Where(u => u.UsuarioId == g.Key)
-                        .Select(u => u.Nombre + " " + u.Apellidos)
-                        .FirstOrDefault(),
-                    Correo = _db.Usuarios
-                        .Where(u => u.UsuarioId == g.Key)
-                        .Select(u => u.Correo)
-                        .FirstOrDefault(),
-                    Minutos = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60,
-                    Secciones = g.Select(x => x.Seccion).Distinct().Count(),
-                    Visitas = g.Count()
-                })
-                .OrderByDescending(x => x.Minutos)
-                .Take(20)
-                .ToList();
-
-            using (var wb = new XLWorkbook())
-            {
-                var ws = wb.Worksheets.Add("Actividad");
-
-                ws.Cell("A1").Value = "CNFL · Actividad de uso de la app";
-                ws.Range("A1:E1").Merge().Style.Font.SetBold().Font.SetFontSize(14).Font.FontColor = XLColor.White;
-                ws.Range("A1:E1").Style.Fill.BackgroundColor = XLColor.FromHtml("#1a2b6b");
-                ws.Range("A1:E1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                string[] headers = { "Cliente", "Correo", "Minutos", "Secciones", "Visitas" };
-                for (int i = 0; i < headers.Length; i++)
-                {
-                    ws.Cell(4, i + 1).Value = headers[i];
-                    ws.Cell(4, i + 1).Style.Font.SetBold().Fill.BackgroundColor = XLColor.FromHtml("#eef0ff");
-                }
-
-                int row = 5;
-                foreach (var d in datos)
-                {
-                    ws.Cell(row, 1).Value = d.Nombre ?? "—";
-                    ws.Cell(row, 2).Value = d.Correo ?? "—";
-                    ws.Cell(row, 3).Value = d.Minutos;
-                    ws.Cell(row, 4).Value = d.Secciones;
-                    ws.Cell(row, 5).Value = d.Visitas;
-                    row++;
-                }
-
-                ws.Columns().AdjustToContents();
-
-                using (var ms = new MemoryStream())
-                {
-                    wb.SaveAs(ms);
-                    return File(ms.ToArray(),
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        "Actividad_Uso_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
-                }
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // EXPORTAR ACTIVIDAD A PDF
-        // ═══════════════════════════════════════════════════════════
-        public ActionResult ExportarActividadPDF()
-        {
-            var redir = RedirigirSiNoEsAdmin();
-            if (redir != null) return redir;
-
-            var clientesIds = _db.UsuarioRoles
-                .Where(ur => ur.Rol.NombreRol == "Cliente")
-                .Select(ur => ur.UsuarioId)
-                .Distinct()
-                .ToList();
-
-            var datos = _db.ActividadUsuario
-                .Where(a => clientesIds.Contains(a.UsuarioId))
-                .GroupBy(a => a.UsuarioId)
-                .Select(g => new
-                {
-                    UsuarioId = g.Key,
-                    Nombre = _db.Usuarios
-                        .Where(u => u.UsuarioId == g.Key)
-                        .Select(u => u.Nombre + " " + u.Apellidos)
-                        .FirstOrDefault(),
-                    Correo = _db.Usuarios
-                        .Where(u => u.UsuarioId == g.Key)
-                        .Select(u => u.Correo)
-                        .FirstOrDefault(),
-                    Minutos = (g.Sum(a => a.DuracionSegundos) ?? 0) / 60,
-                    Secciones = g.Select(x => x.Seccion).Distinct().Count(),
-                    Visitas = g.Count()
-                })
-                .OrderByDescending(x => x.Minutos)
-                .Take(20)
-                .ToList();
-
-            using (var ms = new MemoryStream())
-            {
-                var doc = new Document(PageSize.A4.Rotate(), 36, 36, 54, 36);
-                PdfWriter.GetInstance(doc, ms);
-                doc.Open();
-
-                var titulo = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, new BaseColor(26, 43, 107));
-                var texto = FontFactory.GetFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
-                var textoBold = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
-                var textoBlanco = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
-
-                doc.Add(new Paragraph("CNFL · Actividad de uso de la app", titulo));
-                doc.Add(new Paragraph(" "));
-
-                var tabla = new PdfPTable(5) { WidthPercentage = 100 };
-                string[] headers = { "Cliente", "Correo", "Minutos", "Secciones", "Visitas" };
-                foreach (var h in headers)
-                {
-                    tabla.AddCell(new PdfPCell(new Phrase(h, textoBlanco))
-                    { BackgroundColor = new BaseColor(26, 43, 107), Padding = 8 });
-                }
-
-                foreach (var d in datos)
-                {
-                    tabla.AddCell(new PdfPCell(new Phrase(d.Nombre ?? "—", texto)) { Padding = 6 });
-                    tabla.AddCell(new PdfPCell(new Phrase(d.Correo ?? "—", texto)) { Padding = 6 });
-                    tabla.AddCell(new PdfPCell(new Phrase(d.Minutos.ToString(), textoBold)) { Padding = 6 });
-                    tabla.AddCell(new PdfPCell(new Phrase(d.Secciones.ToString(), texto)) { Padding = 6 });
-                    tabla.AddCell(new PdfPCell(new Phrase(d.Visitas.ToString(), texto)) { Padding = 6 });
-                }
-
-                doc.Add(tabla);
-                doc.Close();
-                return File(ms.ToArray(), "application/pdf",
-                    "Actividad_Uso_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".pdf");
             }
         }
 

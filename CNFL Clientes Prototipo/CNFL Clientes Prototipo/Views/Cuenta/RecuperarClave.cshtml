@@ -6,19 +6,14 @@
 @section Styles {
     <style>
         /* ═══════════════════════════════════════════
-           RECUPERAR CLAVE — REDISEÑADO
+           RECUPERAR CLAVE — GLASSMORPHISM
            ═══════════════════════════════════════════ */
 
-        /* Contenedor principal con fondo blanco para proteger el texto */
         .recuperar-wrap {
             padding-top: 4px;
-            /* Fondo blanco semi-transparente para que el texto no choque con el decorativo */
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.85) 15%, rgba(255, 255, 255, 0.95) 30%);
-            border-radius: 20px;
             padding-bottom: 100px;
         }
 
-        /* Logo */
         .rec-logo-wrap {
             text-align: center;
             margin-bottom: 20px;
@@ -30,7 +25,6 @@
                 display: inline-block;
             }
 
-        /* Título */
         .rec-hero {
             text-align: center;
             margin-bottom: 24px;
@@ -53,13 +47,15 @@
                 padding: 0 8px;
             }
 
-        /* Formulario en card blanca */
+        /* Formulario GLASS */
         .rec-form {
-            background: #ffffff;
-            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 18px;
             padding: 18px;
-            box-shadow: 0 4px 16px rgba(16, 20, 40, 0.06);
+            box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
             margin-bottom: 14px;
         }
 
@@ -84,13 +80,13 @@
             .rec-field input {
                 width: 100%;
                 padding: 13px 14px;
-                border: 1.5px solid var(--line);
+                border: 1.5px solid rgba(237, 239, 243, 0.9);
                 border-radius: 12px;
                 font-family: inherit;
                 font-size: 14.5px;
                 outline: none;
                 color: var(--ink);
-                background: #fafbfe;
+                background: rgba(255, 255, 255, 0.85);
                 transition: border-color .15s, background .15s, box-shadow .15s;
             }
 
@@ -104,7 +100,6 @@
                     color: #b5bcc9;
                 }
 
-        /* Input con ícono */
         .rec-input-icon {
             position: relative;
         }
@@ -138,13 +133,15 @@
                 height: 18px;
             }
 
-        /* Aviso de seguridad */
+        /* Aviso seguridad GLASS */
         .rec-aviso {
             display: flex;
             gap: 10px;
             align-items: flex-start;
-            background: #eef0ff;
-            border: 1px solid #dde3ff;
+            background: rgba(238, 240, 255, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(221, 227, 255, 0.8);
             border-radius: 12px;
             padding: 12px 14px;
             margin-top: 14px;
@@ -233,29 +230,31 @@
                 background: linear-gradient(90deg, transparent, var(--line), transparent);
             }
 
-        /* Botón volver */
+        /* Botón volver GLASS */
         .rec-volver {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             padding: 14px 16px;
-            background: #ffffff;
-            border: 1.5px solid var(--line);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 255, 255, 0.7);
             border-radius: 13px;
             color: var(--blue);
             font-family: inherit;
             font-size: 13.5px;
             font-weight: 800;
             text-decoration: none;
-            box-shadow: 0 2px 8px rgba(16, 20, 40, 0.04);
+            box-shadow: 0 4px 14px rgba(16, 20, 40, 0.06);
             transition: background .15s, transform .15s, border-color .15s;
             margin-bottom: 20px;
         }
 
             .rec-volver:hover {
-                background: #f5f7ff;
-                border-color: #c3caff;
+                background: rgba(255, 255, 255, 0.95);
+                border-color: rgba(195, 202, 255, 0.9);
                 transform: translateX(-2px);
             }
 
@@ -273,17 +272,18 @@
                 stroke-linejoin: round;
             }
 
-        /* Footer legal con fondo blanco para que no choque el texto */
+        /* Footer GLASS */
         .rec-footer {
             text-align: center;
             font-size: 10.5px;
             color: var(--muted);
             line-height: 1.6;
             padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 14px;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
             margin-top: 8px;
             margin-bottom: 20px;
         }
@@ -297,19 +297,19 @@
 
 <div class="recuperar-wrap">
 
-    <!-- ═══ LOGO ═══ -->
+    <!-- LOGO -->
     <div class="rec-logo-wrap">
         <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
              onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
     </div>
 
-    <!-- ═══ TÍTULO ═══ -->
+    <!-- TÍTULO -->
     <div class="rec-hero">
         <h1 class="rec-h">Recuperá tu clave</h1>
         <p class="rec-p">Ingresá tus datos y elegí una nueva contraseña.</p>
     </div>
 
-    <!-- ═══ AVISOS ═══ -->
+    <!-- AVISOS -->
     @if (ViewBag.Mensaje != null)
     {
         <div class="aviso ok" style="margin-bottom:14px;">@ViewBag.Mensaje</div>
@@ -320,7 +320,7 @@
         <div class="aviso err" style="margin-bottom:14px;">@ViewBag.Error</div>
     }
 
-    <!-- ═══ FORMULARIO ═══ -->
+    <!-- FORMULARIO -->
     @using (Html.BeginForm("RecuperarClave", "Cuenta", FormMethod.Post, new { id = "formRecuperar" }))
     {
         @Html.AntiForgeryToken()
@@ -381,7 +381,6 @@
                 </div>
             </div>
 
-            <!-- Aviso de seguridad -->
             <div class="rec-aviso">
                 <div class="rec-aviso-icon">
                     <svg viewBox="0 0 24 24">
@@ -402,12 +401,12 @@
         </div>
     }
 
-    <!-- ═══ DIVISOR ═══ -->
+    <!-- DIVISOR -->
     <div class="rec-divider">
         <span>¿recordaste tu clave?</span>
     </div>
 
-    <!-- ═══ BOTÓN VOLVER ═══ -->
+    <!-- BOTÓN VOLVER -->
     <a href="@Url.Action("Login", "Cuenta")" class="rec-volver">
         <svg viewBox="0 0 24 24">
             <path d="m15 18-6-6 6-6" />
@@ -415,7 +414,7 @@
         Volver al inicio de sesión
     </a>
 
-    <!-- ═══ FOOTER LEGAL ═══ -->
+    <!-- FOOTER -->
     <div class="rec-footer">
         <span>Consentimiento informado</span>
         <span>·</span>
@@ -436,7 +435,6 @@
                 : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
         }
 
-        // Validación
         document.getElementById('formRecuperar').addEventListener('submit', function (e) {
             var pass = document.getElementById('nuevaContrasena').value;
             var conf = document.getElementById('confirmarContrasena').value;

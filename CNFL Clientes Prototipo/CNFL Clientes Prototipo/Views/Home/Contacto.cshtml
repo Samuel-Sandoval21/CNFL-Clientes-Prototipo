@@ -1,0 +1,220 @@
+﻿@{
+    ViewBag.Title = "Contacto";
+    Layout = "~/Views/Shared/_LayoutCliente.cshtml";
+}
+
+@section Styles {
+    <style>
+        .ct-hero {
+            background: linear-gradient(135deg, var(--blue), #2a4fd6);
+            border-radius: 22px;
+            padding: 26px 22px;
+            color: #fff;
+            box-shadow: 0 12px 30px -12px rgba(16,20,60,.45);
+            margin-bottom: 18px;
+        }
+
+            .ct-hero h1 {
+                font-size: 22px;
+                font-weight: 800;
+                letter-spacing: -.02em;
+                line-height: 1.2;
+                margin: 0;
+            }
+
+            .ct-hero p {
+                font-size: 13px;
+                opacity: 0.9;
+                margin-top: 8px;
+                line-height: 1.5;
+            }
+
+        .ct-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 14px;
+        }
+
+        .ct-field {
+            margin-bottom: 14px;
+        }
+
+            .ct-field label {
+                display: block;
+                font-size: 11px;
+                font-weight: 800;
+                color: var(--muted);
+                margin-bottom: 6px;
+                letter-spacing: .04em;
+                text-transform: uppercase;
+            }
+
+            .ct-field input,
+            .ct-field select,
+            .ct-field textarea {
+                width: 100%;
+                padding: 13px 14px;
+                border: 1.5px solid var(--line);
+                border-radius: 12px;
+                font-family: inherit;
+                font-size: 14px;
+                outline: none;
+                background: #fff;
+                transition: border-color .15s, box-shadow .15s;
+                color: var(--ink);
+            }
+
+                .ct-field input:focus,
+                .ct-field select:focus,
+                .ct-field textarea:focus {
+                    border-color: var(--blue);
+                    box-shadow: 0 0 0 3px rgba(30, 35, 230, 0.1);
+                }
+
+                .ct-field input::placeholder,
+                .ct-field textarea::placeholder {
+                    color: #b5bcc9;
+                }
+
+            .ct-field textarea {
+                resize: vertical;
+                min-height: 110px;
+            }
+
+        .ct-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--orange), #ff8a4c);
+            color: #fff;
+            border: 0;
+            border-radius: 14px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14.5px;
+            cursor: pointer;
+            box-shadow: 0 10px 22px -8px rgba(255, 105, 45, 0.6);
+            transition: transform .15s, box-shadow .15s;
+            margin-top: 6px;
+        }
+
+            .ct-btn:hover {
+                box-shadow: 0 12px 26px -8px rgba(255, 105, 45, 0.75);
+            }
+
+            .ct-btn:active {
+                transform: scale(0.98);
+            }
+
+        .ct-aviso {
+            background: #eef0ff;
+            color: var(--blue);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+            .ct-aviso.ok {
+                background: #e9f7ec;
+                color: #2f8f3e;
+            }
+
+            .ct-aviso.err {
+                background: #fdeaea;
+                color: #c93a3f;
+            }
+    </style>
+}
+
+<!-- APPBAR -->
+<div class="appbar">
+    <a href="@Url.Action("Dashboard", "Clientes")" class="icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2.2">
+            <path d="m15 18-6-6 6-6" />
+        </svg>
+    </a>
+    <div class="brand" style="font-weight:800; font-size:16px;">📩 Contacto</div>
+    <div style="width:40px;"></div>
+</div>
+
+<!-- HERO -->
+<div class="ct-hero">
+    <h1>Contáctanos</h1>
+    <p>Completá el formulario y un agente te responderá a la brevedad.</p>
+</div>
+
+<!-- AVISOS -->
+@if (TempData["Mensaje"] != null)
+{
+    <div class="ct-aviso ok">✓ @TempData["Mensaje"]</div>
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="ct-aviso err">✗ @ViewBag.Error</div>
+}
+
+<!-- FORMULARIO -->
+@using (Html.BeginForm("Contacto", "Home", FormMethod.Post, new { id = "formContacto" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="ct-card">
+
+        <div class="ct-field">
+            <label for="nombre">Nombre completo *</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez" required maxlength="100" />
+        </div>
+
+        <div class="ct-field">
+            <label for="correo">Correo electrónico *</label>
+            <input type="email" id="correo" name="correo" placeholder="tucorreo@ejemplo.com" required maxlength="150" />
+        </div>
+
+        <div class="ct-field">
+            <label for="telefono">Teléfono (opcional)</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="Ej: 8888-8888" maxlength="15" />
+        </div>
+
+        <div class="ct-field">
+            <label for="asunto">Asunto *</label>
+            <select id="asunto" name="asunto" required>
+                <option value="">Seleccioná un asunto</option>
+                <option value="Consulta general">Consulta general</option>
+                <option value="Problema con factura">Problema con factura</option>
+                <option value="Reporte de avería">Reporte de avería</option>
+                <option value="Trámites">Trámites</option>
+                <option value="Sugerencia">Sugerencia</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </div>
+
+        <div class="ct-field">
+            <label for="mensaje">Mensaje *</label>
+            <textarea id="mensaje" name="mensaje" placeholder="Escribí tu mensaje..." required maxlength="1000"></textarea>
+        </div>
+
+        <button type="submit" class="ct-btn">
+            📤 Enviar mensaje
+        </button>
+
+    </div>
+}
+
+<!-- INFO -->
+<div class="ct-card" style="background:#f0f7ff; border-color:#cce4ff;">
+    <h4 style="font-size:13px; font-weight:800; margin:0 0 8px; color:var(--ink);">
+        💡 Otros canales de contacto
+    </h4>
+    <p style="font-size:12px; line-height:1.6; color:var(--muted); margin:0;">
+        📞 <strong>800-ENERGIA</strong> (800-363-7442) · 24 horas<br />
+        📱 <strong>WhatsApp:</strong> +506 8319-5273<br />
+        📧 <strong>Correo:</strong> 800energia@cnfl.go.cr<br />
+        🛠️ <strong>Reporte de averías:</strong> 1026
+    </p>
+</div>

@@ -136,7 +136,6 @@
                 width: 0;
             }
 
-        /* Sección */
         .config-section {
             margin-bottom: 18px;
         }
@@ -155,7 +154,6 @@
             padding-left: 2px;
         }
 
-        /* Card destacada */
         .config-featured {
             display: flex;
             align-items: center;
@@ -226,7 +224,6 @@
             line-height: 1.4;
         }
 
-        /* Grid de accesos */
         .config-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -309,7 +306,6 @@
             line-height: 1.35;
         }
 
-        /* Fila compacta */
         .config-row {
             display: flex;
             align-items: center;
@@ -383,7 +379,6 @@
             margin-top: 2px;
         }
 
-        /* Zoom */
         .config-zoom-controles {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -426,7 +421,6 @@
             border-radius: 999px;
         }
 
-        /* Toggle switch */
         .config-toggle {
             position: relative;
             width: 42px;
@@ -593,7 +587,6 @@
 
             <div class="config-content">
 
-                <!-- ═══ PRODUCTOS Y SERVICIOS ═══ -->
                 <div class="config-section">
                     <a href="@Url.Action("ProductosServicios", "Clientes")" class="config-featured">
                         <div class="config-featured-icon">
@@ -610,7 +603,6 @@
                     </a>
                 </div>
 
-                <!-- ═══ ACCESOS RÁPIDOS ═══ -->
                 <div class="config-section">
                     <div class="config-section-title">Accesos rápidos</div>
 
@@ -672,7 +664,6 @@
                     </div>
                 </div>
 
-                <!-- ═══ ZOOM ═══ -->
                 <div class="config-section">
                     <div class="config-section-title">Preferencias</div>
 
@@ -697,7 +688,6 @@
                     </div>
                 </div>
 
-                <!-- ═══ MODO OSCURO + IDIOMA ═══ -->
                 <div class="config-section">
 
                     <div class="config-row" onclick="toggleModoOscuro();">
@@ -820,9 +810,6 @@
             setInterval(actualizarHora, 30000);
         })();
 
-        // ═══════════════════════════════════════════════
-        // CONFIGURACIÓN
-        // ═══════════════════════════════════════════════
         window.abrirConfig = function () {
             var modal = document.getElementById('modalConfig');
             if (modal) {
@@ -843,9 +830,6 @@
             if (e.target === this) window.cerrarConfig();
         });
 
-        // ═══════════════════════════════════════════════
-        // ZOOM
-        // ═══════════════════════════════════════════════
         var ZOOM_KEY = 'cnfl_zoom';
         var zoomActual = parseInt(localStorage.getItem(ZOOM_KEY) || '100', 10);
 
@@ -863,9 +847,6 @@
         window.resetZoom = function () { window.aplicarZoom(100); };
         window.aplicarZoom(zoomActual);
 
-        // ═══════════════════════════════════════════════
-        // MODO OSCURO
-        // ═══════════════════════════════════════════════
         var MODO_KEY = 'cnfl_dark';
         var modoOscuro = localStorage.getItem(MODO_KEY) === '1';
 
@@ -883,9 +864,6 @@
 
         window.aplicarModo();
 
-        // ═══════════════════════════════════════════════
-        // IDIOMAS
-        // ═══════════════════════════════════════════════
         window.abrirIdiomas = function () {
             var m = document.getElementById('modalIdioma');
             if (m) m.style.display = 'flex';
@@ -913,9 +891,6 @@
             window.aplicarIdioma();
         })();
 
-        // ═══════════════════════════════════════════════
-        // BADGE DEL CARRITO
-        // ═══════════════════════════════════════════════
         (function () {
             try {
                 var items = JSON.parse(localStorage.getItem('cnfl_carrito') || '[]');
@@ -925,9 +900,6 @@
             } catch (e) { }
         })();
 
-        // ═══════════════════════════════════════════════
-        // REGISTRAR ACTIVIDAD
-        // ═══════════════════════════════════════════════
         (function () {
             var secciones = {
                 'Dashboard': 'Inicio', 'MisServicios': 'Mis Servicios', 'Tramites': 'Trámites',
@@ -976,7 +948,7 @@
             window.addEventListener('pagehide', enviarTiempo);
 
             setInterval(function () {
-                var segundos = Math.round((Date.now() - tiempoInicio) / 1000);
+                var segundos = Math.round((Date.now() - timeInicio) / 1000);
                 if (segundos >= 60) enviarTiempo();
             }, 30000);
         })();

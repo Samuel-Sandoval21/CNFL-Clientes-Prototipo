@@ -20,7 +20,7 @@ namespace CNFL_Clientes_Prototipo.Data
         public DbSet<Suspension> Suspensiones { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Tramite> Tramites { get; set; }
-        public DbSet<TramiteDocumento> TramiteDocumentos { get; set; }   // ← NUEVO
+        public DbSet<TramiteDocumento> TramiteDocumentos { get; set; }
         public DbSet<Suscripcion> Suscripciones { get; set; }
         public DbSet<Pago> Pagos { get; set; }
 
@@ -45,7 +45,7 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Suspension>().ToTable("Suspensiones");
             modelBuilder.Entity<Notificacion>().ToTable("Notificaciones");
             modelBuilder.Entity<Tramite>().ToTable("Tramites");
-            modelBuilder.Entity<TramiteDocumento>().ToTable("TramiteDocumentos");   // ← NUEVO
+            modelBuilder.Entity<TramiteDocumento>().ToTable("TramiteDocumentos");
             modelBuilder.Entity<Suscripcion>().ToTable("Suscripciones");
             modelBuilder.Entity<Pago>().ToTable("Pagos");
             modelBuilder.Entity<ActividadEconomica>().ToTable("ActividadesEconomicas");
@@ -61,7 +61,7 @@ namespace CNFL_Clientes_Prototipo.Data
             // CLAVES PRIMARIAS
             // ═══════════════════════════════════════════════════════
             modelBuilder.Entity<Tramite>().HasKey(t => t.TramiteId);
-            modelBuilder.Entity<TramiteDocumento>().HasKey(t => t.DocumentoId);   // ← NUEVO
+            modelBuilder.Entity<TramiteDocumento>().HasKey(t => t.DocumentoId);
             modelBuilder.Entity<CarritoItem>().HasKey(c => c.CarritoItemId);
             modelBuilder.Entity<OrdenCompra>().HasKey(o => o.OrdenId);
             modelBuilder.Entity<MetodoPago>().HasKey(m => m.MetodoPagoId);
@@ -75,23 +75,33 @@ namespace CNFL_Clientes_Prototipo.Data
             modelBuilder.Entity<Usuario>()
                 .Property(u => u.DireccionExacta).HasColumnName("DireccionExacta");
 
+            // Tramite
             modelBuilder.Entity<Tramite>().Property(t => t.TramiteId).HasColumnName("TramiteId");
             modelBuilder.Entity<Tramite>().Property(t => t.UsuarioId).HasColumnName("UsuarioId");
+            modelBuilder.Entity<Tramite>().Property(t => t.NiseId).HasColumnName("NiseId");
+            modelBuilder.Entity<Tramite>().Property(t => t.NumeroNise).HasColumnName("NumeroNise");
             modelBuilder.Entity<Tramite>().Property(t => t.Tipo).HasColumnName("Tipo");
             modelBuilder.Entity<Tramite>().Property(t => t.Categoria).HasColumnName("Categoria");
             modelBuilder.Entity<Tramite>().Property(t => t.Estado).HasColumnName("Estado");
+            modelBuilder.Entity<Tramite>().Property(t => t.NumeroReferencia).HasColumnName("NumeroReferencia");
             modelBuilder.Entity<Tramite>().Property(t => t.FechaSolicitud).HasColumnName("FechaSolicitud");
             modelBuilder.Entity<Tramite>().Property(t => t.FechaActualizacion).HasColumnName("FechaActualizacion");
+            modelBuilder.Entity<Tramite>().Property(t => t.FechaEstimadaFinalizacion).HasColumnName("FechaEstimadaFinalizacion");
+            modelBuilder.Entity<Tramite>().Property(t => t.FechaFinalizacion).HasColumnName("FechaFinalizacion");
             modelBuilder.Entity<Tramite>().Property(t => t.Descripcion).HasColumnName("Descripcion");
-            modelBuilder.Entity<Tramite>().Property(t => t.NumeroReferencia).HasColumnName("NumeroReferencia");
             modelBuilder.Entity<Tramite>().Property(t => t.DatosFormulario).HasColumnName("DatosFormulario");
+            modelBuilder.Entity<Tramite>().Property(t => t.Progreso).HasColumnName("Progreso");
+            modelBuilder.Entity<Tramite>().Property(t => t.AgenteAsignado).HasColumnName("AgenteAsignado");
+            modelBuilder.Entity<Tramite>().Property(t => t.ComentarioAgente).HasColumnName("ComentarioAgente");
+            modelBuilder.Entity<Tramite>().Property(t => t.MotivoRechazo).HasColumnName("MotivoRechazo");
 
-            // Mapeo de TramiteDocumento
+            // TramiteDocumento
             modelBuilder.Entity<TramiteDocumento>().Property(d => d.DocumentoId).HasColumnName("DocumentoId");
             modelBuilder.Entity<TramiteDocumento>().Property(d => d.TramiteId).HasColumnName("TramiteId");
             modelBuilder.Entity<TramiteDocumento>().Property(d => d.NombreRequisito).HasColumnName("NombreRequisito");
             modelBuilder.Entity<TramiteDocumento>().Property(d => d.NombreArchivo).HasColumnName("NombreArchivo");
             modelBuilder.Entity<TramiteDocumento>().Property(d => d.RutaArchivo).HasColumnName("RutaArchivo");
+            modelBuilder.Entity<TramiteDocumento>().Property(d => d.TipoArchivo).HasColumnName("TipoArchivo");
             modelBuilder.Entity<TramiteDocumento>().Property(d => d.TamanoBytes).HasColumnName("TamanoBytes");
             modelBuilder.Entity<TramiteDocumento>().Property(d => d.FechaSubida).HasColumnName("FechaSubida");
             modelBuilder.Entity<TramiteDocumento>().Property(d => d.DatosFormulario).HasColumnName("DatosFormulario");
@@ -213,7 +223,16 @@ namespace CNFL_Clientes_Prototipo.Data
                 .WithRequired(p => p.Factura)
                 .HasForeignKey(p => p.FacturaId);
 
-            // ⭐ NUEVA RELACIÓN: Trámite → Documentos
+            // ⭐ RELACIÓN: Trámite → NISE (opcional)
+            // Nota: Usamos HasOptional + WithMany() porque NISE no tiene
+            // una colección de navegación "Tramites"
+            modelBuilder.Entity<Tramite>()
+                .HasOptional(t => t.NISE)
+                .WithMany()
+                .HasForeignKey(t => t.NiseId)
+                .WillCascadeOnDelete(false);
+
+            // ⭐ RELACIÓN: Trámite → Documentos
             modelBuilder.Entity<Tramite>()
                 .HasMany(t => t.TramiteDocumentos)
                 .WithRequired(d => d.Tramite)

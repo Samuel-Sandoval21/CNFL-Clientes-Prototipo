@@ -8,15 +8,100 @@
 
     @Html.Partial("_EstilosBase")
     @RenderSection("Styles", required: false)
+
+    <!-- ═══════════════════════════════════════════
+         GLASS FORZADO EN PANTALLAS PÚBLICAS
+         ═══════════════════════════════════════════ -->
+    <style>
+        /* Fondo decorativo — FIJO detrás de todo */
+        .bg-decorativo {
+            position: absolute !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 1 !important;
+            pointer-events: none !important;
+            background-color: transparent !important;
+            background-image: url('@Url.Content("~/Content/img/fondo-decorativo.png")') !important;
+            background-size: cover !important;
+            background-position: top center !important;
+            background-repeat: no-repeat !important;
+        }
+
+        /* Cards glass forzadas */
+        .reg-card,
+        .chart-card,
+        .contact-list,
+        .card,
+        .row-item,
+        .nise,
+        .alert-card,
+        .rec-card,
+        .carrito-item,
+        .login-form,
+        .login-bio-card,
+        .login-foot-card,
+        .auth-card,
+        .auth-item,
+        .contact-card,
+        .info-card,
+        .home-footer-card,
+        .rec-form,
+        .rec-aviso,
+        .rec-volver,
+        .rec-footer {
+            background: rgba(255, 255, 255, 0.75) !important;
+            backdrop-filter: blur(14px) !important;
+            -webkit-backdrop-filter: blur(14px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08) !important;
+        }
+
+        /* Inputs glass */
+        .reg-field input,
+        .reg-field select,
+        .reg-field textarea,
+        .login-field input,
+        .rec-field input {
+            background: rgba(255, 255, 255, 0.85) !important;
+        }
+
+            .reg-field input:focus,
+            .reg-field select:focus,
+            .reg-field textarea:focus,
+            .login-field input:focus,
+            .rec-field input:focus {
+                background: #ffffff !important;
+            }
+
+        /* Excepciones: hero azul y botones sólidos se mantienen */
+        .hero-card,
+        .home-hero,
+        .rep-hero,
+        .bill,
+        .te-asiste-hero {
+            background: linear-gradient(135deg, #0033A0 0%, #1E23E6 55%, #3b6ce0 100%) !important;
+            backdrop-filter: none !important;
+        }
+
+        .reg-btn,
+        .home-btn-primary,
+        .login-btn,
+        .rec-btn,
+        .btn-cta {
+            backdrop-filter: none !important;
+        }
+    </style>
 </head>
 <body>
 
     @{
         var accionActual = ViewContext.RouteData.Values["action"].ToString();
+        var controladorActual = ViewContext.RouteData.Values["controller"].ToString();
         var logueado = Session["UsuarioId"] != null;
     }
 
-    <div class="phone @(logueado ? "phone-logueado" : "phone-publico")">
+    <div class="phone">
         <div class="phone-notch"></div>
         <div class="phone-statusbar">
             <span id="horaActual">--:--</span>
@@ -27,11 +112,8 @@
             </span>
         </div>
 
-        @* ═══ FONDO DECORATIVO — SOLO PANTALLAS PÚBLICAS (sin loguear) ═══ *@
-        @if (!logueado)
-        {
-            <div class="bg-decorativo" aria-hidden="true"></div>
-        }
+        <!-- ═══ FONDO DECORATIVO (fijo detrás de todo el phone, no scrollea) ═══ -->
+        <div class="bg-decorativo" aria-hidden="true"></div>
 
         <div class="phone-body">
             <div class="app-body with-tabbar">
@@ -43,7 +125,7 @@
             @if (!logueado)
             {
                 <a href="@Url.Action("Index", "Home")"
-                   class="app-tab @(accionActual == "Index" ? "active" : "")">
+                   class="app-tab @(controladorActual == "Home" && accionActual == "Index" ? "active" : "")">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
                     </svg>
@@ -51,7 +133,7 @@
                 </a>
 
                 <a href="@Url.Action("Login", "Cuenta")"
-                   class="app-tab @(accionActual == "Login" ? "active" : "")">
+                   class="app-tab @(controladorActual == "Cuenta" && accionActual == "Login" ? "active" : "")">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="8" r="4" />
                         <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
@@ -62,14 +144,15 @@
             else
             {
                 <a href="@Url.Action("Dashboard", "Clientes")"
-                   class="app-tab @(accionActual == "Dashboard" ? "active" : "")">
+                   class="app-tab @(controladorActual == "Clientes" && accionActual == "Dashboard" ? "active" : "")">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
                     </svg>
                     <span>Inicio</span>
                 </a>
 
-                <a href="@Url.Action("Servicios", "Clientes")" class="app-tab">
+                <a href="@Url.Action("Servicios", "Clientes")"
+                   class="app-tab @(controladorActual == "Clientes" && accionActual == "Servicios" ? "active" : "")">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21V9l6-6v18M9 13h6" />
                         <path d="M3 21h18" />
@@ -77,7 +160,8 @@
                     <span>Servicios</span>
                 </a>
 
-                <a href="@Url.Action("Reportar", "Clientes")" class="app-tab center">
+                <a href="@Url.Action("Reportar", "Clientes")"
+                   class="app-tab center @(controladorActual == "Clientes" && accionActual == "Reportar" ? "active" : "")">
                     <div class="fab">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                             <path d="M13 2 3 14h7l-1 8 10-12h-7z" />
@@ -86,7 +170,8 @@
                     <span>Reportar</span>
                 </a>
 
-                <a href="@Url.Action("Tramites", "Clientes")" class="app-tab">
+                <a href="@Url.Action("Tramites", "Clientes")"
+                   class="app-tab @(controladorActual == "Clientes" && accionActual == "Tramites" ? "active" : "")">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                         <path d="M14 2v6h6M9 13h6M9 17h4" />
@@ -94,7 +179,8 @@
                     <span>Trámites</span>
                 </a>
 
-                <a href="@Url.Action("Dashboard", "Clientes")" class="app-tab">
+                <a href="@Url.Action("Perfil", "Clientes")"
+                   class="app-tab @(controladorActual == "Clientes" && accionActual == "Perfil" ? "active" : "")">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="8" r="4" />
                         <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />

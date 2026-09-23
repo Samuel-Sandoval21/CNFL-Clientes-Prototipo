@@ -168,9 +168,7 @@
             margin: 22px 0 8px;
         }
 
-        /* ═══════════════════════════════════════════
-           SERVICIOS — ACORDEÓN
-           ═══════════════════════════════════════════ */
+        /* ═══════════ SERVICIOS — ACORDEÓN ═══════════ */
         .servicios-lista {
             display: flex;
             flex-direction: column;
@@ -1090,41 +1088,66 @@
      ═══════════════════════════════════════════ -->
 <div id="tab-tarjeta" class="tab-panel" style="display:none;">
 
+    <!-- Card de la tarjeta (compacta) -->
     <div style="
         margin-top: 20px;
         background: linear-gradient(135deg, #7a5c00 0%, #c98a00 45%, #e0a800 100%);
-        border-radius: 22px;
-        padding: 22px 20px;
+        border-radius: 20px;
+        padding: 18px 20px;
         color: #fff;
         position: relative;
         overflow: hidden;
         box-shadow: 0 18px 34px -12px rgba(201,138,0,.55);
+        min-height: 160px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     ">
-        <div style="position:absolute; right:-40px; top:-40px; width:200px; height:200px; background:radial-gradient(circle, rgba(255,255,255,.18), transparent 70%); border-radius:50%;"></div>
-        <div style="position:absolute; right:60px; bottom:-30px; width:120px; height:120px; background:radial-gradient(circle, rgba(255,255,255,.10), transparent 70%); border-radius:50%;"></div>
+        <div style="position:absolute; right:-40px; top:-40px; width:180px; height:180px; background:radial-gradient(circle, rgba(255,255,255,.18), transparent 70%); border-radius:50%;"></div>
+        <div style="position:absolute; right:50px; bottom:-30px; width:110px; height:110px; background:radial-gradient(circle, rgba(255,255,255,.10), transparent 70%); border-radius:50%;"></div>
 
         <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:2;">
             <div>
-                <div style="font-size:10px; letter-spacing:2px; opacity:.85; font-weight:700;">CNFL · VISA</div>
-                <div style="font-size:20px; font-weight:900; letter-spacing:1px; margin-top:2px;">GOLD</div>
+                <div style="font-size:9px; letter-spacing:2px; opacity:.85; font-weight:700;">CNFL · VISA</div>
+                <div style="font-size:18px; font-weight:900; letter-spacing:1px; margin-top:2px;">GOLD</div>
             </div>
-            <div style="font-size:26px;">💳</div>
+            <div style="font-size:22px;">💳</div>
         </div>
 
-        <div style="font-size:13px; letter-spacing:3px; margin-top:26px; opacity:.9; position:relative; z-index:2;">
+        <div style="font-size:12px; letter-spacing:3px; margin-top:16px; opacity:.9; position:relative; z-index:2;">
             •••• •••• •••• ••••
         </div>
 
-        <div style="display:flex; justify-content:space-between; margin-top:20px; font-size:11px; opacity:.9; position:relative; z-index:2;">
+        <div style="display:flex; justify-content:space-between; margin-top:14px; font-size:10px; opacity:.9; position:relative; z-index:2;">
             <div>
-                <div style="opacity:.7; font-size:9px; letter-spacing:1px;">TITULAR</div>
+                <div style="opacity:.7; font-size:8px; letter-spacing:1px;">TITULAR</div>
                 <div style="font-weight:800; margin-top:2px;">@usuarioNombreCompleto</div>
             </div>
             <div style="text-align:right;">
-                <div style="opacity:.7; font-size:9px; letter-spacing:1px;">BENEFICIO</div>
-                <div style="font-weight:800; margin-top:2px;">6 meses asegurado</div>
+                <div style="opacity:.7; font-size:8px; letter-spacing:1px;">BENEFICIO</div>
+                <div style="font-weight:800; margin-top:2px;">60 meses asegurado</div>
             </div>
         </div>
+    </div>
+
+    <!-- ═══ BOTONES DE ACCIÓN ═══ -->
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:18px;">
+        <!-- Botón principal -->
+        <button type="button" onclick="enviarSolicitudTarjeta();"
+                style="width:100%; padding:15px; border:0; border-radius:14px; font-family:inherit; font-weight:800; font-size:14.5px; color:#fff; background:linear-gradient(135deg, #c98a00, #e0a800); cursor:pointer; box-shadow:0 8px 18px -8px rgba(201,138,0,.6);">
+            💳 Solicitar Tarjeta
+        </button>
+
+        <!-- Texto pequeño debajo -->
+        <p style="text-align:center; font-size:11px; color:var(--muted); margin:-4px 0 0; font-weight:600;">
+            Tarjeta categoría Gold CNFL
+        </p>
+
+        <!-- Botón secundario: Beneficios -->
+        <a href="@Url.Action("BeneficiosTarjeta", "Clientes")"
+           style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px; border:1.5px solid #c98a00; border-radius:14px; font-family:inherit; font-weight:800; font-size:13.5px; color:#c98a00; background:rgba(255,255,255,0.9); cursor:pointer; text-decoration:none; transition:.15s;">
+            🎁 Ver Beneficios
+        </a>
     </div>
 
     <div class="eyebrow" style="margin-top:22px;">Beneficios de tu tarjeta</div>
@@ -1134,7 +1157,7 @@
             <div style="font-size:20px;">🛡️</div>
             <div>
                 <div style="font-size:12px; font-weight:800;">Compras aseguradas</div>
-                <div style="font-size:11px; color:var(--muted); margin-top:2px;">Por 6 meses</div>
+                <div style="font-size:11px; color:var(--muted); margin-top:2px;">Por 60 meses</div>
             </div>
         </div>
         <div class="card" style="padding:14px; display:flex; gap:10px; align-items:flex-start;">
@@ -1155,7 +1178,7 @@
             <div style="font-size:20px;">⚡</div>
             <div>
                 <div style="font-size:12px; font-weight:800;">Activación rápida</div>
-                <div style="font-size:11px; color:var(--muted); margin-top:2px;">En 48 horas</div>
+                <div style="font-size:11px; color:var(--muted); margin-top:2px;">Inmediata</div>
             </div>
         </div>
     </div>
@@ -1234,11 +1257,6 @@
             </select>
         </div>
     </div>
-
-    <button type="button" onclick="enviarSolicitudTarjeta();"
-            style="width:100%; margin-top:14px; padding:16px; border:0; border-radius:14px; font-family:inherit; font-weight:800; font-size:14.5px; color:#fff; background:linear-gradient(135deg, #c98a00, #e0a800); cursor:pointer; box-shadow:0 8px 18px -8px rgba(201,138,0,.6);">
-        💳 Solicitar tarjeta Visa Gold
-    </button>
 
     <div id="tcEstado" style="display:none; margin-top:14px; padding:12px 14px; background:#e9f7ec; border-radius:12px; font-size:12.5px; font-weight:800; color:#2f8f3e; text-align:center; margin-bottom: 100px;">
         ✓ Solicitud enviada. Un asesor te contactará.
@@ -1526,11 +1544,5 @@
 
             document.getElementById('tcEstado').style.display = 'block';
         }
-
-        // ═══════════════════════════════════════════════════════════
-        // NOTA: La función abrirConfig() NO está definida aquí.
-        // Se usa la función global definida en el _LayoutCliente.cshtml
-        // que abre el modal de configuración.
-        // ═══════════════════════════════════════════════════════════
     </script>
 }

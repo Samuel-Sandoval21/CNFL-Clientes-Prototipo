@@ -251,10 +251,6 @@
         scroll-behavior: smooth;
     }
 
-    @* @media (prefers-reduced-motion: reduce) {
-        html { scroll-behavior: auto; }
-    } *@
-
     /* ═══════════ RESET ═══════════ */
     * {
         box-sizing: border-box;
@@ -374,16 +370,16 @@
     }
 
     /* ═══════════════════════════════════════════
-       FONDO DECORATIVO
+       FONDO DECORATIVO — CORREGIDO
        ═══════════════════════════════════════════ */
     .bg-decorativo {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
-        z-index: 0;
+        z-index: 1;
         pointer-events: none;
-        background-color: #FFFFFF;
+        background-color: transparent;
         background-image: url('@Url.Content("~/Content/img/fondo-decorativo.png")');
         background-size: cover;
         background-position: top center;
@@ -504,7 +500,7 @@
             }
 
     /* ═══════════════════════════════════════════
-       CAMPOS DE FORMULARIO
+       CAMPOS DE FORMULARIO — GLASS
        ═══════════════════════════════════════════ */
     .reg-field {
         margin-bottom: 14px;
@@ -541,13 +537,13 @@
         .reg-field textarea {
             width: 100%;
             padding: 12px 14px;
-            border: 1.5px solid var(--line);
+            border: 1.5px solid rgba(237, 239, 243, 0.9);
             border-radius: 12px;
             font-family: inherit;
             font-size: 15px;
             outline: none;
-            background: #fff;
-            transition: border-color .15s, box-shadow .15s;
+            background: rgba(255, 255, 255, 0.85);
+            transition: border-color .15s, box-shadow .15s, background .15s;
             color: var(--ink);
         }
 
@@ -555,6 +551,7 @@
             .reg-field select:focus,
             .reg-field textarea:focus {
                 border-color: var(--blue);
+                background: #ffffff;
                 box-shadow: 0 0 0 3px rgba(30,35,230,.1);
             }
 
@@ -597,14 +594,16 @@
             }
 
     /* ═══════════════════════════════════════════
-       CHECKBOX / RADIO
+       CHECKBOX / RADIO — GLASS
        ═══════════════════════════════════════════ */
     .reg-check {
         display: flex;
         align-items: flex-start;
         gap: 12px;
-        background: #fafbfe;
-        border: 1.5px solid var(--line);
+        background: rgba(250, 251, 254, 0.75);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1.5px solid rgba(255, 255, 255, 0.6);
         border-radius: 14px;
         padding: 14px;
         cursor: pointer;
@@ -618,6 +617,7 @@
 
         .reg-check:hover {
             border-color: #d8dde8;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .reg-check input[type="checkbox"],
@@ -674,7 +674,7 @@
     }
 
     /* ═══════════════════════════════════════════
-       TARJETAS DE REGISTRO
+       TARJETAS DE REGISTRO — GLASS
        ═══════════════════════════════════════════ */
     .reg-hero {
         text-align: center;
@@ -694,11 +694,13 @@
         }
 
     .reg-card {
-        background: #fff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         border-radius: 18px;
         padding: 16px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
         margin-bottom: 12px;
     }
 
@@ -749,7 +751,7 @@
         }
 
     /* ═══════════════════════════════════════════
-       LOGIN
+       LOGIN — GLASS
        ═══════════════════════════════════════════ */
     .login-wrap {
         padding-top: 4px;
@@ -771,6 +773,40 @@
         margin-top: 8px;
         line-height: 1.5;
         text-align: center;
+    }
+
+    .login-form {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
+        margin-bottom: 14px;
+    }
+
+    .login-bio-card {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
+        margin-bottom: 18px;
+    }
+
+    .login-foot-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        padding: 16px 20px;
+        text-align: center;
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
+        margin-bottom: 20px;
     }
 
     .login-foot {
@@ -864,11 +900,13 @@
        GRÁFICOS SIMPLES (barras CSS)
        ═══════════════════════════════════════════ */
     .chart-card {
-        background: #fff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         border-radius: 18px;
         padding: 16px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
         margin-top: 12px;
     }
 
@@ -979,14 +1017,16 @@
             }
 
     /* ═══════════════════════════════════════════
-       CONTÁCTENOS
+       CONTÁCTENOS — GLASS
        ═══════════════════════════════════════════ */
     .contact-list {
-        background: #fff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         border-radius: 18px;
         overflow: hidden;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
         margin-top: 12px;
     }
 
@@ -995,7 +1035,7 @@
         align-items: center;
         gap: 12px;
         padding: 14px 16px;
-        border-bottom: 1px solid var(--line);
+        border-bottom: 1px solid rgba(237, 239, 243, 0.7);
         text-decoration: none;
         color: inherit;
         transition: background .15s;
@@ -1006,7 +1046,7 @@
         }
 
         .contact-item:hover {
-            background: #fafbfe;
+            background: rgba(255, 255, 255, 0.5);
             text-decoration: none;
             color: inherit;
         }
@@ -1057,7 +1097,7 @@
     }
 
     /* ═══════════════════════════════════════════
-       RECUPERAR CONTRASEÑA
+       RECUPERAR CONTRASEÑA — GLASS
        ═══════════════════════════════════════════ */
     .rec-hero {
         text-align: center;
@@ -1093,11 +1133,13 @@
         }
 
     .rec-card {
-        background: #fff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         border-radius: 18px;
         padding: 18px 16px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
         margin-bottom: 14px;
     }
 
@@ -1170,13 +1212,15 @@
         width: 40px;
         height: 40px;
         border-radius: 14px;
-        background: #fff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         display: grid;
         place-items: center;
         cursor: pointer;
         position: relative;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 4px 14px rgba(16, 20, 40, 0.06);
         text-decoration: none;
         color: var(--ink);
         transition: .15s;
@@ -1318,14 +1362,16 @@
     }
 
     .btn-line {
-        background: #fff;
-        border: 1.5px solid var(--line);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(255, 255, 255, 0.7);
         color: var(--ink);
         padding: 13px 18px;
     }
 
     /* ═══════════════════════════════════════════
-       CLIENTE — NISE CARDS
+       CLIENTE — NISE CARDS — GLASS
        ═══════════════════════════════════════════ */
     .nise {
         display: flex;
@@ -1333,11 +1379,13 @@
         gap: 14px;
         padding: 15px;
         border-radius: 18px;
-        background: #fff;
-        box-shadow: var(--shadow-sm);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
         cursor: pointer;
         transition: .15s;
-        border: 1px solid var(--line);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         text-decoration: none;
         color: inherit;
         margin-bottom: 10px;
@@ -1492,7 +1540,7 @@
     }
 
     /* ═══════════════════════════════════════════
-       CLIENTE — LISTAS / ROWS
+       CLIENTE — LISTAS / ROWS — GLASS
        ═══════════════════════════════════════════ */
     .rows {
         display: flex;
@@ -1504,19 +1552,22 @@
         display: flex;
         align-items: center;
         gap: 13px;
-        background: #fff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         border-radius: 16px;
         padding: 14px;
         cursor: pointer;
         transition: .15s;
         text-decoration: none;
         color: inherit;
+        box-shadow: 0 4px 14px rgba(16, 20, 40, 0.05);
     }
 
         .row-item:active {
             transform: scale(.99);
-            background: #fafbff;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .row-item .ic {
@@ -1559,14 +1610,16 @@
     }
 
     /* ═══════════════════════════════════════════
-       CLIENTE — CARD GENÉRICA
+       CLIENTE — CARD GENÉRICA — GLASS
        ═══════════════════════════════════════════ */
     .card {
-        background: #fff;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
         border-radius: 18px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
         padding: 18px;
-        border: 1px solid var(--line);
+        border: 1px solid rgba(255, 255, 255, 0.6);
     }
 
         .card.tight {
@@ -1647,14 +1700,16 @@
             }
 
     /* ═══════════════════════════════════════════
-       CLIENTE — ALERTAS
+       CLIENTE — ALERTAS — GLASS
        ═══════════════════════════════════════════ */
     .alert-card {
-        background: #fff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         border-radius: 16px;
         padding: 14px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
         display: flex;
         gap: 11px;
         align-items: flex-start;
@@ -1773,17 +1828,19 @@
         }
 
     /* ═══════════════════════════════════════════
-       CARRITO — TIENDA
+       CARRITO — TIENDA — GLASS
        ═══════════════════════════════════════════ */
     .carrito-item {
         display: flex;
         align-items: center;
         gap: 13px;
-        background: #fff;
-        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
         border-radius: 16px;
         padding: 14px;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
     }
 
         .carrito-item .ic {
@@ -1844,16 +1901,16 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: #f5f6fa;
-        border: 1px solid var(--line);
+        background: rgba(245, 246, 250, 0.8);
+        border: 1px solid rgba(237, 239, 243, 0.8);
         border-radius: 10px;
         padding: 4px 8px;
         margin-top: 6px;
     }
 
         .carrito-cantidad button {
-            background: #fff;
-            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(237, 239, 243, 0.8);
             width: 24px;
             height: 24px;
             border-radius: 7px;
@@ -1887,7 +1944,7 @@
         .resumen-linea.total {
             font-size: 15px;
             padding-top: 12px;
-            border-top: 1px dashed var(--line);
+            border-top: 1px dashed rgba(237, 239, 243, 0.8);
             margin-top: 8px;
         }
 

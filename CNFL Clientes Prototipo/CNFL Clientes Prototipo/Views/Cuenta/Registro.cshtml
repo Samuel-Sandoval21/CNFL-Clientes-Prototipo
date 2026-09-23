@@ -15,14 +15,243 @@
 @section Styles {
     <style>
         /* ═══════════════════════════════════════════
-           AUTORIZACIONES — CHECKBOX MEJORADO
+           REGISTRO — GLASSMORPHISM
            ═══════════════════════════════════════════ */
+
+        .reg-wrap-page {
+            padding-top: 8px;
+            padding-bottom: 100px;
+        }
+
+        /* Logo + título */
+        .reg-logo-wrap {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+            .reg-logo-wrap img {
+                height: 44px;
+                width: auto;
+                display: inline-block;
+            }
+
+        .reg-hero-page {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+            .reg-hero-page h1 {
+                font-size: 22px;
+                font-weight: 800;
+                color: var(--ink);
+                margin: 0;
+                letter-spacing: -.02em;
+                line-height: 1.2;
+            }
+
+            .reg-hero-page p {
+                font-size: 12.5px;
+                color: var(--muted);
+                margin: 8px 0 0;
+                line-height: 1.5;
+                padding: 0 8px;
+            }
+
+        /* Cards GLASS */
+        .reg-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
+            margin-bottom: 12px;
+        }
+
+            .reg-card h3 {
+                margin: 0 0 14px;
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+        /* Campos */
+        .reg-field {
+            margin-bottom: 14px;
+        }
+
+            .reg-field:last-child {
+                margin-bottom: 0;
+            }
+
+            .reg-field label {
+                display: block;
+                font-size: 11px;
+                font-weight: 800;
+                color: var(--muted);
+                margin-bottom: 6px;
+                letter-spacing: .04em;
+                text-transform: uppercase;
+            }
+
+            .reg-field .hint {
+                display: block;
+                font-size: 10.5px;
+                color: #aab0be;
+                font-weight: 600;
+                margin-top: 5px;
+                line-height: 1.4;
+            }
+
+            .reg-field input[type="text"],
+            .reg-field input[type="email"],
+            .reg-field input[type="tel"],
+            .reg-field input[type="password"],
+            .reg-field select,
+            .reg-field textarea {
+                width: 100%;
+                padding: 12px 14px;
+                border: 1.5px solid rgba(237, 239, 243, 0.9);
+                border-radius: 12px;
+                font-family: inherit;
+                font-size: 15px;
+                outline: none;
+                background: rgba(255, 255, 255, 0.9);
+                transition: border-color .15s, box-shadow .15s, background .15s;
+                color: var(--ink);
+            }
+
+                .reg-field input:focus,
+                .reg-field select:focus,
+                .reg-field textarea:focus {
+                    border-color: var(--blue);
+                    background: #ffffff;
+                    box-shadow: 0 0 0 3px rgba(30, 35, 230, .1);
+                }
+
+                .reg-field input::placeholder,
+                .reg-field textarea::placeholder {
+                    color: #b5bcc9;
+                }
+
+        /* Password toggle */
+        .reg-pass-wrap {
+            position: relative;
+        }
+
+            .reg-pass-wrap input {
+                padding-right: 44px !important;
+            }
+
+        .reg-toggle-pass {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: 0;
+            cursor: pointer;
+            padding: 8px;
+            color: #aab0be;
+            border-radius: 8px;
+            transition: color .15s;
+            display: grid;
+            place-items: center;
+        }
+
+            .reg-toggle-pass:hover {
+                color: var(--blue);
+            }
+
+        /* Checkboxes GLASS */
+        .reg-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(250, 251, 254, 0.75);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 14px;
+            padding: 14px;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+            margin-bottom: 10px;
+        }
+
+            .reg-check:last-child {
+                margin-bottom: 0;
+            }
+
+            .reg-check:hover {
+                border-color: #d8dde8;
+                background: rgba(255, 255, 255, 0.9);
+            }
+
+            .reg-check input[type="checkbox"] {
+                width: 22px;
+                height: 22px;
+                accent-color: var(--blue);
+                cursor: pointer;
+                flex-shrink: 0;
+                margin-top: 1px;
+            }
+
+            .reg-check .txt {
+                flex: 1;
+                display: block;
+            }
+
+            .reg-check .t {
+                font-size: 13px;
+                font-weight: 800;
+                color: var(--ink);
+                display: block;
+                line-height: 1.3;
+            }
+
+            .reg-check .s {
+                font-size: 11.5px;
+                color: var(--muted);
+                margin-top: 3px;
+                display: block;
+                line-height: 1.4;
+            }
+
+        /* Actividad económica */
+        .reg-actividad {
+            display: none;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px dashed rgba(237, 239, 243, 0.9);
+        }
+
+            .reg-actividad.show {
+                display: block;
+            }
+
+        .actividad-item:hover {
+            background: #fafbfe;
+        }
+
+        .actividad-item:last-child {
+            border-bottom: 0 !important;
+        }
+
+        /* Card de autorizaciones GLASS */
         .auth-card {
-            background: #fff;
-            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 18px;
             padding: 16px;
             margin-bottom: 12px;
+            box-shadow: 0 8px 24px rgba(16, 20, 40, 0.08);
         }
 
             .auth-card h3 {
@@ -37,8 +266,10 @@
 
         .auth-item {
             display: block;
-            background: #fafbfe;
-            border: 1.5px solid var(--line);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
             border-radius: 14px;
             padding: 14px;
             cursor: pointer;
@@ -57,7 +288,7 @@
 
             .auth-item.marcado {
                 border-color: var(--blue);
-                background: #f5f7ff;
+                background: rgba(245, 247, 255, 0.85);
             }
 
         .auth-item-header {
@@ -66,7 +297,6 @@
             gap: 12px;
         }
 
-        /* Checkbox customizado */
         .auth-check {
             width: 24px;
             height: 24px;
@@ -104,7 +334,6 @@
                 transform: scale(1);
             }
 
-        /* Icono diferenciador */
         .auth-icono {
             width: 38px;
             height: 38px;
@@ -131,7 +360,6 @@
             color: #fff;
         }
 
-        /* Texto */
         .auth-txt {
             flex: 1;
             min-width: 0;
@@ -160,14 +388,13 @@
             line-height: 1.4;
         }
 
-        /* Link como botón */
         .auth-link {
             display: inline-flex;
             align-items: center;
             gap: 5px;
             margin-top: 10px;
             padding: 8px 12px;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.9);
             border: 1.5px solid var(--blue);
             border-radius: 10px;
             color: var(--blue);
@@ -193,9 +420,61 @@
                 stroke-linejoin: round;
             }
 
-        /* ═══════════════════════════════════════════
-           MODAL LEGAL — REDISEÑADO (v2)
-           ═══════════════════════════════════════════ */
+        /* Botón principal */
+        .reg-btn {
+            background: linear-gradient(135deg, var(--orange), #ff8a4c);
+            color: #fff;
+            border: 0;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 14.5px;
+            padding: 16px 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            width: 100%;
+            transition: .15s;
+            box-shadow: 0 10px 22px -8px rgba(255, 105, 45, 0.6);
+            margin-top: 4px;
+        }
+
+            .reg-btn:hover {
+                box-shadow: 0 12px 26px -8px rgba(255, 105, 45, 0.75);
+            }
+
+            .reg-btn:active {
+                transform: scale(.98);
+            }
+
+        /* Link login */
+        .reg-login-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+            .reg-login-link a {
+                color: var(--blue);
+                font-weight: 800;
+                text-decoration: none;
+            }
+
+        /* Avisos */
+        .aviso {
+            padding: 12px 16px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+
+            .aviso.err {
+                background: #fdeaea;
+                border: 1px solid #f6cfd0;
+                color: #c93a3f;
+            }
+
+        /* ═══════════ MODAL LEGAL ═══════════ */
         .modal-legal-overlay {
             position: fixed;
             inset: 0;
@@ -206,7 +485,7 @@
             display: none;
             align-items: flex-end;
             justify-content: center;
-            padding: 0 0 90px 0; /* espacio abajo para el tabbar */
+            padding: 0 0 90px 0;
         }
 
             .modal-legal-overlay.show {
@@ -246,7 +525,6 @@
             flex-shrink: 0;
         }
 
-        /* Header fijo */
         .modal-legal-header {
             padding: 16px 22px 14px;
             flex-shrink: 0;
@@ -297,7 +575,6 @@
                 transform: scale(0.92);
             }
 
-        /* Contenido scrolleable */
         .modal-legal-content {
             flex: 1;
             overflow-y: auto;
@@ -309,19 +586,10 @@
                 width: 0;
             }
 
-            /* Estilos internos del contenido legal */
             .modal-legal-content h2 {
                 font-size: 15px;
                 color: var(--blue);
                 margin: 0 0 14px;
-                font-weight: 800;
-                line-height: 1.3;
-            }
-
-            .modal-legal-content h3 {
-                font-size: 13px;
-                color: var(--ink);
-                margin: 18px 0 8px;
                 font-weight: 800;
                 line-height: 1.3;
             }
@@ -339,20 +607,6 @@
                 font-weight: 800;
             }
 
-            .modal-legal-content ul,
-            .modal-legal-content ol {
-                margin: 0 0 12px;
-                padding-left: 20px;
-            }
-
-            .modal-legal-content li {
-                font-size: 13px;
-                line-height: 1.6;
-                color: #2a2f38;
-                margin-bottom: 6px;
-            }
-
-        /* Footer fijo con botón — REDISEÑADO */
         .modal-legal-footer {
             padding: 16px 22px 24px;
             background: #ffffff;
@@ -374,10 +628,6 @@
             cursor: pointer;
             box-shadow: 0 8px 18px -8px rgba(30, 35, 230, 0.5);
             transition: transform .15s, background .15s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
         }
 
             .modal-legal-btn:hover {
@@ -388,7 +638,6 @@
                 transform: scale(0.98);
             }
 
-        /* Loading state */
         .modal-legal-loading {
             text-align: center;
             padding: 40px 20px;
@@ -416,253 +665,255 @@
     </style>
 }
 
-<!-- ═══════════ LOGO Y TÍTULO ═══════════ -->
-<div class="reg-hero" style="padding-top:20px;">
-    <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
-         onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';"
-         style="height:42px; width:auto; display:inline-block; margin-bottom:10px;" />
-    <h1>Crear cuenta</h1>
-    <p>Registrate con tu cédula para gestionar tus servicios CNFL.</p>
-</div>
+<div class="reg-wrap-page">
 
-<!-- ═══════════ ERRORES DE VALIDACIÓN ═══════════ -->
-@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
-{
-    <div class="aviso err">
-        <ul style="padding-left:18px; margin:0;">
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <li>@error.ErrorMessage</li>
-            }
-        </ul>
-    </div>
-}
-
-@using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post, new { id = "formRegistro" }))
-{
-    @Html.AntiForgeryToken()
-
-    <!-- DATOS PERSONALES -->
-    <div class="reg-card">
-        <h3>👤 Datos personales</h3>
-
-        <div class="reg-field">
-            <label for="Cedula">Cédula *</label>
-            <input type="text" id="Cedula" name="Cedula" placeholder="Ej: 1 2345 6789" required maxlength="20"
-                   value="@(Model != null ? Model.Cedula : "")" />
-            <small class="hint">Sin guiones. Solo números y espacios.</small>
-        </div>
-
-        <div class="reg-field">
-            <label for="NombreCompleto">Nombre completo *</label>
-            <input type="text" id="NombreCompleto" name="NombreCompleto"
-                   value="@nombreCompletoPrevio" placeholder="Ej: Juan Pérez Mora"
-                   autocomplete="name" required />
-            <small class="hint">Escribí nombre y dos apellidos.</small>
-        </div>
-
-        <div class="reg-field">
-            <label for="NombreUsuario">Nombre de usuario *</label>
-            <input type="text" id="NombreUsuario" name="NombreUsuario" placeholder="Ej: juanperez"
-                   required maxlength="50" autocomplete="username"
-                   value="@(Model != null ? Model.NombreUsuario : "")" />
-            <small class="hint">Con este nombre vas a poder iniciar sesión (además de la cédula).</small>
-        </div>
+    <!-- LOGO -->
+    <div class="reg-logo-wrap">
+        <img src="~/Content/img/logo-cnfl.png" alt="CNFL"
+             onerror="this.onerror=null; this.src='/Content/img/logo-cnfl.jpg';" />
     </div>
 
-    <!-- CONTACTO -->
-    <div class="reg-card">
-        <h3>📞 Contacto</h3>
-
-        <div class="reg-field">
-            <label for="Correo">Correo principal *</label>
-            <input type="email" id="Correo" name="Correo" placeholder="Ej: tucorreo@dominio.com"
-                   autocomplete="email" required
-                   value="@(Model != null ? Model.Correo : "")" />
-            <small class="hint">Ahí te enviaremos facturas y notificaciones.</small>
-        </div>
-
-        <div class="reg-field">
-            <label for="Telefono">Teléfono principal *</label>
-            <input type="tel" id="Telefono" name="Telefono" placeholder="Ej: 8888-8888"
-                   autocomplete="tel" maxlength="15" required
-                   value="@(Model != null ? Model.Telefono : "")" />
-            <small class="hint">Formato: 8 dígitos con guion.</small>
-        </div>
+    <!-- HERO -->
+    <div class="reg-hero-page">
+        <h1>Crear cuenta</h1>
+        <p>Registrate con tu cédula para gestionar tus servicios CNFL.</p>
     </div>
 
-    <!-- CONTRASEÑA -->
-    <div class="reg-card">
-        <h3>🔒 Contraseña</h3>
-
-        <div class="reg-field">
-            <label for="Contraseña">Contraseña *</label>
-            <div style="position:relative;">
-                <input type="password" id="Contraseña" name="Contraseña" placeholder="Mínimo 6 caracteres"
-                       autocomplete="new-password" minlength="6" required
-                       style="padding-right:44px;" />
-                <button type="button" onclick="togglePass('Contraseña', this);" title="Mostrar/ocultar"
-                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
-            </div>
-            <small class="hint">Mínimo 6 caracteres. Te recomendamos mezclar letras y números.</small>
+    <!-- ERRORES DE VALIDACIÓN -->
+    @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+    {
+        <div class="aviso err">
+            <ul style="padding-left:18px; margin:0;">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
         </div>
+    }
 
-        <div class="reg-field">
-            <label for="confirmarContraseña">Confirmar contraseña *</label>
-            <div style="position:relative;">
-                <input type="password" id="confirmarContraseña" name="confirmarContraseña"
-                       placeholder="Repetí la contraseña" autocomplete="new-password"
-                       minlength="6" required style="padding-right:44px;" />
-                <button type="button" onclick="togglePass('confirmarContraseña', this);" title="Mostrar/ocultar"
-                        style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:8px;color:#aab0be;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
+    @using (Html.BeginForm("Registro", "Cuenta", FormMethod.Post, new { id = "formRegistro" }))
+    {
+        @Html.AntiForgeryToken()
 
-    <!-- FACTURA ELECTRÓNICA -->
-    <div class="reg-card">
-        <h3>🧾 Facturación electrónica</h3>
+        <!-- DATOS PERSONALES -->
+        <div class="reg-card">
+            <h3>👤 Datos personales</h3>
 
-        <label class="reg-check" for="chkFactura">
-            <input type="checkbox" id="chkFactura" name="FacturaElectronica" value="true"
-                   @(facturaElectronicaPrevia ? "checked" : "")
-                   onchange="toggleFactura(this);" />
-            <span class="txt">
-                <span class="t">Quiero recibir factura electrónica</span>
-                <span class="s">Si marcás esta casilla, elegí tu actividad económica debajo.</span>
-            </span>
-        </label>
-
-        <div class="reg-actividad" id="actividadWrap" style="display:@(facturaElectronicaPrevia ? "block" : "none");">
             <div class="reg-field">
-                <label for="buscadorActividad">Actividad económica</label>
-                <input type="text" id="buscadorActividad"
-                       placeholder="Buscá por código o nombre (ej: 4711, comercio)"
-                       autocomplete="off"
-                       onfocus="mostrarActividades();"
-                       oninput="filtrarActividades();" />
-                <small class="hint">Escribí al menos 3 letras o el código para filtrar.</small>
+                <label for="Cedula">Cédula *</label>
+                <input type="text" id="Cedula" name="Cedula" placeholder="Ej: 1 2345 6789" required maxlength="20"
+                       value="@(Model != null ? Model.Cedula : "")" />
+                <small class="hint">Sin guiones. Solo números y espacios.</small>
+            </div>
 
-                <div id="listaActividades" style="margin-top:8px;max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;background:#fff;display:none;">
-                    @foreach (var item in actividades)
-                    {
-                        var idStr = item.Id.ToString();
-                        var textStr = item.Codigo + " - " + item.Nombre;
-                        <div class="actividad-item"
-                             data-value="@idStr"
-                             data-text="@textStr.ToLower()"
-                             style="padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px;"
-                             onclick="seleccionarActividad(this);">
-                            @textStr
-                        </div>
-                    }
-                </div>
+            <div class="reg-field">
+                <label for="NombreCompleto">Nombre completo *</label>
+                <input type="text" id="NombreCompleto" name="NombreCompleto"
+                       value="@nombreCompletoPrevio" placeholder="Ej: Juan Pérez Mora"
+                       autocomplete="name" required />
+                <small class="hint">Escribí nombre y dos apellidos.</small>
+            </div>
 
-                <div id="actividadSeleccionada" style="display:none;margin-top:8px;padding:10px 14px;background:#eef0ff;border-radius:12px;font-size:12.5px;font-weight:800;color:var(--blue);">
-                    ✓ <span id="actividadTexto"></span>
-                </div>
-
-                <input type="hidden" id="ActividadEconomicaId" name="ActividadEconomicaId" value="" />
+            <div class="reg-field">
+                <label for="NombreUsuario">Nombre de usuario *</label>
+                <input type="text" id="NombreUsuario" name="NombreUsuario" placeholder="Ej: juanperez"
+                       required maxlength="50" autocomplete="username"
+                       value="@(Model != null ? Model.NombreUsuario : "")" />
+                <small class="hint">Con este nombre vas a poder iniciar sesión (además de la cédula).</small>
             </div>
         </div>
-    </div>
 
-    <!-- AUTORIZACIONES -->
-    <div class="auth-card">
-        <h3>⚖️ Autorizaciones</h3>
+        <!-- CONTACTO -->
+        <div class="reg-card">
+            <h3>📞 Contacto</h3>
 
-        <label class="auth-item @(aceptoPoliticaPrevio ? "marcado" : "")" for="chkPolitica" id="authPoliticaItem">
-            <div class="auth-item-header">
-                <div class="auth-check">
-                    <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
+            <div class="reg-field">
+                <label for="Correo">Correo principal *</label>
+                <input type="email" id="Correo" name="Correo" placeholder="Ej: tucorreo@dominio.com"
+                       autocomplete="email" required
+                       value="@(Model != null ? Model.Correo : "")" />
+                <small class="hint">Ahí te enviaremos facturas y notificaciones.</small>
+            </div>
+
+            <div class="reg-field">
+                <label for="Telefono">Teléfono principal *</label>
+                <input type="tel" id="Telefono" name="Telefono" placeholder="Ej: 8888-8888"
+                       autocomplete="tel" maxlength="15" required
+                       value="@(Model != null ? Model.Telefono : "")" />
+                <small class="hint">Formato: 8 dígitos con guion.</small>
+            </div>
+        </div>
+
+        <!-- CONTRASEÑA -->
+        <div class="reg-card">
+            <h3>🔒 Contraseña</h3>
+
+            <div class="reg-field">
+                <label for="Contraseña">Contraseña *</label>
+                <div class="reg-pass-wrap">
+                    <input type="password" id="Contraseña" name="Contraseña" placeholder="Mínimo 6 caracteres"
+                           autocomplete="new-password" minlength="6" required />
+                    <button type="button" class="reg-toggle-pass" onclick="togglePass('Contraseña', this);" title="Mostrar/ocultar">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
                 </div>
-                <div class="auth-icono">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
+                <small class="hint">Mínimo 6 caracteres. Te recomendamos mezclar letras y números.</small>
+            </div>
+
+            <div class="reg-field">
+                <label for="confirmarContraseña">Confirmar contraseña *</label>
+                <div class="reg-pass-wrap">
+                    <input type="password" id="confirmarContraseña" name="confirmarContraseña"
+                           placeholder="Repetí la contraseña" autocomplete="new-password" minlength="6" required />
+                    <button type="button" class="reg-toggle-pass" onclick="togglePass('confirmarContraseña', this);" title="Mostrar/ocultar">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </button>
                 </div>
-                <div class="auth-txt">
-                    <div class="auth-titulo">
-                        Acepto la Política de Privacidad
-                        <span class="auth-req">*</span>
+            </div>
+        </div>
+
+        <!-- FACTURA ELECTRÓNICA -->
+        <div class="reg-card">
+            <h3>🧾 Facturación electrónica</h3>
+
+            <label class="reg-check" for="chkFactura">
+                <input type="checkbox" id="chkFactura" name="FacturaElectronica" value="true"
+                       @(facturaElectronicaPrevia ? "checked" : "")
+                       onchange="toggleFactura(this);" />
+                <span class="txt">
+                    <span class="t">Quiero recibir factura electrónica</span>
+                    <span class="s">Si marcás esta casilla, elegí tu actividad económica debajo.</span>
+                </span>
+            </label>
+
+            <div class="reg-actividad" id="actividadWrap" style="display:@(facturaElectronicaPrevia ? "block" : "none");">
+                <div class="reg-field">
+                    <label for="buscadorActividad">Actividad económica</label>
+                    <input type="text" id="buscadorActividad"
+                           placeholder="Buscá por código o nombre (ej: 4711, comercio)"
+                           autocomplete="off"
+                           onfocus="mostrarActividades();"
+                           oninput="filtrarActividades();" />
+                    <small class="hint">Escribí al menos 3 letras o el código para filtrar.</small>
+
+                    <div id="listaActividades" style="margin-top:8px;max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;background:#fff;display:none;">
+                        @foreach (var item in actividades)
+                        {
+                            var idStr = item.Id.ToString();
+                            var textStr = item.Codigo + " - " + item.Nombre;
+                            <div class="actividad-item"
+                                 data-value="@idStr"
+                                 data-text="@textStr.ToLower()"
+                                 style="padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px;"
+                                 onclick="seleccionarActividad(this);">
+                                @textStr
+                            </div>
+                        }
                     </div>
-                    <div class="auth-desc">
-                        Autorizo el tratamiento de mis datos personales según la ley 8968.
+
+                    <div id="actividadSeleccionada" style="display:none;margin-top:8px;padding:10px 14px;background:#eef0ff;border-radius:12px;font-size:12.5px;font-weight:800;color:var(--blue);">
+                        ✓ <span id="actividadTexto"></span>
                     </div>
-                    <a href="javascript:void(0);"
-                       onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('politica');"
-                       class="auth-link">
+
+                    <input type="hidden" id="ActividadEconomicaId" name="ActividadEconomicaId" value="" />
+                </div>
+            </div>
+        </div>
+
+        <!-- AUTORIZACIONES -->
+        <div class="auth-card">
+            <h3>⚖️ Autorizaciones</h3>
+
+            <!-- Política de Privacidad -->
+            <label class="auth-item @(aceptoPoliticaPrevio ? "marcado" : "")" for="chkPolitica" id="authPoliticaItem">
+                <div class="auth-item-header">
+                    <div class="auth-check">
+                        <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
+                    </div>
+                    <div class="auth-icono">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <div class="auth-txt">
+                        <div class="auth-titulo">
+                            Acepto la Política de Privacidad
+                            <span class="auth-req">*</span>
+                        </div>
+                        <div class="auth-desc">
+                            Autorizo el tratamiento de mis datos personales según la ley 8968.
+                        </div>
+                        <a href="javascript:void(0);"
+                           onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('politica');"
+                           class="auth-link">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                            </svg>
+                            Ver documento
+                        </a>
+                    </div>
+                </div>
+                <input type="checkbox" id="chkPolitica" name="AceptoPolitica" value="true"
+                       @(aceptoPoliticaPrevio ? "checked" : "")
+                       onchange="toggleAuth(this, 'authPoliticaItem');"
+                       style="position:absolute;opacity:0;pointer-events:none;" />
+            </label>
+
+            <!-- Consentimiento Informado -->
+            <label class="auth-item @(aceptoConsentimientoPrevio ? "marcado" : "")" for="chkConsentimiento" id="authConsentItem">
+                <div class="auth-item-header">
+                    <div class="auth-check">
+                        <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
+                    </div>
+                    <div class="auth-icono">
                         <svg viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                             <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
                         </svg>
-                        Ver documento
-                    </a>
+                    </div>
+                    <div class="auth-txt">
+                        <div class="auth-titulo">
+                            Acepto el Consentimiento Informado
+                            <span class="auth-req">*</span>
+                        </div>
+                        <div class="auth-desc">
+                            Autorizo el uso de mi información para los servicios CNFL.
+                        </div>
+                        <a href="javascript:void(0);"
+                           onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('consentimiento');"
+                           class="auth-link">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+                            </svg>
+                            Ver documento
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <input type="checkbox" id="chkPolitica" name="AceptoPolitica" value="true"
-                   @(aceptoPoliticaPrevio ? "checked" : "")
-                   onchange="toggleAuth(this, 'authPoliticaItem');"
-                   style="position:absolute;opacity:0;pointer-events:none;" />
-        </label>
+                <input type="checkbox" id="chkConsentimiento" name="AceptoConsentimiento" value="true"
+                       @(aceptoConsentimientoPrevio ? "checked" : "")
+                       onchange="toggleAuth(this, 'authConsentItem');"
+                       style="position:absolute;opacity:0;pointer-events:none;" />
+            </label>
+        </div>
 
-        <label class="auth-item @(aceptoConsentimientoPrevio ? "marcado" : "")" for="chkConsentimiento" id="authConsentItem">
-            <div class="auth-item-header">
-                <div class="auth-check">
-                    <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>
-                </div>
-                <div class="auth-icono">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-                    </svg>
-                </div>
-                <div class="auth-txt">
-                    <div class="auth-titulo">
-                        Acepto el Consentimiento Informado
-                        <span class="auth-req">*</span>
-                    </div>
-                    <div class="auth-desc">
-                        Autorizo el uso de mi información para los servicios CNFL.
-                    </div>
-                    <a href="javascript:void(0);"
-                       onclick="event.preventDefault(); event.stopPropagation(); abrirLegal('consentimiento');"
-                       class="auth-link">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-                        </svg>
-                        Ver documento
-                    </a>
-                </div>
-            </div>
-            <input type="checkbox" id="chkConsentimiento" name="AceptoConsentimiento" value="true"
-                   @(aceptoConsentimientoPrevio ? "checked" : "")
-                   onchange="toggleAuth(this, 'authConsentItem');"
-                   style="position:absolute;opacity:0;pointer-events:none;" />
-        </label>
+        <button type="submit" class="reg-btn">Crear cuenta</button>
+    }
+
+    <div class="reg-login-link">
+        ¿Ya tenés cuenta? <a href="@Url.Action("Login", "Cuenta")">Iniciar sesión</a>
     </div>
-
-    <button type="submit" class="reg-btn">Crear cuenta</button>
-}
-
-<div class="reg-login-link">
-    ¿Ya tenés cuenta? <a href="@Url.Action("Login", "Cuenta")">Iniciar sesión</a>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     MODAL LEGAL
-     ═══════════════════════════════════════════ -->
+<!-- ═══════════════ MODAL LEGAL ═══════════════ -->
 <div id="modalLegal" class="modal-legal-overlay">
     <div class="modal-legal-box">
 
@@ -779,7 +1030,7 @@
                 }
             });
 
-            // ═══════════ Toggle de checkboxes de autorización ═══════════
+            // ═══════════ Toggle checkboxes de autorización ═══════════
             function toggleAuth(chk, itemId) {
                 var item = document.getElementById(itemId);
                 if (!item) return;

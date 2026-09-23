@@ -17,10 +17,9 @@
 @section Styles {
     <style>
         /* ═══════════════════════════════════════════
-           MIS SERVICIOS — REDISEÑADO
+           MIS SERVICIOS — ESTADO ACTIVO / INACTIVO
            ═══════════════════════════════════════════ */
 
-        /* HERO del NISE principal */
         .ms-hero {
             background: linear-gradient(135deg, #001482 0%, #1E23E6 55%, #3b6ce0 100%);
             border-radius: 22px;
@@ -78,14 +77,14 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(100, 185, 90, 0.25);
             color: #fff;
             font-size: 10.5px;
             font-weight: 800;
             padding: 5px 10px;
             border-radius: 999px;
             backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(100, 185, 90, 0.5);
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -101,7 +100,7 @@
 
             .ms-hero .nise-estado.alerta {
                 background: rgba(245, 166, 35, 0.25);
-                border-color: rgba(245, 166, 35, 0.4);
+                border-color: rgba(245, 166, 35, 0.5);
             }
 
                 .ms-hero .nise-estado.alerta .dot {
@@ -111,7 +110,7 @@
 
             .ms-hero .nise-estado.peligro {
                 background: rgba(229, 72, 77, 0.25);
-                border-color: rgba(229, 72, 77, 0.4);
+                border-color: rgba(229, 72, 77, 0.5);
             }
 
                 .ms-hero .nise-estado.peligro .dot {
@@ -151,7 +150,6 @@
                 opacity: 0.8;
             }
 
-        /* Stats dentro del hero */
         .ms-hero-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -190,7 +188,6 @@
                 margin-top: 1px;
             }
 
-        /* Alert de factura pendiente dentro del hero */
         .ms-hero-alert {
             margin-top: 14px;
             background: rgba(255, 255, 255, 0.15);
@@ -228,7 +225,6 @@
                 font-size: 13px;
             }
 
-        /* Acciones rápidas */
         .ms-acciones {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -312,7 +308,6 @@
             line-height: 1.3;
         }
 
-        /* Secciones */
         .ms-section {
             margin-bottom: 20px;
         }
@@ -358,7 +353,6 @@
                 text-decoration: underline;
             }
 
-        /* Cards de opciones */
         .ms-card {
             display: flex;
             align-items: center;
@@ -468,7 +462,6 @@
                 stroke-linejoin: round;
             }
 
-        /* Averías en seguimiento */
         .ms-averia {
             display: flex;
             align-items: center;
@@ -590,7 +583,6 @@
                 color: var(--green);
             }
 
-        /* Estado vacío */
         .ms-empty {
             text-align: center;
             padding: 30px 20px;
@@ -617,7 +609,6 @@
                 line-height: 1.4;
             }
 
-        /* Leyenda */
         .ms-leyenda {
             display: flex;
             gap: 11px;
@@ -697,26 +688,16 @@
     var facturaPendiente = facturaPendientePrincipal;
     var tieneDeuda = facturaPendiente != null;
 
-    var estadoClase = "Normal";
-    if (tieneDeuda) { estadoClase = "Pendiente"; }
-    else if (nisePrincipal.TipoServicio == "Comercial" || nisePrincipal.TipoServicio == "Industrial") { estadoClase = "Prevención"; }
-
+    // ═══════════════════════════════════════════════════════════
+    // ESTADO DEL NISE — ACTIVO / INACTIVO según deuda
+    // ═══════════════════════════════════════════════════════════
     var estadoClassCss = "nise-estado";
-    var estadoTexto = "Normal";
+    var estadoTexto = "Activo";       // ← Por defecto: Activo (verde)
+
     if (tieneDeuda)
     {
         estadoClassCss = "nise-estado peligro";
-        estadoTexto = "Pendiente";
-    }
-    else if (nisePrincipal.TipoServicio == "Comercial")
-    {
-        estadoClassCss = "nise-estado alerta";
-        estadoTexto = "Prevención";
-    }
-    else if (nisePrincipal.TipoServicio == "Industrial")
-    {
-        estadoClassCss = "nise-estado peligro";
-        estadoTexto = "Revisión";
+        estadoTexto = "Inactivo";     // ← Si tiene deuda: Inactivo (rojo)
     }
 
     <div class="ms-hero">
@@ -895,7 +876,7 @@ else
             }
 
             var pillClass = tieneDeudaN ? "p-red" : "p-green";
-            var pillTexto = tieneDeudaN ? "Pendiente" : "Normal";
+            var pillTexto = tieneDeudaN ? "Inactivo" : "Activo";
 
             <a href="@Url.Action("MisFacturas", "Clientes")" class="ms-card">
                 <div class="ms-card-icon" style="background:@iconBg; color:@iconColor;">
@@ -1117,7 +1098,7 @@ else
         </svg>
     </div>
     <div class="txt">
-        <div class="t">Cambio de color según estado</div>
-        <div class="s">Verde: normal · Ámbar: prevención (suspensión programada) · Rojo: avería.</div>
+        <div class="t">Estado del servicio</div>
+        <div class="s">Verde: Activo (al día) · Rojo: Inactivo (con deuda).</div>
     </div>
 </div>

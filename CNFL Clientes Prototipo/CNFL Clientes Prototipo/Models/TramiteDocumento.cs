@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CNFL_Clientes_Prototipo.Models
 {
+    [Table("TramiteDocumentos")]
     public class TramiteDocumento
     {
         [Key]
@@ -24,11 +25,19 @@ namespace CNFL_Clientes_Prototipo.Models
         [StringLength(500)]
         public string RutaArchivo { get; set; }
 
+        [StringLength(20)]
+        public string TipoArchivo { get; set; }
+
         public long TamanoBytes { get; set; }
 
         public DateTime FechaSubida { get; set; }
 
         [Column(TypeName = "nvarchar(max)")]
         public string DatosFormulario { get; set; }
+
+        public TramiteDocumento()
+        {
+            FechaSubida = DateTime.Now;
+        }
     }
 }
