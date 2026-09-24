@@ -70,6 +70,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus, Version=4.5.3.3, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.3.3\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="EPPlus.Interfaces, Version=8.6.2.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.Interfaces.8.6.2\lib\net462\EPPlus.Interfaces.dll</HintPath>
     </Reference>
@@ -221,6 +224,8 @@
     <Compile Include="Models\ActividadSeccionDto.cs" />
     <Compile Include="Models\ActividadUsuario.cs" />
     <Compile Include="Models\Averia.cs" />
+    <Compile Include="Models\ClienteAdminDto.cs" />
+    <Compile Include="Models\ConsumoMensualDto.cs" />
     <Compile Include="Models\DashboardDtos.cs" />
     <Compile Include="Models\DescargaUsuario.cs" />
     <Compile Include="Models\Factura.cs" />
@@ -228,6 +233,7 @@
     <Compile Include="Models\Notificacion.cs" />
     <Compile Include="Models\Pago.cs" />
     <Compile Include="Models\PagoDtos.cs" />
+    <Compile Include="Models\ReporteGeneralDto.cs" />
     <Compile Include="Models\ReporteMapa.cs" />
     <Compile Include="Models\ReportesViewModel.cs" />
     <Compile Include="Models\Rol.cs" />
@@ -238,6 +244,7 @@
     <Compile Include="Models\TramiteListadoDto.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Models\UsuarioRol.cs" />
+    <Compile Include="Models\ViewModels\ReporteClienteViewModel.cs" />
     <Compile Include="Models\ViewModels\ReporteVentasViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AveriaRepository.cs" />
@@ -291,7 +298,6 @@
     <Content Include="Content\planes\plan_e_movilidad.jpg" />
     <Content Include="Content\planes\plan_hogar_protegido.jpg" />
     <Content Include="Content\planes\plan_vida_premium.jpg" />
-    <Content Include="Index.html" />
     <Content Include="Scripts\admin\admin.js" />
     <Content Include="Scripts\admin\averias.js" />
     <Content Include="Scripts\admin\clientes.js" />
@@ -410,12 +416,11 @@
     <Content Include="Views\Cuenta\_ConsentimientoInformado.cshtml" />
     <Content Include="Views\Shared\_Contactanos.cshtml" />
     <Content Include="Views\Clientes\DetalleTramite.cshtml" />
-    <Content Include="Views\AdminReportes\ReportesVentas.cshtml" />
     <Content Include="Views\Clientes\Configuracion.cshtml" />
-    <Content Include="Views\AdminNotificaciones\Index.cshtml" />
     <Content Include="Views\Shared\_ChatbotWidget.cshtml" />
     <Content Include="Views\Home\Contacto.cshtml" />
     <Content Include="Views\Clientes\BeneficiosTarjeta.cshtml" />
+    <Content Include="Views\AdminNotificaciones\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

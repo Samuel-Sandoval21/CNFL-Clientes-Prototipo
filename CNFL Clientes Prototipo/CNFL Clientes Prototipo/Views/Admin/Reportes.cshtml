@@ -1,879 +1,1113 @@
-﻿@{
+﻿@using CNFL_Clientes_Prototipo.Models.ViewModels
+@model CNFL_Clientes_Prototipo.Models.ViewModels.ReporteClienteViewModel
+@{
     ViewBag.Title = "Reportes";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
-    // ═══ Datos de facturación ═══
-    var consumos = ViewBag.Consumos as List<CNFL_Clientes_Prototipo.Models.ConsumoMensualDto>
-                   ?? new List<CNFL_Clientes_Prototipo.Models.ConsumoMensualDto>();
-    var totalFacturado = (decimal)(ViewBag.TotalFacturado ?? 0m);
-    var totalCobrado = (decimal)(ViewBag.TotalCobrado ?? 0m);
-    var totalPendiente = (decimal)(ViewBag.TotalPendiente ?? 0m);
-
-    var maxMonto = consumos.Any() ? consumos.Max(c => c.monto) : 1m;
-    if (maxMonto <= 0) { maxMonto = 1m; }
-
-    // ═══ Datos de ventas ═══
-    var vmVentas = ViewBag.VentasViewModel as CNFL_Clientes_Prototipo.Models.ViewModels.ReporteVentasViewModel
-                   ?? new CNFL_Clientes_Prototipo.Models.ViewModels.ReporteVentasViewModel();
-
-    // ═══ Actividad de uso (secciones) ═══
-    var actividadSecciones = ViewBag.ActividadSecciones as List<CNFL_Clientes_Prototipo.Models.ActividadSeccionDto>
-                             ?? new List<CNFL_Clientes_Prototipo.Models.ActividadSeccionDto>();
-
-    // ═══ Actividad de uso (meses) ═══
-    var actividadMeses = ViewBag.ActividadMeses as List<CNFL_Clientes_Prototipo.Models.ActividadMesDto>
-                         ?? new List<CNFL_Clientes_Prototipo.Models.ActividadMesDto>();
-
-    // ═══ Top usuarios de uso ═══
-    var topUsuarios = ViewBag.TopUsuarios as List<CNFL_Clientes_Prototipo.Models.TopUsuarioUsoDto>
-                      ?? new List<CNFL_Clientes_Prototipo.Models.TopUsuarioUsoDto>();
-
-    // ═══ Actividad semanal (facturas+averías+trámites) ═══
-    var actividadSemanal = ViewBag.ActividadSemanal as List<CNFL_Clientes_Prototipo.Models.ActividadSemanalDto>
-                           ?? new List<CNFL_Clientes_Prototipo.Models.ActividadSemanalDto>();
-
-    var totalMinutosApp = (int)(ViewBag.TotalMinutosApp ?? 0);
-    var totalSesiones = (int)(ViewBag.TotalSesiones ?? 0);
-    var promedioMinutosPorSesion = (double)(ViewBag.PromedioMinutosPorSesion ?? 0.0);
-    var maxMinutosSeccion = actividadSecciones.Any() ? actividadSecciones.Max(a => a.MinutosTotales) : 1;
-    if (maxMinutosSeccion <= 0) { maxMinutosSeccion = 1; }
+    var vm = Model;
 }
 
 @section Styles {
     <style>
-        /* ═══ Facturación ═══ */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .summary-card {
-            background: #fff;
-            border-radius: 14px;
-            padding: 12px 8px;
-            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
-            text-align: center;
-        }
-
-            .summary-card .label {
-                font-size: 9.5px;
-                color: var(--muted);
-                font-weight: 800;
-                text-transform: uppercase;
-                letter-spacing: .4px;
-                margin-bottom: 6px;
-            }
-
-            .summary-card .value {
-                font-size: 12.5px;
-                font-weight: 900;
-                color: var(--text);
-                word-break: break-all;
-            }
-
-            .summary-card.gold .value {
-                color: var(--gold);
-            }
-
-            .summary-card.green .value {
-                color: var(--green);
-            }
-
-            .summary-card.red .value {
-                color: var(--red);
-            }
-
-        .chart-card {
-            background: #fff;
+        /* ═══ HERO ═══ */
+        .rep-hero {
+            background: linear-gradient(135deg, #1a2b6b 0%, #5b3fbf 100%);
             border-radius: 18px;
-            padding: 16px;
-            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
-            margin-bottom: 14px;
+            padding: 20px;
+            color: #fff;
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .section-title {
-            font-size: 14.5px;
-            font-weight: 800;
-            color: var(--blue);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-            .section-title i {
-                font-size: 15px;
-                color: var(--purple);
+            .rep-hero::after {
+                content: '';
+                position: absolute;
+                right: -40px;
+                top: -40px;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(255,255,255,.15), transparent 70%);
             }
 
-        .chart {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 6px;
-            height: 160px;
-            padding: 10px 0;
-        }
-
-            .chart .bar-wrap {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-end;
-                height: 100%;
+            .rep-hero h1 {
+                margin: 0;
+                font-size: 22px;
+                font-weight: 900;
+                letter-spacing: -.3px;
+                position: relative;
+                z-index: 2;
             }
 
-            .chart .bar {
-                width: 100%;
-                background: linear-gradient(180deg, #1a2b6b, #5b3fbf);
-                border-radius: 8px 8px 0 0;
-                min-height: 6px;
-                transition: height .3s;
-                box-shadow: 0 4px 10px -4px rgba(26, 43, 107, .4);
+            .rep-hero p {
+                margin: 6px 0 0;
+                font-size: 12.5px;
+                opacity: .9;
+                position: relative;
+                z-index: 2;
             }
 
-            .chart .label {
-                font-size: 11px;
-                color: var(--muted);
-                font-weight: 700;
-                margin-top: 8px;
-                text-transform: uppercase;
-            }
-
-            .chart .value {
-                font-size: 9px;
-                color: var(--blue);
-                font-weight: 800;
-                margin-bottom: 4px;
-            }
-
-        /* ═══ Divisor ═══ */
-        .ventas-divider {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 24px 0 18px;
-            color: #c98a00;
+        .rep-badge-periodo {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 12px;
+            background: rgba(255,255,255,.18);
+            border-radius: 20px;
             font-size: 11px;
             font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: .1em;
+            position: relative;
+            z-index: 2;
         }
 
-            .ventas-divider::before,
-            .ventas-divider::after {
-                content: '';
-                flex: 1;
-                height: 1px;
-                background: linear-gradient(90deg, transparent, #e3e6ee, transparent);
-            }
-
-        /* ═══ KPIs ═══ */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .kpi {
-            background: #fff;
-            border-radius: 14px;
-            padding: 14px;
-            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
-        }
-
-            .kpi .lbl {
-                font-size: 10px;
-                color: #6b7280;
-                font-weight: 800;
-                text-transform: uppercase;
-                letter-spacing: .4px;
-            }
-
-            .kpi .num {
-                font-size: 20px;
-                font-weight: 900;
-                margin-top: 4px;
-                color: #1a2b6b;
-                letter-spacing: -.5px;
-                word-break: break-all;
-            }
-
-            .kpi.green .num {
-                color: #00a651;
-            }
-
-            .kpi.gold .num {
-                color: #c98a00;
-            }
-
-            .kpi.purple .num {
-                color: #5b3fbf;
-            }
-
-        /* ═══ Barras horizontales ═══ */
-        .bar-row {
+        /* ═══ FILTROS ═══ */
+        .rep-filtros {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: 10px;
-            padding: 8px 0;
         }
 
-            .bar-row .name {
-                flex: 1;
-                font-size: 12px;
-                font-weight: 700;
-                min-width: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-
-            .bar-row .bar {
-                flex: 2;
-                height: 8px;
-                background: #eef0f5;
-                border-radius: 4px;
-                overflow: hidden;
-            }
-
-                .bar-row .bar span {
-                    display: block;
-                    height: 100%;
-                    background: linear-gradient(90deg, #1a2b6b, #5b3fbf);
-                }
-
-            .bar-row .val {
-                font-size: 11.5px;
-                font-weight: 800;
-                color: #1a2b6b;
-                white-space: nowrap;
-                min-width: 65px;
-                text-align: right;
-            }
-
-        /* ═══ Tabla ═══ */
-        .tabla-compras {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11.5px;
-        }
-
-            .tabla-compras thead th {
-                text-align: left;
-                padding: 8px 6px;
-                font-weight: 800;
-                color: #6b7280;
-                text-transform: uppercase;
-                font-size: 9.5px;
-                letter-spacing: .4px;
-                border-bottom: 2px solid #e3e6ee;
-            }
-
-            .tabla-compras tbody tr {
-                border-bottom: 1px solid #eef0f5;
-            }
-
-                .tabla-compras tbody tr:last-child {
-                    border-bottom: 0;
-                }
-
-            .tabla-compras td {
-                padding: 9px 6px;
-                vertical-align: top;
-            }
-
-        .metodo-tag {
-            display: inline-block;
-            font-size: 9.5px;
+        .rep-filtro-label {
+            font-size: 10px;
             font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 8px;
-            background: #eef0ff;
-            color: #1a2b6b;
-            white-space: nowrap;
-        }
-
-        .card-empty {
-            text-align: center;
-            padding: 30px 20px;
             color: #6b7280;
-            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 4px;
         }
 
-            .card-empty i {
-                font-size: 38px;
-                color: #c9ced9;
-                margin-bottom: 10px;
-                display: block;
-            }
-
-        /* ═══ Exportar ═══ */
-        .export-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .export-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 16px 12px;
-            border-radius: 14px;
-            font-size: 13.5px;
-            font-weight: 800;
+        .rep-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e3e6ee;
+            border-radius: 12px;
             font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            background: #fff;
             cursor: pointer;
-            text-decoration: none;
-            border: none;
-            transition: transform .15s;
+            outline: none;
         }
 
-            .export-btn:active {
-                transform: scale(.97);
-            }
-
-            .export-btn.excel {
-                background: var(--green-soft);
-                color: #046a38;
-            }
-
-            .export-btn.pdf {
-                background: var(--red-soft);
-                color: #b71c1c;
-            }
-
-            .export-btn i {
-                font-size: 18px;
-            }
-
-        .export-info {
-            font-size: 11.5px;
-            color: var(--muted);
-            margin: 12px 0 0;
-            text-align: center;
-            line-height: 1.5;
-        }
-
-        /* ═══ Filtros ═══ */
-        .filtros {
+        .rep-chips {
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
-            margin: 0 0 14px;
         }
 
-        .filtro {
+        .rep-chip {
             padding: 8px 14px;
             background: #fff;
             border: 1.5px solid #e3e6ee;
-            border-radius: 22px;
+            border-radius: 20px;
             font-size: 11.5px;
             font-weight: 700;
             color: #6b7280;
-            white-space: nowrap;
-            cursor: pointer;
             text-decoration: none;
-            transition: all .18s;
+            cursor: pointer;
+            transition: all .15s;
+            white-space: nowrap;
+            display: inline-block;
         }
 
-            .filtro:hover {
+            .rep-chip:hover {
                 border-color: #c9ced9;
             }
 
-            .filtro.active {
+            .rep-chip.active {
                 background: linear-gradient(135deg, #1a2b6b, #5b3fbf);
                 color: #fff;
                 border-color: transparent;
             }
 
-        /* ═══ Gráfico semanal ═══ */
-        .chart-week {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 6px;
-            height: 140px;
+        /* ═══ EXPORTS ═══ */
+        .rep-exports {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
         }
 
-            .chart-week .col {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: flex-end;
-                height: 100%;
-            }
-
-            .chart-week .bar {
-                width: 100%;
-                background: linear-gradient(180deg, #5b3fbf, #1a2b6b);
-                border-radius: 6px 6px 0 0;
-                min-height: 4px;
-            }
-
-            .chart-week .label {
-                font-size: 10px;
-                color: var(--muted);
-                font-weight: 700;
-                margin-top: 6px;
-                text-transform: capitalize;
-            }
-
-            .chart-week .value {
-                font-size: 10px;
-                color: var(--blue);
-                font-weight: 800;
-                margin-bottom: 3px;
-            }
-
-        /* ═══ Top usuarios ═══ */
-        .uso-card {
+        .rep-btn-export {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--line);
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
         }
 
-            .uso-card:last-child {
-                border-bottom: none;
+            .rep-btn-export.excel {
+                background: #d4f0e0;
+                color: #046a38;
             }
 
-            .uso-card .nombre {
+            .rep-btn-export.pdf {
+                background: #ffe0e0;
+                color: #b71c1c;
+            }
+
+            .rep-btn-export i {
+                font-size: 16px;
+            }
+
+        /* ═══ SECCIONES ═══ */
+        .rep-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 14px;
+            border: 1px solid #eef0f5;
+            box-shadow: 0 2px 10px rgba(20, 30, 70, .04);
+        }
+
+        .rep-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--blue);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eef0f5;
+        }
+
+            .rep-section-title i {
+                font-size: 14px;
+                color: var(--purple);
+            }
+
+        .rep-section-count {
+            margin-left: auto;
+            font-size: 10.5px;
+            color: #6b7280;
+            font-weight: 700;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        /* ═══ GRIDS ═══ */
+        .rep-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        @@media (min-width: 600px) {
+            .rep-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @@media (min-width: 900px) {
+            .rep-grid-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* ═══ KPI CARDS ═══ */
+        .kpi-card {
+            background: linear-gradient(180deg, #f9fafc, #f4f6fb);
+            border: 1px solid #e8ecf5;
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .kpi-lbl {
+            font-size: 10px;
+            font-weight: 800;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+
+        .kpi-val {
+            font-size: 16px;
+            font-weight: 900;
+            color: #1a2b6b;
+            letter-spacing: -.3px;
+            line-height: 1.15;
+            word-wrap: break-word;
+        }
+
+        .kpi-card.gold .kpi-val {
+            color: #c98a00;
+        }
+
+        .kpi-card.green .kpi-val {
+            color: #046a38;
+        }
+
+        .kpi-card.red .kpi-val {
+            color: #b71c1c;
+        }
+
+        .kpi-card.purple .kpi-val {
+            color: #5b3fbf;
+        }
+
+        /* ═══ BARRA ═══ */
+        .rep-bar {
+            height: 8px;
+            background: #eef0f5;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0 6px;
+        }
+
+            .rep-bar > span {
+                display: block;
+                height: 100%;
+                background: linear-gradient(90deg, #1a2b6b, #5b3fbf);
+                border-radius: 4px;
+            }
+
+        .rep-subtitle {
+            font-size: 11.5px;
+            color: #6b7280;
+            font-weight: 700;
+            margin: 8px 0 4px;
+        }
+
+        /* ═══ CHART ═══ */
+        .rep-chart-box {
+            background: #fafbfe;
+            border: 1px solid #eef0f5;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+            .rep-chart-box canvas {
+                max-height: 220px;
+            }
+
+        /* ═══ TABLAS ═══ */
+        .rep-table-wrap {
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid #eef0f5;
+            margin-top: 6px;
+        }
+
+        .rep-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11.5px;
+            min-width: 420px;
+        }
+
+            .rep-table thead th {
+                background: #f4f6fb;
+                text-align: left;
+                padding: 10px 12px;
+                font-size: 9.5px;
                 font-weight: 800;
-                font-size: 13px;
+                color: #1a2b6b;
+                text-transform: uppercase;
+                border-bottom: 1.5px solid #e3e6ee;
+                white-space: nowrap;
             }
 
-            .uso-card .correo {
-                font-size: 11.5px;
-                color: var(--muted);
+            .rep-table tbody td {
+                padding: 10px 12px;
+                border-bottom: 1px solid #f0f2f8;
+                vertical-align: middle;
             }
 
-            .uso-card .tiempo {
+            .rep-table tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+            .rep-table tbody tr:hover {
+                background: #fafbfe;
+            }
+
+            .rep-table .col-num {
                 font-weight: 800;
-                color: var(--blue);
-                font-size: 13px;
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            .rep-table .col-badge {
+                text-align: center;
+            }
+
+        /* ═══ BADGES ═══ */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            white-space: nowrap;
+            line-height: 1;
+        }
+
+        .badge-green {
+            background: #d4f0e0;
+            color: #046a38;
+        }
+
+        .badge-amber {
+            background: #fff4d9;
+            color: #c98a00;
+        }
+
+        .badge-red {
+            background: #ffe0e0;
+            color: #b71c1c;
+        }
+
+        .badge-blue {
+            background: #e0e8ff;
+            color: #1a2b6b;
+        }
+
+        .badge-gray {
+            background: #eef0f5;
+            color: #6b7280;
+        }
+
+        /* ═══ EMPTY ═══ */
+        .rep-empty {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f9fafc;
+            border: 1px dashed #e3e6ee;
+            border-radius: 10px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+            .rep-empty i {
+                font-size: 22px;
+                color: #c9ced9;
+            }
+
+        /* ═══ ESTADO CUENTA ═══ */
+        .rep-estado-cuenta {
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 12.5px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .rep-estado-cuenta.green {
+                background: #d4f0e0;
+                color: #046a38;
+            }
+
+            .rep-estado-cuenta.amber {
+                background: #fff4d9;
+                color: #c98a00;
+            }
+
+            .rep-estado-cuenta.red {
+                background: #ffe0e0;
+                color: #b71c1c;
             }
     </style>
 }
 
-<h1 class="page-title">Reportes</h1>
-<p class="page-subtitle">Resumen general: facturación, ventas y actividad de uso de la app.</p>
+<!-- ═══ HERO ═══ -->
+<div class="rep-hero">
+    <h1>📊 Reporte General</h1>
+    <p>Resumen ejecutivo del sistema y detalle por cliente.</p>
+    <span class="rep-badge-periodo">Período: @vm.RangoTexto</span>
+</div>
 
-<!-- ═══ SECCIÓN 1: FACTURACIÓN ═══ -->
-<div class="summary-grid">
-    <div class="summary-card gold">
-        <div class="label">Facturado</div>
-        <div class="value">₡@totalFacturado.ToString("N0")</div>
+<!-- ═══ FILTROS ═══ -->
+<div class="rep-section">
+    <div class="rep-section-title">
+        <i class="fas fa-filter"></i> Filtros
     </div>
-    <div class="summary-card green">
-        <div class="label">Cobrado</div>
-        <div class="value">₡@totalCobrado.ToString("N0")</div>
-    </div>
-    <div class="summary-card red">
-        <div class="label">Pendiente</div>
-        <div class="value">₡@totalPendiente.ToString("N0")</div>
+
+    <div class="rep-filtros">
+        <div>
+            <div class="rep-filtro-label">Cliente</div>
+            <select class="rep-select" onchange="cambiarCliente(this.value);">
+                @foreach (var c in vm.ClientesLista)
+                {
+                    var sel = (vm.ClienteId.HasValue && vm.ClienteId.Value == c.Key) ? "selected" : "";
+                    <option value="@c.Key" @sel>@c.Value</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <div class="rep-filtro-label">Período</div>
+            <div class="rep-chips">
+                <a href="?rango=todo&amp;clienteId=@vm.ClienteId" class="rep-chip @(vm.Rango == "todo" ? "active" : "")">Todo</a>
+                <a href="?rango=7d&amp;clienteId=@vm.ClienteId" class="rep-chip @(vm.Rango == "7d" ? "active" : "")">7 días</a>
+                <a href="?rango=30d&amp;clienteId=@vm.ClienteId" class="rep-chip @(vm.Rango == "30d" ? "active" : "")">30 días</a>
+                <a href="?rango=90d&amp;clienteId=@vm.ClienteId" class="rep-chip @(vm.Rango == "90d" ? "active" : "")">90 días</a>
+                <a href="?rango=anio&amp;clienteId=@vm.ClienteId" class="rep-chip @(vm.Rango == "anio" ? "active" : "")">Este año</a>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="chart-card">
-    <div class="section-title">
-        <i class="fas fa-chart-bar"></i>
-        Facturación últimos 6 meses
+<!-- ═══ EXPORTS ═══ -->
+<div class="rep-exports">
+    <a href="@Url.Action("ExportarReporteExcel", "Admin", new { clienteId = vm.ClienteId, rango = vm.Rango })"
+       class="rep-btn-export excel">
+        <i class="fas fa-file-excel"></i> Excel
+    </a>
+    <a href="@Url.Action("ExportarReportePDF", "Admin", new { clienteId = vm.ClienteId, rango = vm.Rango })"
+       class="rep-btn-export pdf">
+        <i class="fas fa-file-pdf"></i> PDF
+    </a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECCIÓN 1: RESUMEN DEL SISTEMA
+     ═══════════════════════════════════════════ -->
+<div class="rep-section">
+    <div class="rep-section-title">
+        <i class="fas fa-chart-pie"></i> Resumen general del sistema
     </div>
-    @if (!consumos.Any())
+
+    <div class="rep-grid rep-grid-4">
+        <div class="kpi-card">
+            <div class="kpi-lbl">Clientes activos</div>
+            <div class="kpi-val">@vm.SisClientesActivos.ToString("N0")</div>
+        </div>
+        <div class="kpi-card purple">
+            <div class="kpi-lbl">Clientes totales</div>
+            <div class="kpi-val">@vm.SisClientesTotal.ToString("N0")</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-lbl">NISEs</div>
+            <div class="kpi-val">@vm.SisNISEs.ToString("N0")</div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-lbl">Servicios al día</div>
+            <div class="kpi-val">@vm.SisServiciosAlDia.ToString("N0")</div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-lbl">Servicios con deuda</div>
+            <div class="kpi-val">@vm.SisServiciosConDeuda.ToString("N0")</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-lbl">Facturas emitidas</div>
+            <div class="kpi-val">@vm.SisFacturas.ToString("N0")</div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-lbl">Facturas vencidas</div>
+            <div class="kpi-val">@vm.SisFacturasVencidas.ToString("N0")</div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-lbl">Averías abiertas</div>
+            <div class="kpi-val">@vm.SisAveriasAbiertas.ToString("N0")</div>
+        </div>
+        <div class="kpi-card purple">
+            <div class="kpi-lbl">Trámites abiertos</div>
+            <div class="kpi-val">@vm.SisTramitesAbiertos.ToString("N0")</div>
+        </div>
+    </div>
+
+    <div class="rep-grid rep-grid-4">
+        <div class="kpi-card gold">
+            <div class="kpi-lbl">Total facturado</div>
+            <div class="kpi-val">@RepFmt.Mon(vm.SisFacturado)</div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-lbl">Total cobrado</div>
+            <div class="kpi-val">@RepFmt.Mon(vm.SisCobrado)</div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-lbl">Saldo pendiente</div>
+            <div class="kpi-val">@RepFmt.Mon(vm.SisPendiente)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-lbl">Porcentaje cobrado</div>
+            <div class="kpi-val">@RepFmt.Pct(vm.SisPorcentajeCobro)</div>
+        </div>
+    </div>
+
+    <div class="rep-subtitle">Cobro de lo facturado: @RepFmt.Pct(vm.SisPorcentajeCobro)</div>
+    <div class="rep-bar"><span style="width:@RepFmt.Css(vm.SisPorcentajeCobro)%"></span></div>
+
+    @if (vm.SisIngresosVentas > 0 || vm.SisCompras > 0)
     {
-        <div class="card-empty"><i class="fas fa-chart-bar"></i>Sin datos de facturación</div>
-    }
-    else
-    {
-        <div class="chart">
-            @foreach (var c in consumos)
-            {
-                var pct = (double)(c.monto / maxMonto) * 100;
-                if (pct < 3) { pct = 3; }
-                <div class="bar-wrap">
-                    <div class="value">@((c.monto / 1000).ToString("N0"))k</div>
-                    <div class="bar" style="height:@(pct.ToString("0.0"))%;"></div>
-                    <div class="label">@c.mes</div>
-                </div>
-            }
+        <div class="rep-grid rep-grid-4">
+            <div class="kpi-card green">
+                <div class="kpi-lbl">Ingresos por ventas</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.SisIngresosVentas)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-lbl">Compras pagadas</div>
+                <div class="kpi-val">@vm.SisCompras.ToString("N0")</div>
+            </div>
+            <div class="kpi-card purple">
+                <div class="kpi-lbl">Compradores únicos</div>
+                <div class="kpi-val">@vm.SisCompradores.ToString("N0")</div>
+            </div>
+            <div class="kpi-card gold">
+                <div class="kpi-lbl">Ticket promedio</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.SisTicketPromedio)</div>
+            </div>
         </div>
     }
-</div>
 
-<!-- ═══ SECCIÓN 2: VENTAS ═══ -->
-<div class="ventas-divider">
-    <span>🛒 Ventas y compras de clientes</span>
-</div>
-
-<p style="font-size:12px; color:#6b7280; margin:0 0 14px; line-height:1.5;">
-    Todo lo que los clientes han comprado en la app móvil: productos, planes y servicios.
-</p>
-
-<div class="filtros">
-    <a href="?rango=7d" class="filtro @(vmVentas.FiltroRapido == "7d" ? "active" : "")">7 días</a>
-    <a href="?rango=30d" class="filtro @(vmVentas.FiltroRapido == "30d" ? "active" : "")">30 días</a>
-    <a href="?rango=90d" class="filtro @(vmVentas.FiltroRapido == "90d" ? "active" : "")">90 días</a>
-    <a href="?rango=anio" class="filtro @(vmVentas.FiltroRapido == "anio" ? "active" : "")">Este año</a>
-</div>
-
-<div class="kpi-grid">
-    <div class="kpi green">
-        <div class="lbl">Ingresos por ventas</div>
-        <div class="num">₡@vmVentas.IngresosTotales.ToString("N0")</div>
-    </div>
-    <div class="kpi">
-        <div class="lbl">Compras</div>
-        <div class="num">@vmVentas.TotalCompras</div>
-    </div>
-    <div class="kpi purple">
-        <div class="lbl">Clientes únicos</div>
-        <div class="num">@vmVentas.ClientesUnicos</div>
-    </div>
-    <div class="kpi gold">
-        <div class="lbl">Ticket promedio</div>
-        <div class="num">₡@vmVentas.TicketPromedio.ToString("N0")</div>
-    </div>
-</div>
-
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-trophy"></i>Top clientes por gasto</div>
-    @if (vmVentas.TopClientes.Any())
+    @if (vm.SisMensual != null && vm.SisMensual.Count > 0)
     {
-        var maxCli = vmVentas.TopClientes.Max(c => c.TotalGastado);
-        foreach (var c in vmVentas.TopClientes)
-        {
-            var pct = maxCli > 0 ? (c.TotalGastado / maxCli) * 100 : 0;
-            <div class="bar-row">
-                <div class="name">@c.Nombre</div>
-                <div class="bar"><span style="width:@pct.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%"></span></div>
-                <div class="val">₡@c.TotalGastado.ToString("N0")</div>
-            </div>
-        }
+        <div class="rep-subtitle">Facturado y cobrado en los últimos 6 meses</div>
+        <div class="rep-chart-box">
+            <canvas id="chartSistema"></canvas>
+        </div>
     }
-    else
-    {
-        <div class="card-empty"><i class="fas fa-users"></i>Sin clientes con compras en este período</div>
-    }
-</div>
 
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-credit-card"></i>Métodos de pago usados</div>
-    @if (vmVentas.VentasPorMetodo.Any())
+    @if (vm.TopDeudores != null && vm.TopDeudores.Count > 0)
     {
-        foreach (var m in vmVentas.VentasPorMetodo)
-        {
-            <div class="bar-row">
-                <div class="name">@m.Etiqueta</div>
-                <div class="bar"><span style="width:@m.Porcentaje.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%"></span></div>
-                <div class="val">₡@m.TotalIngresos.ToString("N0")</div>
-            </div>
-        }
-    }
-    else
-    {
-        <div class="card-empty"><i class="fas fa-credit-card"></i>Sin métodos registrados</div>
-    }
-</div>
-
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-chart-line"></i>Ventas últimos 6 meses</div>
-    <canvas id="chartVentas" style="max-height:200px;"></canvas>
-</div>
-
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-receipt"></i>Últimas compras</div>
-    @if (vmVentas.Compras.Any())
-    {
-        <div style="overflow-x:auto;">
-            <table class="tabla-compras">
+        <div class="rep-subtitle">Clientes con mayor saldo pendiente</div>
+        <div class="rep-table-wrap">
+            <table class="rep-table">
                 <thead>
                     <tr>
                         <th>Cliente</th>
-                        <th>Fecha</th>
-                        <th>Método</th>
-                        <th style="text-align:right;">Total</th>
+                        <th>Cédula</th>
+                        <th class="col-num">Facturas</th>
+                        <th class="col-num">Saldo</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var c in vmVentas.Compras.Take(15))
+                    @foreach (var d in vm.TopDeudores)
                     {
                         <tr>
-                            <td>
-                                <div style="font-weight:800;">@c.ClienteNombre</div>
-                                <div style="font-size:10px; color:#6b7280;">@c.ClienteCorreo</div>
-                            </td>
-                            <td>
-                                <div>@c.Fecha.ToString("dd/MM/yyyy")</div>
-                                <div style="font-size:10px; color:#6b7280;">@c.Fecha.ToString("HH:mm")</div>
-                            </td>
-                            <td><span class="metodo-tag">@c.MetodoPago</span></td>
-                            <td style="text-align:right; font-weight:900; color:#1a2b6b;">₡@c.Total.ToString("N0")</td>
+                            <td>@d.Nombre</td>
+                            <td>@d.Cedula</td>
+                            <td class="col-num">@d.Facturas</td>
+                            <td class="col-num" style="color:#b71c1c;">@RepFmt.Mon(d.Monto)</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     }
-    else
-    {
-        <div class="card-empty"><i class="fas fa-shopping-cart"></i>Sin compras en este período</div>
-    }
 </div>
 
-<!-- ═══════════════════════════════════════════
-     SECCIÓN 3: ACTIVIDAD DE USO DE LA APP
-     ═══════════════════════════════════════════ -->
-<div class="ventas-divider">
-    <span>📱 Actividad de uso de la app</span>
-</div>
+@if (vm.HayCliente)
+{
+    <!-- ═══════════════════════════════════════════
+         SECCIÓN 2: DETALLE DEL CLIENTE
+         ═══════════════════════════════════════════ -->
+    <div class="rep-section">
+        <div class="rep-section-title">
+            <i class="fas fa-user"></i> Detalle del cliente
+        </div>
 
-<p style="font-size:12px; color:#6b7280; margin:0 0 14px; line-height:1.5;">
-    Tiempo que pasan los clientes en la app y las secciones más visitadas.
-</p>
+        <div class="rep-estado-cuenta @vm.EstadoCuentaClase">
+            <i class="fas fa-info-circle"></i> @vm.EstadoCuenta
+        </div>
 
-<!-- KPIs de actividad -->
-<div class="kpi-grid">
-    <div class="kpi purple">
-        <div class="lbl">Tiempo total en app</div>
-        <div class="num">@totalMinutosApp <small style="font-size:11px;">min</small></div>
-    </div>
-    <div class="kpi">
-        <div class="lbl">Sesiones registradas</div>
-        <div class="num">@totalSesiones</div>
-    </div>
-    <div class="kpi green">
-        <div class="lbl">Promedio por sesión</div>
-        <div class="num">@promedioMinutosPorSesion.ToString("0.0") <small style="font-size:11px;">min</small></div>
-    </div>
-    <div class="kpi gold">
-        <div class="lbl">Secciones activas</div>
-        <div class="num">@actividadSecciones.Count</div>
-    </div>
-</div>
+        <div class="rep-grid">
+            <div class="kpi-card">
+                <div class="kpi-lbl">Cliente</div>
+                <div class="kpi-val" style="font-size:13px;">@vm.Cliente.NombreCompleto</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-lbl">Cédula</div>
+                <div class="kpi-val" style="font-size:13px;">@vm.Cliente.Cedula</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-lbl">Correo</div>
+                <div class="kpi-val" style="font-size:12px;">@vm.Cliente.Correo</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-lbl">Teléfono</div>
+                <div class="kpi-val" style="font-size:13px;">@(string.IsNullOrEmpty(vm.Cliente.Telefono) ? "—" : vm.Cliente.Telefono)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-lbl">Registro</div>
+                <div class="kpi-val" style="font-size:13px;">@RepFmt.Fecha(vm.Cliente.FechaRegistro)</div>
+            </div>
+            <div class="kpi-card @(vm.Cliente.Activo ? "green" : "red")">
+                <div class="kpi-lbl">Estado</div>
+                <div class="kpi-val" style="font-size:13px;">@(vm.Cliente.Activo ? "Activo" : "Inactivo")</div>
+            </div>
+        </div>
 
-<!-- Secciones más usadas -->
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-clock"></i>Secciones más usadas</div>
-    @if (actividadSecciones.Any())
-    {
-        foreach (var a in actividadSecciones.OrderByDescending(x => x.MinutosTotales))
+        <div class="rep-grid">
+            <div class="kpi-card gold">
+                <div class="kpi-lbl">Facturado (período)</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.Facturado)</div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-lbl">Pagado (período)</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.Pagado)</div>
+            </div>
+            <div class="kpi-card red">
+                <div class="kpi-lbl">Pendiente (período)</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.Pendiente)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-lbl">Porcentaje pagado</div>
+                <div class="kpi-val">@RepFmt.Pct(vm.PorcentajePagado)</div>
+            </div>
+            <div class="kpi-card red">
+                <div class="kpi-lbl">Saldo total</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.SaldoPendienteTotal)</div>
+            </div>
+            <div class="kpi-card red">
+                <div class="kpi-lbl">Monto vencido</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.MontoVencido)</div>
+            </div>
+        </div>
+
+        <div class="rep-subtitle">Pago del período: @RepFmt.Pct(vm.PorcentajePagado)</div>
+        <div class="rep-bar"><span style="width:@RepFmt.Css(vm.PorcentajePagado)%"></span></div>
+    </div>
+
+    <!-- ═══ SERVICIOS (NISE) ═══ -->
+    <div class="rep-section">
+        <div class="rep-section-title">
+            <i class="fas fa-bolt"></i> Servicios (NISE)
+            <span class="rep-section-count">@vm.Servicios.Count</span>
+        </div>
+
+        @if (vm.Servicios != null && vm.Servicios.Count > 0)
         {
-            var pct = (double)((decimal)a.MinutosTotales / maxMinutosSeccion) * 100;
-            <div class="bar-row">
-                <div class="name">@a.Seccion</div>
-                <div class="bar"><span style="width:@pct.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)%"></span></div>
-                <div class="val">@a.MinutosTotales min</div>
+            <div class="rep-table-wrap">
+                <table class="rep-table">
+                    <thead>
+                        <tr>
+                            <th>NISE</th>
+                            <th>Tipo</th>
+                            <th>Provincia</th>
+                            <th class="col-num">Facturas</th>
+                            <th class="col-num">Saldo</th>
+                            <th class="col-badge">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in vm.Servicios)
+                        {
+                            <tr>
+                                <td><strong>@s.Nise</strong></td>
+                                <td>@s.Tipo</td>
+                                <td>@s.Provincia</td>
+                                <td class="col-num">@s.Facturas</td>
+                                <td class="col-num">@RepFmt.Mon(s.Pendiente)</td>
+                                <td class="col-badge">
+                                    <span class="badge badge-@RepFmt.Clase(s.Estado)">@s.Estado</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         }
-    }
-    else
-    {
-        <div class="card-empty"><i class="fas fa-clock"></i>Sin actividad registrada</div>
-    }
-</div>
-
-<!-- Gráfica de actividad por mes -->
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-chart-line"></i>Actividad últimos 6 meses</div>
-    @if (actividadMeses.Any())
-    {
-        <canvas id="chartActividad" style="max-height:200px;"></canvas>
-    }
-    else
-    {
-        <div class="card-empty"><i class="fas fa-chart-line"></i>Sin datos de actividad mensual</div>
-    }
-</div>
-
-<!-- Top 10 usuarios por uso -->
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-user-clock"></i>Top 10 clientes por uso de la app</div>
-    @if (topUsuarios.Any())
-    {
-        foreach (var u in topUsuarios)
+        else
         {
-            <div class="uso-card">
-                <div>
-                    <div class="nombre">@u.Nombre</div>
-                    <div class="correo">@u.Correo · @u.Secciones secciones · @u.Visitas visitas</div>
-                </div>
-                <div class="tiempo">@u.MinutosTotales min</div>
-            </div>
-        }
-    }
-    else
-    {
-        <div class="card-empty"><i class="fas fa-user-clock"></i>Sin datos de uso en este período</div>
-    }
-</div>
-
-<!-- Gráfico semanal de operaciones -->
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-calendar-week"></i>Actividad operativa · últimos 7 días</div>
-    @{
-        var maxAct = actividadSemanal.Any() ? actividadSemanal.Max(a => a.facturas + a.reportes + a.tramites) : 1;
-        if (maxAct <= 0) { maxAct = 1; }
-    }
-    <div class="chart-week">
-        @foreach (var a in actividadSemanal)
-        {
-            var total = a.facturas + a.reportes + a.tramites;
-            var pct = ((double)total / maxAct) * 100;
-            <div class="col">
-                <div class="value">@total</div>
-                <div class="bar" style="height:@(pct.ToString("0.0"))%;"></div>
-                <div class="label">@a.dia</div>
+            <div class="rep-empty">
+                <i class="fas fa-bolt"></i> Sin servicios registrados.
             </div>
         }
     </div>
-    <p style="font-size:11px; color:#6b7280; margin:10px 0 0; text-align:center;">
-        Total = facturas + averías + trámites por día
-    </p>
-</div>
 
-<!-- ═══ SECCIÓN 4: EXPORTAR ═══ -->
-<div class="chart-card">
-    <div class="section-title"><i class="fas fa-download"></i>Descargar reportes</div>
-    <div class="export-grid">
-        <a href="@Url.Action("ExportarExcel", "Admin")" class="export-btn excel">
-            <i class="fas fa-file-excel"></i> Excel
-        </a>
-        <a href="@Url.Action("ExportarPDF", "Admin")" class="export-btn pdf">
-            <i class="fas fa-file-pdf"></i> PDF
-        </a>
+    <!-- ═══ FACTURACIÓN MENSUAL ═══ -->
+    if (vm.FacturacionMensual != null && vm.FacturacionMensual.Count > 0)
+    {
+        <div class="rep-section">
+            <div class="rep-section-title">
+                <i class="fas fa-chart-line"></i> Facturación del cliente · últimos 12 meses
+            </div>
+            <div class="rep-chart-box">
+                <canvas id="chartCliente"></canvas>
+            </div>
+        </div>
+    }
+
+    <!-- ═══ FACTURAS ═══ -->
+    <div class="rep-section">
+        <div class="rep-section-title">
+            <i class="fas fa-file-invoice-dollar"></i> Facturas
+            <span class="rep-section-count">@vm.FacturasTotal</span>
+        </div>
+
+        <div class="rep-grid">
+            <div class="kpi-card">
+                <div class="kpi-lbl">Total</div>
+                <div class="kpi-val">@vm.FacturasTotal.ToString("N0")</div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-lbl">Pagadas</div>
+                <div class="kpi-val">@vm.FacturasPagadas.ToString("N0")</div>
+            </div>
+            <div class="kpi-card gold">
+                <div class="kpi-lbl">Pendientes</div>
+                <div class="kpi-val">@vm.FacturasPendientes.ToString("N0")</div>
+            </div>
+            <div class="kpi-card red">
+                <div class="kpi-lbl">Vencidas</div>
+                <div class="kpi-val">@vm.FacturasVencidas.ToString("N0")</div>
+            </div>
+        </div>
+
+        @if (vm.Facturas != null && vm.Facturas.Count > 0)
+        {
+            <div class="rep-table-wrap">
+                <table class="rep-table">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>NISE</th>
+                            <th>Emisión</th>
+                            <th>Vencimiento</th>
+                            <th class="col-num">Monto</th>
+                            <th class="col-badge">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var f in vm.Facturas.Take(40))
+                        {
+                            <tr>
+                                <td><strong>@f.Numero</strong></td>
+                                <td>@f.Nise</td>
+                                <td>@RepFmt.Fecha(f.Emision)</td>
+                                <td>@RepFmt.Fecha(f.Vencimiento)</td>
+                                <td class="col-num">@RepFmt.Mon(f.Monto)</td>
+                                <td class="col-badge">
+                                    <span class="badge badge-@RepFmt.Clase(f.Estado)">@f.Estado</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="rep-empty">
+                <i class="fas fa-file-invoice"></i> Sin facturas en este período.
+            </div>
+        }
     </div>
-    <p class="export-info">
-        <strong>Excel:</strong> Resumen general con datos.<br />
-        <strong>PDF:</strong> Reporte completo con tablas.
-    </p>
 
-    <button type="button" onclick="exportarVentasExcel()"
-            style="width:100%; margin-top:14px; padding:14px; border:0; border-radius:12px; background:#e0f7e9; color:#00a651; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer;">
-        📥 Descargar ventas a Excel
-    </button>
-    <button type="button" onclick="exportarVentasPDF()"
-            style="width:100%; margin-top:8px; padding:14px; border:0; border-radius:12px; background:#ffe6e6; color:#e53935; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer;">
-        📄 Descargar ventas a PDF
-    </button>
-</div>
+    <!-- ═══ AVERÍAS ═══ -->
+    <div class="rep-section">
+        <div class="rep-section-title">
+            <i class="fas fa-tools"></i> Averías
+            <span class="rep-section-count">@vm.AveriasTotal</span>
+        </div>
+
+        <div class="rep-grid rep-grid-4">
+            <div class="kpi-card">
+                <div class="kpi-lbl">Total</div>
+                <div class="kpi-val">@vm.AveriasTotal.ToString("N0")</div>
+            </div>
+            <div class="kpi-card red">
+                <div class="kpi-lbl">Abiertas</div>
+                <div class="kpi-val">@vm.AveriasAbiertas.ToString("N0")</div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-lbl">Resueltas</div>
+                <div class="kpi-val">@vm.AveriasResueltas.ToString("N0")</div>
+            </div>
+            <div class="kpi-card purple">
+                <div class="kpi-lbl">Promedio resolución</div>
+                <div class="kpi-val" style="font-size:13px;">@RepFmt.Numero((decimal)vm.AveriasDiasPromedio, 1) días</div>
+            </div>
+        </div>
+
+        @if (vm.Averias != null && vm.Averias.Count > 0)
+        {
+            <div class="rep-table-wrap">
+                <table class="rep-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Reportada</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in vm.Averias.Take(25))
+                        {
+                            <tr>
+                                <td>@a.Id</td>
+                                <td>@a.Tipo</td>
+                                <td><span class="badge badge-@RepFmt.Clase(a.Estado)">@a.Estado</span></td>
+                                <td>@RepFmt.Fecha(a.Reportada)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="rep-empty">
+                <i class="fas fa-tools"></i> Sin averías en este período.
+            </div>
+        }
+    </div>
+
+    <!-- ═══ TRÁMITES ═══ -->
+    <div class="rep-section">
+        <div class="rep-section-title">
+            <i class="fas fa-file-signature"></i> Trámites
+            <span class="rep-section-count">@vm.TramitesTotal</span>
+        </div>
+
+        <div class="rep-grid">
+            <div class="kpi-card">
+                <div class="kpi-lbl">Total</div>
+                <div class="kpi-val">@vm.TramitesTotal.ToString("N0")</div>
+            </div>
+            <div class="kpi-card gold">
+                <div class="kpi-lbl">Abiertos</div>
+                <div class="kpi-val">@vm.TramitesAbiertos.ToString("N0")</div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-lbl">Completados</div>
+                <div class="kpi-val">@vm.TramitesCompletados.ToString("N0")</div>
+            </div>
+        </div>
+
+        @if (vm.Tramites != null && vm.Tramites.Count > 0)
+        {
+            <div class="rep-table-wrap">
+                <table class="rep-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Solicitado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in vm.Tramites.Take(25))
+                        {
+                            <tr>
+                                <td>@t.Id</td>
+                                <td>@t.Tipo</td>
+                                <td><span class="badge badge-@RepFmt.Clase(t.Estado)">@t.Estado</span></td>
+                                <td>@RepFmt.Fecha(t.Solicitud)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="rep-empty">
+                <i class="fas fa-file-signature"></i> Sin trámites en este período.
+            </div>
+        }
+    </div>
+
+    <!-- ═══ COMPRAS ═══ -->
+    <div class="rep-section">
+        <div class="rep-section-title">
+            <i class="fas fa-shopping-cart"></i> Compras
+            <span class="rep-section-count">@vm.Compras.Count</span>
+        </div>
+
+        <div class="rep-grid rep-grid-4">
+            <div class="kpi-card green">
+                <div class="kpi-lbl">Compras pagadas</div>
+                <div class="kpi-val">@vm.ComprasPagadas.ToString("N0")</div>
+            </div>
+            <div class="kpi-card gold">
+                <div class="kpi-lbl">Monto total</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.ComprasMonto)</div>
+            </div>
+            <div class="kpi-card purple">
+                <div class="kpi-lbl">Ticket promedio</div>
+                <div class="kpi-val">@RepFmt.Mon(vm.ComprasTicket)</div>
+            </div>
+        </div>
+
+        @if (vm.Compras != null && vm.Compras.Count > 0)
+        {
+            <div class="rep-table-wrap">
+                <table class="rep-table">
+                    <thead>
+                        <tr>
+                            <th>Orden</th>
+                            <th>Fecha</th>
+                            <th>Método</th>
+                            <th>Estado</th>
+                            <th class="col-num">Artículos</th>
+                            <th class="col-num">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in vm.Compras.Take(25))
+                        {
+                            <tr>
+                                <td><strong>#@c.Id</strong></td>
+                                <td>@RepFmt.Fecha(c.Fecha)</td>
+                                <td>@c.Metodo</td>
+                                <td><span class="badge badge-@RepFmt.Clase(c.Estado)">@c.Estado</span></td>
+                                <td class="col-num">@c.Articulos</td>
+                                <td class="col-num">@RepFmt.Mon(c.Total)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="rep-empty">
+                <i class="fas fa-shopping-cart"></i> Sin compras registradas.
+            </div>
+        }
+    </div>
+
+    <!-- ═══ ACTIVIDAD ═══ -->
+    <div class="rep-section">
+        <div class="rep-section-title">
+            <i class="fas fa-mobile-alt"></i> Actividad en la app
+        </div>
+
+        <div class="rep-grid rep-grid-4">
+            <div class="kpi-card">
+                <div class="kpi-lbl">Sesiones</div>
+                <div class="kpi-val">@vm.ActSesiones.ToString("N0")</div>
+            </div>
+            <div class="kpi-card purple">
+                <div class="kpi-lbl">Minutos totales</div>
+                <div class="kpi-val">@RepFmt.Numero(vm.ActMinutos, 1)</div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-lbl">Promedio por sesión</div>
+                <div class="kpi-val" style="font-size:13px;">@RepFmt.Numero(vm.ActPromedioMin, 1) min</div>
+            </div>
+            <div class="kpi-card gold">
+                <div class="kpi-lbl">Última actividad</div>
+                <div class="kpi-val" style="font-size:12px;">@RepFmt.FechaHora(vm.ActUltima)</div>
+            </div>
+        </div>
+
+        @if (vm.Actividad != null && vm.Actividad.Count > 0)
+        {
+            <div class="rep-table-wrap">
+                <table class="rep-table">
+                    <thead>
+                        <tr>
+                            <th>Sección</th>
+                            <th class="col-num">Minutos</th>
+                            <th class="col-num">Sesiones</th>
+                            <th class="col-num">% del tiempo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in vm.Actividad)
+                        {
+                            <tr>
+                                <td>@a.Seccion</td>
+                                <td class="col-num">@RepFmt.Numero(a.Minutos, 1)</td>
+                                <td class="col-num">@a.Sesiones</td>
+                                <td class="col-num">@RepFmt.Pct(a.Porcentaje)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="rep-empty">
+                <i class="fas fa-mobile-alt"></i> Sin actividad registrada.
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="rep-section">
+        <div class="rep-empty">
+            <i class="fas fa-info-circle"></i> No hay clientes registrados.
+        </div>
+    </div>
+}
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
-        var datosCompras = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-            vmVentas.Compras.Select(c => new {
-                Cliente = c.ClienteNombre,
-                Correo = c.ClienteCorreo,
-                Fecha = c.Fecha.ToString("dd/MM/yyyy HH:mm"),
-                Metodo = c.MetodoPago,
-                Items = c.TotalItems,
-                Total = c.Total
-            })
+        function cambiarCliente(id) {
+            var rango = '@vm.Rango';
+            window.location.href = '@Url.Action("Reportes", "Admin")?rango=' + rango + '&clienteId=' + id;
+        }
+
+        var datosSistema = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            vm.SisMensual.Select(x => new { etiqueta = x.Etiqueta, facturado = x.Valor, cobrado = x.Valor2 })
         ));
 
-        var datosMes = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-            vmVentas.VentasPorMes.Select(v => new {
-                Etiqueta = v.Etiqueta,
-                Total = v.TotalIngresos
-            })
-        ));
-
-        var datosActividadMes = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-            actividadMeses.Select(a => new {
-                Etiqueta = a.Etiqueta,
-                Minutos = a.MinutosTotales
-            })
-        ));
-
-        var ctx = document.getElementById('chartVentas');
-        if (ctx && datosMes.length) {
-            new Chart(ctx, {
+        if (document.getElementById('chartSistema') && datosSistema.length) {
+            new Chart(document.getElementById('chartSistema'), {
                 type: 'bar',
                 data: {
-                    labels: datosMes.map(function (d) { return d.Etiqueta; }),
-                    datasets: [{
-                        label: 'Ventas',
-                        data: datosMes.map(function (d) { return d.Total; }),
-                        backgroundColor: '#5b3fbf',
-                        borderRadius: 6
-                    }]
+                    labels: datosSistema.map(function (d) { return d.etiqueta; }),
+                    datasets: [
+                        { label: 'Facturado', data: datosSistema.map(function (d) { return d.facturado; }), backgroundColor: '#1a2b6b', borderRadius: 6, maxBarThickness: 32 },
+                        { label: 'Cobrado', data: datosSistema.map(function (d) { return d.cobrado; }), backgroundColor: '#046a38', borderRadius: 6, maxBarThickness: 32 }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
+                    plugins: { legend: { position: 'bottom', labels: { font: { size: 10, weight: '700' }, usePointStyle: true, boxWidth: 10 } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#eef0f5' }, ticks: { font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                    }
                 }
             });
         }
 
-        var ctxActividad = document.getElementById('chartActividad');
-        if (ctxActividad && datosActividadMes.length) {
-            new Chart(ctxActividad, {
+        var datosCliente = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            vm.FacturacionMensual.Select(x => new { etiqueta = x.Etiqueta, facturado = x.Valor, pagado = x.Valor2 })
+        ));
+
+        if (document.getElementById('chartCliente') && datosCliente.length) {
+            new Chart(document.getElementById('chartCliente'), {
                 type: 'bar',
                 data: {
-                    labels: datosActividadMes.map(function (d) { return d.Etiqueta; }),
-                    datasets: [{
-                        label: 'Minutos',
-                        data: datosActividadMes.map(function (d) { return d.Minutos; }),
-                        backgroundColor: '#1a2b6b',
-                        borderRadius: 6
-                    }]
+                    labels: datosCliente.map(function (d) { return d.etiqueta; }),
+                    datasets: [
+                        { label: 'Facturado', data: datosCliente.map(function (d) { return d.facturado; }), backgroundColor: '#5b3fbf', borderRadius: 6, maxBarThickness: 22 },
+                        { label: 'Pagado', data: datosCliente.map(function (d) { return d.pagado; }), backgroundColor: '#046a38', borderRadius: 6, maxBarThickness: 22 }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true } }
+                    plugins: { legend: { position: 'bottom', labels: { font: { size: 10, weight: '700' }, usePointStyle: true, boxWidth: 10 } } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#eef0f5' }, ticks: { font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 9 } } }
+                    }
                 }
             });
-        }
-
-        function exportarVentasExcel() {
-            if (!datosCompras.length) { alert('No hay datos de ventas.'); return; }
-            var ws = XLSX.utils.json_to_sheet(datosCompras);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Ventas');
-            var fecha = new Date().toISOString().slice(0, 10);
-            XLSX.writeFile(wb, 'Ventas_CNFL_' + fecha + '.xlsx');
-        }
-
-        function exportarVentasPDF() {
-            if (!datosCompras.length) { alert('No hay datos de ventas.'); return; }
-            var jsPDF = window.jspdf.jsPDF;
-            var doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.setTextColor(26, 43, 107);
-            doc.text('Reporte de Ventas · CNFL', 14, 20);
-            doc.setFontSize(10);
-            doc.setTextColor(107, 114, 128);
-            doc.text('Generado: ' + new Date().toLocaleString('es-CR'), 14, 28);
-
-            doc.autoTable({
-                startY: 40,
-                head: [['Cliente', 'Correo', 'Fecha', 'Método', 'Total']],
-                body: datosCompras.map(function (d) {
-                    return [d.Cliente, d.Correo, d.Fecha, d.Metodo, '₡' + d.Total.toLocaleString('es-CR')];
-                }),
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [91, 63, 191] }
-            });
-
-            var fecha = new Date().toISOString().slice(0, 10);
-            doc.save('Ventas_CNFL_' + fecha + '.pdf');
         }
     </script>
 }

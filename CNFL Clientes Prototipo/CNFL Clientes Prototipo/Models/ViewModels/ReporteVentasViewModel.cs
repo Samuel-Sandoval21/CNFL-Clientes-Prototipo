@@ -5,44 +5,31 @@ namespace CNFL_Clientes_Prototipo.Models.ViewModels
 {
     public class ReporteVentasViewModel
     {
-        // ═══ Filtros ═══
-        public DateTime? FechaDesde { get; set; }
-        public DateTime? FechaHasta { get; set; }
-        public string FiltroRapido { get; set; }
-        public string ClienteId { get; set; }
-        public string Tipo { get; set; }
-        public string MetodoPago { get; set; }
+        public string FiltroRapido { get; set; } = "30d";
+        public string MetodoPago { get; set; } = "todos";
+        public string Tipo { get; set; } = "todos";
+        public DateTime FechaDesde { get; set; }
+        public DateTime FechaHasta { get; set; }
 
-        // ═══ KPIs ═══
         public decimal IngresosTotales { get; set; }
         public int TotalCompras { get; set; }
         public int ClientesUnicos { get; set; }
         public decimal TicketPromedio { get; set; }
 
-        // ═══ Listas ═══
-        public List<TopProducto> TopProductos { get; set; }
         public List<TopCliente> TopClientes { get; set; }
-        public List<VentaPorMes> VentasPorMes { get; set; }
         public List<VentaPorMetodo> VentasPorMetodo { get; set; }
+        public List<VentaPorMes> VentasPorMes { get; set; }
         public List<CompraDetalle> Compras { get; set; }
 
         public ReporteVentasViewModel()
         {
-            TopProductos = new List<TopProducto>();
             TopClientes = new List<TopCliente>();
-            VentasPorMes = new List<VentaPorMes>();
             VentasPorMetodo = new List<VentaPorMetodo>();
+            VentasPorMes = new List<VentaPorMes>();
             Compras = new List<CompraDetalle>();
+            FechaDesde = DateTime.Now.AddDays(-30);
+            FechaHasta = DateTime.Now;
         }
-    }
-
-    public class TopProducto
-    {
-        public string Nombre { get; set; }
-        public string Tipo { get; set; }
-        public string Emoji { get; set; }
-        public int CantidadVendida { get; set; }
-        public decimal IngresosGenerados { get; set; }
     }
 
     public class TopCliente
@@ -54,15 +41,6 @@ namespace CNFL_Clientes_Prototipo.Models.ViewModels
         public decimal TotalGastado { get; set; }
     }
 
-    public class VentaPorMes
-    {
-        public int Anio { get; set; }
-        public int Mes { get; set; }
-        public string Etiqueta { get; set; }
-        public int TotalCompras { get; set; }
-        public decimal TotalIngresos { get; set; }
-    }
-
     public class VentaPorMetodo
     {
         public string Metodo { get; set; }
@@ -70,6 +48,15 @@ namespace CNFL_Clientes_Prototipo.Models.ViewModels
         public int TotalCompras { get; set; }
         public decimal TotalIngresos { get; set; }
         public decimal Porcentaje { get; set; }
+    }
+
+    public class VentaPorMes
+    {
+        public int Anio { get; set; }
+        public int Mes { get; set; }
+        public string Etiqueta { get; set; }
+        public int TotalCompras { get; set; }
+        public decimal TotalIngresos { get; set; }
     }
 
     public class CompraDetalle

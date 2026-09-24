@@ -42,22 +42,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public string color { get; set; }
     }
 
-    public class ConsumoMensualDto
-    {
-        public string mes { get; set; }
-        public decimal monto { get; set; }
-        public double kwh { get; set; }
-    }
-
-    public class ActividadSemanalDto
-    {
-        public string dia { get; set; }
-        public int facturas { get; set; }
-        public int reportes { get; set; }
-        public int tramites { get; set; }
-        public int perfil { get; set; }
-    }
-
     public class SeccionTopDto
     {
         public string nombre { get; set; }
@@ -84,27 +68,6 @@ namespace CNFL_Clientes_Prototipo.Models
         public int TotalDescargas { get; set; }
         public int DescargasPDF { get; set; }
         public int DescargasExcel { get; set; }
-    }
-
-    // ═══════════════════════════════════════════════════════════
-    // DTOs del ADMIN
-    // ═══════════════════════════════════════════════════════════
-
-    /// <summary>DTO con datos de un cliente para el panel de administración.</summary>
-    public class ClienteAdminDto
-    {
-        public int UsuarioId { get; set; }
-        public string Nombre { get; set; }
-        public string Apellidos { get; set; }
-        public string Cedula { get; set; }
-        public string Correo { get; set; }
-        public string Telefono { get; set; }
-        public bool Activo { get; set; }
-        public DateTime? FechaRegistro { get; set; }
-        public int TotalNISEs { get; set; }
-        public int FacturasPendientes { get; set; }
-        public decimal MontoPendiente { get; set; }
-        public int AveriasActivas { get; set; }
     }
 
     /// <summary>DTO con tiempo de uso de la app por cliente (Admin → Actividad).</summary>

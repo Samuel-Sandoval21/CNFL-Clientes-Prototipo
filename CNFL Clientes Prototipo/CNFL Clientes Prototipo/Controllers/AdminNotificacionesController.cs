@@ -19,75 +19,85 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
 
         // ============================================================
-        // VISTA PRINCIPAL: Enviar notificaciones
+        // VISTA PRINCIPAL: Enviar notificaciones + Historial
         // ============================================================
         public ActionResult Index()
         {
             if (!EsAdmin()) return RedirectToAction("Login", "Cuenta");
 
-            // Cargar todos los clientes (los que tienen rol "Cliente")
+            // Clientes (rol "Cliente" y activos)
             var clientes = _db.Usuarios
                 .Include("UsuarioRoles")
                 .Where(u => u.Activo && u.UsuarioRoles.Any(ur => ur.Rol.NombreRol == "Cliente"))
                 .OrderBy(u => u.Nombre)
-                .Select(u => new ClienteDto
-                {
-                    UsuarioId = u.UsuarioId,
-                    NombreCompleto = u.Nombre + " " + u.Apellidos,
-                    Correo = u.Correo,
-                    Telefono = u.Telefono
-                })
                 .ToList();
 
-            ViewBag.Clientes = clientes;
+            ViewBag.Usuarios = clientes;
+
+            // Notificaciones enviadas por admin (historial)
+            var notificaciones = _db.Notificaciones
+                .Where(n => n.Tipo == "Admin")
+                .OrderByDescending(n => n.Fecha)
+                .Take(50)
+                .ToList();
+
+            ViewBag.Notificaciones = notificaciones;
 
             // Estadísticas
             ViewBag.TotalClientes = clientes.Count;
-            ViewBag.ClientesConCorreo = clientes.Count(c => !string.IsNullOrEmpty(c.Correo));
-            ViewBag.NotificacionesEnviadas = _db.Notificaciones.Count(n => n.Tipo == "Admin");
-
-            // Últimas notificaciones enviadas por admin
-            ViewBag.UltimasEnviadas = _db.Notificaciones
-                .Include("Usuario")
-                .Where(n => n.Tipo == "Admin")
-                .OrderByDescending(n => n.Fecha)
-                .Take(20)
-                .ToList();
+            ViewBag.TotalNotificaciones = _db.Notificaciones.Count(n => n.Tipo == "Admin");
+            ViewBag.TotalLeidas = _db.Notificaciones.Count(n => n.Tipo == "Admin" && n.Leida);
+            ViewBag.TotalNoLeidas = _db.Notificaciones.Count(n => n.Tipo == "Admin" && !n.Leida);
 
             return View();
         }
 
         // ============================================================
-        // ENVIAR A UNO O VARIOS CLIENTES
+        // ENVIAR: Todos o seleccionados
         // ============================================================
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult Enviar(int[] usuarioIds, string titulo, string mensaje, string tipo = "General")
+        public JsonResult EnviarNotificacion(string titulo, string mensaje, string tipo = "General", string scope = "todos", string usuariosIds = "")
         {
             if (!EsAdmin())
-                return Json(new { success = false, message = "Sesión expirada." });
-
-            if (usuarioIds == null || usuarioIds.Length == 0)
-                return Json(new { success = false, message = "Seleccioná al menos un cliente." });
+                return Json(new { ok = false, mensaje = "Sesión expirada." });
 
             if (string.IsNullOrWhiteSpace(titulo) || string.IsNullOrWhiteSpace(mensaje))
-                return Json(new { success = false, message = "Título y mensaje son obligatorios." });
+                return Json(new { ok = false, mensaje = "Título y mensaje son obligatorios." });
 
             try
             {
+                List<Usuario> destinatarios;
+
+                if (scope == "seleccion" && !string.IsNullOrWhiteSpace(usuariosIds))
+                {
+                    var ids = usuariosIds
+                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s => int.Parse(s.Trim()))
+                        .ToList();
+
+                    destinatarios = _db.Usuarios.Where(u => ids.Contains(u.UsuarioId)).ToList();
+                }
+                else
+                {
+                    // Todos los clientes activos con rol Cliente
+                    destinatarios = _db.Usuarios
+                        .Include("UsuarioRoles")
+                        .Where(u => u.Activo && u.UsuarioRoles.Any(ur => ur.Rol.NombreRol == "Cliente"))
+                        .ToList();
+                }
+
+                if (!destinatarios.Any())
+                    return Json(new { ok = false, mensaje = "No hay destinatarios válidos." });
+
                 int enviados = 0;
-                int correosEnviados = 0;
+                int correosOk = 0;
                 var errores = new List<string>();
 
-                foreach (var usuarioId in usuarioIds)
+                foreach (var u in destinatarios)
                 {
-                    var usuario = _db.Usuarios.Find(usuarioId);
-                    if (usuario == null) continue;
-
-                    // 1. Crear notificación en la BD (para la app)
                     var notif = new Notificacion
                     {
-                        UsuarioId = usuarioId,
+                        UsuarioId = u.UsuarioId,
                         Titulo = titulo,
                         Mensaje = mensaje,
                         Fecha = DateTime.Now,
@@ -98,26 +108,24 @@ namespace CNFL_Clientes_Prototipo.Controllers
                     _db.Notificaciones.Add(notif);
                     enviados++;
 
-                    // 2. Enviar correo al cliente
-                    if (!string.IsNullOrWhiteSpace(usuario.Correo))
+                    if (!string.IsNullOrWhiteSpace(u.Correo))
                     {
                         try
                         {
-                            string nombreCompleto = (usuario.Nombre + " " + usuario.Apellidos).Trim();
+                            var nombreCompleto = (u.Nombre + " " + u.Apellidos).Trim();
                             bool ok = EmailService.Enviar(
-                                usuario.Correo,
+                                u.Correo,
                                 "CNFL · " + titulo,
                                 titulo,
                                 mensaje,
                                 nombreCompleto
                             );
 
-                            if (ok) correosEnviados++;
-                            else errores.Add("No se pudo enviar correo a " + usuario.Correo);
+                            if (ok) correosOk++;
                         }
                         catch (Exception exMail)
                         {
-                            errores.Add("Error correo " + usuario.Correo + ": " + exMail.Message);
+                            errores.Add("Error correo " + u.Correo + ": " + exMail.Message);
                         }
                     }
                 }
@@ -126,89 +134,15 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
                 return Json(new
                 {
-                    success = true,
+                    ok = true,
                     enviados = enviados,
-                    correos = correosEnviados,
-                    message = "Se enviaron " + enviados + " notificaciones y " + correosEnviados + " correos.",
-                    errores = errores
+                    correos = correosOk,
+                    mensaje = "Se enviaron " + enviados + " notificaciones y " + correosOk + " correos."
                 });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
-
-        // ============================================================
-        // ENVIAR A TODOS LOS CLIENTES
-        // ============================================================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult EnviarATodos(string titulo, string mensaje, string tipo = "General")
-        {
-            if (!EsAdmin())
-                return Json(new { success = false, message = "Sesión expirada." });
-
-            if (string.IsNullOrWhiteSpace(titulo) || string.IsNullOrWhiteSpace(mensaje))
-                return Json(new { success = false, message = "Título y mensaje son obligatorios." });
-
-            try
-            {
-                var todosLosClientes = _db.Usuarios
-                    .Include("UsuarioRoles")
-                    .Where(u => u.Activo && u.UsuarioRoles.Any(ur => ur.Rol.NombreRol == "Cliente"))
-                    .ToList();
-
-                int enviados = 0;
-                int correosEnviados = 0;
-
-                foreach (var usuario in todosLosClientes)
-                {
-                    var notif = new Notificacion
-                    {
-                        UsuarioId = usuario.UsuarioId,
-                        Titulo = titulo,
-                        Mensaje = mensaje,
-                        Fecha = DateTime.Now,
-                        Leida = false,
-                        Tipo = "Admin",
-                        Estado = tipo
-                    };
-                    _db.Notificaciones.Add(notif);
-                    enviados++;
-
-                    if (!string.IsNullOrWhiteSpace(usuario.Correo))
-                    {
-                        try
-                        {
-                            string nombreCompleto = (usuario.Nombre + " " + usuario.Apellidos).Trim();
-                            bool ok = EmailService.Enviar(
-                                usuario.Correo,
-                                "CNFL · " + titulo,
-                                titulo,
-                                mensaje,
-                                nombreCompleto
-                            );
-
-                            if (ok) correosEnviados++;
-                        }
-                        catch { /* continuar con los demás */ }
-                    }
-                }
-
-                _db.SaveChanges();
-
-                return Json(new
-                {
-                    success = true,
-                    enviados = enviados,
-                    correos = correosEnviados,
-                    message = "Se enviaron " + enviados + " notificaciones y " + correosEnviados + " correos a todos los clientes."
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { ok = false, mensaje = "Error: " + ex.Message });
             }
         }
 
@@ -216,46 +150,50 @@ namespace CNFL_Clientes_Prototipo.Controllers
         // NOTIFICAR TRÁMITE ESPECÍFICO
         // ============================================================
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public JsonResult NotificarTramite(int tramiteId, string titulo, string mensaje)
         {
             if (!EsAdmin())
-                return Json(new { success = false, message = "Sesión expirada." });
+                return Json(new { ok = false, mensaje = "Sesión expirada." });
 
-            var tramite = _db.Tramites.Include("Usuario").FirstOrDefault(t => t.TramiteId == tramiteId);
+            var tramite = _db.Tramites
+                .Include("Usuario")
+                .FirstOrDefault(t => t.TramiteId == tramiteId);
+
             if (tramite == null)
-                return Json(new { success = false, message = "Trámite no encontrado." });
+                return Json(new { ok = false, mensaje = "Trámite no encontrado." });
 
-            return EnviarConMensajePersonalizado(tramite.UsuarioId, titulo, mensaje, "Tramite");
+            return EnviarPersonalizado(tramite.UsuarioId, titulo, mensaje, "Tramite");
         }
 
         // ============================================================
         // NOTIFICAR AVERÍA ESPECÍFICA
         // ============================================================
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public JsonResult NotificarAveria(int averiaId, string titulo, string mensaje)
         {
             if (!EsAdmin())
-                return Json(new { success = false, message = "Sesión expirada." });
+                return Json(new { ok = false, mensaje = "Sesión expirada." });
 
-            var averia = _db.Averias.Include("Usuario").FirstOrDefault(a => a.AveriaId == averiaId);
+            var averia = _db.Averias
+                .Include("Usuario")
+                .FirstOrDefault(a => a.AveriaId == averiaId);
+
             if (averia == null)
-                return Json(new { success = false, message = "Avería no encontrada." });
+                return Json(new { ok = false, mensaje = "Avería no encontrada." });
 
-            return EnviarConMensajePersonalizado(averia.UsuarioId, titulo, mensaje, "Averia");
+            return EnviarPersonalizado(averia.UsuarioId, titulo, mensaje, "Averia");
         }
 
         // ============================================================
-        // HELPER: Enviar notificación + correo
+        // HELPER: Enviar notificación a un solo usuario
         // ============================================================
-        private JsonResult EnviarConMensajePersonalizado(int usuarioId, string titulo, string mensaje, string tipo)
+        private JsonResult EnviarPersonalizado(int usuarioId, string titulo, string mensaje, string tipo)
         {
             try
             {
                 var usuario = _db.Usuarios.Find(usuarioId);
                 if (usuario == null)
-                    return Json(new { success = false, message = "Usuario no encontrado." });
+                    return Json(new { ok = false, mensaje = "Usuario no encontrado." });
 
                 var notif = new Notificacion
                 {
@@ -273,7 +211,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 bool correoOk = false;
                 if (!string.IsNullOrWhiteSpace(usuario.Correo))
                 {
-                    string nombreCompleto = (usuario.Nombre + " " + usuario.Apellidos).Trim();
+                    var nombreCompleto = (usuario.Nombre + " " + usuario.Apellidos).Trim();
                     correoOk = EmailService.Enviar(
                         usuario.Correo,
                         "CNFL · " + titulo,
@@ -285,16 +223,16 @@ namespace CNFL_Clientes_Prototipo.Controllers
 
                 return Json(new
                 {
-                    success = true,
+                    ok = true,
                     correo = correoOk,
-                    message = correoOk
-                        ? "Notificación enviada y correo enviado a " + usuario.Correo
-                        : "Notificación creada pero no se pudo enviar el correo"
+                    mensaje = correoOk
+                        ? "Notificación enviada y correo a " + usuario.Correo
+                        : "Notificación creada pero no se pudo enviar correo"
                 });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { ok = false, mensaje = ex.Message });
             }
         }
 
@@ -305,7 +243,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         public JsonResult BuscarClientes(string q = "")
         {
             if (!EsAdmin())
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                return Json(new { ok = false }, JsonRequestBehavior.AllowGet);
 
             var query = _db.Usuarios
                 .Include("UsuarioRoles")
@@ -333,7 +271,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
                 })
                 .ToList();
 
-            return Json(new { success = true, clientes = clientes }, JsonRequestBehavior.AllowGet);
+            return Json(new { ok = true, clientes = clientes }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
@@ -343,7 +281,7 @@ namespace CNFL_Clientes_Prototipo.Controllers
         }
     }
 
-    // DTO para clientes
+    // DTO para clientes (por si lo usás en otra vista)
     public class ClienteDto
     {
         public int UsuarioId { get; set; }

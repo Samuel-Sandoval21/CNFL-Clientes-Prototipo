@@ -1,181 +1,173 @@
 ﻿@{
-    ViewBag.Title = "Enviar Notificaciones";
+    ViewBag.Title = "Notificar";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
-    var clientes = ViewBag.Clientes as List<CNFL_Clientes_Prototipo.Controllers.ClienteDto>
-                   ?? new List<CNFL_Clientes_Prototipo.Controllers.ClienteDto>();
-    var totalClientes = (int)(ViewBag.TotalClientes ?? 0);
-    var conCorreo = (int)(ViewBag.ClientesConCorreo ?? 0);
-    var enviadas = (int)(ViewBag.NotificacionesEnviadas ?? 0);
-    var ultimasEnviadas = ViewBag.UltimasEnviadas as List<CNFL_Clientes_Prototipo.Models.Notificacion>
-                          ?? new List<CNFL_Clientes_Prototipo.Models.Notificacion>();
+    var usuarios = ViewBag.Usuarios as List<CNFL_Clientes_Prototipo.Models.Usuario>
+                   ?? new List<CNFL_Clientes_Prototipo.Models.Usuario>();
+    var notificaciones = ViewBag.Notificaciones as List<CNFL_Clientes_Prototipo.Models.Notificacion>
+                        ?? new List<CNFL_Clientes_Prototipo.Models.Notificacion>();
+
+    var totalClientes = ViewBag.TotalClientes ?? 0;
+    var totalNotif = ViewBag.TotalNotificaciones ?? 0;
+    var totalLeidas = ViewBag.TotalLeidas ?? 0;
+    var totalNoLeidas = ViewBag.TotalNoLeidas ?? 0;
 }
 
 @section Styles {
     <style>
-        .admin-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 16px rgba(16,20,40,.06);
+        /* ═══ ESTADÍSTICAS ═══ */
+        .notif-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
         }
 
-            .admin-card h3 {
-                font-size: 15px;
+        .notif-stat {
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            border: 1px solid #eef0f5;
+        }
+
+            .notif-stat .lbl {
+                font-size: 10px;
+                color: #6b7280;
                 font-weight: 800;
-                color: var(--text);
-                margin: 0 0 12px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
+                text-transform: uppercase;
+                letter-spacing: .4px;
             }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            .notif-stat .num {
+                font-size: 20px;
+                font-weight: 900;
+                margin-top: 4px;
+                color: #1a2b6b;
+            }
+
+            .notif-stat.green .num {
+                color: #00a651;
+            }
+
+            .notif-stat.gold .num {
+                color: #c98a00;
+            }
+
+            .notif-stat.purple .num {
+                color: #5b3fbf;
+            }
+
+        /* ═══ TABS ═══ */
+        .notif-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .notif-tab {
+            padding: 9px 16px;
+            background: #fff;
+            border: 1.5px solid #e3e6ee;
+            border-radius: 22px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all .18s;
+            font-family: inherit;
+        }
+
+            .notif-tab.active {
+                background: linear-gradient(135deg, #1a2b6b, #5b3fbf);
+                color: #fff;
+                border-color: transparent;
+                box-shadow: 0 6px 14px -6px rgba(26, 43, 107, .5);
+            }
+
+        /* ═══ FORMULARIO ═══ */
+        .notif-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 4px 20px rgba(20, 30, 70, .06);
+            border: 1px solid #eef0f5;
             margin-bottom: 16px;
         }
 
-        .stat-box {
-            background: linear-gradient(135deg, #eef0ff, #dde3ff);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-        }
-
-            .stat-box .num {
-                font-size: 20px;
-                font-weight: 900;
-                color: var(--blue);
-                line-height: 1;
-            }
-
-            .stat-box .lbl {
-                font-size: 10px;
-                color: var(--muted);
-                font-weight: 800;
-                text-transform: uppercase;
-                margin-top: 4px;
-                letter-spacing: .04em;
-            }
-
-        .form-field {
+        .notif-card-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--blue);
             margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-            .form-field label {
+            .notif-card-title i {
+                font-size: 15px;
+                color: var(--purple);
+            }
+
+        .notif-field {
+            margin-bottom: 12px;
+        }
+
+            .notif-field label {
                 display: block;
                 font-size: 11px;
                 font-weight: 800;
-                color: var(--muted);
+                color: #6b7280;
+                margin-bottom: 6px;
                 text-transform: uppercase;
                 letter-spacing: .04em;
-                margin-bottom: 6px;
             }
 
-            .form-field input,
-            .form-field textarea,
-            .form-field select {
+            .notif-field input[type="text"],
+            .notif-field select,
+            .notif-field textarea {
                 width: 100%;
-                padding: 12px 14px;
-                border: 1.5px solid var(--line);
-                border-radius: 12px;
+                padding: 11px 14px;
+                border: 1.5px solid #e3e6ee;
+                border-radius: 10px;
                 font-family: inherit;
-                font-size: 14px;
+                font-size: 13.5px;
+                color: var(--text);
                 outline: none;
                 background: #fff;
                 transition: border-color .15s, box-shadow .15s;
-                color: var(--text);
             }
 
-                .form-field input:focus,
-                .form-field textarea:focus,
-                .form-field select:focus {
+                .notif-field input:focus,
+                .notif-field select:focus,
+                .notif-field textarea:focus {
                     border-color: var(--blue);
-                    box-shadow: 0 0 0 3px rgba(26,43,107,.1);
+                    box-shadow: 0 0 0 3px rgba(30, 35, 230, .08);
                 }
 
-            .form-field textarea {
+            .notif-field textarea {
                 min-height: 100px;
                 resize: vertical;
+                line-height: 1.5;
             }
 
-        .clientes-lista {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1.5px solid var(--line);
-            border-radius: 12px;
-            padding: 8px;
-            background: #fafbfe;
-        }
-
-        .cliente-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background .15s;
-            border: 1px solid transparent;
-            margin-bottom: 4px;
-        }
-
-            .cliente-item:hover {
-                background: #eef0ff;
-            }
-
-            .cliente-item.selected {
-                background: #eef0ff;
-                border-color: var(--blue);
-            }
-
-            .cliente-item input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
-                accent-color: var(--blue);
-                cursor: pointer;
-                flex-shrink: 0;
-            }
-
-            .cliente-item .info {
-                flex: 1;
-                min-width: 0;
-            }
-
-            .cliente-item .nombre {
-                font-size: 13px;
-                font-weight: 800;
-                color: var(--text);
-            }
-
-            .cliente-item .correo {
-                font-size: 11px;
-                color: var(--muted);
-                margin-top: 1px;
-            }
-
-        .acciones {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            flex: 1;
-            min-width: 140px;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--blue), #3b6ce0);
+        .notif-btn-send {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #1a2b6b, #5b3fbf);
             color: #fff;
             border: 0;
             border-radius: 12px;
             font-family: inherit;
             font-weight: 800;
-            font-size: 13.5px;
+            font-size: 14px;
             cursor: pointer;
+            box-shadow: 0 8px 18px -6px rgba(30, 35, 230, .5);
             transition: transform .15s;
             display: flex;
             align-items: center;
@@ -183,427 +175,466 @@
             gap: 8px;
         }
 
-            .btn-primary:active {
+            .notif-btn-send:active {
                 transform: scale(.98);
             }
 
-            .btn-primary:disabled {
+            .notif-btn-send:disabled {
                 opacity: 0.6;
                 cursor: not-allowed;
             }
 
-        .btn-secondary {
-            flex: 1;
-            min-width: 140px;
-            padding: 14px;
-            background: #fff;
-            border: 1.5px solid var(--line);
-            color: var(--text);
+        .notif-aviso {
+            display: none;
+            margin-top: 12px;
+            padding: 12px 14px;
             border-radius: 12px;
-            font-family: inherit;
+            font-size: 12.5px;
             font-weight: 800;
-            font-size: 13.5px;
-            cursor: pointer;
-            transition: background .15s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-            .btn-secondary:hover {
-                background: #fafbfe;
-            }
-
-            .btn-secondary:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
-
-        .tipo-selector {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-
-        .tipo-chip {
-            padding: 10px 6px;
-            border-radius: 10px;
-            background: #f5f6fa;
-            border: 1.5px solid var(--line);
-            color: var(--muted);
-            font-family: inherit;
-            font-size: 11px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all .15s;
             text-align: center;
         }
 
-            .tipo-chip.active {
-                background: var(--blue);
-                border-color: var(--blue);
-                color: #fff;
-            }
-
-        .notif-item {
-            padding: 12px;
-            background: #fafbfe;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            margin-bottom: 8px;
-        }
-
-            .notif-item .titulo {
-                font-size: 12.5px;
-                font-weight: 800;
-                color: var(--text);
-            }
-
-            .notif-item .msg {
-                font-size: 11.5px;
-                color: var(--muted);
-                margin-top: 3px;
-                line-height: 1.4;
-            }
-
-            .notif-item .meta {
-                font-size: 10.5px;
-                color: var(--muted);
-                margin-top: 6px;
-                display: flex;
-                justify-content: space-between;
-            }
-
-        .aviso {
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 14px;
-            font-size: 12.5px;
-            font-weight: 700;
-            display: none;
-        }
-
-            .aviso.ok {
+            .notif-aviso.ok {
                 background: #e9f7ec;
-                border: 1px solid #cdeed4;
                 color: #2f8f3e;
                 display: block;
             }
 
-            .aviso.err {
+            .notif-aviso.err {
                 background: #fdeaea;
-                border: 1px solid #f6cfd0;
                 color: #c93a3f;
                 display: block;
+            }
+
+        /* ═══ LISTA NOTIFICACIONES ═══ */
+        .notif-item {
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            background: #fff;
+            border: 1px solid #eef0f5;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            transition: transform .15s, box-shadow .15s;
+            position: relative;
+        }
+
+            .notif-item:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 18px rgba(20, 30, 70, .08);
+            }
+
+            .notif-item.unread {
+                border-left: 4px solid #1a2b6b;
+            }
+
+            .notif-item.read {
+                border-left: 4px solid #e0e0e0;
+                opacity: 0.85;
+            }
+
+        .notif-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: #eef0ff;
+            color: var(--blue);
+            flex-shrink: 0;
+        }
+
+            .notif-item-icon svg {
+                width: 20px;
+                height: 20px;
+                stroke: currentColor;
+                fill: none;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+        .notif-item-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notif-item-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .notif-item-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.25;
+        }
+
+        .notif-item-time {
+            font-size: 10.5px;
+            color: #6b7280;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .notif-item-msg {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.45;
+        }
+
+        .notif-item-user {
+            font-size: 11px;
+            color: var(--blue);
+            font-weight: 800;
+            margin-top: 6px;
+        }
+
+        .notif-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+
+            .notif-empty i {
+                font-size: 40px;
+                color: #c9ced9;
+                margin-bottom: 12px;
+                display: block;
+            }
+
+            .notif-empty .t {
+                font-size: 14px;
+                font-weight: 800;
+                color: var(--text);
+                margin-bottom: 4px;
+            }
+
+            .notif-empty .s {
+                font-size: 12px;
+                line-height: 1.4;
+            }
+
+        /* ═══ CHIPS DE DESTINATARIOS ═══ */
+        .notif-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .notif-chip {
+            padding: 6px 12px;
+            background: #eef0f5;
+            border: 1.5px solid transparent;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #6b7280;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all .15s;
+        }
+
+            .notif-chip.active {
+                background: #eef0ff;
+                border-color: var(--blue);
+                color: var(--blue);
+            }
+
+        .notif-checkbox-wrap {
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1.5px solid #e3e6ee;
+            border-radius: 12px;
+            padding: 8px;
+            background: #fafbfe;
+        }
+
+        .notif-checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+            .notif-checkbox-row:hover {
+                background: #f0f2f8;
+            }
+
+            .notif-checkbox-row input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                accent-color: var(--blue);
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+
+            .notif-checkbox-row .info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .notif-checkbox-row .name {
+                font-size: 12.5px;
+                font-weight: 700;
+                color: var(--text);
+                line-height: 1.2;
+            }
+
+            .notif-checkbox-row .email {
+                font-size: 11px;
+                color: #6b7280;
+                margin-top: 2px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
     </style>
 }
 
-<h2 class="page-title">📢 Enviar Notificaciones</h2>
-<p class="page-subtitle">Notificá a tus clientes por app y correo.</p>
+<h1 class="page-title">Notificar</h1>
+<p class="page-subtitle">Enviá notificaciones a tus clientes y consultá el historial.</p>
 
-<!-- ═══════════ ANTI-FORGERY TOKEN (NECESARIO) ═══════════ -->
-@Html.AntiForgeryToken()
-
-<!-- Aviso -->
-<div id="aviso" class="aviso"></div>
-
-<!-- Estadísticas -->
-<div class="stat-grid">
-    <div class="stat-box">
-        <div class="num">@totalClientes</div>
+<!-- ═══ ESTADÍSTICAS ═══ -->
+<div class="notif-stats">
+    <div class="notif-stat">
         <div class="lbl">Clientes</div>
+        <div class="num">@totalClientes</div>
     </div>
-    <div class="stat-box">
-        <div class="num">@conCorreo</div>
-        <div class="lbl">Con correo</div>
+    <div class="notif-stat purple">
+        <div class="lbl">Notificaciones</div>
+        <div class="num">@totalNotif</div>
     </div>
-    <div class="stat-box">
-        <div class="num">@enviadas</div>
-        <div class="lbl">Enviadas</div>
+    <div class="notif-stat green">
+        <div class="lbl">Leídas</div>
+        <div class="num">@totalLeidas</div>
     </div>
-</div>
-
-<!-- Formulario -->
-<div class="admin-card">
-    <h3>📝 Redactar notificación</h3>
-
-    <div class="form-field">
-        <label>Tipo de notificación</label>
-        <div class="tipo-selector">
-            <button type="button" class="tipo-chip active" data-tipo="General" onclick="seleccionarTipo(this);">📢 General</button>
-            <button type="button" class="tipo-chip" data-tipo="Tramite" onclick="seleccionarTipo(this);">📄 Trámite</button>
-            <button type="button" class="tipo-chip" data-tipo="Averia" onclick="seleccionarTipo(this);">⚡ Avería</button>
-            <button type="button" class="tipo-chip" data-tipo="Pago" onclick="seleccionarTipo(this);">💰 Pago</button>
-        </div>
-    </div>
-
-    <div class="form-field">
-        <label>Título *</label>
-        <input type="text" id="titulo" placeholder="Ej: Actualización de trámite" maxlength="100" required />
-    </div>
-
-    <div class="form-field">
-        <label>Mensaje *</label>
-        <textarea id="mensaje" placeholder="Escribí el mensaje que recibirán los clientes..." maxlength="500" required></textarea>
-    </div>
-
-    <div class="form-field">
-        <label>Destinatarios</label>
-        <div style="display:flex; gap:8px; margin-bottom:10px;">
-            <button type="button" class="tipo-chip active" onclick="seleccionarTodos(this);" style="flex:1;">👥 Todos</button>
-            <button type="button" class="tipo-chip" onclick="limpiarSeleccion(this);" style="flex:1;">✂️ Ninguno</button>
-        </div>
-        <input type="text" id="buscador" placeholder="🔍 Buscar cliente por nombre, cédula o correo..." style="margin-bottom:10px;" oninput="filtrarClientes(this.value);" />
-        <div class="clientes-lista" id="clientesLista">
-            @foreach (var c in clientes)
-            {
-                <label class="cliente-item" data-id="@c.UsuarioId" data-buscar="@((c.NombreCompleto + " " + c.Correo).ToLower())">
-                    <input type="checkbox" value="@c.UsuarioId" class="chk-cliente" />
-                    <div class="info">
-                        <div class="nombre">@c.NombreCompleto</div>
-                        <div class="correo">@c.Correo</div>
-                    </div>
-                </label>
-            }
-        </div>
-    </div>
-
-    <div class="acciones">
-        <button type="button" class="btn-primary" id="btnEnviar" onclick="enviarSeleccionados();">
-            📤 Enviar a seleccionados
-        </button>
-        <button type="button" class="btn-secondary" id="btnEnviarTodos" onclick="enviarATodos();">
-            👥 Enviar a todos
-        </button>
+    <div class="notif-stat gold">
+        <div class="lbl">No leídas</div>
+        <div class="num">@totalNoLeidas</div>
     </div>
 </div>
 
-<!-- Últimas enviadas -->
-@if (ultimasEnviadas.Any())
-{
-    <div class="admin-card">
-        <h3>🕐 Últimas notificaciones enviadas</h3>
-        @foreach (var n in ultimasEnviadas)
+<!-- ═══ TABS ═══ -->
+<div class="notif-tabs">
+    <button type="button" class="notif-tab active" data-tab="enviar" onclick="cambiarTab('enviar', this);">📤 Enviar</button>
+    <button type="button" class="notif-tab" data-tab="historial" onclick="cambiarTab('historial', this);">📋 Historial</button>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 1: ENVIAR NOTIFICACIÓN
+     ═══════════════════════════════════════════ -->
+<div id="tab-enviar" class="tab-panel">
+    <div class="notif-card">
+        <div class="notif-card-title">
+            <i class="fas fa-paper-plane"></i>
+            Nueva notificación
+        </div>
+
+        <div class="notif-field">
+            <label>Destinatarios</label>
+            <div class="notif-chips">
+                <button type="button" class="notif-chip active" data-scope="todos" onclick="cambiarScope('todos', this);">Todos los clientes</button>
+                <button type="button" class="notif-chip" data-scope="seleccion" onclick="cambiarScope('seleccion', this);">Seleccionar clientes</button>
+            </div>
+
+            <div id="wrapClientes" class="notif-checkbox-wrap" style="display:none;">
+                @foreach (var u in usuarios)
+                {
+                    <label class="notif-checkbox-row">
+                        <input type="checkbox" class="chk-cliente" value="@u.UsuarioId" />
+                        <div class="info">
+                            <div class="name">@u.Nombre @u.Apellidos</div>
+                            <div class="email">@u.Correo · @u.Cedula</div>
+                        </div>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="notif-field">
+            <label for="notifTitulo">Título</label>
+            <input type="text" id="notifTitulo" placeholder="Ej: Mantenimiento programado" maxlength="100" />
+        </div>
+
+        <div class="notif-field">
+            <label for="notifMensaje">Mensaje</label>
+            <textarea id="notifMensaje" placeholder="Escribí el contenido de la notificación..." maxlength="500"></textarea>
+        </div>
+
+        <div class="notif-field">
+            <label for="notifTipo">Tipo de notificación</label>
+            <select id="notifTipo">
+                <option value="General">General</option>
+                <option value="Factura">Factura</option>
+                <option value="Avería">Avería</option>
+                <option value="Trámite">Trámite</option>
+                <option value="Alerta">Alerta</option>
+                <option value="Promoción">Promoción</option>
+            </select>
+        </div>
+
+        <button type="button" id="btnEnviarNotif" class="notif-btn-send" onclick="enviarNotificacion();">
+            <i class="fas fa-paper-plane"></i> Enviar notificación
+        </button>
+
+        <div id="notifAviso" class="notif-aviso"></div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TAB 2: HISTORIAL
+     ═══════════════════════════════════════════ -->
+<div id="tab-historial" class="tab-panel" style="display:none;">
+    <div class="notif-card">
+        <div class="notif-card-title">
+            <i class="fas fa-history"></i>
+            Historial de notificaciones
+        </div>
+
+        @if (notificaciones.Any())
         {
-            <div class="notif-item">
-                <div class="titulo">@n.Titulo</div>
-                <div class="msg">@n.Mensaje</div>
-                <div class="meta">
-                    <span>👤 @(n.Usuario != null ? n.Usuario.Nombre + " " + n.Usuario.Apellidos : "Cliente")</span>
-                    <span>@n.Fecha.ToString("dd/MM/yyyy HH:mm")</span>
+            foreach (var n in notificaciones)
+            {
+                var clase = n.Leida ? "read" : "unread";
+                <div class="notif-item @clase">
+                    <div class="notif-item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+                        </svg>
+                    </div>
+                    <div class="notif-item-body">
+                        <div class="notif-item-head">
+                            <div class="notif-item-title">@n.Titulo</div>
+                            <div class="notif-item-time">@n.Fecha.ToString("dd/MM/yyyy HH:mm")</div>
+                        </div>
+                        <div class="notif-item-msg">@Html.Raw(n.Mensaje)</div>
+                        @if (!string.IsNullOrEmpty(n.Tipo))
+                        {
+                            <div class="notif-item-user">
+                                @n.Tipo
+                                @if (n.Leida)
+                                {
+                                    <text>· ✓ Leída</text>
+                                }
+                                else
+                                {
+                                    <text>· ⏳ No leída</text>
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
+            }
+        }
+        else
+        {
+            <div class="notif-empty">
+                <i class="fas fa-bell-slash"></i>
+                <div class="t">Sin notificaciones</div>
+                <div class="s">Cuando envíes notificaciones aparecerán acá.</div>
             </div>
         }
     </div>
-}
+</div>
 
 @section Scripts {
     <script>
-        // ═══ Seleccionar tipo ═══
-        var tipoActual = 'General';
-        function seleccionarTipo(btn) {
-            document.querySelectorAll('.tipo-chip[data-tipo]').forEach(function (b) { b.classList.remove('active'); });
+        // ═══════════ TABS ═══════════
+        function cambiarTab(tab, btn) {
+            document.querySelectorAll('.notif-tab').forEach(function (t) { t.classList.remove('active'); });
             btn.classList.add('active');
-            tipoActual = btn.getAttribute('data-tipo');
+
+            document.querySelectorAll('.tab-panel').forEach(function (p) { p.style.display = 'none'; });
+            var panel = document.getElementById('tab-' + tab);
+            if (panel) panel.style.display = 'block';
         }
 
-        // ═══ Seleccionar todos ═══
-        function seleccionarTodos(btn) {
-            document.querySelectorAll('.chk-cliente').forEach(function (chk) {
-                var item = chk.closest('.cliente-item');
-                if (item.style.display !== 'none') {
-                    chk.checked = true;
-                    item.classList.add('selected');
+        // ═══════════ SCOPE (todos / selección) ═══════════
+        var scopeActual = 'todos';
+
+        function cambiarScope(scope, btn) {
+            scopeActual = scope;
+            document.querySelectorAll('.notif-chip').forEach(function (c) { c.classList.remove('active'); });
+            btn.classList.add('active');
+
+            var wrap = document.getElementById('wrapClientes');
+            wrap.style.display = (scope === 'seleccion') ? 'block' : 'none';
+        }
+
+        // ═══════════ ENVIAR ═══════════
+        function enviarNotificacion() {
+            var titulo = document.getElementById('notifTitulo').value.trim();
+            var mensaje = document.getElementById('notifMensaje').value.trim();
+            var tipo = document.getElementById('notifTipo').value;
+
+            if (!titulo) { alert('Escribí un título para la notificación.'); return; }
+            if (!mensaje) { alert('Escribí un mensaje para la notificación.'); return; }
+
+            var usuariosIds = [];
+            if (scopeActual === 'seleccion') {
+                var checks = document.querySelectorAll('.chk-cliente:checked');
+                checks.forEach(function (c) { usuariosIds.push(parseInt(c.value, 10)); });
+                if (usuariosIds.length === 0) {
+                    alert('Seleccioná al menos un cliente.');
+                    return;
                 }
-            });
-        }
+            }
 
-        function limpiarSeleccion() {
-            document.querySelectorAll('.chk-cliente').forEach(function (chk) {
-                chk.checked = false;
-                var item = chk.closest('.cliente-item');
-                if (item) item.classList.remove('selected');
-            });
-        }
+            var btn = document.getElementById('btnEnviarNotif');
+            var aviso = document.getElementById('notifAviso');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            aviso.className = 'notif-aviso';
+            aviso.style.display = 'none';
 
-        // ═══ Toggle selección ═══
-        document.querySelectorAll('.cliente-item').forEach(function (item) {
-            var chk = item.querySelector('.chk-cliente');
-            chk.addEventListener('change', function () {
-                item.classList.toggle('selected', this.checked);
-            });
-            item.addEventListener('click', function (e) {
-                if (e.target.tagName !== 'INPUT') {
-                    chk.checked = !chk.checked;
-                    item.classList.toggle('selected', chk.checked);
-                }
-            });
-        });
+            var formData = new FormData();
+            formData.append('titulo', titulo);
+            formData.append('mensaje', mensaje);
+            formData.append('tipo', tipo);
+            formData.append('scope', scopeActual);
+            if (usuariosIds.length > 0) {
+                formData.append('usuariosIds', usuariosIds.join(','));
+            }
 
-        // ═══ Buscar ═══
-        function filtrarClientes(q) {
-            q = q.toLowerCase().trim();
-            document.querySelectorAll('.cliente-item').forEach(function (item) {
-                var texto = item.getAttribute('data-buscar') || '';
-                item.style.display = (q === '' || texto.indexOf(q) >= 0) ? 'flex' : 'none';
-            });
-        }
-
-        // ═══ Helper: POST con manejo robusto de errores ═══
-        function postJson(url, formData) {
-            return fetch(url, {
+            fetch('@Url.Action("EnviarNotificacion", "AdminNotificaciones")', {
                 method: 'POST',
-                body: formData,
-                credentials: 'same-origin',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                body: formData
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.ok) {
+                    aviso.className = 'notif-aviso ok';
+                    aviso.textContent = '✓ ' + data.mensaje;
+                    document.getElementById('notifTitulo').value = '';
+                    document.getElementById('notifMensaje').value = '';
+                    document.querySelectorAll('.chk-cliente:checked').forEach(function (c) { c.checked = false; });
+
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    aviso.className = 'notif-aviso err';
+                    aviso.textContent = '✗ ' + (data.mensaje || 'Error al enviar');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar notificación';
                 }
             })
-            .then(function (response) {
-                var contentType = response.headers.get('content-type') || '';
-
-                // Si NO es JSON → es HTML (login, error 500, etc.)
-                if (contentType.indexOf('application/json') === -1) {
-                    return response.text().then(function (html) {
-                        // Login
-                        if (html.indexOf('Iniciar sesión') >= 0 || html.indexOf('formLogin') >= 0) {
-                            throw new Error('Tu sesión expiró. Cerrá sesión y volvé a entrar como admin.');
-                        }
-                        // Error del servidor
-                        if (html.indexOf('Server Error') >= 0 || html.indexOf('Error de servidor') >= 0 || response.status >= 500) {
-                            throw new Error('Error del servidor (' + response.status + '). Revisá el Output de Visual Studio.');
-                        }
-                        // Otro HTML
-                        throw new Error('El servidor devolvió HTML. Status: ' + response.status);
-                    });
-                }
-
-                // Es JSON
-                return response.json();
+            .catch(function () {
+                aviso.className = 'notif-aviso err';
+                aviso.textContent = '✗ Error de conexión';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar notificación';
             });
-        }
-
-        // ═══ Enviar a seleccionados ═══
-        function enviarSeleccionados() {
-            var titulo = document.getElementById('titulo').value.trim();
-            var mensaje = document.getElementById('mensaje').value.trim();
-            var seleccionados = [];
-
-            document.querySelectorAll('.chk-cliente:checked').forEach(function (chk) {
-                seleccionados.push(parseInt(chk.value));
-            });
-
-            if (seleccionados.length === 0) {
-                mostrarAviso('err', 'Seleccioná al menos un cliente.');
-                return;
-            }
-            if (!titulo || !mensaje) {
-                mostrarAviso('err', 'Título y mensaje son obligatorios.');
-                return;
-            }
-
-            if (!confirm('¿Enviar a ' + seleccionados.length + ' cliente(s)?')) return;
-
-            var btn = document.getElementById('btnEnviar');
-            var htmlOriginal = btn.innerHTML;
-            btn.disabled = true;
-            btn.textContent = 'Enviando...';
-
-            var formData = new FormData();
-            formData.append('titulo', titulo);
-            formData.append('mensaje', mensaje);
-            formData.append('tipo', tipoActual);
-
-            seleccionados.forEach(function (id) {
-                formData.append('usuarioIds', id);
-            });
-
-            var token = document.querySelector('input[name="__RequestVerificationToken"]');
-            if (token) formData.append('__RequestVerificationToken', token.value);
-
-            postJson('@Url.Action("Enviar", "AdminNotificaciones")', formData)
-                .then(function (data) {
-                    btn.disabled = false;
-                    btn.innerHTML = htmlOriginal;
-
-                    if (data.success) {
-                        mostrarAviso('ok', data.message);
-                        limpiarFormulario();
-                    } else {
-                        mostrarAviso('err', data.message || 'Error al enviar.');
-                    }
-                })
-                .catch(function (err) {
-                    btn.disabled = false;
-                    btn.innerHTML = htmlOriginal;
-                    mostrarAviso('err', err.message);
-                    console.error('Error enviar:', err);
-                });
-        }
-
-        // ═══ Enviar a todos ═══
-        function enviarATodos() {
-            var titulo = document.getElementById('titulo').value.trim();
-            var mensaje = document.getElementById('mensaje').value.trim();
-
-            if (!titulo || !mensaje) {
-                mostrarAviso('err', 'Título y mensaje son obligatorios.');
-                return;
-            }
-
-            if (!confirm('¿Enviar a TODOS los clientes?\n\nEsto enviará notificaciones y correos a todos.')) return;
-
-            var btn = document.getElementById('btnEnviarTodos');
-            var htmlOriginal = btn.innerHTML;
-            btn.disabled = true;
-            btn.textContent = 'Enviando a todos...';
-
-            var formData = new FormData();
-            formData.append('titulo', titulo);
-            formData.append('mensaje', mensaje);
-            formData.append('tipo', tipoActual);
-
-            var token = document.querySelector('input[name="__RequestVerificationToken"]');
-            if (token) formData.append('__RequestVerificationToken', token.value);
-
-            postJson('@Url.Action("EnviarATodos", "AdminNotificaciones")', formData)
-                .then(function (data) {
-                    btn.disabled = false;
-                    btn.innerHTML = htmlOriginal;
-
-                    if (data.success) {
-                        mostrarAviso('ok', data.message);
-                        limpiarFormulario();
-                    } else {
-                        mostrarAviso('err', data.message || 'Error al enviar.');
-                    }
-                })
-                .catch(function (err) {
-                    btn.disabled = false;
-                    btn.innerHTML = htmlOriginal;
-                    mostrarAviso('err', err.message);
-                    console.error('Error enviar a todos:', err);
-                });
-        }
-
-        // ═══ Mostrar aviso ═══
-        function mostrarAviso(tipo, msg) {
-            var aviso = document.getElementById('aviso');
-            aviso.className = 'aviso ' + tipo;
-            aviso.textContent = msg;
-            setTimeout(function () {
-                aviso.className = 'aviso';
-            }, 8000);
-        }
-
-        // ═══ Limpiar form ═══
-        function limpiarFormulario() {
-            document.getElementById('titulo').value = '';
-            document.getElementById('mensaje').value = '';
-            limpiarSeleccion();
         }
     </script>
 }
